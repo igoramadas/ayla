@@ -8,7 +8,7 @@ class GitHub
 
 
 # Singleton implementation.
-# --------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 GitHub.getInstance = ->
     @instance = new GitHub() if not @instance?
     return @instance

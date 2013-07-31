@@ -13,7 +13,7 @@ class Ninja
 
 
 # Singleton implementation.
-# --------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 Ninja.getInstance = ->
     @instance = new Ninja() if not @instance?
     return @instance

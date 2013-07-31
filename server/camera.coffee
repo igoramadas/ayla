@@ -8,7 +8,7 @@ class Camera
 
 
 # Singleton implementation.
-# --------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 Camera.getInstance = ->
     @instance = new Camera() if not @instance?
     return @instance

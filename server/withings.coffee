@@ -8,7 +8,7 @@ class Withings
 
 
 # Singleton implementation.
-# --------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 Withings.getInstance = ->
     @instance = new Withings() if not @instance?
     return @instance

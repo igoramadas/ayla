@@ -8,7 +8,7 @@ class Endomondo
 
 
 # Singleton implementation.
-# --------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 Endomondo.getInstance = ->
     @instance = new Endomondo() if not @instance?
     return @instance

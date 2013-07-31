@@ -8,7 +8,7 @@ class Email
 
 
 # Singleton implementation.
-# --------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 Email.getInstance = ->
     @instance = new Email() if not @instance?
     return @instance
