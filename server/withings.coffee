@@ -1,7 +1,7 @@
-# EMAIL
+# WITHINGS
 # -----------------------------------------------------------------------------
 
-class Email
+class Withings
 
     # Required modules.
     expresser = require "expresser"
@@ -9,8 +9,8 @@ class Email
 
 # Singleton implementation.
 # --------------------------------------------------------------------------
-Email.getInstance = ->
-    @instance = new Email() if not @instance?
+Withings.getInstance = ->
+    @instance = new Withings() if not @instance?
     return @instance
 
-module.exports = exports = Email.getInstance()
+module.exports = exports = Withings.getInstance()

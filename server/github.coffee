@@ -1,7 +1,7 @@
-# EMAIL
+# GITHUB
 # -----------------------------------------------------------------------------
 
-class Email
+class GitHub
 
     # Required modules.
     expresser = require "expresser"
@@ -9,8 +9,8 @@ class Email
 
 # Singleton implementation.
 # --------------------------------------------------------------------------
-Email.getInstance = ->
-    @instance = new Email() if not @instance?
+GitHub.getInstance = ->
+    @instance = new GitHub() if not @instance?
     return @instance
 
-module.exports = exports = Email.getInstance()
+module.exports = exports = GitHub.getInstance()

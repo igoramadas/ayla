@@ -1,7 +1,7 @@
-# EMAIL
+# CAMERA
 # -----------------------------------------------------------------------------
 
-class Email
+class Camera
 
     # Required modules.
     expresser = require "expresser"
@@ -9,8 +9,8 @@ class Email
 
 # Singleton implementation.
 # --------------------------------------------------------------------------
-Email.getInstance = ->
-    @instance = new Email() if not @instance?
+Camera.getInstance = ->
+    @instance = new Camera() if not @instance?
     return @instance
 
-module.exports = exports = Email.getInstance()
+module.exports = exports = Camera.getInstance()
