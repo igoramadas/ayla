@@ -10,7 +10,11 @@ class Email
     lodash = require "lodash"
     moment = require "moment"
 
-    rules = []
+    # PROPERTIES
+    # -------------------------------------------------------------------------
+
+    # Email rules loaded from the data/emailRules.json file.
+    rules: []
 
     # INIT
     # -------------------------------------------------------------------------
@@ -18,7 +22,7 @@ class Email
     # Init the Email module.
     init: =>
         rulesPath = settings.path.data + "emailRules.json"
-        rules = require rulesPath
+        @rules = require rulesPath
 
 
 

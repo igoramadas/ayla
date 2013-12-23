@@ -1,5 +1,6 @@
 .idea/
 atlassian-ide-plugin.xml
+data/*.json
 logs/*.log
 node_modules/
 npm-shrinkwrap.json
