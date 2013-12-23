@@ -1,10 +1,15 @@
 # CAMERA
 # -----------------------------------------------------------------------------
-
 class Camera
 
-    # Required modules.
     expresser = require "expresser"
+    logger = expresser.logger
+
+    # AUTH
+    # -------------------------------------------------------------------------
+
+    auth: =>
+
 
 
 # Singleton implementation.

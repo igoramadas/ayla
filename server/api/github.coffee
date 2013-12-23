@@ -1,10 +1,15 @@
 # GITHUB
 # -----------------------------------------------------------------------------
-
 class GitHub
 
-    # Required modules.
     expresser = require "expresser"
+    logger = expresser.logger
+
+    # AUTH
+    # -------------------------------------------------------------------------
+
+    auth: =>
+
 
 
 # Singleton implementation.

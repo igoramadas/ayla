@@ -1,0 +1,11 @@
+extends layout
+
+block contents
+    #graphs.contents(data-bind="foreach: imps")
+        div(data-bind="attr: {'id': 'imp-' + id}")
+            div.wifi(data-bind="css: wifiClass")
+            h3(data-bind="text: title")
+            .graphwrapper
+                div.scale.left(data-bind="attr: {'id': 'axis-light-' + id}")
+                div(data-bind="attr: {'id': 'chart-' + id}")
+                div.scale.right(data-bind="attr: {'id': 'axis-temp-' + id}")

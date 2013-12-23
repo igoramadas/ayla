@@ -1,0 +1,60 @@
+body
+    font 20px "Myriad Pro", Calibri, Helvetica, Arial, sans-serif
+    margin 0
+    padding 0
+    position relative
+    text-align center
+    width 100%
+
+// Center contents
+.contents
+    margin auto
+    width 900px
+
+// Main wrapper
+#wrapper
+    margin auto
+
+// Top menu
+#header
+    background rgba(0, 0, 0, 0.8)
+    text-align left
+
+    h1
+        display inline-block
+        color rgb(255, 255, 255)
+        font-size 20px
+        margin 0 10px 0 0
+        padding 0
+    a
+        display inline-block
+        color rgb(255, 240, 220)
+        font-size 20px
+        padding 8px 10px 7px 10px
+        text-decoration none
+
+// Error and notification alerts
+#alerts
+    background rgba(0, 0, 0, 0.8)
+    height 30px
+    position fixed
+    width 100%
+    top -30px
+
+    .title
+        display inline-block
+        font-weight strong
+        margin-right 10px
+
+    .message
+        display inline-block
+
+// Info alerts with neutral color.
+#alerts.info
+    color rgb(245, 245, 245)
+    box-shadow 0 2px 22px 2px rgb(50, 50, 50)
+
+// Error alerts in red.
+#alerts.error
+    color rgb(255, 200, 200)
+    box-shadow 0 2px 22px 2px rgb(255, 120, 120)

@@ -1,15 +1,20 @@
-# NINJA
+# NINJA BLOCKS
 # -----------------------------------------------------------------------------
-# Interactions with Ninja Blocks.
-
 class Ninja
 
-    # Required modules.
     expresser = require "expresser"
+    logger = expresser.logger
+
     ninjablocks = require "ninja-blocks"
 
     # Create Ninja App/
     ninjaApp = ninjablocks.app {user_access_token: expresser.settings.ninja.appSecret}
+
+    # AUTH
+    # -------------------------------------------------------------------------
+
+    auth: =>
+
 
 
 # Singleton implementation.

@@ -1,0 +1,22 @@
+!!! 5
+html
+    head
+        title Izulu
+        meta(name="apple-mobile-web-app-capable", content="yes")
+        script(src="/socket.io/socket.io.js")
+        script window.jarbas = {};
+        != js("scripts")
+        != css("styles")
+    body
+        #wrapper
+            #header
+                .contents
+                    h1 IZULU
+                    a(href="/") status
+                    a(href="/rooms") rooms
+                    a(href="/climate") climate
+            #alerts
+                .contents
+                    label.title
+                    span.message
+            block contents
