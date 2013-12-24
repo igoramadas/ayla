@@ -4,12 +4,15 @@
 class Security
 
     expresser = require "expresser"
+    database = expresser.database
+    logger = expresser.logger
     settings = expresser.settings
 
     crypto = require "crypto"
-    database = require "./database.coffee"
     lodash = require "lodash"
     moment = require "moment"
+    oauthModule = require "oauth"
+    passportFitbit = require "passport-fitbit"
 
     # PROPERTIES
     # -------------------------------------------------------------------------
@@ -17,47 +20,82 @@ class Security
     # Passport is accessible from outside.
     passport: require "passport"
 
+    # Holds a copy of users and tokens.
+    cachedTokens: []
+
     # INIT
     # -------------------------------------------------------------------------
 
-    # Init all security related stuff. Set the passport strategy to
-    # authenticate users using basic HTTP authentication.
+    # Init the Security module. Set session management methods and init
+    # auth procedures for all API modules.
     init: =>
-        @cachedUsers = {}
+        @passport.serializeUser @serializeUser
+        @passport.deserializeUser @deserializeUser
 
-        # Only add passowrd protection if enabled on settings.
-        return if not @getPassportStrategy()?
+        @initFitbit()
 
+    # Init Fitbit auth and security.
+    initFitbit: =>
+        options = {consumerKey: settings.fitbit.apiKey, consumerSecret: settings.fitbit.apiSecret}
+        strategy = new passportFitbit.Strategy options
+        @passport.use strategy, @authFitbit
 
-        # Enable LDAP authentication?
-        if settings.passport.ldap.enabled
-            ldapStrategy = (require "passport-ldapauth").Strategy
-            ldapOptions =
-                server:
-                    url: settings.passport.ldap.server
-                    adminDn: settings.passport.ldap.adminDn
-                    adminPassword: settings.passport.ldap.adminPassword
-                    searchBase: settings.passport.ldap.searchBase
-                    searchFilter: settings.passport.ldap.searchFilter
-                    tlsOptions: settings.passport.ldap.tlsOptions
+    # AUTH METHODS
+    # -------------------------------------------------------------------------
 
-            # Use `ldapauth` strategy.
-            strategy = new ldapStrategy ldapOptions, (profile, callback) => @validateUser profile, null, callback
-            @passport.use strategy
-            expresser.logger.debug "Security", "Passport: using LDAP authentication."
+    # Auth handler for Fitbit.
+    authFitbit: (token, tokenSecret, user, callback) =>
+        user.encodedId = user.id
+        user.accessToken = token
+        user.accessSecret = tokenSecret
+        @saveUserToDb user
 
-        # Enable basic HTTP authentication?
-        else if settings.passport.basic.enabled
-            httpStrategy = (require "passport-http").BasicStrategy
+        # Create OAuth client, used to subscribe for notifications from Fitbit.
+        oauth = new oauthModule.OAuth(
+            settings.fitbit.oauthUrl + "request_token",
+            settings.fitbit.oauthUrl + "access_token",
+            settings.fitbit.apiKey,
+            settings.fitbit.apiSecret,
+            "1.0",
+            null,
+            "HMAC-SHA1")
 
-            # Use `basic` strategy.
-            strategy = new httpStrategy (username, password, callback) => @validateUser username, password, callback
-            @passport.use strategy
-            expresser.logger.debug "Security", "Passport: using basic HTTP authentication."
+        # Set subscription URL.
+        postUrl = "#{settings.fitbit.apiUrl}user/-/apiSubscriptions/#{user.id}-all.json"
 
-        # Make sure we have the admin user created and set guest user.
-        @ensureAdminUser()
-        @guestUser = {id: "guest", displayName: settings.security.guestDisplayName, username: "guest", roles: ["guest"]}
+        # Subscribe this application to updates from the user's data
+        oauth.post postUrl, token, tokenSecret, null, null, (err, data, res) ->
+            if err?
+                logger.error "Security.authFitbit", postUrl, err
+            callback err, user
+
+    # SESSION MANAGEMENT
+    # -------------------------------------------------------------------------
+
+    # Helper to serialize authenticated users.
+    serializeUser: (user, callback) =>
+        logger.debug "Security.serializeUser", user
+        callback null, user.id
+
+    # Helper to deserialize users.
+    deserializeUser: (user, callback) =>
+        logger.debug "Security.deserializeUser", user
+        @validateUser user, callback
+
+    # Helper to validate user data.
+    validateUser: (user, callback) =>
+        callback null, user
+
+    # DATABASE SYNC
+    # -------------------------------------------------------------------------
+
+    # Save user info or tokens to the database.
+    saveUserToDb: (user, callback) =>
+        database.set "auth", user, (err, result) =>
+            if err?
+                logger.error "Security.saveUserToDb", user.id, err
+            if callback?
+                callback err, result
 
 
 # Singleton implementation

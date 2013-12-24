@@ -12,7 +12,8 @@ class Routes
     # -------------------------------------------------------------------------
 
     # Set most routes on init. The app (from Expresser) must be passed here.
-    init: (app) =>
+    init: =>
+        app = expresser.app.server
 
         # Passport auth helper.
         passportAuth = security.passport.authenticate
@@ -33,8 +34,7 @@ class Routes
     indexPage = (req, res) ->
         logRequest "indexPage"
 
-        renderPage req, res, "index",
-            title: expresser.settings.general.appTitle
+        renderPage req, res, "index"
 
     # FITBIT ROUTES
     # -------------------------------------------------------------------------
@@ -43,7 +43,7 @@ class Routes
     fitbitPage = (req, res) ->
         logRequest "fitbitPage"
 
-        res.redirect "/fitbit"
+        renderPage req, res, "fitbit"
 
     # Callback for Fitbit OAuth.
     fitbitAuthCallback = (req, res) ->
@@ -56,6 +56,9 @@ class Routes
 
     # Helper to render pages.
     renderPage = (req, res, file, options) ->
+        options = {} if not options?
+        options.title = settings.general.appTitle if not options.title?
+
         res.render file, options
 
     # When the server can't return a valid result,

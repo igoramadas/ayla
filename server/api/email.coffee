@@ -4,7 +4,9 @@ class Email
 
     expresser = require "expresser"
     logger = expresser.logger
+    settings = expresser.settings
 
+    data = require "../data.coffee"
     fs = require "fs"
     imap = require "imap"
     lodash = require "lodash"
@@ -22,11 +24,6 @@ class Email
     # Init the Email module.
     init: =>
         rulesPath = settings.path.data + "emailRules.json"
-        @rules = require rulesPath
-
-
-
-
 
     # READ MESSAGES
     # -------------------------------------------------------------------------
@@ -56,7 +53,7 @@ class Email
             stream.once "end", -> logger.debug "Email.processMessage", "Message body", parsed.body
 
             # Check if there's a "from" rule for the current message.
-            fromRule = lodash.find rules, {from: parsed.fromAddress}
+            fromRule = lodash.find data.cache.emailRules, {from: parsed.fromAddress}
             if fromRule?
                 action = new (require "../emailActions/#{fromRule.action}")
 

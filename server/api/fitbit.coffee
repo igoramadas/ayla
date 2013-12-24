@@ -5,10 +5,18 @@ class Fitbit
     expresser = require "expresser"
     logger = expresser.logger
 
-    # AUTH
+
+
+    # INIT
     # -------------------------------------------------------------------------
 
+    # Init the Fitbit module.
+    init: =>
+
+
+    # Passport authentication helper for Fitbit.
     auth: =>
+
 
     # SLEEP
     # -------------------------------------------------------------------------

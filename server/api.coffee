@@ -7,15 +7,15 @@ class Api
     logger = expresser.logger
 
     # Init Jarbas API.
-    camera = require "./server/api/camera.coffee"
-    email = require "./server/api/email.coffee"
-    endomondo = require "./server/api/endomondo.coffee"
-    fitbit = require "./server/api/fitbit.coffee"
-    github = require "./server/api/github.coffee"
-    hue = require "./server/api/hue.coffee"
-    ninja = require "./server/api/ninja.coffee"
-    toshl = require "./server/api/toshl.coffee"
-    withings = require "./server/api/withings.coffee"
+    camera = require "./api/camera.coffee"
+    email = require "./api/email.coffee"
+    endomondo = require "./api/endomondo.coffee"
+    fitbit = require "./api/fitbit.coffee"
+    github = require "./api/github.coffee"
+    hue = require "./api/hue.coffee"
+    ninja = require "./api/ninja.coffee"
+    toshl = require "./api/toshl.coffee"
+    withings = require "./api/withings.coffee"
 
     # INIT
     # -------------------------------------------------------------------------

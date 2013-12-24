@@ -5,13 +5,10 @@ class Camera
     expresser = require "expresser"
     downloader = expresser.downloader
     logger = expresser.logger
+    settings = expresser.settings
 
+    data = require "../data.coffee"
     lodash = require "lodash"
-
-    # PROPERTIES
-    # -------------------------------------------------------------------------
-
-    cameras: []
 
     # INIT
     # -------------------------------------------------------------------------
@@ -19,14 +16,13 @@ class Camera
     # Init the Camera module.
     init: =>
         camerasPath = settings.path.data + "cameras.json"
-        @cameras = require camerasPath
 
     # SNAPS
     # -------------------------------------------------------------------------
 
     # Save a snapshop for the specified camera.
     saveSnap: (id, callback) =>
-        cam = lodash.find @cameras, {id: id}
+        cam = lodash.find data.cache.cameras, {id: id}
 
         # Wrong cam?
         if not cam?
