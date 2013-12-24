@@ -19,7 +19,9 @@
         "expresser": ">= 0.9.4",
         "imap": ">= 0.8.7",
         "moment": ">= 2.0.0",
-        "ninja-blocks": ">= 0.1.3"
+        "ninja-blocks": ">= 0.1.3",
+        "passport": ">= 0.1.17",
+        "passport-fitbit": ">= 0.1.2"
     },
     "devDependencies": {
         "chai": "*",

@@ -1,21 +1,17 @@
-# JARBAS IMPLEMENTATION
+# JARBAS
 # -----------------------------------------------------------------------------
 
-# Init expresser.
+# Required modules.
 expresser = require "expresser"
-expresser.init()
+api = require "./server/api.coffee"
+routes = require "./server/routes.coffee"
+security = require "./server/security.coffee"
 
-# Init Jarbas API.
-camera = require "api/camera.coffee"
-email = require "api/email.coffee"
-endomondo = require "api/endomondo.coffee"
-fitbit = require "api/fitbit.coffee"
-github = require "api/github.coffee"
-hue = require "api/hue.coffee"
-ninja = require "api/ninja.coffee"
-toshl = require "api/toshl.coffee"
-withings = require "api/withings.coffee"
+# Init Expresser.
+expresser.init {security.passport.initialize(), security.passport.session()]}
 
-# Init sub modules.
-camera.init()
-email.init()
+# Init API.
+api.init()
+
+# Set routes.
+routes.init expresser.app
