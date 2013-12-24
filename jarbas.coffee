@@ -8,7 +8,7 @@ routes = require "./server/routes.coffee"
 security = require "./server/security.coffee"
 
 # Init Expresser.
-expresser.init {security.passport.initialize(), security.passport.session()]}
+expresser.init {app: [security.passport.initialize(), security.passport.session()]}
 
 # Init API.
 api.init()
