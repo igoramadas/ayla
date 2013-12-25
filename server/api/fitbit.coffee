@@ -3,9 +3,12 @@
 class Fitbit
 
     expresser = require "expresser"
+    database = expresser.database
     logger = expresser.logger
     settings = expresser.settings
 
+    lodash = require "lodash"
+    querystring = require "querystring"
     security = require "../security.coffee"
 
     # INIT
@@ -15,13 +18,11 @@ class Fitbit
     init: =>
         logger.debug "Fitbit.init"
 
-    # AUTH
+    # AUTH AND BASE REQUEST
     # -------------------------------------------------------------------------
 
     # Authentication helper for Fitbit.
     auth: (req, res, callback) =>
-
-
         security.processAuthToken "fitbit", {version: "1.0"}, req, res, (err, result) =>
             console.warn err, result
 
@@ -34,10 +35,25 @@ class Fitbit
                 logger.error "Security.authFitbit", postUrl, err
             callback err, user
 
+    makeRequest: (path, params, callback) =>
+        if not callback? and lodash.isFunction params
+            callback = params
+            params = null
+
+        oauthCache = security.oauthCache["fitbit"]
+        reqUrl = settings.fitbit.apiUrl + path
+
+        if params?
+            reqUrl += "?" + querystring.stringify params
+
+        oauthCache.oauth.get reqUrl, oauthCache.token, oauthCache.tokenSecret, callback
+
     # SLEEP
     # -------------------------------------------------------------------------
 
-    getSleepData: (since) =>
+    getSleepData: (date) =>
+        @makeRequest "user/-/sleep/date/#{date}.json", (err, result) =>
+            console.warn err, result
 
     # ACTIVITIES
     # -------------------------------------------------------------------------

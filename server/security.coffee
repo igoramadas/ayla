@@ -20,7 +20,7 @@ class Security
     # -------------------------------------------------------------------------
 
     # Holds a copy of users and tokens.
-    authTokens: {}
+    oauthCache: {}
 
     # INIT
     # -------------------------------------------------------------------------
@@ -33,10 +33,10 @@ class Security
     # AUTH SYNC
     # -------------------------------------------------------------------------
 
-    # Get most recent auth tokens from the database and update the `authTokens` collection.
+    # Get most recent auth tokens from the database and update the `oauthCache` collection.
     # Callback (err, result) is optional.
     refreshAuthTokens: (callback) =>
-        @authTokens = {}
+        @oauthCache = {}
 
         database.get "auth", (err, result) =>
             if err?
@@ -44,13 +44,16 @@ class Security
                 callback err, false if callback?
             else
                 for t in result
-                    @authTokens[t.service] = t
+                    oauth = getOAuthObject t.service
+                    @oauthCache[t.service] = {oauth: oauth, token: t.token, tokenSecret: t.tokenSecret}
                 callback null, true if callback?
 
     # Save user info or tokens to the database.
-    saveAuthToken: (service, data, callback) =>
-        data.service = service
-        @authTokens[service] = data
+    saveAuthToken: (service, token, tokenSecret, callback) =>
+        @oauthCache[service].token = token
+        @oauthCache[service].tokenSecret = tokenSecret
+
+        data = {service: service, token: token, tokenSecret: tokenSecret}
 
         database.set "auth", data, (err, result) =>
             if err?
@@ -63,23 +66,26 @@ class Security
     # HELPERS
     # -------------------------------------------------------------------------
 
-    # Try getting auth data for a particular request / response.
-    processAuthToken: (service, options, req, res) =>
+    getOAuthObject = (service) ->
         callbackUrl = settings.general.appUrl + service + "/auth/callback"
 
-        @authTokens[service] = {} if not @authTokens[service]?
-
-        # Create OAuth client.
-        oauth = new oauthModule.OAuth(
+        return new oauthModule.OAuth(
             settings[service].oauthUrl + "request_token",
             settings[service].oauthUrl + "access_token",
             settings[service].apiKey,
             settings[service].apiSecret,
-            options.version,
+            "1.0",
             callbackUrl,
             "HMAC-SHA1",
             null,
             {"Accept": "*/*", "Connection": "close", "User-Agent": "Jarbas"})
+
+    # Try getting auth data for a particular request / response.
+    processAuthToken: (service, options, req, res) =>
+        oauth = getOAuthObject service
+
+        # Set cache.
+        @oauthCache[service] = {oauth: oauth} if not @oauthCache[service]?
 
         # Check if request has token on querystring.
         qs = url.parse(req.url, true).query
@@ -90,7 +96,7 @@ class Security
             if err?
                 logger.error "Security.processAuthToken", "getAccessToken", service, oauth_token, oauth_token_secret, err
                 return
-            @saveAuthToken service, {token: oauth_token, tokenSecret: oauth_token_secret}
+            @saveAuthToken service, oauth_token, oauth_token_secret
             res.redirect "/#{service}"
 
         # Helper function to get the request token.
@@ -99,15 +105,15 @@ class Security
                 logger.error "Security.processAuthToken", "getRequestToken", service, oauth_token, oauth_token_secret, err
                 return
 
-            @authTokens[service].tokenSecret = oauth_token_secret
+            @oauthCache[service].tokenSecret = oauth_token_secret
 
             res.redirect "#{settings[service].oauthUrl}authorize?oauth_token=#{oauth_token}"
 
         # Has the token verifier on the query string? Get OAuth access token from server.
         if hasTokenVerifier
-            oauth.getOAuthAccessToken qs.oauth_token, @authTokens[service].tokenSecret, qs.oauth_verifier, getAccessToken
+            oauth.getOAuthAccessToken qs.oauth_token, @oauthCache[service].tokenSecret, qs.oauth_verifier, getAccessToken
         else
-            oauth.getOAuthRequestToken {oauth_callback: callbackUrl}, getRequestToken
+            oauth.getOAuthRequestToken {}, getRequestToken
 
 
 # Singleton implementation

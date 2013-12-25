@@ -39,7 +39,7 @@ class Routes
 
     # Main Fitbit entrance page.
     fitbitPage = (req, res) ->
-        renderPage req, res, "fitbit"
+        fitbit.getSleepData "2013-12-01"
 
     # Get Fitbit OAuth tokens.
     fitbitAuth = (req, res) ->
