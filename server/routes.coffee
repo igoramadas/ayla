@@ -5,6 +5,7 @@ class Routes
 
     expresser = require "expresser"
     logger = expresser.logger
+    settings = expresser.settings
 
     security = require "./security.coffee"
 
@@ -15,17 +16,13 @@ class Routes
     init: =>
         app = expresser.app.server
 
-        # Passport auth helper.
-        passportAuth = security.passport.authenticate
-        passportOptions = {failureRedirect: "/?error=auth_failed" }
-
         # Main routes.
         app.get "/", indexPage
 
         # Fitbit routes.
         app.get "/fitbit", fitbitPage
-        app.get "/fitbit/auth", passportAuth("fitbit")
-        app.get "/fitbit/auth/callback", passportAuth("fitbit", passportOptions), fitbitAuthCallback
+        app.get "/fitbit/auth", fitbitAuth
+        app.get "/fitbit/auth/callback", fitbitAuthCallback
 
     # MAIN ROUTES
     # -------------------------------------------------------------------------
@@ -44,6 +41,10 @@ class Routes
         logRequest "fitbitPage"
 
         renderPage req, res, "fitbit"
+
+    # Get Fitbit OAuth tokens.
+    fitbitAuth = (req, res) ->
+
 
     # Callback for Fitbit OAuth.
     fitbitAuthCallback = (req, res) ->

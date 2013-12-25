@@ -21,9 +21,7 @@
         "lodash": ">= 2.4.0",
         "moment": ">= 2.0.0",
         "ninja-blocks": ">= 0.1.3",
-        "oauth": ">= 0.9.10",
-        "passport": ">= 0.1.17",
-        "passport-fitbit": ">= 0.1.2"
+        "oauth": ">= 0.9.10"
     },
     "devDependencies": {
         "chai": "*",

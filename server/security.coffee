@@ -7,21 +7,20 @@ class Security
     database = expresser.database
     logger = expresser.logger
     settings = expresser.settings
+    utils = expresser.utils
 
     crypto = require "crypto"
     lodash = require "lodash"
     moment = require "moment"
-    oauthModule = require "oauth"
-    passportFitbit = require "passport-fitbit"
+    querystring = require "querystring"
+    url = require "url"
+
 
     # PROPERTIES
     # -------------------------------------------------------------------------
 
-    # Passport is accessible from outside.
-    passport: require "passport"
-
     # Holds a copy of users and tokens.
-    cachedTokens: []
+    authTokens: {}
 
     # INIT
     # -------------------------------------------------------------------------
@@ -29,73 +28,68 @@ class Security
     # Init the Security module. Set session management methods and init
     # auth procedures for all API modules.
     init: =>
-        @passport.serializeUser @serializeUser
-        @passport.deserializeUser @deserializeUser
+        @refreshAuthTokens()
 
-        @initFitbit()
-
-    # Init Fitbit auth and security.
-    initFitbit: =>
-        options = {consumerKey: settings.fitbit.apiKey, consumerSecret: settings.fitbit.apiSecret}
-        strategy = new passportFitbit.Strategy options
-        @passport.use strategy, @authFitbit
-
-    # AUTH METHODS
+    # AUTH SYNC
     # -------------------------------------------------------------------------
 
-    # Auth handler for Fitbit.
-    authFitbit: (token, tokenSecret, user, callback) =>
-        user.encodedId = user.id
-        user.accessToken = token
-        user.accessSecret = tokenSecret
-        @saveUserToDb user
+    # Get most recent auth tokens from the database and update the `authTokens` collection.
+    # Callback (err, result) is optional.
+    refreshAuthTokens: (callback) =>
+        @authTokens = {}
 
-        # Create OAuth client, used to subscribe for notifications from Fitbit.
-        oauth = new oauthModule.OAuth(
-            settings.fitbit.oauthUrl + "request_token",
-            settings.fitbit.oauthUrl + "access_token",
-            settings.fitbit.apiKey,
-            settings.fitbit.apiSecret,
-            "1.0",
-            null,
-            "HMAC-SHA1")
-
-        # Set subscription URL.
-        postUrl = "#{settings.fitbit.apiUrl}user/-/apiSubscriptions/#{user.id}-all.json"
-
-        # Subscribe this application to updates from the user's data
-        oauth.post postUrl, token, tokenSecret, null, null, (err, data, res) ->
+        database.get "auth", {active: true}, (err, result) =>
             if err?
-                logger.error "Security.authFitbit", postUrl, err
-            callback err, user
-
-    # SESSION MANAGEMENT
-    # -------------------------------------------------------------------------
-
-    # Helper to serialize authenticated users.
-    serializeUser: (user, callback) =>
-        logger.debug "Security.serializeUser", user
-        callback null, user.id
-
-    # Helper to deserialize users.
-    deserializeUser: (user, callback) =>
-        logger.debug "Security.deserializeUser", user
-        @validateUser user, callback
-
-    # Helper to validate user data.
-    validateUser: (user, callback) =>
-        callback null, user
-
-    # DATABASE SYNC
-    # -------------------------------------------------------------------------
+                logger.critical "Security.refreshAuthTokens", err
+                callback err, false if callback?
+            else
+                for t in result
+                    @authTokens[t.service] = t
+                callback null, true if callback?
 
     # Save user info or tokens to the database.
-    saveUserToDb: (user, callback) =>
+    saveAuthTokens: (user, callback) =>
         database.set "auth", user, (err, result) =>
             if err?
-                logger.error "Security.saveUserToDb", user.id, err
+                logger.error "Security.saveAuthTokens", user.id, err
             if callback?
                 callback err, result
+
+    # HELPERS
+    # -------------------------------------------------------------------------
+
+    # Try getting auth data for a particular request / response.
+    processAuthToken: (service, oauth, req, res, callback) =>
+        sess = JSON.parse req.cookies["#{service}Auth"]
+        qs = url.parse(req.url, true).query
+
+        # Check if request has token and secret.
+        hasSecret = sess?.token_secret
+        hasToken = qs?.oauth_token
+
+        # Helper function to get the access token.
+        getAccessToken = (err, oauth_token, oauth_token_secret, additionalParameters) ->
+            if err?
+                logger.error "Security.fetchAuthToken", "getAccessToken", service, err
+                return callback err, null
+            callback null, {oauth_token: oauth_token, oauth_token_secret: oauth_token_secret}
+
+        # Helper function to get the request token.
+        getRequestToken = (err, oauth_token, oauth_token_secret, oauth_authorize_url, additionalParameters) ->
+            if err?
+                logger.error "Security.fetchAuthToken", "getRequestToken", service, err
+                return callback err, null
+
+            cookieData = utils.minifyJson {token_secret: oauth_token_secret}, true
+            cookieOptions = {path: "/", httpOnly: false}
+            res.cookie "#{service}Auth", cookieData, cookieOptions
+            res.redirect "#{settings[service].authUrl}authorize?oauth_token=#{oauth_token}"
+
+        # Has secret and token? Get OAuth access token from server.
+        if hasSecret and hasToken
+            oauth.getOAuthAccessToken qs.oauth_token, sess.tokenSecret, qs.oauth_verifier, getAccessToken
+        else
+            oauth.getOAuthRequestToken {oauth_callback: callbackURI}, getRequestToken
 
 
 # Singleton implementation

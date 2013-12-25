@@ -9,10 +9,13 @@ routes = require "./server/routes.coffee"
 security = require "./server/security.coffee"
 
 # Init Expresser.
-expresser.init {app: [security.passport.initialize(), security.passport.session()]}
+expresser.init()
 
-# Init Data.
+# Init data cache.
 data.init()
+
+# Init security.
+security.init()
 
 # Init API.
 api.init()
