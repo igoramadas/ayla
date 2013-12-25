@@ -12,7 +12,7 @@ class Security
     crypto = require "crypto"
     lodash = require "lodash"
     moment = require "moment"
-    querystring = require "querystring"
+    oauthModule = require "oauth"
     url = require "url"
 
 
@@ -38,7 +38,7 @@ class Security
     refreshAuthTokens: (callback) =>
         @authTokens = {}
 
-        database.get "auth", {active: true}, (err, result) =>
+        database.get "auth", (err, result) =>
             if err?
                 logger.critical "Security.refreshAuthTokens", err
                 callback err, false if callback?
@@ -48,10 +48,15 @@ class Security
                 callback null, true if callback?
 
     # Save user info or tokens to the database.
-    saveAuthTokens: (user, callback) =>
-        database.set "auth", user, (err, result) =>
+    saveAuthToken: (service, data, callback) =>
+        data.service = service
+        @authTokens[service] = data
+
+        database.set "auth", data, (err, result) =>
             if err?
-                logger.error "Security.saveAuthTokens", user.id, err
+                logger.error "Security.saveAuthToken", service, data, err
+            else
+                logger.debug "Security.saveAuthToken", service, data, "OK"
             if callback?
                 callback err, result
 
@@ -59,37 +64,50 @@ class Security
     # -------------------------------------------------------------------------
 
     # Try getting auth data for a particular request / response.
-    processAuthToken: (service, oauth, req, res, callback) =>
-        sess = JSON.parse req.cookies["#{service}Auth"]
-        qs = url.parse(req.url, true).query
+    processAuthToken: (service, options, req, res) =>
+        callbackUrl = settings.general.appUrl + service + "/auth/callback"
 
-        # Check if request has token and secret.
-        hasSecret = sess?.token_secret
-        hasToken = qs?.oauth_token
+        @authTokens[service] = {} if not @authTokens[service]?
+
+        # Create OAuth client.
+        oauth = new oauthModule.OAuth(
+            settings[service].oauthUrl + "request_token",
+            settings[service].oauthUrl + "access_token",
+            settings[service].apiKey,
+            settings[service].apiSecret,
+            options.version,
+            callbackUrl,
+            "HMAC-SHA1",
+            null,
+            {"Accept": "*/*", "Connection": "close", "User-Agent": "Jarbas"})
+
+        # Check if request has token on querystring.
+        qs = url.parse(req.url, true).query
+        hasTokenVerifier = qs?.oauth_token?
 
         # Helper function to get the access token.
-        getAccessToken = (err, oauth_token, oauth_token_secret, additionalParameters) ->
+        getAccessToken = (err, oauth_token, oauth_token_secret, additionalParameters) =>
             if err?
-                logger.error "Security.fetchAuthToken", "getAccessToken", service, err
-                return callback err, null
-            callback null, {oauth_token: oauth_token, oauth_token_secret: oauth_token_secret}
+                logger.error "Security.processAuthToken", "getAccessToken", service, oauth_token, oauth_token_secret, err
+                return
+            @saveAuthToken service, {token: oauth_token, tokenSecret: oauth_token_secret}
+            res.redirect "/#{service}"
 
         # Helper function to get the request token.
-        getRequestToken = (err, oauth_token, oauth_token_secret, oauth_authorize_url, additionalParameters) ->
+        getRequestToken = (err, oauth_token, oauth_token_secret, oauth_authorize_url, additionalParameters) =>
             if err?
-                logger.error "Security.fetchAuthToken", "getRequestToken", service, err
-                return callback err, null
+                logger.error "Security.processAuthToken", "getRequestToken", service, oauth_token, oauth_token_secret, err
+                return
 
-            cookieData = utils.minifyJson {token_secret: oauth_token_secret}, true
-            cookieOptions = {path: "/", httpOnly: false}
-            res.cookie "#{service}Auth", cookieData, cookieOptions
-            res.redirect "#{settings[service].authUrl}authorize?oauth_token=#{oauth_token}"
+            @authTokens[service].tokenSecret = oauth_token_secret
 
-        # Has secret and token? Get OAuth access token from server.
-        if hasSecret and hasToken
-            oauth.getOAuthAccessToken qs.oauth_token, sess.tokenSecret, qs.oauth_verifier, getAccessToken
+            res.redirect "#{settings[service].oauthUrl}authorize?oauth_token=#{oauth_token}"
+
+        # Has the token verifier on the query string? Get OAuth access token from server.
+        if hasTokenVerifier
+            oauth.getOAuthAccessToken qs.oauth_token, @authTokens[service].tokenSecret, qs.oauth_verifier, getAccessToken
         else
-            oauth.getOAuthRequestToken {oauth_callback: callbackURI}, getRequestToken
+            oauth.getOAuthRequestToken {oauth_callback: callbackUrl}, getRequestToken
 
 
 # Singleton implementation

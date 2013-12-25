@@ -7,6 +7,7 @@ class Routes
     logger = expresser.logger
     settings = expresser.settings
 
+    fitbit = require "./api/fitbit.coffee"
     security = require "./security.coffee"
 
     # INIT
@@ -23,14 +24,14 @@ class Routes
         app.get "/fitbit", fitbitPage
         app.get "/fitbit/auth", fitbitAuth
         app.get "/fitbit/auth/callback", fitbitAuthCallback
+        app.post "/fitbit/auth/callback", fitbitAuthCallback
+
 
     # MAIN ROUTES
     # -------------------------------------------------------------------------
 
     # The index homepage.
     indexPage = (req, res) ->
-        logRequest "indexPage"
-
         renderPage req, res, "index"
 
     # FITBIT ROUTES
@@ -38,19 +39,16 @@ class Routes
 
     # Main Fitbit entrance page.
     fitbitPage = (req, res) ->
-        logRequest "fitbitPage"
-
         renderPage req, res, "fitbit"
 
     # Get Fitbit OAuth tokens.
     fitbitAuth = (req, res) ->
-
+        fitbit.auth req, res
 
     # Callback for Fitbit OAuth.
     fitbitAuthCallback = (req, res) ->
-        logRequest "fitbitAuthCallback"
+        fitbit.auth req, res
 
-        res.redirect "/fitbit"
 
     # HELPER METHODS
     # -------------------------------------------------------------------------

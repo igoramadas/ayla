@@ -4,9 +4,8 @@ class Fitbit
 
     expresser = require "expresser"
     logger = expresser.logger
+    settings = expresser.settings
 
-    oauthModule = require "oauth"
-    querystring = require "querystring"
     security = require "../security.coffee"
 
     # INIT
@@ -21,14 +20,10 @@ class Fitbit
 
     # Authentication helper for Fitbit.
     auth: (req, res, callback) =>
-        oauth = new oauthModule.OAuth(
-            settings.fitbit.authUrl + "request_token",
-            settings.fitbit.authUrl + "access_token",
-            settings.fitbit.apiKey,
-            settings.fitbit.apiSecret,
-            "1.0",
-            null,
-            "HMAC-SHA1")
+
+
+        security.processAuthToken "fitbit", {version: "1.0"}, req, res, (err, result) =>
+            console.warn err, result
 
     subscribe: =>
         postUrl = "#{settings.fitbit.apiUrl}user/-/apiSubscriptions/#{user.id}-all.json"
