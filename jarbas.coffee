@@ -1,8 +1,10 @@
 # JARBAS
 # -----------------------------------------------------------------------------
 
-# Required modules.
+# Require Expresser.
 expresser = require "expresser"
+
+# Required modules.
 api = require "./server/api.coffee"
 data = require "./server/data.coffee"
 routes = require "./server/routes.coffee"

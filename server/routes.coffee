@@ -9,6 +9,8 @@ class Routes
 
     fitbit = require "./api/fitbit.coffee"
     security = require "./security.coffee"
+    withings = require "./api/withings.coffee"
+    wunderground = require "./api/wunderground.coffee"
 
     # INIT
     # -------------------------------------------------------------------------
@@ -26,12 +28,24 @@ class Routes
         app.get "/fitbit/auth/callback", fitbitAuthCallback
         app.post "/fitbit/auth/callback", fitbitAuthCallback
 
+        # Withings routes.
+        app.get "/withings", withingsPage
+        app.get "/withings/auth", withingsAuth
+        app.get "/withings/auth/callback", withingsAuthCallback
+        app.post "/withings/auth/callback", withingsAuthCallback
+
+        # Weather underground routes.
+        app.get "/wunderground", wundergroundPage
 
     # MAIN ROUTES
     # -------------------------------------------------------------------------
 
     # The index homepage.
     indexPage = (req, res) ->
+        renderPage req, res, "index"
+
+    # The main home page.
+    homePage = (req, res) ->
         renderPage req, res, "index"
 
     # FITBIT ROUTES
@@ -49,6 +63,27 @@ class Routes
     fitbitAuthCallback = (req, res) ->
         fitbit.auth req, res
 
+    # WITHINGS ROUTES
+    # -------------------------------------------------------------------------
+
+    # Main Withings entrance page.
+    withingsPage = (req, res) ->
+        withings.getDashboard (err, result) -> renderPage req, res, "withings", {err: err, result: result}
+
+    # Get Withings OAuth tokens.
+    withingsAuth = (req, res) ->
+        withings.auth req, res
+
+    # Callback for Withings OAuth.
+    withingsAuthCallback = (req, res) ->
+        withings.auth req, res
+
+    # WEATHER UNDERGROUND ROUTES
+    # -------------------------------------------------------------------------
+
+    # Main Weather Underground entrance page.
+    wundergroundPage = (req, res) ->
+        wunderground.getCurrentWeather (err, result) -> renderPage req, res, "wunderground", {err: err, result: result}
 
     # HELPER METHODS
     # -------------------------------------------------------------------------
