@@ -17,7 +17,7 @@ class Data
     # The cache will be set on `load` as key / data.
     cache: {}
 
-    # INIT
+    # INIT AND LOADING
     # -------------------------------------------------------------------------
 
     # Init the Data module.
@@ -43,6 +43,14 @@ class Data
                 if path.extname(f) is ".json"
                     key = path.basename f, ".json"
                     @cache[key] = require dirname + f
+
+    # SAVING
+    # -------------------------------------------------------------------------
+
+    # Save the specified JSON object to the data cache. If `disk` is true,
+    # dump it to the disk as well.
+    save: (data, disk) =>
+        console.warn data
 
 
 # Singleton implementation.

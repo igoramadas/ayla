@@ -39,7 +39,7 @@ class Routes
 
     # Main Fitbit entrance page.
     fitbitPage = (req, res) ->
-        fitbit.getSleepData "2013-12-01"
+        fitbit.getDashboard (err, result) -> renderPage req, res, "fitbit", {err: err, result: result}
 
     # Get Fitbit OAuth tokens.
     fitbitAuth = (req, res) ->
@@ -57,6 +57,8 @@ class Routes
     renderPage = (req, res, file, options) ->
         options = {} if not options?
         options.title = settings.general.appTitle if not options.title?
+
+        console.warn "RENDER PAGE", options
 
         res.render file, options
 
