@@ -8,7 +8,7 @@ class Api
 
     # Init Jarbas API.
     camera = require "./api/camera.coffee"
-    mail = require "./api/mail.coffee"
+    email = require "./api/email.coffee"
     endomondo = require "./api/endomondo.coffee"
     fitbit = require "./api/fitbit.coffee"
     github = require "./api/github.coffee"

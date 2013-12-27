@@ -8,6 +8,7 @@ class Routes
     settings = expresser.settings
 
     fitbit = require "./api/fitbit.coffee"
+    ninja = require "./api/ninja.coffee"
     security = require "./security.coffee"
     withings = require "./api/withings.coffee"
     wunderground = require "./api/wunderground.coffee"
@@ -27,6 +28,9 @@ class Routes
         app.get "/fitbit/auth", fitbitAuth
         app.get "/fitbit/auth/callback", fitbitAuthCallback
         app.post "/fitbit/auth/callback", fitbitAuthCallback
+
+        # Ninja Blocks routes.
+        app.get "/ninja", ninjaPage
 
         # Withings routes.
         app.get "/withings", withingsPage
@@ -63,6 +67,13 @@ class Routes
     fitbitAuthCallback = (req, res) ->
         fitbit.auth req, res
 
+    # NINJA BLOCKS ROUTES
+    # -------------------------------------------------------------------------
+
+    # Main Fitbit entrance page.
+    ninjaPage = (req, res) ->
+        ninja.getDashboard (err, result) -> renderPage req, res, "ninja", {err: err, result: result}
+
     # WITHINGS ROUTES
     # -------------------------------------------------------------------------
 
@@ -78,7 +89,7 @@ class Routes
     withingsAuthCallback = (req, res) ->
         withings.auth req, res
 
-    # WEATHER UNDERGROUND ROUTES
+    # WUNDERGROUND ROUTES
     # -------------------------------------------------------------------------
 
     # Main Weather Underground entrance page.
