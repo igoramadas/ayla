@@ -101,6 +101,7 @@ class Security
     # Helper to the an OAuth client for a particular service.
     getOAuthClient = (service) ->
         callbackUrl = settings.general.appUrl + service + "/auth/callback"
+        headers = {"Accept": "*/*", "Connection": "close", "User-Agent": "Jarbas #{packageJson.version}"}
 
         return new oauthModule.OAuth(
             settings[service].oauthUrl + "request_token",
@@ -111,7 +112,7 @@ class Security
             callbackUrl,
             "HMAC-SHA1",
             null,
-            {"Accept": "*/*", "Connection": "close", "User-Agent": "Jarbas #{packageJson.version}"})
+            headers)
 
     # Try getting auth data for a particular request / response.
     processAuthToken: (service, options, req, res) =>
@@ -136,7 +137,7 @@ class Security
             if err?
                 logger.error "Security.processAuthToken", "getAccessToken", service, oauth_token, oauth_token_secret, err
                 return
-            logger.debug "Security.processAuthToken", "getAccessToken", service, oauth_token, oauth_token_secret
+            logger.debug "Security.processAuthToken", "getAccessToken", service, oauth_token, oauth_token_secret, additionalParameters
 
             # Save auth details to DB and redirect user to service page.
             @saveAuthToken service, oauth_token, oauth_token_secret, additionalParameters
@@ -147,7 +148,7 @@ class Security
             if err?
                 logger.error "Security.processAuthToken", "getRequestToken", service, oauth_token, oauth_token_secret, err
                 return
-            logger.debug "Security.processAuthToken", "getRequestToken", service, oauth_token, oauth_token_secret
+            logger.debug "Security.processAuthToken", "getRequestToken", service, oauth_token, oauth_token_secret, oauth_authorize_url, additionalParameters
 
             # Set token secret cache and redirect to authorization URL.
             @authCache[service].data.tokenSecret = oauth_token_secret
@@ -155,7 +156,11 @@ class Security
 
         # Has the token verifier on the query string? Get OAuth access token from server.
         if hasTokenVerifier
-            oauth.getOAuthAccessToken qs.oauth_token, @authCache[service].data.tokenSecret, qs.oauth_verifier, getAccessToken
+            extraParams = {}
+            extraParams.userid = qs.userid if qs.userid?
+            extraParams.oauth_verifier = qs.oauth_verifier if qs.oauth_verifier?
+
+            oauth.getOAuthAccessToken qs.oauth_token, @authCache[service].data.tokenSecret, extraParams, getAccessToken
         else
             oauth.getOAuthRequestToken {}, getRequestToken
 

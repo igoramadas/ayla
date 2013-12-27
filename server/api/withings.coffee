@@ -35,13 +35,17 @@ class Withings
 
         # Get data from the security module and set request URL.
         authCache = security.authCache["withings"]
-        reqUrl = settings.withings.apiUrl + path + "?action=#{action}&userid=#{authCache.data.userId}"
-        reqUrl += "&" + params if params?
+        reqUrl = settings.withings.apiUrl + path
+
+        # Set post parameters.
+        params = {} if not params?
+        params.action = action
+        params.userid = authCache.data.userId
 
         logger.debug "Withings.makeRequest", reqUrl, authCache.data.token, authCache.data.tokenSecret
 
         # Make request using OAuth.
-        authCache.oauth.get reqUrl, authCache.data.token, authCache.data.tokenSecret, callback
+        authCache.oauth.post reqUrl, authCache.data.token, authCache.data.tokenSecret, params, callback
 
     # GET DATA
     # -------------------------------------------------------------------------
