@@ -37,42 +37,57 @@ class Security
     refreshAuthTokens: (callback) =>
         @authCache = {}
 
-        database.get "auth", (err, result) =>
+        database.get "authCache", {"active": true}, (err, result) =>
             if err?
                 logger.critical "Security.refreshAuthTokens", err
                 callback err, false if callback?
             else
-                logger.debug "Security.refreshAuthTokens", "Got #{result.length} tokens."
+                logger.debug "Security.refreshAuthTokens", result
                 for t in result
                     oauth = getOAuthClient t.service
-                    @authCache[t.service] = t
-                    @authCache[t.service].oauth = oauth
+                    @authCache[t.service] = {oauth: oauth, data: t}
                 if callback?
                     callback null, true
 
     # Save the specified auth token to the database.
-    saveAuthToken: (service, token, tokenSecret, callback) =>
+    saveAuthToken: (service, token, tokenSecret, params, callback) =>
+        if not callback? and lodash.isFunction params
+            callback = params
+            params = null
+
+        # Get current time and set data.
         now = moment().unix()
-        data = {service: service, token: token, tokenSecret: tokenSecret, timestamp: now}
+        data = {service: service, active: true, token: token, tokenSecret: tokenSecret, timestamp: now}
+
+        # Add extra parameters, if any.
+        if params?
+            data.timestamp = params.oauth_timestamp if params.oauth_timestamp?
+            data.userId = params.encoded_user_id if params.encoded_user_id?
+            data.userId = params.userid if params.userid?
 
         # Set local auth cache.
-        @authCache[service].token = token
-        @authCache[service].tokenSecret = tokenSecret
-        @authCache[service].timestamp = now
+        @authCache[service].data = data
 
-        # Save to database.
-        database.set "auth", data, (err, result) =>
+        # Update current "authCache" collection and set related tokens `active` to false.
+        database.set "authCache", {active: false}, {patch: true, upsert: false, filter: {service: service}}, (err, result) =>
             if err?
-                logger.error "Security.saveAuthToken", service, data, err
+                logger.error "Security.saveAuthToken", service, "Set active=false", err
             else
-                logger.debug "Security.saveAuthToken", service, data, "OK"
-            if callback?
-                callback err, result
+                logger.debug "Security.saveAuthToken", service, "Set active=false", "OK"
+
+            # Save to database.
+            database.set "authCache", data, (err, result) =>
+                if err?
+                    logger.error "Security.saveAuthToken", service, data, err
+                else
+                    logger.debug "Security.saveAuthToken", service, data, "OK"
+                if callback?
+                    callback err, result
 
     # Remove old auth tokens from the database.
     cleanAuthTokens: (callback) =>
         minTimestamp = moment().unix() - (settings.security.maxAuthTokenAgeDays * 24 * 60 * 60)
-        database.del "auth", {timestamp: {$lt: minTimestamp}}, (err, result) =>
+        database.del "authCache", {timestamp: {$lt: minTimestamp}}, (err, result) =>
             if err?
                 logger.error "Security.cleanAuthTokens", "Timestamp #{minTimestamp}", err
             else
@@ -100,9 +115,15 @@ class Security
 
     # Try getting auth data for a particular request / response.
     processAuthToken: (service, options, req, res) =>
+        if not res?
+            res = req
+            req = options
+            options = null
+
+        # Check if OAuth client was already created, if not then create one.
         if not @authCache[service]?
             oauth = getOAuthClient service
-            @authCache[service] = {oauth: oauth}
+            @authCache[service] = {oauth: oauth, data: {}}
         else
             oauth = @authCache[service]?.oauth
 
@@ -118,7 +139,7 @@ class Security
             logger.debug "Security.processAuthToken", "getAccessToken", service, oauth_token, oauth_token_secret
 
             # Save auth details to DB and redirect user to service page.
-            @saveAuthToken service, oauth_token, oauth_token_secret
+            @saveAuthToken service, oauth_token, oauth_token_secret, additionalParameters
             res.redirect "/#{service}"
 
         # Helper function to get the request token.
@@ -129,12 +150,12 @@ class Security
             logger.debug "Security.processAuthToken", "getRequestToken", service, oauth_token, oauth_token_secret
 
             # Set token secret cache and redirect to authorization URL.
-            @authCache[service].tokenSecret = oauth_token_secret
+            @authCache[service].data.tokenSecret = oauth_token_secret
             res.redirect "#{settings[service].oauthUrl}authorize?oauth_token=#{oauth_token}"
 
         # Has the token verifier on the query string? Get OAuth access token from server.
         if hasTokenVerifier
-            oauth.getOAuthAccessToken qs.oauth_token, @authCache[service].tokenSecret, qs.oauth_verifier, getAccessToken
+            oauth.getOAuthAccessToken qs.oauth_token, @authCache[service].data.tokenSecret, qs.oauth_verifier, getAccessToken
         else
             oauth.getOAuthRequestToken {}, getRequestToken
 

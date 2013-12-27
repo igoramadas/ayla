@@ -62,13 +62,20 @@ class Wunderground
                 curValue = result[prop]
                 nextValue = d[field][prop]
 
-                # Parse result data.
-                if not value?
+                # Parse next value.
+                if nextValue.toString().indexOf("%") > 0
+                    nextValue = nextValue.toString().replace "%", ""
+                if not isNaN nextValue
+                    nextValue = parseFloat nextValue
+
+                # Set result data.
+                if not curValue?
                     result[prop] = nextValue
-                else if lodash.isNumber nextValue
-                    result[prop] = (curValue + nextValue) / 2
                 else
-                    result[prop] += ", " + nextValue
+                    if lodash.isNumber nextValue
+                        result[prop] = (curValue + nextValue) / 2
+                    else if curValue.indexOf(nextValue) < 0
+                        result[prop] += ", " + nextValue
 
         callback null, result
 
@@ -78,8 +85,23 @@ class Wunderground
             if err?
                 callback err
             else
-                @getAverageResult results, "current_conditions", callback
+                @getAverageResult results, "current_observation", callback
 
+    # SAVE WEATHER DATA
+    # -------------------------------------------------------------------------
+
+    # Get current weather data and save to the database.
+    saveCurrentWeather: (callback) =>
+        @getCurrentWeather (err, result) =>
+            if err?
+                logger.error "Wunderground.saveCurrentWeather", err
+            if result?
+                result.timestamp = moment().unix()
+                database.set "weather", result, (err, result) =>
+                    if err?
+                        logger.error "Wunderground.saveCurrentWeather", "Database.set", err
+                    if callback?
+                        callback err, result
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

@@ -24,18 +24,8 @@ class Fitbit
     # -------------------------------------------------------------------------
 
     # Authentication helper for Fitbit.
-    auth: (req, res, callback) =>
-        security.processAuthToken "fitbit", {version: "1.0"}, req, res
-
-    # Subscribe to Fitbit notifications.
-    subscribe: =>
-        postUrl = "#{settings.fitbit.apiUrl}user/-/apiSubscriptions/#{user.id}-all.json"
-
-        # Subscribe this application to updates from the user's data
-        oauth.post postUrl, token, tokenSecret, null, null, (err, data, res) ->
-            if err?
-                logger.error "Security.authFitbit", postUrl, err
-            callback err, user
+    auth: (req, res) =>
+        security.processAuthToken "fitbit", req, res
 
     # Make a request to the Fitbit API.
     makeRequest: (path, params, callback) =>
@@ -46,10 +36,12 @@ class Fitbit
         # Get data from the security module and set request URL.
         authCache = security.authCache["fitbit"]
         reqUrl = settings.fitbit.apiUrl + path
-        reqUrl += "?" + querystring.stringify params if params?
+        reqUrl += "?" + params if params?
+
+        logger.debug "Fitbit.makeRequest", reqUrl
 
         # Make request using OAuth.
-        authCache.oauth.get reqUrl, authCache.token, authCache.tokenSecret, callback
+        authCache.oauth.get reqUrl, authCache.data.token, authCache.data.tokenSecret, callback
 
     # GET DATA
     # -------------------------------------------------------------------------
