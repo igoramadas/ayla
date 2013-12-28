@@ -47,9 +47,12 @@ class Data
     # SAVING
     # -------------------------------------------------------------------------
 
-    # Save the specified JSON object to the data cache. If `disk` is true,
-    # dump it to the disk as well.
-    save: (data, disk) =>
+    # Save the specified JSON object to the disk.
+    saveToDisk: (key, data) =>
+        console.warn data
+
+    # Save the specified JSON object to the database.
+    saveToDb: (key, data) ->
         console.warn data
 
 

@@ -16,6 +16,7 @@ class Api
     ninja = require "./api/ninja.coffee"
     toshl = require "./api/toshl.coffee"
     withings = require "./api/withings.coffee"
+    wunderground = require "./api/wunderground.coffee"
 
     # INIT
     # -------------------------------------------------------------------------
@@ -24,6 +25,10 @@ class Api
     init: ->
         camera.init()
         email.init()
+        fitbit.init()
+        ninja.init()
+        withings.init()
+        wunderground.init()
 
 
 # Singleton implementation.

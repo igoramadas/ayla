@@ -7,6 +7,7 @@ class Routes
     logger = expresser.logger
     settings = expresser.settings
 
+    email = require "./api/email.coffee"
     fitbit = require "./api/fitbit.coffee"
     ninja = require "./api/ninja.coffee"
     security = require "./security.coffee"
@@ -22,6 +23,9 @@ class Routes
 
         # Main routes.
         app.get "/", indexPage
+
+        # Email routes.
+        app.get "/email", emailPage
 
         # Fitbit routes.
         app.get "/fitbit", fitbitPage
@@ -51,6 +55,13 @@ class Routes
     # The main home page.
     homePage = (req, res) ->
         renderPage req, res, "index"
+
+    # EMAIL ROUTES
+    # -------------------------------------------------------------------------
+
+    # Main Email entrance page.
+    emailPage = (req, res) ->
+        email.getDashboard (err, result) -> renderPage req, res, "email", {err: err, result: result}
 
     # FITBIT ROUTES
     # -------------------------------------------------------------------------
