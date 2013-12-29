@@ -22,9 +22,9 @@ class ApiBase
         id = arguments[0]
 
         @errors[id] = [] if not @errors[id]?
-        @errors.push arguments
+        @errors[id].push arguments
 
-        logger.error.apply logger.error, arguments
+        logger.error.apply logger, arguments
 
 
 # Exports API Base Module.

@@ -26,6 +26,7 @@ class Api
         camera.init()
         email.init()
         fitbit.init()
+        hue.init()
         ninja.init()
         withings.init()
         wunderground.init()

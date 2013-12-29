@@ -62,6 +62,13 @@ class Ninja
                 logger.debug "Ninja.getDeviceData", deviceId, result
             callback err, result
 
+    # RF 433 SENSORS
+    # -------------------------------------------------------------------------
+
+    # Turn remote controlled sockets on or off. If no `id` is specified
+    # then on or off all sockets.
+    switchSocket: (id, turnOn) =>
+
     # PAGES
     # -------------------------------------------------------------------------
 
