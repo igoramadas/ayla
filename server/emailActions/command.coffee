@@ -21,7 +21,7 @@ class EmailAction_Command
             return false
 
         # Execute command.
-        commander.execute msg.subject, msg.text
+        commander.execute msg.subject, msg.text, callback
 
 
 # Exports (not singleton!)

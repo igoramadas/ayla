@@ -16,26 +16,26 @@ class Commander
     # -------------------------------------------------------------------------
 
     # Parse and execute the specified command.
-    execute: (cmd, options) =>
+    execute: (cmd, options, callback) =>
         logger.debug "Commander.execute", cmd, options
 
         if cmd.indexOf("turn lights off") >= 0
-            @turnLightsOff options
+            @turnLightsOff options, callback
 
     # COMMANDS
     # -------------------------------------------------------------------------
 
     # Turn the specified house lights off.
-    turnLightsOff: (options) =>
+    turnLightsOff: (options, callback) =>
         logger.info "Commander.turnLightsOff", options
         hue.switchLight false, (err, result) =>
-            console.warn err, result
+            callback err, result
 
     # Turn the specified house lights on.
-    turnLightsOn: (options) =>
+    turnLightsOn: (options, callback) =>
         logger.info "Commander.turnLightsOn", options
         hue.switchLight true, (err, result) =>
-            console.warn err, result
+            callback err, result
 
 
 # Singleton implementation.

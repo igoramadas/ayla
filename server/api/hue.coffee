@@ -31,27 +31,24 @@ class Hue extends (require "./apiBase.coffee")
     # -------------------------------------------------------------------------
 
     # Make a request to the Hue API.
-    makeRequest: (path, params, callback) =>
+    makeRequest: (urlPath, params, callback) =>
         if lodash.isFunction params
             callback = params
             params = null
 
-        logger.debug "Hue.makeRequest", reqUrl, path, params
+        logger.debug "Hue.makeRequest", reqUrl, urlPath, params
 
         # Set request URL.
-        reqUrl = settings.hue.apiUrl + settings.hue.apiUser + "/" + path
+        reqUrl = settings.hue.apiUrl + settings.hue.apiUser + "/" + urlPath
         reqOptions = url.parse reqUrl
 
         # Set request parameters.
         if params?
-            reqOptions = params.method
+            reqOptions.method = params.method
             body = params.body
             body = JSON.stringify body if not lodash.isString params.body
         else
-            params = {method: "GET"}
-
-        # Force JSON as content type.
-        params.headers = {"Content-Type": "application/json", "Content-Length": body.length()}
+            reqOptions.method = "GET"
 
         # Make the HTTP request.
         req = http.request reqOptions, (response) =>
@@ -62,17 +59,17 @@ class Hue extends (require "./apiBase.coffee")
 
                 response.addListener "end", =>
                     try
-                        console.warn response.downloadedData
                         callback null, JSON.parse response.downloadedData
                     catch ex
-                        @logError "Hue.makeRequest", path, params, ex
                         callback ex if callback?
 
         # On request error, trigger the callback straight away.
-        req.on "error", (err) -> callback err if callback?
+        req.on "error", (err) =>
+            callback err if callback?
 
         # Write body, if any, and end request.
-        req.end body, settings.general.encoding
+        req.write(body, settings.general.encoding) if body?
+        req.end()
 
     # GET HUB DATA
     # -------------------------------------------------------------------------
@@ -109,18 +106,19 @@ class Hue extends (require "./apiBase.coffee")
             id = "All"
             arr = @lights
 
+        logger.debug "Hue.switchLight", id, turnOn
+
         # Set request parameter to use PUT and pass the `on` property.
         params = {method: "PUT", body: {on: turnOn}}
 
         # Make the API request for the specified or all lights.
-        lodash.forEach arr, (data, i) =>
-            logger.debug "Hue.switchLight", i, turnOn
-
-            @makeRequest "lights/#{i}/state", params, (err, result) =>
-                if err?
-                    @logError "Hue.switchLight", i, turnOn, err
-                else
-                    logger.info "Hue.switchLight", i, turnOn, "OK"
+        for i of @lights
+            do (i) =>
+                @makeRequest "lights/#{i}/state", params, (err, result) =>
+                    if err?
+                        @logError "Hue.switchLight", i, turnOn, err
+                    else
+                        logger.info "Hue.switchLight", i, turnOn, "OK"
 
 
 # Singleton implementation.
