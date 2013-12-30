@@ -9,18 +9,25 @@ class Commander
     logger = expresser.logger
     mailer = expresser.mailer
 
+    data = require "./data.coffee"
     hue = require "./api/hue.coffee"
     ninja = require "./api/ninja.coffee"
 
-    # INIT
+    # PARSE AND EXECUTE
     # -------------------------------------------------------------------------
 
     # Parse and execute the specified command.
     execute: (cmd, options, callback) =>
         logger.debug "Commander.execute", cmd, options
 
-        if cmd.indexOf("turn lights off") >= 0
-            @turnLightsOff options, callback
+        # Iterate all command triggers till it finds a matching one.
+        for key, value of data.cache["commands"]
+            if value.indexOf(cmd) >= 0
+                try
+                    eval (this[key] options, callback)
+                catch ex
+                    logger.error "Commander.execute", cmd, options, ex
+                    callback ex if callback?
 
     # COMMANDS
     # -------------------------------------------------------------------------
@@ -29,13 +36,13 @@ class Commander
     turnLightsOff: (options, callback) =>
         logger.info "Commander.turnLightsOff", options
         hue.switchLight false, (err, result) =>
-            callback err, result
+            callback err, result if callback?
 
     # Turn the specified house lights on.
     turnLightsOn: (options, callback) =>
         logger.info "Commander.turnLightsOn", options
         hue.switchLight true, (err, result) =>
-            callback err, result
+            callback err, result if callback?
 
 
 # Singleton implementation.

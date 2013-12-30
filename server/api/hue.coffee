@@ -8,6 +8,7 @@ class Hue extends (require "./apiBase.coffee")
     logger = expresser.logger
     settings = expresser.settings
 
+    async = require "async"
     data = require "../data.coffee"
     http = require "http"
     lodash = require "lodash"
@@ -51,7 +52,7 @@ class Hue extends (require "./apiBase.coffee")
             reqOptions.method = "GET"
 
         # Make the HTTP request.
-        req = http.request reqOptions, (response) =>
+        req = http.request reqOptions, (response) ->
                 response.downloadedData = ""
 
                 response.addListener "data", (data) =>
@@ -64,19 +65,18 @@ class Hue extends (require "./apiBase.coffee")
                         callback ex if callback?
 
         # On request error, trigger the callback straight away.
-        req.on "error", (err) =>
-            callback err if callback?
+        req.on "error", (err) => callback err if callback?
 
         # Write body, if any, and end request.
-        req.write(body, settings.general.encoding) if body?
+        req.write body, settings.general.encoding if body?
         req.end()
 
     # GET HUB DATA
     # -------------------------------------------------------------------------
 
     # Refresh information from the Hue hub.
-    refreshHub: =>
-        logger.info "Hue.refreshHub"
+    refreshHub: (callback) =>
+        logger.debug "Hue.refreshHub"
 
         @makeRequest "lights", (err, results) =>
             if err?
@@ -84,41 +84,56 @@ class Hue extends (require "./apiBase.coffee")
             else
                 @lights = results
                 data.upsert "hue.lights", results
+                logger.info "Hue.refreshHub", "Got #{results.length} lights."
+
+            callback err, results if callback?
 
     # LIGHT CONTROL
     # -------------------------------------------------------------------------
 
-    # Turn lights on (true) or off (false). If no `id` is specified then
-    # execute the command for all lights.
-    switchLight: (id, turnOn, callback) =>
-        if lodash.isFunction turnOn
-            callback = turnOn
-
-        if lodash.isBoolean id
-            turnOn = id
-            id = null
-
-        # Create the iterator array.
-        if id?
-            arr = {}
-            arr[id] = @lights[id]
+    # Main function to set light state (switch, colour, brightness etc).
+    setLightState: (id, state, callback) =>
+        if not id?
+            throw new Error "A valid light (or array of) id must be specified."
         else
-            id = "All"
-            arr = @lights
+            logger.debug "Hue.setLightState", id, state
 
-        logger.debug "Hue.switchLight", id, turnOn
+        # Set request parameter to use PUT and pass the full state and create tasks array.
+        params = {method: "PUT", body: state}
+        tasks = []
 
-        # Set request parameter to use PUT and pass the `on` property.
-        params = {method: "PUT", body: {on: turnOn}}
+        # Check if id is a single light or an array of lights.
+        if lodash.isArray id
+            arr = id
+        else
+            arr = [id]
 
-        # Make the API request for the specified or all lights.
+        # Make the light state change request for all specified ids.
+        for i of arr
+            do (i) => tasks.push (cb) => @makeRequest "lights/#{i}/state", params, cb
+
+        # Execute requests in parallel.
+        async.parallelLimit tasks, settings.general.parallelTasksLimit, (err, results) =>
+            if err?
+                @logError "Hue.setLightState", id, state, err
+            else
+                logger.info "Hue.setLightState", id, state
+
+            callback err, results if callback?
+
+    # Turn all lights on (true) or off (false).
+    switchAllLights: (turnOn, callback) =>
+        logger.debug "Hue.switchAllLights", turnOn
         for i of @lights
-            do (i) =>
-                @makeRequest "lights/#{i}/state", params, (err, result) =>
-                    if err?
-                        @logError "Hue.switchLight", i, turnOn, err
-                    else
-                        logger.info "Hue.switchLight", i, turnOn, "OK"
+            @switchLight i, turnOn, callback
+
+    # Turn the specified light on (true) or off (false).
+    switchLight: (id, turnOn, callback) =>
+        logger.debug "Hue.switchLight", id, turnOn
+        @setLightState id, {on: turnOn}, callback
+
+
+
 
 
 # Singleton implementation.
