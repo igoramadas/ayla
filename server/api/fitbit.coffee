@@ -77,6 +77,13 @@ class Fitbit
     postActivity: (activity, callback) =>
         console.warn activity
 
+    # JOBS
+    # -------------------------------------------------------------------------
+
+    # Scheduled job to refresh the hub data.
+    jobCheckMissingData: =>
+        console.warn arguments
+
     # PAGES
     # -------------------------------------------------------------------------
 

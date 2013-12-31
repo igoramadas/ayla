@@ -115,6 +115,13 @@ class Hue extends (require "./apiBase.coffee")
         logger.debug "Hue.switchLight", id, turnOn
         @setLightState id, {on: turnOn}, callback
 
+    # JOBS
+    # -------------------------------------------------------------------------
+
+    # Scheduled job to refresh the hub data.
+    jobRefreshHub: =>
+        @refreshHub()
+
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

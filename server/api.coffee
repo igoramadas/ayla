@@ -4,9 +4,10 @@
 class Api
 
     expresser = require "expresser"
+    cron = expresser.cron
     logger = expresser.logger
+    settings = expresser.settings
 
-    # Init Jarbas API.
     camera = require "./api/camera.coffee"
     email = require "./api/email.coffee"
     endomondo = require "./api/endomondo.coffee"
@@ -14,6 +15,7 @@ class Api
     github = require "./api/github.coffee"
     hue = require "./api/hue.coffee"
     ninja = require "./api/ninja.coffee"
+    path = require "path"
     toshl = require "./api/toshl.coffee"
     withings = require "./api/withings.coffee"
     wunderground = require "./api/wunderground.coffee"
@@ -23,6 +25,14 @@ class Api
 
     # Init Jarbas API.
     init: ->
+        rootPath = path.join __dirname, "../"
+        cronPath = rootPath + settings.path.data + "cron.json"
+        apiPath = rootPath + "server/api/"
+
+        # Load cron jobs.
+        cron.load cronPath, {basePath: apiPath}
+
+        # Init modules.
         camera.init()
         email.init()
         fitbit.init()
