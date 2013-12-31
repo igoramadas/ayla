@@ -1,6 +1,6 @@
 # WEATHER UNDERGROUND API
 # -----------------------------------------------------------------------------
-class Wunderground
+class Wunderground extends (require "./apiBase.coffee")
 
     expresser = require "expresser"
     database = expresser.database
@@ -17,14 +17,22 @@ class Wunderground
 
     # Init the Wunderground module.
     init: =>
-        logger.debug "Wunderground.init"
+        @baseInit()
+
+    # Start collecting weather data.
+    start: =>
+        @baseStart()
+
+    # Stop collecting weather data.
+    stop: =>
+        @baseStop()
 
     # GET WEATHER DATA
     # -------------------------------------------------------------------------
 
     # Helper to make requests to Weather Underground for stations defined on the settings.
     # The callback result will be the average of station data.
-    makeRequest: (path, callback) =>
+    apiRequest: (path, callback) =>
         tasks = []
 
         # Iterate stations and create a HTTP request for each station.
@@ -32,28 +40,25 @@ class Wunderground
             do (id) ->
                 task = (cb) ->
                     reqUrl = settings.wunderground.apiUrl + settings.wunderground.apiKey + "/#{path}/q/pws:#{id}.json"
-                    req = http.get reqUrl, (response) ->
-                        response.downloadedData = ""
-                        response.addListener "data", (data) -> response.downloadedData += data
-                        response.addListener "end", -> cb null, JSON.parse response.downloadedData
-
-                    # On request error, trigger the callback straight away.
-                    req.on "error", (err) -> cb err
+                    @makeRequest reqUrl, null, cb
 
                 # Add task and debug log.
                 tasks.push task
-                logger.debug "Wunderground.makeRequest", id
 
         # Run tasks in parallel.
-        async.parallel tasks, (err, results) =>
+        async.parallelLimit tasks, settings.general.parallelLimit, (err, results) =>
             if err?
-                logger.error "Wunderground.makeRequest", path, err
+                logger.error "Wunderground.apiRequest", path, err
             else
-                logger.debug "Wunderground.makeRequest", path, results
-            callback err, results
+                logger.debug "Wunderground.apiRequest", path, results
+
+            callback err, results if callback?
 
     # Helper to get average data from different stations.
     getAverageResult: (data, field, callback) =>
+        if not callback?
+            throw new Error "The callback for getAverageResult must be specified."
+
         result = {}
 
         # Iterate data and get average values.
@@ -81,7 +86,7 @@ class Wunderground
 
     # Get the current weather conditions.
     getCurrentWeather: (callback) =>
-        @makeRequest "conditions", (err, results) =>
+        @apiRequest "conditions", (err, results) =>
             if err?
                 callback err
             else

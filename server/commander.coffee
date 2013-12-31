@@ -35,13 +35,13 @@ class Commander
     # Turn the specified house lights off.
     turnLightsOff: (options, callback) =>
         logger.info "Commander.turnLightsOff", options
-        hue.switchLight false, (err, result) =>
+        hue.switchAllLights false, (err, result) =>
             callback err, result if callback?
 
     # Turn the specified house lights on.
     turnLightsOn: (options, callback) =>
         logger.info "Commander.turnLightsOn", options
-        hue.switchLight true, (err, result) =>
+        hue.switchAllLights true, (err, result) =>
             callback err, result if callback?
 
 

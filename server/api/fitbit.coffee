@@ -28,7 +28,7 @@ class Fitbit
         security.processAuthToken "fitbit", req, res
 
     # Make a request to the Fitbit API.
-    makeRequest: (path, params, callback) =>
+    apiRequest: (path, params, callback) =>
         if not callback? and lodash.isFunction params
             callback = params
             params = null

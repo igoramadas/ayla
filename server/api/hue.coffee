@@ -10,66 +10,49 @@ class Hue extends (require "./apiBase.coffee")
 
     async = require "async"
     data = require "../data.coffee"
-    http = require "http"
     lodash = require "lodash"
     url = require "url"
 
     # PROPERTIES
     # -------------------------------------------------------------------------
 
-    # Holds current information about all registered lights.
-    lights: {}
+    # Holds current information about the Hue hub (lights, groups, etc).
+    hub: {}
 
     # INIT
     # -------------------------------------------------------------------------
 
-    # Init the Hue module.
+    # Init the Hue module and schedule a job to refresh the hub status every minute.
     init: =>
-        logger.debug "Hue.init"
+        @baseInit()
+
+    # Start the module and refresh the Hue hub data.
+    start: =>
+        @baseStart()
         @refreshHub()
+
+    # Stop the module and cancel the Hue hub refresh jobs.
+    stop: =>
+        @baseStop()
 
     # API BASE METHODS
     # -------------------------------------------------------------------------
 
+    # Helper to get all lights IDs.
+    getLightIds: =>
+        result = []
+        result.push i for i of @hue.lights
+        return result
+
     # Make a request to the Hue API.
-    makeRequest: (urlPath, params, callback) =>
+    apiRequest: (urlPath, params, callback) =>
         if lodash.isFunction params
             callback = params
             params = null
 
-        logger.debug "Hue.makeRequest", reqUrl, urlPath, params
-
-        # Set request URL.
+        # Set full URL and make the HTTP request.
         reqUrl = settings.hue.apiUrl + settings.hue.apiUser + "/" + urlPath
-        reqOptions = url.parse reqUrl
-
-        # Set request parameters.
-        if params?
-            reqOptions.method = params.method
-            body = params.body
-            body = JSON.stringify body if not lodash.isString params.body
-        else
-            reqOptions.method = "GET"
-
-        # Make the HTTP request.
-        req = http.request reqOptions, (response) ->
-                response.downloadedData = ""
-
-                response.addListener "data", (data) =>
-                    response.downloadedData += data
-
-                response.addListener "end", =>
-                    try
-                        callback null, JSON.parse response.downloadedData
-                    catch ex
-                        callback ex if callback?
-
-        # On request error, trigger the callback straight away.
-        req.on "error", (err) => callback err if callback?
-
-        # Write body, if any, and end request.
-        req.write body, settings.general.encoding if body?
-        req.end()
+        @makeRequest reqUrl, params, callback
 
     # GET HUB DATA
     # -------------------------------------------------------------------------
@@ -78,13 +61,14 @@ class Hue extends (require "./apiBase.coffee")
     refreshHub: (callback) =>
         logger.debug "Hue.refreshHub"
 
-        @makeRequest "lights", (err, results) =>
+        @apiRequest "", (err, results) =>
             if err?
                 @logError "Hue.refreshHub", err
             else
-                @lights = results
-                data.upsert "hue.lights", results
-                logger.info "Hue.refreshHub", "Got #{results.length} lights."
+                @hue = results
+
+                data.upsert "hue", @hue
+                logger.info "Hue.refreshHub", "OK"
 
             callback err, results if callback?
 
@@ -110,7 +94,7 @@ class Hue extends (require "./apiBase.coffee")
 
         # Make the light state change request for all specified ids.
         for i of arr
-            do (i) => tasks.push (cb) => @makeRequest "lights/#{i}/state", params, cb
+            do (i) => tasks.push (cb) => @apiRequest "lights/#{i}/state", params, cb
 
         # Execute requests in parallel.
         async.parallelLimit tasks, settings.general.parallelTasksLimit, (err, results) =>
@@ -124,16 +108,12 @@ class Hue extends (require "./apiBase.coffee")
     # Turn all lights on (true) or off (false).
     switchAllLights: (turnOn, callback) =>
         logger.debug "Hue.switchAllLights", turnOn
-        for i of @lights
-            @switchLight i, turnOn, callback
+        @setLightState @getLightIds(), {on: turnOn}, callback
 
     # Turn the specified light on (true) or off (false).
     switchLight: (id, turnOn, callback) =>
         logger.debug "Hue.switchLight", id, turnOn
         @setLightState id, {on: turnOn}, callback
-
-
-
 
 
 # Singleton implementation.

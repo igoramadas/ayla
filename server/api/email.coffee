@@ -26,19 +26,23 @@ class Email extends (require "./apiBase.coffee")
 
     # Init the Email module and start listening to new message events from the server.
     init: =>
-        logger.debug "Email.init"
-
         @imap = new imapModule settings.email.imap
-        @start()
+        @baseInit()
 
     # Start listening to new message events from the server.
     start: =>
-        logger.info "Email.start"
+        @baseStart()
+        @openBox()
 
+    # Stop listening to new messages and disconnect. Set `running` to false.
+    stop: =>
+        @baseStop()
+        @imap.closeBox()
+        @imap.end()
+
+    # Open the IMAP email box.
+    openBox: =>
         @imap.once "ready", =>
-            logger.debug "Email.start", "Ready"
-
-            # Open inbox.
             @imap.openBox settings.email.imap.inboxName, false, (err, box) =>
                 if err?
                     @logError "Email.start", err
@@ -52,14 +56,6 @@ class Email extends (require "./apiBase.coffee")
 
         # Connect to the IMAP server.
         @imap.connect()
-
-    # Stop listening to new messages and disconnect. Set `running` to false.
-    stop: =>
-        logger.info "Email.stop"
-
-        @running = false
-        @imap.closeBox()
-        @imap.end()
 
     # READ MESSAGES
     # -------------------------------------------------------------------------
@@ -83,10 +79,6 @@ class Email extends (require "./apiBase.coffee")
         msgAttributes = {}
         parsedMsg = {}
 
-        # Parse email body.
-        parser.on "end", (result) =>
-            parsedMsg = result
-
         # Parse email attachments.
         parser.on "attachment", (att) =>
             try
@@ -96,11 +88,14 @@ class Email extends (require "./apiBase.coffee")
                 @logError "Email.downloadMessage.attachment", err
 
         # Parse message attributes and body chunks.
-        msg.on "attributes", (attrs) -> msgAttributes = attrs
+        parser.on "end", (result) -> parsedMsg = result
         msg.on "body", (stream, info) -> stream.pipe parser
+        msg.on "attributes", (attrs) -> msgAttributes = attrs
 
-        # On message end check if there's any action to be processed.
-        msg.on "end", => lodash.delay @processMessage, settings.email.imap.processDelay, parsedMsg, msgAttributes
+        # On message end, process parsed message and attributes.
+        msg.on "end", =>
+            processer = => @processMessage parsedMsg, msgAttributes
+            setTimeout processer, settings.email.imap.processDelay
 
     # After message has been downloaded, process it.
     processMessage: (parsedMsg, msgAttributes) =>
@@ -119,15 +114,15 @@ class Email extends (require "./apiBase.coffee")
 
         # Check if message has a from rule.
         fromRule = lodash.find data.cache.emailRules, {from: parsedMsg.from.address}
-        action = new (require "../emailActions/#{fromRule.action}") if fromRule?
+        action = new (require "../emailActions/#{fromRule.action}.coffee") if fromRule?
 
         # Has action? Process it!
         if action?
             action.process parsedMsg, (err, result) =>
                 if err?
-                    @logError "Email.processMessage.#{action}", msgAttributes.uid, err
+                    @logError "Email.processMessage.#{fromRule.action}", msgAttributes.uid, err
                 else
-                    logger.debug "Email.processMessage.#{action}", "Processed"
+                    logger.debug "Email.processMessage.#{fromRule.action}", msgAttributes.uid, "Processed"
                     @archiveMessage parsedMsg
         else
             @archiveMessage parsedMsg
