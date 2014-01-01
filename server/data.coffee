@@ -4,6 +4,7 @@
 class Data
 
     expresser = require "expresser"
+    cron = expresser.cron
     database = expresser.database
     logger = expresser.logger
     settings = expresser.settings
@@ -28,6 +29,7 @@ class Data
     init: =>
         @basePath = path.join __dirname, "../", settings.path.data
         @load()
+        @setJobs()
 
     # Load all .json files from the /data folder. Each file will be transformed
     # and set as a local property inside the `cache` property.
@@ -46,6 +48,10 @@ class Data
                 if path.extname(f) is ".json"
                     key = path.basename f, ".json"
                     @cache[key] = require @basePath + f
+
+    # Create maintenance jobs.
+    setJobs: =>
+        cron.add {id: "data.cleanOld", schedule: ["00:00:05"], callback: @cleanOld}
 
     # ADDING AND SAVING
     # -------------------------------------------------------------------------
@@ -90,7 +96,7 @@ class Data
 
     # Remove old data from the MongoDB database.
     cleanOld: =>
-        logger.info "Data.cleanOld"
+        database.del
 
 
 # Singleton implementation.

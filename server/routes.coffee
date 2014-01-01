@@ -4,6 +4,7 @@
 class Routes
 
     expresser = require "expresser"
+    cron = expresser.cron
     logger = expresser.logger
     settings = expresser.settings
 
@@ -35,6 +36,9 @@ class Routes
 
         # Ninja Blocks routes.
         app.get "/ninja", ninjaPage
+
+        # System routes.
+        app.get "/system/jobs", systemJobsPage
 
         # Withings routes.
         app.get "/withings", withingsPage
@@ -85,6 +89,13 @@ class Routes
     ninjaPage = (req, res) ->
         ninja.getDashboard (err, result) -> renderPage req, res, "ninja", {err: err, result: result}
 
+    # SYSTEM ROUTES
+    # -------------------------------------------------------------------------
+
+    # Cron jobs page.
+    systemJobsPage = (req, res) ->
+        renderPage req, res, "system.jobs", {jobs: cron.jobs}
+
     # WITHINGS ROUTES
     # -------------------------------------------------------------------------
 
@@ -111,13 +122,15 @@ class Routes
     # -------------------------------------------------------------------------
 
     # Helper to render pages.
-    renderPage = (req, res, file, options) ->
+    renderPage = (req, res, filename, options) ->
         options = {} if not options?
         options.title = settings.general.appTitle if not options.title?
 
-        console.warn "RENDER PAGE", options
+        # Force .jade extension.
+        filename += ".jade" if filename.indexOf(".jade") < 0
 
-        res.render file, options
+        # Render page.
+        res.render filename, options
 
     # When the server can't return a valid result,
     # send an error response with status code 500.

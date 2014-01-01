@@ -14,6 +14,7 @@ class Api
     fitbit = require "./api/fitbit.coffee"
     github = require "./api/github.coffee"
     hue = require "./api/hue.coffee"
+    netatmo = require "./api/netatmo.coffee"
     ninja = require "./api/ninja.coffee"
     path = require "path"
     toshl = require "./api/toshl.coffee"

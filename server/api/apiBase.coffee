@@ -8,6 +8,7 @@ class ApiBase
 
     http = require "http"
     https = require "https"
+    lodash = require "lodash"
     path = require "path"
     url = require "url"
 
@@ -93,11 +94,12 @@ class ApiBase
     # Logs module errors.
     logError: =>
         id = arguments[0]
+        args = lodash.toArray arguments
 
         @errors[id] = [] if not @errors[id]?
-        @errors[id].push arguments
+        @errors[id].push args
 
-        logger.error.apply logger, arguments
+        logger.error.apply logger, args
 
 
 # Exports API Base Module.
