@@ -71,9 +71,11 @@ class ApiBase
         req = httpHandler.request reqOptions, (response) ->
             response.downloadedData = ""
 
-            response.addListener "data", (data) =>
+            # Append received data.
+            response.addListener "data", (data) ->
                 response.downloadedData += data
 
+            # On end set the `downloadedData` property as JSON.
             response.addListener "end", =>
                 if callback?
                     try
@@ -83,7 +85,7 @@ class ApiBase
                         callback ex
 
         # On request error, trigger the callback straight away.
-        req.on "error", (err) ->
+        req.on "error", (err) =>
             @logError "#{@moduleName}.makeHttpRequest", reqUrl, params, err
             callback err if callback?
 

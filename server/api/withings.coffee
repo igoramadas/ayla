@@ -35,7 +35,7 @@ class Withings
 
         # Get data from the security module and set request URL.
         authCache = security.authCache["withings"]
-        reqUrl = settings.withings.apiUrl + path
+        reqUrl = settings.withings.api.url + path
 
         # Set post parameters.
         params = {} if not params?

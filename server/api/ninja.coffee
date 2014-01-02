@@ -36,7 +36,7 @@ class Ninja
         reqHasError = false
 
         # Make the HTTP request to the Ninja API.
-        reqUrl = settings.ninja.apiUrl + path + "/" + params + "?user_access_token=" + settings.ninja.accessToken
+        reqUrl = settings.ninja.api.url + path + "/" + params + "?user_access_token=" + settings.ninja.api.clientId
         req = https.get reqUrl, (response) ->
             response.downloadedData = ""
             response.addListener "data", (data) -> response.downloadedData += data

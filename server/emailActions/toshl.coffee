@@ -1,6 +1,6 @@
-# EMAIL ACTION: FYVE
+# EMAIL ACTION: TOSHL
 # -----------------------------------------------------------------------------
-class EmailAction_Fyve
+class EmailAction_Toshl
 
     expresser = require "expresser"
     logger = expresser.logger
@@ -9,11 +9,11 @@ class EmailAction_Fyve
     # ACTIONS
     # -------------------------------------------------------------------------
 
-    # Process message from Fyve.
+    # Process message from Toshl.
     process: (msg, callback) =>
 
 
 
 # Exports (not singleton!)
 # -----------------------------------------------------------------------------
-module.exports = exports = EmailAction_Fyve
+module.exports = exports = EmailAction_Toshl

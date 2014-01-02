@@ -3,18 +3,22 @@
 class Hue extends (require "./apiBase.coffee")
 
     expresser = require "expresser"
-    database = expresser.database
     events = expresser.events
     logger = expresser.logger
     settings = expresser.settings
+    utils = expresser.utils
 
     async = require "async"
     data = require "../data.coffee"
     lodash = require "lodash"
+    network = require "../network.coffee"
     url = require "url"
 
     # PROPERTIES
     # -------------------------------------------------------------------------
+
+    # Holds the current URL in use for the API (local or remote).
+    apiUrl: ""
 
     # Holds current information about the Hue hub (lights, groups, etc).
     hub: {}
@@ -22,7 +26,7 @@ class Hue extends (require "./apiBase.coffee")
     # INIT
     # -------------------------------------------------------------------------
 
-    # Init the Hue module and schedule a job to refresh the hub status every minute.
+    # Init the Hue module and schedule a job to refresh the hub status every few seconds.
     init: =>
         @baseInit()
 
@@ -51,7 +55,8 @@ class Hue extends (require "./apiBase.coffee")
             params = null
 
         # Set full URL and make the HTTP request.
-        reqUrl = settings.hue.apiUrl + settings.hue.apiUser + "/" + urlPath
+        baseUrl = (if network.isLocal then settings.hue.api.localUrl else settings.hue.api.remoteUrl)
+        reqUrl = baseUrl + settings.hue.api.user + "/" + urlPath
         @makeRequest reqUrl, params, callback
 
     # GET HUB DATA
@@ -67,8 +72,9 @@ class Hue extends (require "./apiBase.coffee")
             else
                 @hue = results
 
-                data.upsert "hue", @hue
                 logger.info "Hue.refreshHub", "OK"
+                data.upsert "hue", @hue
+                events.emit "hue.hub.refresh"
 
             callback err, results if callback?
 
@@ -102,6 +108,7 @@ class Hue extends (require "./apiBase.coffee")
                 @logError "Hue.setLightState", id, state, err
             else
                 logger.info "Hue.setLightState", id, state
+                events.emit "hue.light.state", id, state
 
             callback err, results if callback?
 

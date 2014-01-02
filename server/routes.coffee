@@ -12,6 +12,7 @@ class Routes
     fitbit = require "./api/fitbit.coffee"
     ninja = require "./api/ninja.coffee"
     security = require "./security.coffee"
+    toshl = require "./api/toshl.coffee"
     withings = require "./api/withings.coffee"
     wunderground = require "./api/wunderground.coffee"
 
@@ -39,6 +40,12 @@ class Routes
 
         # System routes.
         app.get "/system/jobs", systemJobsPage
+
+        # Toshl routes.
+        app.get "/toshl", toshlPage
+        app.get "/toshl/auth", toshlAuth
+        app.get "/toshl/auth/callback", toshlAuthCallback
+        app.post "/toshl/auth/callback", toshlAuthCallback
 
         # Withings routes.
         app.get "/withings", withingsPage
@@ -95,6 +102,21 @@ class Routes
     # Cron jobs page.
     systemJobsPage = (req, res) ->
         renderPage req, res, "system.jobs", {jobs: cron.jobs}
+
+    # TOSHL ROUTES
+    # -------------------------------------------------------------------------
+
+    # Main Toshl entrance page.
+    toshlPage = (req, res) ->
+        toshl.getDashboard (err, result) -> renderPage req, res, "toshl", {err: err, result: result}
+
+    # Get Toshl OAuth tokens.
+    toshlAuth = (req, res) ->
+        toshl.auth req, res
+
+    # Callback for Toshl OAuth.
+    toshlAuthCallback = (req, res) ->
+        toshl.auth req, res
 
     # WITHINGS ROUTES
     # -------------------------------------------------------------------------

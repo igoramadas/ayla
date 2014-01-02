@@ -1,9 +1,8 @@
 # FITBIT API
 # -----------------------------------------------------------------------------
-class Fitbit
+class Fitbit extends (require "./apiBase.coffee")
 
     expresser = require "expresser"
-    database = expresser.database
     logger = expresser.logger
     settings = expresser.settings
 
@@ -18,7 +17,15 @@ class Fitbit
 
     # Init the Fitbit module.
     init: =>
-        logger.debug "Fitbit.init"
+        @baseInit()
+
+    # Start the Fitbit module.
+    start: =>
+        @baseStart()
+
+    # Stop the Fitbit module.
+    stop: =>
+        @baseStop()
 
     # API BASE METHODS
     # -------------------------------------------------------------------------
@@ -35,10 +42,10 @@ class Fitbit
 
         # Get data from the security module and set request URL.
         authCache = security.authCache["fitbit"]
-        reqUrl = settings.fitbit.apiUrl + path
+        reqUrl = settings.fitbit.api.url + path
         reqUrl += "?" + params if params?
 
-        logger.debug "Fitbit.makeRequest", reqUrl
+        logger.debug "Fitbit.apiRequest", reqUrl
 
         # Make request using OAuth.
         authCache.oauth.get reqUrl, authCache.data.token, authCache.data.tokenSecret, callback

@@ -15,6 +15,7 @@ class Api
     github = require "./api/github.coffee"
     hue = require "./api/hue.coffee"
     netatmo = require "./api/netatmo.coffee"
+    network = require "./network.coffee"
     ninja = require "./api/ninja.coffee"
     path = require "path"
     toshl = require "./api/toshl.coffee"
@@ -38,7 +39,9 @@ class Api
         email.init()
         fitbit.init()
         hue.init()
+        network.init()
         ninja.init()
+        toshl.init()
         withings.init()
         wunderground.init()
 

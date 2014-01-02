@@ -27,7 +27,7 @@ class Wunderground extends (require "./apiBase.coffee")
     stop: =>
         @baseStop()
 
-    # GET WEATHER DATA
+    # API BASE METHODS
     # -------------------------------------------------------------------------
 
     # Helper to make requests to Weather Underground for stations defined on the settings.
@@ -39,7 +39,7 @@ class Wunderground extends (require "./apiBase.coffee")
         for id in settings.wunderground.stationIds
             do (id) ->
                 task = (cb) ->
-                    reqUrl = settings.wunderground.apiUrl + settings.wunderground.apiKey + "/#{path}/q/pws:#{id}.json"
+                    reqUrl = settings.wunderground.api.url + settings.wunderground.api.clientId + "/#{path}/q/pws:#{id}.json"
                     @makeRequest reqUrl, null, cb
 
                 # Add task and debug log.
@@ -84,6 +84,9 @@ class Wunderground extends (require "./apiBase.coffee")
 
         callback null, result
 
+    # GET WEATHER DATA
+    # -------------------------------------------------------------------------
+
     # Get the current weather conditions.
     getCurrentWeather: (callback) =>
         @apiRequest "conditions", (err, results) =>
@@ -92,21 +95,12 @@ class Wunderground extends (require "./apiBase.coffee")
             else
                 @getAverageResult results, "current_observation", callback
 
-    # SAVE WEATHER DATA
+    # JOBS
     # -------------------------------------------------------------------------
 
-    # Get current weather data and save to the database.
-    saveCurrentWeather: (callback) =>
-        @getCurrentWeather (err, result) =>
-            if err?
-                logger.error "Wunderground.saveCurrentWeather", err
-            if result?
-                result.timestamp = moment().unix()
-                database.set "weather", result, (err, result) =>
-                    if err?
-                        logger.error "Wunderground.saveCurrentWeather", "Database.set", err
-                    if callback?
-                        callback err, result
+    # Refresh weather data and save to the database.
+    jobRefreshWeather: =>
+
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

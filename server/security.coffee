@@ -50,20 +50,19 @@ class Security
                     callback null, true
 
     # Save the specified auth token to the database.
-    saveAuthToken: (service, token, tokenSecret, params, callback) =>
+    saveAuthToken: (service, params, callback) =>
         if not callback? and lodash.isFunction params
             callback = params
             params = null
 
         # Get current time and set data.
         now = moment().unix()
-        data = {service: service, active: true, token: token, tokenSecret: tokenSecret, timestamp: now}
+        data = lodash.defaults params, {service: service, active: true, timestamp: now}
 
         # Add extra parameters, if any.
-        if params?
-            data.timestamp = params.oauth_timestamp if params.oauth_timestamp?
-            data.userId = params.encoded_user_id if params.encoded_user_id?
-            data.userId = params.userid if params.userid?
+        data.timestamp = params.oauth_timestamp if params.oauth_timestamp?
+        data.userId = params.encoded_user_id if params.encoded_user_id?
+        data.userId = params.userid if params.userid?
 
         # Set local auth cache.
         @authCache[service].data = data
@@ -102,17 +101,27 @@ class Security
     getOAuthClient = (service) ->
         callbackUrl = settings.general.appUrl + service + "/auth/callback"
         headers = {"Accept": "*/*", "Connection": "close", "User-Agent": "Jarbas #{packageJson.version}"}
+        version = settings[service].api.oauthVersion
 
-        return new oauthModule.OAuth(
-            settings[service].oauthUrl + "request_token",
-            settings[service].oauthUrl + "access_token",
-            settings[service].apiKey,
-            settings[service].apiSecret,
-            settings[service].oauthVersion,
-            callbackUrl,
-            "HMAC-SHA1",
-            null,
-            headers)
+        if version is "2.0"
+            return new oauthModule.OAuth2(
+                settings[service].api.clientId,
+                settings[service].api.secret,
+                settings[service].api.oauthUrl,
+                settings[service].api.oauthPathAuthorize,
+                settings[service].api.oauthPathToken,
+                headers)
+        else
+            return new oauthModule.OAuth(
+                settings[service].api.oauthUrl + "request_token",
+                settings[service].api.oauthUrl + "access_token",
+                settings[service].api.clientId,
+                settings[service].api.secret,
+                version,
+                callbackUrl,
+                "HMAC-SHA1",
+                null,
+                headers)
 
     # Try getting auth data for a particular request / response.
     processAuthToken: (service, options, req, res) =>
@@ -130,39 +139,52 @@ class Security
 
         # Check if request has token on querystring.
         qs = url.parse(req.url, true).query
-        hasTokenVerifier = qs?.oauth_token?
 
-        # Helper function to get the access token.
-        getAccessToken = (err, oauth_token, oauth_token_secret, additionalParameters) =>
+        # Helper function to get the request token using OAUth 1.x.
+        getRequestToken1 = (err, oauth_token, oauth_token_secret, oauth_authorize_url, additionalParameters) =>
             if err?
-                logger.error "Security.processAuthToken", "getAccessToken", service, oauth_token, oauth_token_secret, err
+                logger.error "Security.processAuthToken", "getRequestToken1", service, oauth_token, oauth_token_secret, err
                 return
-            logger.debug "Security.processAuthToken", "getAccessToken", service, oauth_token, oauth_token_secret, additionalParameters
-
-            # Save auth details to DB and redirect user to service page.
-            @saveAuthToken service, oauth_token, oauth_token_secret, additionalParameters
-            res.redirect "/#{service}"
-
-        # Helper function to get the request token.
-        getRequestToken = (err, oauth_token, oauth_token_secret, oauth_authorize_url, additionalParameters) =>
-            if err?
-                logger.error "Security.processAuthToken", "getRequestToken", service, oauth_token, oauth_token_secret, err
-                return
-            logger.debug "Security.processAuthToken", "getRequestToken", service, oauth_token, oauth_token_secret, oauth_authorize_url, additionalParameters
+            logger.debug "Security.processAuthToken", "getRequestToken1", service, oauth_token, oauth_token_secret, oauth_authorize_url, additionalParameters
 
             # Set token secret cache and redirect to authorization URL.
             @authCache[service].data.tokenSecret = oauth_token_secret
             res.redirect "#{settings[service].oauthUrl}authorize?oauth_token=#{oauth_token}"
 
-        # Has the token verifier on the query string? Get OAuth access token from server.
-        if hasTokenVerifier
+        # Helper function to get the access token using OAUth 1.x.
+        getAccessToken1 = (err, oauth_token, oauth_token_secret, additionalParameters) =>
+            if err?
+                logger.error "Security.processAuthToken", "getAccessToken1", service, oauth_token, oauth_token_secret, err
+                return
+            logger.debug "Security.processAuthToken", "getAccessToken1", service, oauth_token, oauth_token_secret, additionalParameters
+
+            # Save auth details to DB and redirect user to service page.
+            oauthData = lodash.defaults {token: oauth_token, tokenSecret: oauth_token_secret}, additionalParameters
+            @saveAuthToken service, oauthData
+            res.redirect "/#{service}"
+
+        # Helper function to get the access token using OAUth 2.x.
+        getAccessToken2 = (err, oauth_access_token, oauth_refresh_token, results) =>
+            if err?
+                logger.error "Security.processAuthToken", "getAccessToken2", oauth_access_token, oauth_refresh_token, results, err
+                return
+            logger.debug "Security.processAuthToken", "getAccessToken2", oauth_access_token, oauth_refresh_token, results
+
+            # Save auth details to DB and redirect user to service page.
+            oauthData = {accessToken: oauth_access_token, refreshToken: oauth_refresh_token}
+            @saveAuthToken service, oauthData
+            res.redirect "/#{service}"
+
+        # Set correct request handler based on OAUth parameters and query tokens.
+        if settings[service].api.oauthVersion is "2.0"
+            oauth.getOAuthAccessToken qs.code, {"grant_type": "authorization_code", "response_type": "code"}, getAccessToken2
+        else if qs?.oauth_token?
             extraParams = {}
             extraParams.userid = qs.userid if qs.userid?
             extraParams.oauth_verifier = qs.oauth_verifier if qs.oauth_verifier?
-
-            oauth.getOAuthAccessToken qs.oauth_token, @authCache[service].data.tokenSecret, extraParams, getAccessToken
+            oauth.getOAuthAccessToken qs.oauth_token, @authCache[service].data.tokenSecret, extraParams, getAccessToken1
         else
-            oauth.getOAuthRequestToken {}, getRequestToken
+            oauth.getOAuthRequestToken {}, getRequestToken1
 
 
 # Singleton implementation
