@@ -149,7 +149,7 @@ class Security
 
             # Set token secret cache and redirect to authorization URL.
             @authCache[service].data.tokenSecret = oauth_token_secret
-            res.redirect "#{settings[service].oauthUrl}authorize?oauth_token=#{oauth_token}"
+            res.redirect "#{settings[service].api.oauthUrl}authorize?oauth_token=#{oauth_token}"
 
         # Helper function to get the access token using OAUth 1.x.
         getAccessToken1 = (err, oauth_token, oauth_token_secret, additionalParameters) =>

@@ -3,7 +3,10 @@
 class Fitbit extends (require "./apiBase.coffee")
 
     expresser = require "expresser"
+    database= expresser.database
+    events = expresser.events
     logger = expresser.logger
+    mailer = expresser.mailer
     settings = expresser.settings
 
     async = require "async"
@@ -48,7 +51,9 @@ class Fitbit extends (require "./apiBase.coffee")
         logger.debug "Fitbit.apiRequest", reqUrl
 
         # Make request using OAuth.
-        authCache.oauth.get reqUrl, authCache.data.token, authCache.data.tokenSecret, callback
+        authCache.oauth.get reqUrl, authCache.data.token, authCache.data.tokenSecret, (err, result) ->
+            result = JSON.parse result if lodash.isString result
+            callback err, result if callback?
 
     # GET DATA
     # -------------------------------------------------------------------------
@@ -56,11 +61,11 @@ class Fitbit extends (require "./apiBase.coffee")
     # Get sleep data for the specified date.
     getSleep: (date, callback) =>
         if not date? or not callback?
-            throw "Fitbit.getSleep: parameters date and callback must be specified!"
+            throw new Error "Fitbit.getSleep: parameters date and callback must be specified."
 
-        @makeRequest "user/-/sleep/date/#{date}.json", (err, result) =>
+        @apiRequest "user/-/sleep/date/#{date}.json", (err, result) =>
             if err?
-                logger.error "Fitbit.getSleep", date, err
+                @logError "Fitbit.getSleep", date, err
             else
                 logger.debug "Fitbit.getSleep", date, result
             callback err, result
@@ -68,11 +73,11 @@ class Fitbit extends (require "./apiBase.coffee")
     # Get activity data (steps, calories, etc) for the specified date.
     getActivities: (date, callback) =>
         if not date? or not callback?
-            throw "Fitbit.getSteps: parameters date and callback must be specified!"
+            throw new Error "Fitbit.getSteps: parameters date and callback must be specified."
 
-        @makeRequest "user/-/activities/date/#{date}.json", (err, result) =>
+        @apiRequest "user/-/activities/date/#{date}.json", (err, result) =>
             if err?
-                logger.error "Fitbit.getSteps", date, err
+                @logError "Fitbit.getSteps", date, err
             else
                 logger.debug "Fitbit.getSteps", date, result
             callback err, result
@@ -89,14 +94,53 @@ class Fitbit extends (require "./apiBase.coffee")
 
     # Scheduled job to refresh the hub data.
     jobCheckMissingData: =>
-        console.warn arguments
+        for d in settings.fitbit.checkMissingDataDays
+            do (d) =>
+                date = moment().subtract("d", d).format settings.fitbit.dateFormat
+                @getSleep date, (err, result) =>
+                    if err?
+                        @logError "Fitbit.jobCheckMissingData", "getSleep", date, err
+                        return false
+
+                    # Has sleep data? Stop here.
+                    return if result?.sleep?.length > 0
+
+                    # No results found, so mail the user.
+                    msgOptions = {to: settings.email.toDefault, subject: "Missing sleep data for #{date}", keywords: {}}
+                    msgOptions.template = "fitbitMissingSleep"
+                    msgOptions.keywords.date = date
+                    msgOptions.keywords.dateUrl = date.replace "-", "/"
+
+                    # Send the email.
+                    mailer.send msgOptions, (errM, resultM) =>
+                        if errM?
+                            @logError "Fitbit.jobCheckMissingData", "mailer.send", errM
+                            return false
+                        else
+                            logger.info "Fitbit.jobCheckMissingData", "Notified of missing sleep on #{date}."
+
+    # Scheduled job to save activities history to the MongoDD database.
+    jobActivitiesHistory: =>
+        date = moment().subtract("d", settings.fitbit.historyOffsetDays).format settings.fitbit.dateFormat
+        @getActivities date, (err, result) =>
+            if err?
+                @logError "Fitbit.jobActivitiesHistory", "getActivities", date, err
+                return false
+
+            # Save history to the database.
+            database.set "fitbit-history", result, (errDb, resultDb) =>
+                if errDb?
+                    @logError "Fitbit.jobActivitiesHistory", "database.set", errDb
+                    return false
+                else
+                    logger.info "Fitbit.jobActivitiesHistory", date
 
     # PAGES
     # -------------------------------------------------------------------------
 
     # Get the Fitbit dashboard data.
     getDashboard: (callback) =>
-        yesterday = moment().subtract("d", 1).format "YYYY-MM-DD"
+        yesterday = moment().subtract("d", 1).format settings.fitbit.dateFormat
         getSleepYesterday = (cb) => @getSleep yesterday, (err, result) -> cb err, {sleepYesterday: result}
         getActivitiesYesterday = (cb) => @getActivities yesterday, (err, result) -> cb err, {activitiesYesterday: result}
 

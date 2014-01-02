@@ -57,7 +57,7 @@ class Wunderground extends (require "./apiBase.coffee")
     # Helper to get average data from different stations.
     getAverageResult: (data, field, callback) =>
         if not callback?
-            throw new Error "The callback for getAverageResult must be specified."
+            throw new Error "Wunderground.getAverageResult: a callback must be specified."
 
         result = {}
 
