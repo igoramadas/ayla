@@ -13,17 +13,17 @@ window.logger = -> console.log.apply console, arguments
 # Start the app when document is ready and apply knockout bindings.
 onReady = ->
     $.get "/data", (data) ->
-        jarbas.data = data
-        jarbas.settings = data.settings
-        jarbas.alerts.init()
-        jarbas.sockets.init()
+        ayla.data = data
+        ayla.settings = data.settings
+        ayla.alerts.init()
+        ayla.sockets.init()
 
         if document.location.href.indexOf("rooms") < 1
-            jarbas.statusView.init()
-            ko.applyBindings jarbas.statusView
+            ayla.statusView.init()
+            ko.applyBindings ayla.statusView
         else
-            jarbas.roomsView.init()
-            ko.applyBindings jarbas.roomsView
+            ayla.roomsView.init()
+            ko.applyBindings ayla.roomsView
 
 
 # Hey ho let's go!

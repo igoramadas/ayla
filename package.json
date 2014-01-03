@@ -1,14 +1,14 @@
 {
-    "name": "jarbas",
-    "version": "0.0.3",
-    "description": "Jarbas at your service.",
-    "homepage": "http://jarbas.codeplex.com",
+    "name": "ayla",
+    "version": "0.0.4",
+    "description": "Ayla at your service.",
+    "homepage": "http://ayla.codeplex.com",
     "author": "Igor Ramadas <igor@devv.com>",
     "license": "MIT",
     "subdomain": "jarbas",
     "main": "index",
     "domains": [
-        "jarbas.codeplex.com"
+        "ayla.codeplex.com"
     ],
     "engines": {
         "node": "*"
@@ -31,10 +31,11 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://git01.codeplex.com/jarbas"
+        "url": "https://git01.codeplex.com/ayla"
     },
     "keywords": [
         "ai",
+        "ayla",
         "cortana",
         "devv",
         "igor",

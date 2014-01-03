@@ -25,7 +25,7 @@ class Api
     # INIT
     # -------------------------------------------------------------------------
 
-    # Init Jarbas API.
+    # Init Ayla API.
     init: ->
         rootPath = path.join __dirname, "../"
         cronPath = rootPath + settings.path.data + "cron.json"

@@ -9,7 +9,7 @@ class StatusView
     # Init the status view.
     init: =>
         @imps = ko.observableArray()
-        @setupImps jarbas.data.imps
+        @setupImps ayla.data.imps
 
     # Get list of registered imps from server and reset the imps list.
     setupImps: (arr) =>
@@ -24,10 +24,10 @@ class StatusView
     createImp: (obj) =>
         return if not obj? or obj is ""
 
-        imp = new jarbas.impModel obj
+        imp = new ayla.impModel obj
         @imps.push imp
 
 
 # BIND IMP MANAGER TO WINDOW
 # --------------------------------------------------------------------------
-window.jarbas.statusView = new StatusView()
+window.ayla.statusView = new StatusView()

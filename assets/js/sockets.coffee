@@ -39,4 +39,4 @@ class Sockets
 
 # BIND SOCKETS TO WINDOW.
 # --------------------------------------------------------------------------
-window.jarbas.sockets = new Sockets()
+window.ayla.sockets = new Sockets()

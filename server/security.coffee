@@ -100,7 +100,7 @@ class Security
     # Helper to the an OAuth client for a particular service.
     getOAuthClient = (service) ->
         callbackUrl = settings.general.appUrl + service + "/auth/callback"
-        headers = {"Accept": "*/*", "Connection": "close", "User-Agent": "Jarbas #{packageJson.version}"}
+        headers = {"Accept": "*/*", "Connection": "close", "User-Agent": "Ayla #{packageJson.version}"}
         version = settings[service].api.oauthVersion
 
         if version is "2.0"

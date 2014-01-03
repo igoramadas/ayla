@@ -45,7 +45,7 @@ class AlertsView
         @$title.html alertObj.title
         @$message.html alertObj.message
         @$el.addClass(alertObj.type).animate {top: 0}
-        setTimeout @hide, jarbas.settings.alerts.hideTimeout
+        setTimeout @hide, ayla.settings.alerts.hideTimeout
 
     # Hide the current alert.
     hide: =>
@@ -55,4 +55,4 @@ class AlertsView
 
 # BIND ALERTS TO WINDOW
 # --------------------------------------------------------------------------
-window.jarbas.alerts = new AlertsView()
+window.ayla.alerts = new AlertsView()
