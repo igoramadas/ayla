@@ -29,12 +29,12 @@ class Data
     # Init the Data module.
     init: =>
         @basePath = path.join __dirname, "../", settings.path.data
-        @load()
+        @loadFromDisk()
         @setJobs()
 
     # Load all .json files from the /data folder. Each file will be transformed
     # and set as a local property inside the `cache` property.
-    load: =>
+    loadFromDisk: =>
         @cache = {}
 
         # Read files from the data folder.
@@ -87,25 +87,6 @@ class Data
         fs.writeFile @basePath + key + ".json", data, {encoding: settings.general.encoding}, (err, callback) =>
             if err?
                 logger.error "Data.saveToDisk", key, data, err
-
-    # Save the specified JSON object to the database.
-    saveToDatabase: (collection, data, callback) =>
-        logger.debug "Data.saveToDatabase", collection, data
-
-        # Make sure data is valid.
-        if not data? or data is ""
-            return logger.warn "Data.saveToDatabase", collection, "Data is emoty ir nit valid. Abort!"
-
-        # Append data timestamp.
-        data.jarbasTimestamp = moment().unix()
-
-        # Save data to MongoDB.
-        database.set "fitbit-history", data, (err, result) =>
-            if errDb?
-                @logError "Fitbit.jobActivitiesHistory", "database.set", errDb
-                return false
-            else
-                logger.info "Fitbit.jobActivitiesHistory", date
 
     # MAINTENANCE
     # -------------------------------------------------------------------------

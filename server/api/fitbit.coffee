@@ -119,17 +119,6 @@ class Fitbit extends (require "./apiBase.coffee")
                         else
                             logger.info "Fitbit.jobCheckMissingData", "Notified of missing sleep on #{date}."
 
-    # Scheduled job to save activities history to the MongoDD database.
-    jobActivitiesHistory: =>
-        date = moment().subtract("d", settings.fitbit.historyOffsetDays).format settings.fitbit.dateFormat
-        @getActivities date, (err, result) =>
-            if err?
-                @logError "Fitbit.jobActivitiesHistory", "getActivities", date, err
-                return false
-
-            # Save history to the database.
-            data.saveToDatabase "fitbit-history", result
-
     # PAGES
     # -------------------------------------------------------------------------
 
