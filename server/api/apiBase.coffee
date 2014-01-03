@@ -5,10 +5,12 @@ class ApiBase
     expresser = require "expresser"
     cron = expresser.cron
     logger = expresser.logger
+    settings = expresser.settings
 
     http = require "http"
     https = require "https"
     lodash = require "lodash"
+    moment = require "moment"
     path = require "path"
     url = require "url"
 
@@ -86,8 +88,7 @@ class ApiBase
 
         # On request error, trigger the callback straight away.
         req.on "error", (err) =>
-            @logError "#{@moduleName}.makeHttpRequest", reqUrl, params, err
-            callback err if callback?
+            callback {err: err, url: reqUrl, params: params} if callback?
 
         # Write body, if any, and end request.
         req.write(body, settings.general.encoding) if body?
@@ -98,8 +99,15 @@ class ApiBase
         id = arguments[0]
         args = lodash.toArray arguments
 
+        # Append to the errors log.
         @errors[id] = [] if not @errors[id]?
-        @errors[id].push args
+        @errors[id].push {timestamp: moment().unix(), data: args}
+        count = @errors[id].length
+
+        # Too many consecutive errors? Stop the module.
+        if count is settings.general.stopOnModuleErrorCount
+            logger.critical id, "Too many consecutive errors (#{count}) logged.", "Module will now stop."
+            @stop()
 
         logger.error.apply logger, args
 

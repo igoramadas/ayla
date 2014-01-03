@@ -11,6 +11,7 @@ class Data
 
     fs = require "fs"
     lodash = require "lodash"
+    moment = require "moment"
     path = require "path"
 
     # PROPERTIES
@@ -88,15 +89,30 @@ class Data
                 logger.error "Data.saveToDisk", key, data, err
 
     # Save the specified JSON object to the database.
-    saveToDb: (key, data) ->
-        logger.debug "Data.saveToDb", key, data
+    saveToDatabase: (collection, data, callback) =>
+        logger.debug "Data.saveToDatabase", collection, data
+
+        # Make sure data is valid.
+        if not data? or data is ""
+            return logger.warn "Data.saveToDatabase", collection, "Data is emoty ir nit valid. Abort!"
+
+        # Append data timestamp.
+        data.jarbasTimestamp = moment().unix()
+
+        # Save data to MongoDB.
+        database.set "fitbit-history", data, (err, result) =>
+            if errDb?
+                @logError "Fitbit.jobActivitiesHistory", "database.set", errDb
+                return false
+            else
+                logger.info "Fitbit.jobActivitiesHistory", date
 
     # MAINTENANCE
     # -------------------------------------------------------------------------
 
     # Remove old data from the MongoDB database.
     cleanOld: =>
-        database.del
+        database.del()
 
 
 # Singleton implementation.

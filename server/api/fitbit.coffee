@@ -10,9 +10,9 @@ class Fitbit extends (require "./apiBase.coffee")
     settings = expresser.settings
 
     async = require "async"
+    data = require "../data.coffee"
     lodash = require "lodash"
     moment = require "moment"
-    querystring = require "querystring"
     security = require "../security.coffee"
 
     # INIT
@@ -128,12 +128,7 @@ class Fitbit extends (require "./apiBase.coffee")
                 return false
 
             # Save history to the database.
-            database.set "fitbit-history", result, (errDb, resultDb) =>
-                if errDb?
-                    @logError "Fitbit.jobActivitiesHistory", "database.set", errDb
-                    return false
-                else
-                    logger.info "Fitbit.jobActivitiesHistory", date
+            data.saveToDatabase "fitbit-history", result
 
     # PAGES
     # -------------------------------------------------------------------------
