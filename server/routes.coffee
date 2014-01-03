@@ -9,8 +9,10 @@ class Routes
     settings = expresser.settings
 
     email = require "./api/email.coffee"
+    fs = require "fs"
     fitbit = require "./api/fitbit.coffee"
     ninja = require "./api/ninja.coffee"
+    path = require "path"
     security = require "./security.coffee"
     toshl = require "./api/toshl.coffee"
     withings = require "./api/withings.coffee"
@@ -23,8 +25,12 @@ class Routes
     init: =>
         app = expresser.app.server
 
-        # Main routes.
+        # Main route.
         app.get "/", indexPage
+
+        # Commander routes.
+        app.get "/commander/:cmd/:params", commanderCallback
+        app.get "/commander/:cmd", commanderCallback
 
         # Email routes.
         app.get "/email", emailPage
@@ -63,9 +69,12 @@ class Routes
     indexPage = (req, res) ->
         renderPage req, res, "index"
 
-    # The main home page.
-    homePage = (req, res) ->
-        renderPage req, res, "index"
+    # COMMANDER ROUTES
+    # -------------------------------------------------------------------------
+
+    # The commander processor.
+    commanderCallback = (req, res) ->
+        renderPage req, res, "commander"
 
     # EMAIL ROUTES
     # -------------------------------------------------------------------------
@@ -101,7 +110,7 @@ class Routes
 
     # Cron jobs page.
     systemJobsPage = (req, res) ->
-        renderPage req, res, "system.jobs", {jobs: cron.jobs}
+        renderPage req, res, "system.jobs", {pageTitle: "Scheduled jobs", jobs: cron.jobs}
 
     # TOSHL ROUTES
     # -------------------------------------------------------------------------
@@ -146,7 +155,15 @@ class Routes
     # Helper to render pages.
     renderPage = (req, res, filename, options) ->
         options = {} if not options?
+        options.pageTitle = filename if not options.pageTitle?
         options.title = settings.general.appTitle if not options.title?
+
+        # Check if current view have an external JS to be loaded.
+        jsName = filename.replace "jade",""
+        jsPath = path.resolve __dirname, "../", "assets/js/views/#{jsName}.coffee"
+        if fs.existsSync jsPath
+            options.loadJs = [] if not options.loadJs?
+            options.loadJs.push "views/#{jsName}.js"
 
         # Force .jade extension.
         filename += ".jade" if filename.indexOf(".jade") < 0

@@ -7,6 +7,8 @@ html
         script window.ayla = {};
         != js("scripts")
         != css("styles")
+        for j in loadJs
+            != js(j)
     body
         #wrapper
             #header
@@ -23,4 +25,5 @@ html
                 .contents
                     label.title
                     span.message
+            h1= pageTitle
             block contents

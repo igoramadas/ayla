@@ -45,7 +45,7 @@ class Email extends (require "./apiBase.coffee")
         @imap.once "ready", =>
             @imap.openBox settings.email.imap.inboxName, false, (err, box) =>
                 if err?
-                    @logError "Email.start", err
+                    @logError "Email.openBox", err
                     @imap.disconnect()
                     return false
 
@@ -53,6 +53,10 @@ class Email extends (require "./apiBase.coffee")
                 @running = true
                 @fetchNewMessages()
                 @imap.on "mail", @fetchNewMessages
+
+        # Handle IMAP errors.
+        @imap.on "error", (err) =>
+            @logError "Email", err
 
         # Connect to the IMAP server.
         @imap.connect()
