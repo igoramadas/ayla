@@ -11,7 +11,7 @@ class Hue extends (require "./apiBase.coffee")
     async = require "async"
     data = require "../data.coffee"
     lodash = require "lodash"
-    network = require "../network.coffee"
+    network = require "./network.coffee"
     url = require "url"
 
     # PROPERTIES
@@ -55,7 +55,7 @@ class Hue extends (require "./apiBase.coffee")
             params = null
 
         # Set full URL and make the HTTP request.
-        baseUrl = (if network.isLocal then settings.hue.api.localUrl else settings.hue.api.remoteUrl)
+        baseUrl = (if network.isHome then settings.hue.api.localUrl else settings.hue.api.remoteUrl)
         reqUrl = baseUrl + settings.hue.api.user + "/" + urlPath
         @makeRequest reqUrl, params, callback
 

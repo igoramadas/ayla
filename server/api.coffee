@@ -5,6 +5,7 @@ class Api
 
     expresser = require "expresser"
     cron = expresser.cron
+    events = expresser.events
     logger = expresser.logger
     settings = expresser.settings
 
@@ -15,7 +16,7 @@ class Api
     github = require "./api/github.coffee"
     hue = require "./api/hue.coffee"
     netatmo = require "./api/netatmo.coffee"
-    network = require "./network.coffee"
+    network = require "./api/network.coffee"
     ninja = require "./api/ninja.coffee"
     path = require "path"
     toshl = require "./api/toshl.coffee"
@@ -26,20 +27,29 @@ class Api
     # -------------------------------------------------------------------------
 
     # Init Ayla API.
-    init: ->
+    init: =>
         rootPath = path.join __dirname, "../"
         cronPath = rootPath + settings.path.data + "cron.json"
         apiPath = rootPath + "server/api/"
 
+        # Load modules only after data has loaded.
+        events.on "data.static.load", @initModules
+
         # Load cron jobs.
         cron.load cronPath, {basePath: apiPath}
+
+    # Init all API modules, usually called after data has loaded.
+    initModules: =>
+        logger.debug "Api.initModules"
+
+        # Network must be started first.
+        network.init()
 
         # Init modules.
         camera.init()
         email.init()
         fitbit.init()
         hue.init()
-        network.init()
         ninja.init()
         toshl.init()
         withings.init()

@@ -82,7 +82,16 @@ class ApiBase
                 if callback?
                     try
                         response.downloadedData = JSON.parse response.downloadedData
-                        callback null, response.downloadedData
+
+                        # Check for error on response.
+                        if response.downloadedData.error?
+                            respError = response.downloadedData.error
+                        else if response.downloadedData[0]?.error?
+                            respError = response.downloadedData[0].error
+                        else
+                            respError = null
+
+                        callback respError, response.downloadedData
                     catch ex
                         callback ex
 

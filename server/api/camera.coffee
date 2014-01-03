@@ -10,7 +10,7 @@ class Camera extends (require "./apiBase.coffee")
     data = require "../data.coffee"
     fs = require "fs"
     lodash = require "lodash"
-    network = require "../network.coffee"
+    network = require "./network.coffee"
     path = require "path"
 
     # PROPERTIES
@@ -45,7 +45,7 @@ class Camera extends (require "./apiBase.coffee")
 
         # Find camera.
         id = id.id if id.id?
-        cam = lodash.find data.cache.cameras, {id: id}
+        cam = lodash.find data.static.cameras, {id: id}
 
         # Wrong cam?
         if not cam?
@@ -59,7 +59,7 @@ class Camera extends (require "./apiBase.coffee")
         saveTo = @snapsPath + "#{id}.#{now}.jpg"
 
         # URL remote or local?
-        downloadUrl = if network.isLocal() then cam.localUrl else cam.remoteUrl
+        downloadUrl = if network.isHome() then cam.localUrl else cam.remoteUrl
 
         # Save (download) a snap from the camera.
         downloader.download downloadUrl, saveTo, (err, result) =>
@@ -99,7 +99,7 @@ class Camera extends (require "./apiBase.coffee")
     # Take camera snaps every `snapsIntervalSeconds` seconds.
     jobTakeSnaps: =>
         logger.info "Camera.jobTakeSnaps"
-        for c in data.cache.cameras
+        for c in data.static.cameras
             @takeSnap c.id if c.enabled
 
     # Clean old snaps twice a day.

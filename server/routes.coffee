@@ -11,6 +11,8 @@ class Routes
     email = require "./api/email.coffee"
     fs = require "fs"
     fitbit = require "./api/fitbit.coffee"
+    toshl = require "./api/network.coffee"
+    network = require "./api/network.coffee"
     ninja = require "./api/ninja.coffee"
     path = require "path"
     security = require "./security.coffee"
@@ -46,6 +48,7 @@ class Routes
 
         # System routes.
         app.get "/system/jobs", systemJobsPage
+        app.get "/system/network", systemNetworkPage
 
         # Toshl routes.
         app.get "/toshl", toshlPage
@@ -111,6 +114,10 @@ class Routes
     # Cron jobs page.
     systemJobsPage = (req, res) ->
         renderPage req, res, "system.jobs", {pageTitle: "Scheduled jobs", jobs: cron.jobs}
+
+    # Cron jobs page.
+    systemNetworkPage = (req, res) ->
+        renderPage req, res, "system.network", {pageTitle: "Network overview", status: network.status}
 
     # TOSHL ROUTES
     # -------------------------------------------------------------------------

@@ -21,7 +21,7 @@ class Commander
         logger.debug "Commander.execute", cmd, options
 
         # Iterate all command triggers till it finds a matching one.
-        for key, value of data.cache["commands"]
+        for key, value of data.static["commands"]
             if value.indexOf(cmd) >= 0
                 try
                     eval (this[key] options, callback)

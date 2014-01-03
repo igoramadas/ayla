@@ -117,7 +117,7 @@ class Email extends (require "./apiBase.coffee")
         parsedMsg.attributes = msgAttributes
 
         # Check if message has a from rule.
-        fromRule = lodash.find data.cache.emailRules, {from: parsedMsg.from.address}
+        fromRule = lodash.find data.static.emailRules, {from: parsedMsg.from.address}
         action = new (require "../emailActions/#{fromRule.action}.coffee") if fromRule?
 
         # Has action? Process it!
