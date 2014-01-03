@@ -40,6 +40,7 @@ class Network extends (require "./apiBase.coffee")
     # Start monitoring the network.
     start: =>
         @baseStart()
+        @probe()
         @browser.start()
 
     # Stop monitoring the network.
@@ -64,10 +65,27 @@ class Network extends (require "./apiBase.coffee")
         logger.info "Network.checkIP", ips, "isHome = #{@isHome}"
 
     # Check if the specified device / server / URL is up.
-    checkDevice: (device, callback) =>
+    checkDevice: (device) =>
+        logger.debug "Network.checkDevice", device
+
+        # Abort if device was found using mdns.
+        return if device.mdns
+
+        # Are addresses set?
         if not device.addresses?
-            device.addresses []
+            device.addresses = []
             device.addresses.push device.localIP
+
+        # Not checked yet? Set `up` to false.
+        device.up = false if not device.up?
+
+        # Try connecting.
+        req = http.get {host: device.localIP, port: device.localPort}, (response) ->
+            response.addListener "data", (data) -> response.isValid = true
+            response.addListener "end", -> device.up = true if response.isValid
+
+        # On request error, set device as down.
+        req.on "error", (err) ->
 
     # Probe the current network and check device statuses.
     probe: =>
@@ -91,16 +109,17 @@ class Network extends (require "./apiBase.coffee")
             # Create new device or update existing?
             if not existingDevice?
                 logger.info "Network.onServiceUp", "New", service.name, service.addresses, service.port
-                existingDevice = {id: device.name}
+                existingDevice = {id: service.name}
                 isNew = true
             else
                 logger.info "Network.onServiceUp", "Existing", service.name, service.addresses, service.port
                 isNew = false
 
             # Set device properties.
-            existingDevice.host = device.host
-            existingDevice.addresses = device.addresses
+            existingDevice.host = service.host
+            existingDevice.addresses = service.addresses
             existingDevice.up = true
+            existingDevice.mdns = true
 
             @status[key].devices.push existingDevice if isNew
 
@@ -114,6 +133,7 @@ class Network extends (require "./apiBase.coffee")
 
             if existingDevice?
                 existingDevice.up = false
+                existingDevice.mdns = false
 
     # JOBS
     # -------------------------------------------------------------------------
