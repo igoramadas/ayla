@@ -5,7 +5,7 @@
     "homepage": "http://ayla.codeplex.com",
     "author": "Igor Ramadas <igor@devv.com>",
     "license": "MIT",
-    "subdomain": "jarbas",
+    "subdomain": "ayla",
     "main": "index",
     "domains": [
         "ayla.codeplex.com"
@@ -39,7 +39,7 @@
         "cortana",
         "devv",
         "igor",
-        "jarbas",
+        "ayla",
         "jarvis",
         "ninja",
         "siri"
