@@ -16,7 +16,7 @@ class EmailAction_Command
 
         # Only proceed if subject is valid.
         if not msg.subject? or msg.subject is ""
-            logger.warn "EmailAction_Amazon", msg.attributes.id, "No subject, abort."
+            logger.warn "EmailAction_Command", msg.attributes.id, "No subject, abort."
             callback null, false
             return false
 

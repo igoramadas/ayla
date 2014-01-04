@@ -95,6 +95,17 @@ class Network extends (require "./apiBase.coffee")
             # Iterate network devices.
             @checkDevice d for d in @status[nKey].devices
 
+    # Return a list of devices marked as offline (up=false).
+    getOfflineDevices: =>
+        result = []
+
+        # Iterate network devices.
+        for key, data of @status
+            for d in data.devices
+                result.push d if not d.up
+
+        return result
+
     # SERVICE DISCOVERY
     # -------------------------------------------------------------------------
 
