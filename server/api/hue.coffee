@@ -45,7 +45,7 @@ class Hue extends (require "./apiBase.coffee")
     # Helper to get all lights IDs.
     getLightIds: =>
         result = []
-        result.push i for i of @hue.lights
+        result.push i for i of @hub.lights
         return result
 
     # Make a request to the Hue API.
@@ -70,10 +70,17 @@ class Hue extends (require "./apiBase.coffee")
             if err?
                 @logError "Hue.refreshHub", err
             else
-                @hue = results
+                @hub = results
 
-                logger.info "Hue.refreshHub", "OK"
-                data.upsert "hue", @hue
+                # Get hub counters.
+                lightCount = 0
+                groupCount = 0
+                lightCount = lodash.keys(results.lights).length if results?.lights?
+                groupCount = lodash.keys(results.groups).length if results?.groups?
+
+                # Log and save data.
+                logger.info "Hue.refreshHub", "#{lightCount} lights and #{groupCount} groups."
+                data.upsert "hue", @hub
                 events.emit "hue.hub.refresh"
 
             callback err, results if callback?

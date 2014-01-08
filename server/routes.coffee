@@ -11,7 +11,7 @@ class Routes
     email = require "./api/email.coffee"
     fs = require "fs"
     fitbit = require "./api/fitbit.coffee"
-    toshl = require "./api/network.coffee"
+    hue = require "./api/hue.coffee"
     network = require "./api/network.coffee"
     ninja = require "./api/ninja.coffee"
     path = require "path"
@@ -42,6 +42,9 @@ class Routes
         app.get "/fitbit/auth", fitbitAuth
         app.get "/fitbit/auth/callback", fitbitAuthCallback
         app.post "/fitbit/auth/callback", fitbitAuthCallback
+
+        # Home rules.
+        app.get "/home/lights", homeLightsPage
 
         # Ninja Blocks routes.
         app.get "/ninja", ninjaPage
@@ -101,6 +104,14 @@ class Routes
     fitbitAuthCallback = (req, res) ->
         fitbit.auth req, res
 
+    # HOME ROUTES
+    # -------------------------------------------------------------------------
+
+    # Home light control page.
+    homeLightsPage = (req, res) ->
+        console.warn hue.hub
+        renderPage req, res, "home.lights", {pageTitle: "Home lights", hub: hue.hub}
+
     # NINJA BLOCKS ROUTES
     # -------------------------------------------------------------------------
 
@@ -115,7 +126,7 @@ class Routes
     systemJobsPage = (req, res) ->
         renderPage req, res, "system.jobs", {pageTitle: "Scheduled jobs", jobs: cron.jobs}
 
-    # Cron jobs page.
+    # Network overview page.
     systemNetworkPage = (req, res) ->
         renderPage req, res, "system.network", {pageTitle: "Network overview", status: network.status}
 
@@ -164,13 +175,12 @@ class Routes
         options = {} if not options?
         options.pageTitle = filename if not options.pageTitle?
         options.title = settings.general.appTitle if not options.title?
+        options.loadJs = [] if not options.loadJs?
 
         # Check if current view have an external JS to be loaded.
         jsName = filename.replace "jade",""
         jsPath = path.resolve __dirname, "../", "assets/js/views/#{jsName}.coffee"
-        if fs.existsSync jsPath
-            options.loadJs = [] if not options.loadJs?
-            options.loadJs.push "views/#{jsName}.js"
+        options.loadJs.push "views/#{jsName}.js" if fs.existsSync jsPath
 
         # Force .jade extension.
         filename += ".jade" if filename.indexOf(".jade") < 0

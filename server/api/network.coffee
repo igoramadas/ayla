@@ -17,7 +17,7 @@ class Network extends (require "./apiBase.coffee")
     # -------------------------------------------------------------------------
 
     # Holds all network status info.
-    status: {}
+    status: {local: {devices: []}}
 
     # Local network discovery / browser.
     browser: null
@@ -90,7 +90,7 @@ class Network extends (require "./apiBase.coffee")
     # Probe the current network and check device statuses.
     probe: =>
         for nKey, nData of data.static.network
-            @status[nKey] = nData if not @status[nKey]?
+            @status[nKey] = lodash.cloneDeep(nData) if not @status[nKey]?
 
             # Iterate network devices.
             @checkDevice d for d in @status[nKey].devices
@@ -100,8 +100,8 @@ class Network extends (require "./apiBase.coffee")
         result = []
 
         # Iterate network devices.
-        for key, data of @status
-            for d in data.devices
+        for sKey, sData of @status
+            for d in sData.devices
                 result.push d if not d.up
 
         return result
@@ -113,33 +113,33 @@ class Network extends (require "./apiBase.coffee")
     onServiceUp: (service) =>
         logger.debug "Network.onServiceUp", service
 
-        for key, data of @status
-            existingDevice = lodash.find data.devices, (d) =>
-                return service.addresses.indexOf d.localIP >= 0 and service.port is d.localPort
+        for sKey, sData of @status
+            existingDevice = lodash.find sData.devices, (d) ->
+                return service.addresses.indexOf(d.localIP) >= 0 and service.port is d.localPort
 
-            # Create new device or update existing?
-            if not existingDevice?
-                logger.info "Network.onServiceUp", "New", service.name, service.addresses, service.port
-                existingDevice = {id: service.name}
-                isNew = true
-            else
-                logger.info "Network.onServiceUp", "Existing", service.name, service.addresses, service.port
-                isNew = false
+        # Create new device or update existing?
+        if not existingDevice?
+            logger.info "Network.onServiceUp", "New", service.name, service.addresses, service.port
+            existingDevice = {id: service.name}
+            isNew = true
+        else
+            logger.info "Network.onServiceUp", "Existing", service.name, service.addresses, service.port
+            isNew = false
 
-            # Set device properties.
-            existingDevice.host = service.host
-            existingDevice.addresses = service.addresses
-            existingDevice.up = true
-            existingDevice.mdns = true
+        # Set device properties.
+        existingDevice.host = service.host
+        existingDevice.addresses = service.addresses
+        existingDevice.up = true
+        existingDevice.mdns = true
 
-            @status[key].devices.push existingDevice if isNew
+        @status.local.devices.push existingDevice if isNew
 
     # When a service disappears from the network.
     onServiceDown: (service) =>
         logger.info "Network.onServiceDown", service.name
 
-        for key, data of @status
-            existingDevice = lodash.find data.devices, (d) =>
+        for sKey, sData of @status
+            existingDevice = lodash.find sData.devices, (d) =>
                 return service.addresses.indexOf d.localIP >= 0 and service.port is d.localPort
 
             if existingDevice?

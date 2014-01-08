@@ -36,13 +36,11 @@ class ApiBase
     baseStart: =>
         @running = true
         cron.start {module: "#{@moduleName.toLowerCase()}.coffee"}
-        logger.info "#{@moduleName}.start"
 
     # Called when the module stops.
     baseStop: =>
         @running = false
         cron.stop {module: "#{@moduleName.toLowerCase()}.coffee"}
-        logger.info "#{@moduleName}.stop"
 
     # GENERAL METHODS
     # -------------------------------------------------------------------------
@@ -96,7 +94,7 @@ class ApiBase
                         callback ex
 
         # On request error, trigger the callback straight away.
-        req.on "error", (err) =>
+        req.on "error", (err) ->
             callback {err: err, url: reqUrl, params: params} if callback?
 
         # Write body, if any, and end request.
@@ -114,7 +112,7 @@ class ApiBase
         count = @errors[id].length
 
         # Too many consecutive errors? Stop the module.
-        if count is settings.general.stopOnModuleErrorCount
+        if count is settings.general.stopOnErrorCount
             logger.critical id, "Too many consecutive errors (#{count}) logged.", "Module will now stop."
             @stop()
 
