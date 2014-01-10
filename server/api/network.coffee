@@ -1,6 +1,6 @@
 # NETWORK API
 # -----------------------------------------------------------------------------
-class Network extends (require "./apiBase.coffee")
+class Network extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
     logger = expresser.logger
@@ -114,8 +114,12 @@ class Network extends (require "./apiBase.coffee")
         logger.debug "Network.onServiceUp", service
 
         for sKey, sData of @status
-            existingDevice = lodash.find sData.devices, (d) ->
-                return service.addresses.indexOf(d.localIP) >= 0 and service.port is d.localPort
+            if sData.devices?
+                existingDevice = lodash.find sData.devices, (d) ->
+                    if service.adresses?
+                        return service.addresses.indexOf(d.localIP) >= 0 and service.port is d.localPort
+                    else
+                        return false
 
         # Create new device or update existing?
         if not existingDevice?

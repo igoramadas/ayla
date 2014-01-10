@@ -1,6 +1,6 @@
 # WEATHER UNDERGROUND API
 # -----------------------------------------------------------------------------
-class Wunderground extends (require "./apiBase.coffee")
+class Wunderground extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
     database = expresser.database

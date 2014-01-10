@@ -30,10 +30,6 @@ class BaseView
             else
                 domId = s
 
-            domId = domId.replace RegExp(" ", "g"), ""
-            domId = domId.replace RegExp("_", "g"), ""
-            domId = domId.replace RegExp(">", "g"), ""
-
             @dom[domId] = @dom.wrapper.find s
 
 

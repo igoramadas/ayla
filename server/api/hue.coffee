@@ -1,6 +1,6 @@
 # PHILIPS HUE API
 # -----------------------------------------------------------------------------
-class Hue extends (require "./apiBase.coffee")
+class Hue extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
     events = expresser.events

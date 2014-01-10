@@ -1,6 +1,6 @@
 # TOSHL API
 # -----------------------------------------------------------------------------
-class Toshl extends (require "./apiBase.coffee")
+class Toshl extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
     logger = expresser.logger

@@ -1,6 +1,6 @@
 # NETATMO API
 # -----------------------------------------------------------------------------
-class Netatmo extends (require "./apiBase.coffee")
+class Netatmo extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
     database = expresser.database

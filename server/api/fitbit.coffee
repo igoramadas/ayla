@@ -1,6 +1,6 @@
 # FITBIT API
 # -----------------------------------------------------------------------------
-class Fitbit extends (require "./apiBase.coffee")
+class Fitbit extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
     database= expresser.database

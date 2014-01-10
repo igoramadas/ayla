@@ -4,7 +4,10 @@
 #= require lib/moment.js
 #= require lib/datatables.js
 
-#= require baseView.coffee
+#= require models/baseModel.coffee
+#= require models/light.coffee
+#= require models/lightsGroup.coffee
+#= require views/baseView.coffee
 #= require sockets.coffee
 
 # Bind helper to log to console.

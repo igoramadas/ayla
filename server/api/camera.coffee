@@ -1,6 +1,6 @@
 # CAMERA API
 # -----------------------------------------------------------------------------
-class Camera extends (require "./apiBase.coffee")
+class Camera extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
     downloader = expresser.downloader

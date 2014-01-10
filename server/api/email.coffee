@@ -1,6 +1,6 @@
 # EMAIL API
 # -----------------------------------------------------------------------------
-class Email extends (require "./apiBase.coffee")
+class Email extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
     events = expresser.events

@@ -5,12 +5,12 @@ block contents
         table
             thead
                 tr
-                    td Light
-                    td State
-                    td Colour
+                    td.name Light
+                    td.state State
+                    td.colour Colour
             tbody
                 each light in hub.lights
                     tr
-                        td #{light.name}
-                        td #{light.state.on}
-                        td #{light.state.hue} / #{light.state.bri}
+                        td.name(data-bind="text: name")
+                        td.state(data-bind="text: state")
+                        td.colour(data-bind="text: colour")
