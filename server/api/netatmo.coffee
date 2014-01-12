@@ -52,27 +52,45 @@ class Netatmo extends (require "./baseApi.coffee")
         # Add parameters to request URL.
         reqUrl += querystring.stringify params
 
-        logger.debug "Netatmo.makeRequest", reqUrl, authCache.data.token, authCache.data.tokenSecret
+        logger.debug "Netatmo.makeRequest", reqUrl
 
         # Make request using OAuth.
-        authCache.oauth.get reqUrl, authCache.data.token, authCache.data.tokenSecret, callback
+        authCache.oauth.get reqUrl, authCache.data.accessToken, callback
 
     # GET DATA
     # -------------------------------------------------------------------------
 
-    # Get indoor readings from Netatmo. Default is to get only the most current data.
-    getIndoorMeasure: (filter, callback) =>
-        params = {}
-        params.type = filter.type || "Temperature,Humidity,Pressure,CO2,Noise"
-        params.scale = filter.scale || "30min"
-        params.date_begin = filter.startDate if filter.startDate?
-        params.date_end = filter.endDate || "last"
+    # Helper to get API request parameters based on the filter.
+    getParams = (filter) ->
+        params = {"device_id": settings.netatmo.deviceId}
+        params["scale"] = filter.scale or "30min"
+        params["date_end"] = filter.endDate or "last"
+        params["date_begin"] = filter.startDate if filter.startDate?
+
+        return params
+
+    # Get outdoor readings from Netatmo. Default is to get only the most current data.
+    getOutdoorMeasure: (filter, callback) =>
+        params = getParams filter
+        params["type"] = "Temperature,Humidity"
 
         @makeRequest "getmeasure", params, (err, result) =>
             if err?
-                logger.error "Netatmo.getWeight", filter, err
+                logger.error "Netatmo.getIndoorMeasure", filter, err
             else
-                logger.debug "Netatmo.getWeight", filter
+                logger.debug "Netatmo.getIndoorMeasure", filter
+            callback err, result
+
+    # Get indoor readings from Netatmo. Default is to get only the most current data.
+    getIndoorMeasure: (filter, callback) =>
+        params = getParams filter
+        params["type"] = "Temperature,Humidity,Pressure,CO2,Noise"
+
+        @makeRequest "getmeasure", params, (err, result) =>
+            if err?
+                logger.error "Netatmo.getIndoorMeasure", filter, err
+            else
+                logger.debug "Netatmo.getIndoorMeasure", filter
             callback err, result
 
     # PAGES
@@ -80,6 +98,19 @@ class Netatmo extends (require "./baseApi.coffee")
 
     # Get Netatmo dashboard data.
     getDashboard: (callback) =>
+        @getIndoorMeasure {}, (err, result) =>
+            console.warn err, result
+
+    # JOBS
+    # -------------------------------------------------------------------------
+
+    # Get current outdoor conditions (weather) every 30 minutes.
+    jobGetOutdoor: (callback) =>
+        @getOutdoorMeasure {}, (err, result) =>
+            console.warn err, result
+
+    # Get current indoor conditions every 5 minutes.
+    jobGetIndoor: (callback) =>
         @getIndoorMeasure {}, (err, result) =>
             console.warn err, result
 
