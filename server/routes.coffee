@@ -12,6 +12,7 @@ class Routes
     fs = require "fs"
     fitbit = require "./api/fitbit.coffee"
     hue = require "./api/hue.coffee"
+    netatmo = require "./api/netatmo.coffee"
     network = require "./api/network.coffee"
     ninja = require "./api/ninja.coffee"
     path = require "path"
@@ -45,6 +46,12 @@ class Routes
 
         # Home rules.
         app.get "/home/lights", homeLightsPage
+
+        # Netatmo routes.
+        app.get "/netatmo", netatmoPage
+        app.get "/netatmo/auth", netatmoAuth
+        app.get "/netatmo/auth/callback", netatmoAuthCallback
+        app.post "/netatmo/auth/callback", netatmoAuthCallback
 
         # Ninja Blocks routes.
         app.get "/ninja", ninjaPage
@@ -111,6 +118,21 @@ class Routes
     homeLightsPage = (req, res) ->
         console.warn hue.hub
         renderPage req, res, "home.lights", {pageTitle: "Home lights", hub: hue.hub}
+
+    # NETATMO ROUTES
+    # -------------------------------------------------------------------------
+
+    # Main Netatmo entrance page.
+    netatmoPage = (req, res) ->
+        netatmo.getDashboard (err, result) -> renderPage req, res, "netatmo", {err: err, result: result}
+
+    # Get Netatmo OAuth tokens.
+    netatmoAuth = (req, res) ->
+        netatmo.auth req, res
+
+    # Callback for Netatmo OAuth.
+    netatmoAuthCallback = (req, res) ->
+        netatmo.auth req, res
 
     # NINJA BLOCKS ROUTES
     # -------------------------------------------------------------------------

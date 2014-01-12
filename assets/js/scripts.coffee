@@ -6,7 +6,7 @@
 
 #= require models/baseModel.coffee
 #= require models/light.coffee
-#= require models/lightsGroup.coffee
+#= require models/room.coffee
 #= require views/baseView.coffee
 #= require sockets.coffee
 

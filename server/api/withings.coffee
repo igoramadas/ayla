@@ -10,7 +10,6 @@ class Withings
     async = require "async"
     lodash = require "lodash"
     moment = require "moment"
-    querystring = require "querystring"
     security = require "../security.coffee"
 
     # INIT

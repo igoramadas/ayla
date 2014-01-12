@@ -177,7 +177,19 @@ class Security
 
         # Set correct request handler based on OAUth parameters and query tokens.
         if settings[service].api.oauthVersion is "2.0"
-            oauth.getOAuthAccessToken qs.code, {"grant_type": "authorization_code", "response_type": "code"}, getAccessToken2
+
+            # Use cliend credentials (password) or authorization code?
+            if settings[service].api.username?
+                opts = {"grant_type": "password", username: settings[service].api.username, password: settings[service].api.password}
+            else
+                opts = {"grant_type": "authorization_code"}
+
+            if settings[service].api.oauthResponseType?
+                opts["response_type"] = settings[service].api.oauthResponseType
+
+            oauth.getOAuthAccessToken qs.code, opts, getAccessToken2
+
+        # Getting an OAuth1 access token?
         else if qs?.oauth_token?
             extraParams = {}
             extraParams.userid = qs.userid if qs.userid?
