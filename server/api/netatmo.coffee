@@ -71,6 +71,11 @@ class Netatmo extends (require "./baseApi.coffee")
 
     # Get outdoor readings from Netatmo. Default is to get only the most current data.
     getOutdoorMeasure: (filter, callback) =>
+        if lodash.isFunction filter
+            callback = filter
+            filter = null
+
+        # Set outdoor parameters.
         params = getParams filter
         params["type"] = "Temperature,Humidity"
 
@@ -83,6 +88,11 @@ class Netatmo extends (require "./baseApi.coffee")
 
     # Get indoor readings from Netatmo. Default is to get only the most current data.
     getIndoorMeasure: (filter, callback) =>
+        if lodash.isFunction filter
+            callback = filter
+            filter = null
+
+        # Set indoor parameters.
         params = getParams filter
         params["type"] = "Temperature,Humidity,Pressure,CO2,Noise"
 
@@ -98,8 +108,11 @@ class Netatmo extends (require "./baseApi.coffee")
 
     # Get Netatmo dashboard data.
     getDashboard: (callback) =>
-        @getIndoorMeasure {}, (err, result) =>
-            console.warn err, result
+        getOutdoor = (cb) => @getOutdoorMeasure (err, result) -> cb err, {outdoor: result}
+        getIndoor = (cb) => @getIndoorMeasure (err, result) -> cb err, {indoor: result}
+
+        async.parallel [getOutdoor, getIndoor], (err, result) =>
+            callback err, result
 
     # JOBS
     # -------------------------------------------------------------------------

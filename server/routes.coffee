@@ -56,6 +56,11 @@ class Routes
         # Ninja Blocks routes.
         app.get "/ninja", ninjaPage
 
+        # Phone client routes.
+        app.get "/phone/fitness", phoneFitness
+        app.get "/phone/home", phoneHome
+        app.get "/phone/weather", phoneWeather
+
         # System routes.
         app.get "/system/jobs", systemJobsPage
         app.get "/system/network", systemNetworkPage
@@ -116,7 +121,6 @@ class Routes
 
     # Home light control page.
     homeLightsPage = (req, res) ->
-        console.warn hue.hub
         renderPage req, res, "home.lights", {pageTitle: "Home lights", hub: hue.hub}
 
     # NETATMO ROUTES
@@ -140,6 +144,21 @@ class Routes
     # Main Fitbit entrance page.
     ninjaPage = (req, res) ->
         ninja.getDashboard (err, result) -> renderPage req, res, "ninja", {err: err, result: result}
+
+    # PHONE CLIENT ROUTES
+    # -------------------------------------------------------------------------
+
+    # Phone client: retrieve fitness data.
+    phoneFitness = (req, res) ->
+        console.warn 1
+
+    # Phone client: retrieve home data.
+    phoneHome = (req, res) ->
+        console.warn 1
+
+    # Phone client: retrieve weather data.
+    phoneWeather = (req, res) ->
+        console.warn 1
 
     # SYSTEM ROUTES
     # -------------------------------------------------------------------------
