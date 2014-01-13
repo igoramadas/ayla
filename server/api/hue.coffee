@@ -9,7 +9,6 @@ class Hue extends (require "./baseApi.coffee")
     utils = expresser.utils
 
     async = require "async"
-    data = require "../data.coffee"
     lodash = require "lodash"
     network = require "./network.coffee"
     url = require "url"

@@ -10,7 +10,6 @@ class Fitbit extends (require "./baseApi.coffee")
     settings = expresser.settings
 
     async = require "async"
-    data = require "../data.coffee"
     lodash = require "lodash"
     moment = require "moment"
     security = require "../security.coffee"

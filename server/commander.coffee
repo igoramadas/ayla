@@ -8,8 +8,8 @@ class Commander
     events = expresser.events
     logger = expresser.logger
     mailer = expresser.mailer
+    settings = expresser.settings
 
-    data = require "./data.coffee"
     hue = require "./api/hue.coffee"
     network = require "./api/network.coffee"
     ninja = require "./api/ninja.coffee"
@@ -22,7 +22,7 @@ class Commander
         logger.debug "Commander.execute", cmd, options
 
         # Iterate all command triggers till it finds a matching one.
-        for key, value of data.static.commands
+        for key, value of settings.commands
             for c in value
                 if cmd.indexOf(c) >= 0
                     try

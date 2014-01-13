@@ -7,7 +7,6 @@ class Network extends (require "./baseApi.coffee")
     settings = expresser.settings
     utils = expresser.utils
 
-    data = require "../data.coffee"
     http = require "http"
     lodash = require "lodash"
     mdns = require "mdns"
@@ -31,6 +30,8 @@ class Network extends (require "./baseApi.coffee")
         @browser.on "serviceUp", @onServiceUp
         @browser.on "serviceDown", @onServiceDown
 
+        @data.local = {devices: []}
+
         @checkIP()
         @baseInit()
 
@@ -50,11 +51,11 @@ class Network extends (require "./baseApi.coffee")
 
     # Check if Ayla server is on the home network.
     checkIP: =>
-        logger.debug "Network.checkIP", "Expected home IP: #{data.static.network.home.ip}"
+        logger.debug "Network.checkIP", "Expected home IP: #{settings.network.home.ip}"
 
         ips = utils.getServerIP()
 
-        if ips.indexOf(data.static.network.home.ip) < 0
+        if ips.indexOf(settings.network.home.ip) < 0
             @isHome = false
         else
             @isHome = true
@@ -86,11 +87,12 @@ class Network extends (require "./baseApi.coffee")
 
     # Probe the current network and check device statuses.
     probe: =>
-        for nKey, nData of data.static.network
+        for nKey, nData of settings.network
             @data[nKey] = lodash.cloneDeep(nData) if not @data[nKey]?
 
             # Iterate network devices.
-            @checkDevice d for d in @data[nKey].devices
+            if @data[nKey].devices?
+                @checkDevice d for d in @data[nKey].devices
 
     # Return a list of devices marked as offline (up=false).
     getOfflineDevices: =>

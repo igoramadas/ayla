@@ -9,7 +9,6 @@ class ApiBase
     logger = expresser.logger
     settings = expresser.settings
 
-    data = require "../data.coffee"
     http = require "http"
     https = require "https"
     lodash = require "lodash"
@@ -37,10 +36,8 @@ class ApiBase
         @moduleName = @__proto__.constructor.name.toString()
         @moduleId = @moduleName.toLowerCase()
 
-        # Log and set data.
+        # Log and start.
         logger.debug "#{@moduleName}.init"
-        data.cache[@moduleId] = {}
-
         @start()
 
     # Called when the module starts.

@@ -7,7 +7,6 @@ class Email extends (require "./baseApi.coffee")
     logger = expresser.logger
     settings = expresser.settings
 
-    data = require "../data.coffee"
     fs = require "fs"
     imapModule = require "imap"
     lodash = require "lodash"
@@ -117,7 +116,7 @@ class Email extends (require "./baseApi.coffee")
         parsedMsg.attributes = msgAttributes
 
         # Check if message has a from rule.
-        fromRule = lodash.find data.static.emailRules, {from: parsedMsg.from.address}
+        fromRule = lodash.find settings.email.rules, {from: parsedMsg.from.address}
         action = new (require "../emailActions/#{fromRule.action}.coffee") if fromRule?
 
         # Has action? Process it!

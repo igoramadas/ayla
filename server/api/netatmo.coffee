@@ -8,7 +8,6 @@ class Netatmo extends (require "./baseApi.coffee")
     settings = expresser.settings
 
     async = require "async"
-    data = require "../data.coffee"
     lodash = require "lodash"
     moment = require "moment"
     querystring = require "querystring"
@@ -111,7 +110,7 @@ class Netatmo extends (require "./baseApi.coffee")
 
                 # Result represent current readings?
                 if isCurrent params
-                    data.upsert "netatmo-outdoor"
+                    @setData "outdoor", result
 
             callback err, result
 
@@ -134,7 +133,7 @@ class Netatmo extends (require "./baseApi.coffee")
 
                 # Result represent current readings?
                 if isCurrent params
-                    data.upsert "netatmo-indoor", result
+                    @setData "indoor", result
 
             callback err, result
 

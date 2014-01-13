@@ -29,14 +29,12 @@ class Api
     # Init Ayla API.
     init: =>
         rootPath = path.join __dirname, "../"
-        cronPath = rootPath + settings.path.data + "cron.json"
+        cronPath = rootPath + "cron.json"
         apiPath = rootPath + "server/api/"
 
-        # Load modules only after data has loaded.
-        events.on "data.static.load", @initModules
-
-        # Load cron jobs.
+        # Load cron jobs and init modules.
         cron.load cronPath, {basePath: apiPath}
+        @initModules()
 
     # Init all API modules, usually called after data has loaded.
     initModules: =>

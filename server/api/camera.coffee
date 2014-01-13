@@ -7,7 +7,6 @@ class Camera extends (require "./baseApi.coffee")
     logger = expresser.logger
     settings = expresser.settings
 
-    data = require "../data.coffee"
     fs = require "fs"
     lodash = require "lodash"
     moment = require "moment"
@@ -46,7 +45,7 @@ class Camera extends (require "./baseApi.coffee")
 
         # Find camera.
         id = id.id if id.id?
-        cam = lodash.find data.static.cameras, {id: id}
+        cam = lodash.find settings.camera.devices, {id: id}
 
         # Wrong cam?
         if not cam?
@@ -100,7 +99,7 @@ class Camera extends (require "./baseApi.coffee")
     # Take camera snaps every `snapsIntervalSeconds` seconds.
     jobTakeSnaps: =>
         logger.info "Camera.jobTakeSnaps"
-        for c in data.static.cameras
+        for c in settings.camera.devices
             @takeSnap c.id if c.enabled
 
     # Clean old snaps twice a day.
