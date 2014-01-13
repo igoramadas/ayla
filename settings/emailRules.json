@@ -1,5 +1,0 @@
-[
-    { "from": "igor@devv.com", "action": "command" },
-    { "from": "devv@devv.com", "action": "command" },
-    { "from": "info@amazon.de", "action": "amazon" }
-]

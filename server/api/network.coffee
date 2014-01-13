@@ -87,17 +87,17 @@ class Network extends (require "./baseApi.coffee")
     # Probe the current network and check device statuses.
     probe: =>
         for nKey, nData of data.static.network
-            @status[nKey] = lodash.cloneDeep(nData) if not @status[nKey]?
+            @data[nKey] = lodash.cloneDeep(nData) if not @data[nKey]?
 
             # Iterate network devices.
-            @checkDevice d for d in @status[nKey].devices
+            @checkDevice d for d in @data[nKey].devices
 
     # Return a list of devices marked as offline (up=false).
     getOfflineDevices: =>
         result = []
 
         # Iterate network devices.
-        for sKey, sData of @status
+        for sKey, sData of @data
             for d in sData.devices
                 result.push d if not d.up
 
@@ -110,7 +110,7 @@ class Network extends (require "./baseApi.coffee")
     onServiceUp: (service) =>
         logger.debug "Network.onServiceUp", service
 
-        for sKey, sData of @status
+        for sKey, sData of @data
             if sData.devices?
                 existingDevice = lodash.find sData.devices, (d) ->
                     if service.adresses?
@@ -133,13 +133,13 @@ class Network extends (require "./baseApi.coffee")
         existingDevice.up = true
         existingDevice.mdns = true
 
-        @setData["local"].devices.push existingDevice if isNew
+        @data.local.devices.push existingDevice if isNew
 
     # When a service disappears from the network.
     onServiceDown: (service) =>
         logger.info "Network.onServiceDown", service.name
 
-        for sKey, sData of data[]
+        for sKey, sData of @data
             existingDevice = lodash.find sData.devices, (d) =>
                 return service.addresses.indexOf d.localIP >= 0 and service.port is d.localPort
 

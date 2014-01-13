@@ -1,5 +1,0 @@
-{
-    "turnLightsOff": ["turn lights off", "all lights off"],
-    "turnLightsOn": ["turn lights on", "all lights on"],
-    "notifyNetworkDevicesDown": ["which servers are down", "are servers down"]
-}

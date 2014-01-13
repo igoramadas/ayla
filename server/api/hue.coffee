@@ -20,9 +20,6 @@ class Hue extends (require "./baseApi.coffee")
     # Holds the current URL in use for the API (local or remote).
     apiUrl: ""
 
-    # Holds current information about the Hue hub (lights, groups, etc).
-    hub: {}
-
     # INIT
     # -------------------------------------------------------------------------
 
@@ -45,7 +42,7 @@ class Hue extends (require "./baseApi.coffee")
     # Helper to get all lights IDs.
     getLightIds: =>
         result = []
-        result.push i for i of @hub.lights
+        result.push i for i of @data.hub.lights
         return result
 
     # Make a request to the Hue API.
@@ -70,7 +67,7 @@ class Hue extends (require "./baseApi.coffee")
             if err?
                 @logError "Hue.refreshHub", err
             else
-                @hub = results
+                @setData "hub", results
 
                 # Get hub counters.
                 lightCount = 0
@@ -78,9 +75,8 @@ class Hue extends (require "./baseApi.coffee")
                 lightCount = lodash.keys(results.lights).length if results?.lights?
                 groupCount = lodash.keys(results.groups).length if results?.groups?
 
-                # Log and save data.
+                # Log and emit refresh event.
                 logger.info "Hue.refreshHub", "#{lightCount} lights and #{groupCount} groups."
-                data.upsert "hue", @hub
                 events.emit "hue.hub.refresh"
 
             callback err, results if callback?
