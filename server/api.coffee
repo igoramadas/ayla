@@ -50,6 +50,7 @@ class Api
         email.init()
         fitbit.init()
         hue.init()
+        netatmo.init()
         ninja.init()
         toshl.init()
         withings.init()

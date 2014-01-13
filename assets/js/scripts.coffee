@@ -15,8 +15,9 @@ window.logger = -> console.log.apply console, arguments
 
 # Start the app when document is ready and apply knockout bindings.
 onReady = ->
-        if ayla.currentView?
-            ayla.currentView.init()
+        currentPath = location.pathname
+        $("#header").find(".#{currentPath}").addClass "selected"
+        ayla.currentView.init() if ayla.currentView?
 
 # Hey ho let's go!
 $(document).ready onReady

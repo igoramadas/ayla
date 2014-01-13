@@ -16,9 +16,6 @@ class Network extends (require "./baseApi.coffee")
     # PROPERTIES
     # -------------------------------------------------------------------------
 
-    # Holds all network status info.
-    status: {local: {devices: []}}
-
     # Local network discovery / browser.
     browser: null
 
@@ -136,13 +133,13 @@ class Network extends (require "./baseApi.coffee")
         existingDevice.up = true
         existingDevice.mdns = true
 
-        @status.local.devices.push existingDevice if isNew
+        @setData["local"].devices.push existingDevice if isNew
 
     # When a service disappears from the network.
     onServiceDown: (service) =>
         logger.info "Network.onServiceDown", service.name
 
-        for sKey, sData of @status
+        for sKey, sData of data[]
             existingDevice = lodash.find sData.devices, (d) =>
                 return service.addresses.indexOf d.localIP >= 0 and service.port is d.localPort
 

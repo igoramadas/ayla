@@ -1,0 +1,62 @@
+{
+    "camera.coffee": [
+        {
+            "callback": "jobTakeSnaps",
+            "description": "Save a snap of enabled cameras to the data folder.",
+            "schedule": 600,
+            "enabled": false
+        },
+        {
+            "callback": "jobCleanSnaps",
+            "description": "Delete old camera snaps.",
+            "schedule": ["11:00:00", "21:00:00"],
+            "enabled": false
+        }
+    ],
+    "netatmo.coffee": [
+        {
+            "callback": "jobGetOutdoor",
+            "description": "Probe current outdoor conditions (weather).",
+            "schedule": 1800,
+            "enabled": false
+        },
+        {
+            "callback": "jobGetIndoor",
+            "description": "Probe current indoor conditions.",
+            "schedule": 300,
+            "enabled": false
+        }
+    ],
+    "network.coffee": [
+        {
+            "callback": "jobProbe",
+            "description": "Probe network and update device statuses.",
+            "schedule": 30,
+            "enabled": false
+        }
+    ],
+    "fitbit.coffee": [
+        {
+            "callback": "jobCheckMissingData",
+            "description": "Notify missing sleep and activities data from Fitbit.",
+            "schedule": ["14:00:00"],
+            "enabled": false
+        }
+    ],
+    "hue.coffee": [
+        {
+            "callback": "jobRefreshHub",
+            "description": "Refresh Philips Hue hub data.",
+            "schedule": 60,
+            "enabled": false
+        }
+    ],
+    "wunderground.coffee": [
+        {
+            "callback": "jobRefreshWeather",
+            "description": "Get updated weather information.",
+            "schedule": 300,
+            "enabled": false
+        }
+    ]
+}

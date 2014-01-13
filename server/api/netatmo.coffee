@@ -8,10 +8,17 @@ class Netatmo extends (require "./baseApi.coffee")
     settings = expresser.settings
 
     async = require "async"
+    data = require "../data.coffee"
     lodash = require "lodash"
     moment = require "moment"
     querystring = require "querystring"
     security = require "../security.coffee"
+
+    # PROPERTIES
+    # -------------------------------------------------------------------------
+
+    # Stores the current indoor and outdoor readings.
+    currentReadings: {}
 
     # INIT
     # -------------------------------------------------------------------------
@@ -23,6 +30,16 @@ class Netatmo extends (require "./baseApi.coffee")
     # Start collecting weather data.
     start: =>
         @baseStart()
+
+        # Load outdoor on start.
+        @getOutdoorMeasure (err, result) =>
+            if err?
+                logger.error "Netatmo.init", "getOutdoorMeasure", err
+
+        # Load indoor on start.
+        @getIndoorMeasure (err, result) =>
+            if err?
+                logger.error "Netatmo.init", "getIndoorMeasure", err
 
     # Stop collecting weather data.
     stop: =>
@@ -69,6 +86,12 @@ class Netatmo extends (require "./baseApi.coffee")
 
         return params
 
+    # Check if the returned results or parameters represent the current reading.
+    isCurrent = (params) ->
+        if params["date_end"] is "last"
+            return true
+        return false
+
     # Get outdoor readings from Netatmo. Default is to get only the most current data.
     getOutdoorMeasure: (filter, callback) =>
         if lodash.isFunction filter
@@ -79,11 +102,17 @@ class Netatmo extends (require "./baseApi.coffee")
         params = getParams filter
         params["type"] = "Temperature,Humidity"
 
+        # Make the request for outdoor readings.
         @makeRequest "getmeasure", params, (err, result) =>
             if err?
                 logger.error "Netatmo.getIndoorMeasure", filter, err
             else
                 logger.debug "Netatmo.getIndoorMeasure", filter
+
+                # Result represent current readings?
+                if isCurrent params
+                    data.upsert "netatmo-outdoor"
+
             callback err, result
 
     # Get indoor readings from Netatmo. Default is to get only the most current data.
@@ -96,11 +125,17 @@ class Netatmo extends (require "./baseApi.coffee")
         params = getParams filter
         params["type"] = "Temperature,Humidity,Pressure,CO2,Noise"
 
+        # Make the request for indoor readings.
         @makeRequest "getmeasure", params, (err, result) =>
             if err?
                 logger.error "Netatmo.getIndoorMeasure", filter, err
             else
                 logger.debug "Netatmo.getIndoorMeasure", filter
+
+                # Result represent current readings?
+                if isCurrent params
+                    data.upsert "netatmo-indoor", result
+
             callback err, result
 
     # PAGES

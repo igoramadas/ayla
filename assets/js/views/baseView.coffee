@@ -33,6 +33,7 @@ class BaseView
             @dom[domId] = @dom.wrapper.find s
 
 
-# BIND BASE VIEW TO WINDOW
+# BIND BASE VIEW AND OPTIONS TO WINDOW
 # --------------------------------------------------------------------------
 window.ayla.BaseView = BaseView
+window.ayla.optsDataDTables = {bAutoWidth: true, bInfo: false}

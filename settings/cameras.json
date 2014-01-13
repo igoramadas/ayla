@@ -1,0 +1,16 @@
+[
+    {
+        "id": "frontcam",
+        "title": "Home Front",
+        "localUrl": "http://admin:abc@scubadyver.dyndns.org:140/image.jpg",
+        "remoteUrl": "http://admin:abc@scubadyver.dyndns.org:140/image.jpg",
+        "enabled": true
+    },
+    {
+        "id": "babycam",
+        "title": "Home Noah",
+        "localUrl": "http://admin:abc@scubadyver.dyndns.org:140/image.jpg",
+        "remoteUrl": "http://admin:abc@scubadyver.dyndns.org:140/image.jpg",
+        "enabled": true
+    }
+]

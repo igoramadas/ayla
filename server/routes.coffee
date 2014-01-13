@@ -8,6 +8,7 @@ class Routes
     logger = expresser.logger
     settings = expresser.settings
 
+    data = require "./data.coffee"
     email = require "./api/email.coffee"
     fs = require "fs"
     fitbit = require "./api/fitbit.coffee"
@@ -45,6 +46,7 @@ class Routes
         app.post "/fitbit/auth/callback", fitbitAuthCallback
 
         # Home rules.
+        app.get "/home", homePage
         app.get "/home/lights", homeLightsPage
 
         # Netatmo routes.
@@ -118,6 +120,11 @@ class Routes
 
     # HOME ROUTES
     # -------------------------------------------------------------------------
+
+    # Main home page.
+    homePage = (req, res) ->
+        options = {pageTitle: "Home"}
+        renderPage req, res, "home", options
 
     # Home light control page.
     homeLightsPage = (req, res) ->
@@ -214,6 +221,8 @@ class Routes
     # Helper to render pages.
     renderPage = (req, res, filename, options) ->
         options = {} if not options?
+        options.dataCache = data.cache
+        options.dataStatic = data.static
         options.pageTitle = filename if not options.pageTitle?
         options.title = settings.general.appTitle if not options.title?
         options.loadJs = [] if not options.loadJs?

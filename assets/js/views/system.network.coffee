@@ -10,7 +10,7 @@ class SystemNetworkView extends ayla.BaseView
 
     # Init the System Jobs view.
     onReady: =>
-        @dom.table.dataTable()
+        @dom.table.dataTable ayla.optsDataDTables
 
 
 # BIND VIEW TO WINDOW

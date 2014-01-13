@@ -4,9 +4,12 @@ class ApiBase
 
     expresser = require "expresser"
     cron = expresser.cron
+    database = expresser.database
+    events = expresser.events
     logger = expresser.logger
     settings = expresser.settings
 
+    data = require "../data.coffee"
     http = require "http"
     https = require "https"
     lodash = require "lodash"
@@ -16,6 +19,9 @@ class ApiBase
 
     # PROPERTIES
     # -------------------------------------------------------------------------
+
+    # Holds all downloaded / processed data for that particular module.
+    data: {}
 
     # Holds all errors that happened on the module.
     errors: {}
@@ -29,18 +35,52 @@ class ApiBase
     # Called when the module inits.
     baseInit: =>
         @moduleName = @__proto__.constructor.name.toString()
+        @moduleId = @moduleName.toLowerCase()
+
+        # Log and set data.
         logger.debug "#{@moduleName}.init"
+        data.cache[@moduleId] = {}
+
         @start()
 
     # Called when the module starts.
     baseStart: =>
         @running = true
-        cron.start {module: "#{@moduleName.toLowerCase()}.coffee"}
+        cron.start {module: "#{@moduleId}.coffee"}
 
     # Called when the module stops.
     baseStop: =>
         @running = false
-        cron.stop {module: "#{@moduleName.toLowerCase()}.coffee"}
+        cron.stop {module: "#{@moduleId}.coffee"}
+
+    # DATA HANDLING
+    # -------------------------------------------------------------------------
+
+    # Load data from the database and populate the `data` property.
+    loadData: =>
+        database.get "data-#{@moduleId}", (err, results) =>
+            if err?
+                logger.error "#{@moduleName}.loadData", err
+            else
+                logger.info "#{@moduleName}.loadData", "#{results.length} objects to be loaded."
+
+            # Iterate results.
+            for r in results
+                @data[r.key] = r.data
+
+            # Trigger load event.
+            events.emit "#{@moduleId}.data.load"
+
+    # Save module data.
+    setData: (key, value, options) =>
+        @data[key] = value
+
+        if not options? or options.saveToDatabase
+            database.set "data-#{@moduleId}", {key: key, data: value}, (err, result) =>
+                if err?
+                    logger.error "#{@moduleName}.setData", key, err
+                else
+                    logger.debug "#{@moduleName}.setData", key, value
 
     # GENERAL METHODS
     # -------------------------------------------------------------------------
