@@ -1,15 +1,25 @@
-# GITHUB
+# GITHUB API
 # -----------------------------------------------------------------------------
-class GitHub
+class GitHub extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
     logger = expresser.logger
+    settings = expresser.settings
 
-    # AUTH
+    # INIT
     # -------------------------------------------------------------------------
-
-    auth: =>
-
+    
+    # Init the GitHub module.
+    init: =>
+        @baseInit()
+    
+    # Start collecting weather data.
+    start: =>
+        @baseStart()
+    
+    # Stop collecting weather data.
+    stop: =>
+        @baseStop()
 
 
 # Singleton implementation.

@@ -3,8 +3,13 @@ extends layout
 block contents
     #home
         div.climate
-            h3 Ambient conditions
-            div.indoor-temp= dataCache["netatmo-indoor"].temp
-            div.indoor-humidity= netatmo["netatmo-indoor"].humidity
-            div.indoor-co2= netatmo["netatmo-indoor"].co2
+            h3 Weather
+            div.indoor
+                div.temperature= netatmo.indoor.temperature
+                div.humidity= netatmo.indoor.humidity
+                div.co2= netatmo.indoor.co2
+                div.noise= netatmo.indoor.noise
+            div.outdoor
+                div.temperature= netatmo.outdoor.temperature
+                div.humidity= netatmo.outdoor.humidity
         div.lights

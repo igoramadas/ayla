@@ -17,13 +17,13 @@
         {
             "callback": "jobGetOutdoor",
             "description": "Probe current outdoor conditions (weather).",
-            "schedule": 1800,
+            "schedule": 900,
             "enabled": false
         },
         {
             "callback": "jobGetIndoor",
             "description": "Probe current indoor conditions.",
-            "schedule": 300,
+            "schedule": 600,
             "enabled": false
         }
     ],

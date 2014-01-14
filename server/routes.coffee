@@ -122,7 +122,7 @@ class Routes
 
     # Main home page.
     homePage = (req, res) ->
-        options = {pageTitle: "Home"}
+        options = {pageTitle: "Home", data: [hue, netatmo, withings]}
         renderPage req, res, "home", options
 
     # Home light control page.
@@ -223,6 +223,11 @@ class Routes
         options.pageTitle = filename if not options.pageTitle?
         options.title = settings.general.appTitle if not options.title?
         options.loadJs = [] if not options.loadJs?
+
+        # Data to be included.
+        if options.data?
+            options[d.moduleId] = d.data for d in options.data
+            delete options.data
 
         # Check if current view have an external JS to be loaded.
         jsName = filename.replace "jade",""

@@ -1,6 +1,6 @@
 # WITHINGS API
 # -----------------------------------------------------------------------------
-class Withings
+class Withings extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
     database = expresser.database
@@ -15,9 +15,17 @@ class Withings
     # INIT
     # -------------------------------------------------------------------------
 
-    # Init the Withings module.
+    # Init the GitHub module.
     init: =>
-        logger.debug "Withings.init"
+        @baseInit()
+
+    # Start collecting weather data.
+    start: =>
+        @baseStart()
+
+    # Stop collecting weather data.
+    stop: =>
+        @baseStop()
 
     # API BASE METHODS
     # -------------------------------------------------------------------------

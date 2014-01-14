@@ -1,12 +1,10 @@
-# SERVER: API
+# SERVER: MANAGER
 # -----------------------------------------------------------------------------
-# Wrapper for all server API modules. An "api" is responsible for getting
-# and sending data from / to a specific online service.
-class Api
+# Wrapper for all managers. A "manager" is responsible for automated actions
+# based on data processed by relevant API modules.
+class Manager
 
     expresser = require "expresser"
-    cron = expresser.cron
-    events = expresser.events
     logger = expresser.logger
     settings = expresser.settings
 
@@ -22,29 +20,24 @@ class Api
     # Init Ayla API.
     init: (callback) =>
         rootPath = path.join __dirname, "../"
-        cronPath = rootPath + "cron.api.json"
-        apiPath = rootPath + "server/api/"
+        managerPath = rootPath + "server/manager/"
 
         # Init modules.
-        files = fs.readdirSync apiPath
+        files = fs.readdirSync managerPath
 
         for f in files
-            if f isnt "baseApi.coffee" and f.indexOf(".coffee") > 0
-                module = require "./api/#{f}"
+            if f isnt "baseManager.coffee" and f.indexOf(".coffee") > 0
+                module = require "./manager/#{f}"
                 module.init()
                 @modules[module.moduleId] = module
-
-        # Load cron jobs.
-        cron.load cronPath, {basePath: apiPath}
 
         # Proceed with callback?
         callback() if callback?
 
-
 # Singleton implementation.
 # -----------------------------------------------------------------------------
-Api.getInstance = ->
-    @instance = new Api() if not @instance?
+Manager.getInstance = ->
+    @instance = new Manager() if not @instance?
     return @instance
 
-module.exports = exports = Api.getInstance()
+module.exports = exports = Manager.getInstance()

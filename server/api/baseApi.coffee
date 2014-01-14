@@ -1,6 +1,6 @@
 # API BASE MODULE
 # -----------------------------------------------------------------------------
-class ApiBase
+class BaseApi
 
     expresser = require "expresser"
     cron = expresser.cron
@@ -8,6 +8,7 @@ class ApiBase
     events = expresser.events
     logger = expresser.logger
     settings = expresser.settings
+    sockets = expresser.sockets
 
     http = require "http"
     https = require "https"
@@ -72,7 +73,20 @@ class ApiBase
     setData: (key, value, options) =>
         @data[key] = value
 
-        if not options? or options.saveToDatabase
+        # Set default options to emit sockets and save to db.
+        options = {} if not options?
+        options = lodash.defaults options, {eventsEmit: true, socketsEmit: true, saveToDatabase: true}
+
+        # Emit new data to central event dispatched?
+        if options.eventsEmit
+            events.emit "#{@moduleId}.data.#{key}", value
+
+        # Emit new data to clients using Sockets?
+        if options.socketsEmit
+            sockets.emit "#{@moduleId}.data.#{key}", value
+
+        # Save the new data on the database?
+        if options.saveToDatabase
             database.set "data-#{@moduleId}", {key: key, data: value}, (err, result) =>
                 if err?
                     logger.error "#{@moduleName}.setData", key, err
@@ -158,4 +172,4 @@ class ApiBase
 
 # Exports API Base Module.
 # -----------------------------------------------------------------------------
-module.exports = exports = ApiBase
+module.exports = exports = BaseApi

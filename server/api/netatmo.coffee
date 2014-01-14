@@ -70,9 +70,10 @@ class Netatmo extends (require "./baseApi.coffee")
 
         logger.debug "Netatmo.makeRequest", reqUrl
 
-        # Make request using OAuth.
+        # Make request using OAuth. Force parse err and result as JSON.
         authCache.oauth.get reqUrl, authCache.data.accessToken, (err, result) =>
             result = JSON.parse result if result? and lodash.isString result
+            err = JSON.parse err if err? and lodash.isString err
             callback err, result
 
     # GET DATA
@@ -97,7 +98,6 @@ class Netatmo extends (require "./baseApi.coffee")
             arr.push f
 
         # Return formatted array.
-        console.warn arr
         return arr
 
     # Helper to get API request parameters based on the filter.
@@ -179,14 +179,12 @@ class Netatmo extends (require "./baseApi.coffee")
     # -------------------------------------------------------------------------
 
     # Get current outdoor conditions (weather) every 30 minutes.
-    jobGetOutdoor: (callback) =>
-        @getOutdoorMeasure {}, (err, result) =>
-            console.warn err, result
+    jobGetOutdoor: =>
+        @getOutdoorMeasure (err, result) =>
 
     # Get current indoor conditions every 5 minutes.
-    jobGetIndoor: (callback) =>
-        @getIndoorMeasure {}, (err, result) =>
-            console.warn err, result
+    jobGetIndoor: =>
+        @getIndoorMeasure (err, result) =>
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

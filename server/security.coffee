@@ -126,7 +126,7 @@ class Security
 
     # Try getting auth data for a particular request / response.
     processAuthToken: (service, options, req, res) =>
-        if not res?
+        if not res? and req?
             res = req
             req = options
             options = null
@@ -139,7 +139,7 @@ class Security
             oauth = @authCache[service]?.oauth
 
         # Check if request has token on querystring.
-        qs = url.parse(req.url, true).query
+        qs = url.parse(req.url, true).query if req?
 
         # Helper function to get the request token using OAUth 1.x.
         getRequestToken1 = (err, oauth_token, oauth_token_secret, oauth_authorize_url, additionalParameters) =>
@@ -150,31 +150,35 @@ class Security
 
             # Set token secret cache and redirect to authorization URL.
             @authCache[service].data.tokenSecret = oauth_token_secret
-            res.redirect "#{settings[service].api.oauthUrl}authorize?oauth_token=#{oauth_token}"
+            res?.redirect "#{settings[service].api.oauthUrl}authorize?oauth_token=#{oauth_token}"
 
         # Helper function to get the access token using OAUth 1.x.
         getAccessToken1 = (err, oauth_token, oauth_token_secret, additionalParameters) =>
             if err?
-                logger.error "Security.processAuthToken", "getAccessToken1", service, oauth_token, oauth_token_secret, err
+                logger.error "Security.processAuthToken", "getAccessToken1", service, err
                 return
-            logger.debug "Security.processAuthToken", "getAccessToken1", service, oauth_token, oauth_token_secret, additionalParameters
+            logger.debug "Security.processAuthToken", "getAccessToken1", service, additionalParameters
 
             # Save auth details to DB and redirect user to service page.
             oauthData = lodash.defaults {token: oauth_token, tokenSecret: oauth_token_secret}, additionalParameters
             @saveAuthToken service, oauthData
-            res.redirect "/#{service}"
+            res?.redirect "/#{service}"
 
         # Helper function to get the access token using OAUth 2.x.
         getAccessToken2 = (err, oauth_access_token, oauth_refresh_token, results) =>
-            if err?
-                logger.error "Security.processAuthToken", "getAccessToken2", oauth_access_token, oauth_refresh_token, results, err
+             if err?
+                logger.error "Security.processAuthToken", "getAccessToken2", service, err
                 return
-            logger.debug "Security.processAuthToken", "getAccessToken2", oauth_access_token, oauth_refresh_token, results
+            logger.debug "Security.processAuthToken", "getAccessToken2", service, results
+
+            # Schedule token to be refreshed.
+            expires = results.expires_in or results.expire_in or 86400
+            lodash.delay @processAuthToken, expires * 0.9, service, options
 
             # Save auth details to DB and redirect user to service page.
-            oauthData = {accessToken: oauth_access_token, refreshToken: oauth_refresh_token}
+            oauthData = {accessToken: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add("s", expires)}
             @saveAuthToken service, oauthData
-            res.redirect "/#{service}"
+            res?.redirect "/#{service}"
 
         # Set correct request handler based on OAUth parameters and query tokens.
         if settings[service].api.oauthVersion is "2.0"

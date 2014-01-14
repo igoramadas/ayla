@@ -1,6 +1,6 @@
 # NINJA BLOCKS API
 # -----------------------------------------------------------------------------
-class Ninja
+class Ninja extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
     logger = expresser.logger
@@ -20,9 +20,18 @@ class Ninja
     # INIT
     # -------------------------------------------------------------------------
 
-    # Init the Ninja Blocks module.
+    # Init the GitHub module.
     init: =>
+        @baseInit()
         @ninjaApp = ninjablocks.app {user_access_token: settings.ninja.appSecret}
+
+    # Start collecting weather data.
+    start: =>
+        @baseStart()
+
+    # Stop collecting weather data.
+    stop: =>
+        @baseStop()
 
     # API BASE METHODS
     # -------------------------------------------------------------------------

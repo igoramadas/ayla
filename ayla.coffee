@@ -6,6 +6,7 @@ expresser = require "expresser"
 
 # Required modules.
 api = require "./server/api.coffee"
+manager = require "./server/manager.coffee"
 routes = require "./server/routes.coffee"
 security = require "./server/security.coffee"
 
@@ -13,7 +14,7 @@ security = require "./server/security.coffee"
 expresser.init()
 
 # Init the main modules.
-security.init => api.init()
+security.init => api.init => manager.init()
 
 # Set routes.
 routes.init()
