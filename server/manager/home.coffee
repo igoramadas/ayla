@@ -9,6 +9,8 @@ class HomeManager extends (require "./baseManager.coffee")
     mailer = expresser.mailer
     settings = expresser.settings
 
+    netatmo = require "../api/netatmo.coffee"
+
     # INIT
     # -------------------------------------------------------------------------
 
@@ -22,7 +24,15 @@ class HomeManager extends (require "./baseManager.coffee")
     # -------------------------------------------------------------------------
 
     # Check home indoor conditions.
-    checkIndoorWeather: (data) =>
+    checkIndoorWeather: =>
+        alerts = []
+
+        if netatmo.data.indoor.temperature < settings.home.temperature.min
+
+        @alertIndoor
+
+    alertIndoor: (data) =>
+
 
 
 # Singleton implementation.

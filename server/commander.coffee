@@ -31,7 +31,7 @@ class Commander
                         logger.error "Commander.execute", cmd, options, ex
                         callback ex if callback?
 
-    # LIGHT COMMANDS
+    # HOME (LIGHTS, WEATHER) COMMANDS
     # -------------------------------------------------------------------------
 
     # Turn the specified house lights off.
@@ -51,7 +51,7 @@ class Commander
     # SYSTEM COMMANDS
     # -------------------------------------------------------------------------
 
-    # Turn the specified house lights off.
+    # Notify user of devices down.
     notifyNetworkDevicesDown: (options, callback) =>
         logger.info "Commander.notifyNetworkDevicesDown", options
         down = network.getOfflineDevices()

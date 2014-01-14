@@ -5,6 +5,7 @@ class BaseManager
     expresser = require "expresser"
     events = expresser.events
     logger = expresser.logger
+    mailer = expresser.mailer
     settings = expresser.settings
     sockets = expresser.sockets
 
@@ -41,6 +42,20 @@ class BaseManager
     baseStop: =>
         @running = false
         cron.stop {module: "#{@moduleId}.coffee"}
+
+    # ALERTS AND NOTIFICATIONS
+    # -------------------------------------------------------------------------
+
+    # Used to send alerts and general notifications to the user.
+    notify: (template, subject, messages) =>
+        logger.info "#{@moduleName}.notify", subject, messages
+
+        body = messages.join "\n"
+
+        # Set message options and send email.
+        msgOptions = {to: settings.email.toMobile, subject: subject, body: body}
+        mailer.send msgOptions, (err, result) =>
+            callback err, result if callback?
 
 
 # Exports API Base Module.
