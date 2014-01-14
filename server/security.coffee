@@ -5,6 +5,7 @@ class Security
 
     expresser = require "expresser"
     database = expresser.database
+    events = expresser.events
     logger = expresser.logger
     settings = expresser.settings
     utils = expresser.utils
@@ -26,8 +27,8 @@ class Security
     # -------------------------------------------------------------------------
 
     # Init the Security module and refresh auth tokens from the database.
-    init: =>
-        @refreshAuthTokens()
+    init: (callback) =>
+        @refreshAuthTokens callback
 
     # AUTH SYNC
     # -------------------------------------------------------------------------

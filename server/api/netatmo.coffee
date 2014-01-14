@@ -71,13 +71,38 @@ class Netatmo extends (require "./baseApi.coffee")
         logger.debug "Netatmo.makeRequest", reqUrl
 
         # Make request using OAuth.
-        authCache.oauth.get reqUrl, authCache.data.accessToken, callback
+        authCache.oauth.get reqUrl, authCache.data.accessToken, (err, result) =>
+            result = JSON.parse result if result? and lodash.isString result
+            callback err, result
 
     # GET DATA
     # -------------------------------------------------------------------------
 
+    # Helper to get a formatted result.
+    getResultBody = (result, params) ->
+        arr = []
+        types = params.type.split ","
+
+        # Iterate result body and create the formatted object.
+        for key, value of result.body
+            f = {timestamp: key}
+            i = 0
+
+            # Iterate each type to set formatted value.
+            for t in types
+                f[t.toLowerCase()] = value[i]
+                i++
+
+            # Push to the final array.
+            arr.push f
+
+        # Return formatted array.
+        console.warn arr
+        return arr
+
     # Helper to get API request parameters based on the filter.
     getParams = (filter) ->
+        filter = {} if not filter?
         params = {"device_id": settings.netatmo.deviceId}
         params["scale"] = filter.scale or "30min"
         params["date_end"] = filter.endDate or "last"
@@ -110,7 +135,8 @@ class Netatmo extends (require "./baseApi.coffee")
 
                 # Result represent current readings?
                 if isCurrent params
-                    @setData "outdoor", result
+                    body = getResultBody result, params
+                    @setData "outdoor", body[0]
 
             callback err, result
 
@@ -133,7 +159,8 @@ class Netatmo extends (require "./baseApi.coffee")
 
                 # Result represent current readings?
                 if isCurrent params
-                    @setData "indoor", result
+                    body = getResultBody result, params
+                    @setData "indoor", body[0]
 
             callback err, result
 

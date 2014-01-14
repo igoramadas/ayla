@@ -13,8 +13,7 @@ security = require "./server/security.coffee"
 expresser.init()
 
 # Init the main modules.
-api.init()
-security.init()
+security.init => api.init()
 
 # Set routes.
 routes.init()
