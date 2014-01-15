@@ -1,9 +1,4 @@
 .idea/*
 atlassian-ide-plugin.xml
-data/*
-logs/*
-node_modules/
-npm-shrinkwrap.json
-settings.json
 ssl.cer
 ssl.key
