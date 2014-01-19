@@ -57,9 +57,15 @@ class Netatmo extends (require "./baseApi.coffee")
             callback = params
             params = null
 
-        # Get data from the security module and set request URL.
+        # Set auth and request URL.
         authCache = security.authCache["netatmo"]
         reqUrl = settings.netatmo.api.url + path + "?"
+
+        # Make sure auth is valid.
+        authError = @checkAuthData authCache
+        if authError?
+            callback authError
+            return
 
         # Set default parameters.
         params = {} if not params?

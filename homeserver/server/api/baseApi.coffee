@@ -152,6 +152,13 @@ class BaseApi
         req.write(body, settings.general.encoding) if body?
         req.end()
 
+    # Checks if auth data is valid and set. Returns false if not valid.
+    checkAuthData: (obj) =>
+        if not obj?
+            logger.critical "#{@moduleName}.checkAuthData", "Auth data is missing."
+            return "Auth data is missing."
+        return null
+
     # Logs module errors.
     logError: =>
         id = arguments[0]
