@@ -16,9 +16,9 @@ class HomeManager extends (require "./baseManager.coffee")
 
     # Init the manager and start listeting to data updates.
     init: =>
-        @data.bedRoom = getRoomObject "Bedroom"
-        @data.livingRoom = getRoomObject "Living Room"
-        @data.babyRoom = getRoomObject "Noah's room"
+        @data.bedroom = getRoomObject "Bedroom"
+        @data.livingroom = getRoomObject "Living Room"
+        @data.babyroom = getRoomObject "Noah's room"
         @data.kitchen = getRoomObject "Kitchen"
 
     # Start the home manager.
@@ -35,21 +35,40 @@ class HomeManager extends (require "./baseManager.coffee")
     # WEATHER AND CLIMATE
     # -------------------------------------------------------------------------
 
+    # Helper to verify if room weather is in good condition.
+    checkRoomWeather: (room) =>
+
+
+    # Helper to set current conditions for the specified room.
+    setRoomWeather: (room, data) =>
+        roomObj = @data[room]
+        roomObj.temperature = data.temperature
+        roomObj.humidity = data.humidity
+        roomObj.co2 = data.co2
+
+        @checkRoomWeather room
+
+    # Helper to set current conditions for outdoors.
+    setOutdoorWeather: (data) =>
+        outdoorObj = @data[room]
+        outdoorObj.temperature = data.temperature
+        outdoorObj.humidity = data.humidity
+
+    # Check home indoor conditions using Netatmo.
+    onNetatmoIndoor: (data) =>
+        @setRoomWeather "livingroom", netatmo.data.indoor
+
+    # CHeck outdoor conditions using Netatmo.
+    onNetatmoOutdoor: (data) =>
+        @setOutdoorWeather netatmo.data.outdoor
+
+    # GENERAL HELPERS
+    # -------------------------------------------------------------------------
+
     # Helper to return room object with weather, title etc.
     getRoomObject = (title) ->
-        weather = {temperature: 0, humidity: 0, co2: 0}
+        weather = {temperature: null, humidity: null, co2: null}
         return {title: title, weather: weather}
-
-    # Check home indoor conditions.
-    onNetatmoIndoor: (data) =>
-        alerts = []
-
-        if netatmo.data.indoor.temperature < settings.home.temperature.min
-
-            @alertIndoor 1
-
-    onNetatmoOutdoor: (data) =>
-
 
 
 # Singleton implementation.
