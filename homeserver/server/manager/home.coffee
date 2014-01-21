@@ -15,23 +15,40 @@ class HomeManager extends (require "./baseManager.coffee")
     # -------------------------------------------------------------------------
 
     # Init the manager and start listeting to data updates.
-    init: (callback) =>
-        events.on "netamo.data.indoor", @checkIndoorWeather
+    init: =>
+        @data.bedRoom = getRoomObject "Bedroom"
+        @data.livingRoom = getRoomObject "Living Room"
+        @data.babyRoom = getRoomObject "Noah's room"
+        @data.kitchen = getRoomObject "Kitchen"
 
-        callback() if callback?
+    # Start the home manager.
+    start: =>
+        events.on "netamo.data.indoor", @onNetatmoIndoor
+        events.on "netamo.data.outdoor", @onNetatmoOutdoor
+
+        @baseStart()
+
+    # Stop the home manager.
+    stop: =>
+        @baseStop()
 
     # WEATHER AND CLIMATE
     # -------------------------------------------------------------------------
 
+    # Helper to return room object with weather, title etc.
+    getRoomObject = (title) ->
+        weather = {temperature: 0, humidity: 0, co2: 0}
+        return {title: title, weather: weather}
+
     # Check home indoor conditions.
-    checkIndoorWeather: =>
+    onNetatmoIndoor: (data) =>
         alerts = []
 
         if netatmo.data.indoor.temperature < settings.home.temperature.min
 
             @alertIndoor 1
 
-    alertIndoor: (data) =>
+    onNetatmoOutdoor: (data) =>
 
 
 

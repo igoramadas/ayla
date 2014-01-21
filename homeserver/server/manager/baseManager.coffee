@@ -36,12 +36,10 @@ class BaseManager
     # Called when the module starts.
     baseStart: =>
         @running = true
-        cron.start {module: "#{@moduleId}.coffee"}
 
     # Called when the module stops.
     baseStop: =>
         @running = false
-        cron.stop {module: "#{@moduleId}.coffee"}
 
     # ALERTS AND NOTIFICATIONS
     # -------------------------------------------------------------------------
