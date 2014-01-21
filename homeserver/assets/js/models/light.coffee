@@ -6,7 +6,7 @@ class LightModel extends ayla.baseModel
     # CONSTRUCTOR AND PARSING
     # ----------------------------------------------------------------------
 
-    # Constructor will ask server for new data straight away.
+    # Constructs a new light model.
     constructor: (@originalData) ->
         @name = ko.observable()
         @reachable = ko.observable()
@@ -34,6 +34,6 @@ class LightModel extends ayla.baseModel
             @sat @originalData.state.sat
 
 
-# BIND LIGHT MODEL TO WINDOW
+# EXPORTS
 # --------------------------------------------------------------------------
 window.ayla.lightModel = LightModel

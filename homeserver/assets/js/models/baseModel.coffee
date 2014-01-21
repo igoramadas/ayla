@@ -18,12 +18,9 @@ class BaseModel
         # Set model name.
         @modelName = @__proto__.constructor.name.toString()
 
-        # Listen to socket events.
+        # Listen to socket events (only on client side).
         ayla.sockets.on "#{@modelName.toLowerCase()}:#{@id}:data", @onData
         ayla.sockets.on "#{@modelName.toLowerCase()}:#{@id}:error", @onError
-
-        # If no data
-        @fetchHistory()
 
     # Stop listening to socket events.
     dispose: =>
@@ -36,7 +33,9 @@ class BaseModel
     # Fetch model data from the server.
     fetchData: =>
         logger @modelName, @id, "fetchData"
-        ayla.sockets.emit "#{@modelName.toLowerCase()}:#{@id}:fetch", this
+
+        if window?
+            ayla.sockets.emit "#{@modelName.toLowerCase()}:#{@id}:fetch", this
 
     # Update model data when new values are pushed from the server.
     onData: (data) =>
@@ -60,6 +59,6 @@ class BaseModel
         ayla.alerts.error {title: "Could not load #{@modelName} data", message: err.message}
 
 
-# BIND BASE MODEL TO WINDOW
+# EXPORTS
 # --------------------------------------------------------------------------
 window.ayla.baseModel = BaseModel

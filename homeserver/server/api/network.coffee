@@ -54,9 +54,10 @@ class Network extends (require "./baseApi.coffee")
         logger.debug "Network.checkIP", "Expected home IP: #{settings.network.home.ip}"
 
         ips = utils.getServerIP()
-        homeSubnet = settings.network.home.ip.substring 0, 6
+        ips = "0," + ips.join ","
+        homeSubnet = settings.network.home.ip.substring 0, 7
 
-        if ips.indexOf(homeSubnet) < 0
+        if ips.indexOf(",#{homeSubnet}") < 0
             @isHome = false
         else
             @isHome = true

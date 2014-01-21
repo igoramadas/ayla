@@ -30,16 +30,6 @@ class Netatmo extends (require "./baseApi.coffee")
     start: =>
         @baseStart()
 
-        # Load outdoor on start.
-        @getOutdoorMeasure (err, result) =>
-            if err?
-                logger.error "Netatmo.init", "getOutdoorMeasure", err
-
-        # Load indoor on start.
-        @getIndoorMeasure (err, result) =>
-            if err?
-                logger.error "Netatmo.init", "getIndoorMeasure", err
-
     # Stop collecting weather data.
     stop: =>
         @baseStop()

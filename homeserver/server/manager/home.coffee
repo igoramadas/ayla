@@ -29,7 +29,7 @@ class HomeManager extends (require "./baseManager.coffee")
 
         if netatmo.data.indoor.temperature < settings.home.temperature.min
 
-        @alertIndoor
+            @alertIndoor 1
 
     alertIndoor: (data) =>
 
