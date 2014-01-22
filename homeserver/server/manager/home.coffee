@@ -14,17 +14,23 @@ class HomeManager extends (require "./baseManager.coffee")
     # INIT
     # -------------------------------------------------------------------------
 
-    # Init the manager and start listeting to data updates.
+    # Init the home manager.
     init: =>
         @data.bedroom = getRoomObject "Bedroom"
         @data.livingroom = getRoomObject "Living Room"
         @data.babyroom = getRoomObject "Noah's room"
         @data.kitchen = getRoomObject "Kitchen"
 
-    # Start the home manager.
+        @baseInit()
+
+    # Start the home manager and listen to data updates.
     start: =>
         events.on "netamo.data.indoor", @onNetatmoIndoor
         events.on "netamo.data.outdoor", @onNetatmoOutdoor
+        events.on "ninja.data.weather", @onNinja
+        events.on "ubi.data.weather", @onUbi
+        events.on "withings.data.weather", @onWithings
+        events.on "wunderground.data", @onWithings
 
         @baseStart()
 
@@ -37,7 +43,10 @@ class HomeManager extends (require "./baseManager.coffee")
 
     # Helper to verify if room weather is in good condition.
     checkRoomWeather: (room) =>
-
+        if room.temperature > settings.home.temperature.max
+            @notify
+        else if room.temperature < settings.home.temperature.min
+            @notify
 
     # Helper to set current conditions for the specified room.
     setRoomWeather: (room, data) =>
