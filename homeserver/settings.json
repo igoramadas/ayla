@@ -1,0 +1,60 @@
+{
+    "app": {
+        "port": 8443,
+        "ssl": {
+            "enabled": true,
+            "redirectorPort": 8080
+        }
+    },
+    "camera": {
+        "dateFormat": "YYYYMMDD-HHmmss",
+        "snapsMaxAgeDays": 3
+    },
+    "commands": {
+        "turnLightsOff": ["turn lights off", "all lights off"],
+        "turnLightsOn": ["turn lights on", "all lights on"],
+        "notifyNetworkDevicesDown": ["which servers are down", "are servers down"]
+    },
+    "email" : {
+        "newMessages": {
+            "sinceDays": 30
+        },
+        "randomGreetings": ["Hey cutie", "Hi sir"]
+    },
+    "fitbit": {
+        "checkMissingDataDays": [2, 5, 10],
+        "dateFormat": "YYYY-MM-DD"
+    },
+    "general": {
+        "appTitle": "Ayla",
+        "debug": true,
+        "moduleErrorMaxAgeHours": 48,
+        "moduleStopOnErrorCount": 10,
+        "parallelTasksLimit": 4,
+        "owner": "Igor Ramadas"
+    },
+    "home": {
+        "temperature": {
+            "min": 16,
+            "ideal": 19,
+            "max": 28
+        }
+    },
+    "logger": {
+        "local": {
+            "enabled": false
+        }
+    },
+    "path": {
+        "data": "/data/",
+        "emailTemplatesDir": "/data/emailTemplates/"
+    },
+    "security": {
+        "maxAuthTokenAgeDays": 90
+    },
+    "wunderground": {
+        "resultFields": ["weather", "temp_c", "relative_humidity", "wind_degrees", "wind_kph", "pressure_mb",
+                         "dewpoint_c", "feelslike_c", "visibility_km", "precip_1hr_metric"],
+        "stationIds": ["IBERLIN15", "IBERLINB42"]
+    }
+}
