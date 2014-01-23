@@ -170,11 +170,23 @@ class BaseApi
         count = @errors[id].length
 
         # Too many consecutive errors? Stop the module.
-        if count is settings.general.stopOnErrorCount
+        if count is settings.general.moduleStopOnErrorCount
             logger.critical id, "Too many consecutive errors (#{count}) logged.", "Module will now stop."
             @stop()
 
         logger.error.apply logger, args
+
+    # Helper to clear old errors.
+    clearErrors: =>
+        maxAge = moment().subtract("h", settings.general.moduleErrorMaxAgeHours).unix()
+
+        # Iterate errors by ID, then internal data, and remove everything which is too old.
+        for key, value of @errors
+            for d in value
+                if d.timestamp < maxAge
+                    lodash.remove value, d
+            if value.length < 1
+                delete @errors[key]
 
 
 # Exports API Base Module.

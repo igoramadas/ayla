@@ -9,7 +9,18 @@ class HomeManager extends (require "./baseManager.coffee")
     mailer = expresser.mailer
     settings = expresser.settings
 
-    netatmo = require "../api/netatmo.coffee"
+    # COMPUTED PROPERTIES
+    # -------------------------------------------------------------------------
+
+    # Computed weather stats.
+    weather:
+        indoor:
+            temperature: -> return getWeatherAverage "indoor", "temperature"
+            humidity: -> return getWeatherAverage "indoor", "temperature"
+            co2: -> return getWeatherAverage "indoor", "temperature"
+        outdoor:
+            temperature: -> return getWeatherAverage "outdoor", "temperature"
+            humidity: -> return getWeatherAverage "outdoor", "humidity"
 
     # INIT
     # -------------------------------------------------------------------------
@@ -20,6 +31,8 @@ class HomeManager extends (require "./baseManager.coffee")
         @data.livingroom = getRoomObject "Living Room"
         @data.babyroom = getRoomObject "Noah's room"
         @data.kitchen = getRoomObject "Kitchen"
+        @data.outdoor = {}
+        @data.forecast = {}
 
         @baseInit()
 
@@ -27,10 +40,9 @@ class HomeManager extends (require "./baseManager.coffee")
     start: =>
         events.on "netamo.data.indoor", @onNetatmoIndoor
         events.on "netamo.data.outdoor", @onNetatmoOutdoor
-        events.on "ninja.data.weather", @onNinja
-        events.on "ubi.data.weather", @onUbi
-        events.on "withings.data.weather", @onWithings
-        events.on "wunderground.data", @onWithings
+        events.on "ninja.data.weather", @onNinjaWeather
+        events.on "ubi.data.weather", @onUbiWeather
+        events.on "wunderground.data", @onWunderground
 
         @baseStart()
 
@@ -63,19 +75,57 @@ class HomeManager extends (require "./baseManager.coffee")
         outdoorObj.temperature = data.temperature
         outdoorObj.humidity = data.humidity
 
-    # Check home indoor conditions using Netatmo.
-    onNetatmoIndoor: (data) =>
-        @setRoomWeather "livingroom", netatmo.data.indoor
+    # Helper to set forecast conditions for outdoors.
+    setWeatherForecast: (data) =>
+        outdoorObj = @data[room]
+        outdoorObj.temperature = data.temperature
+        outdoorObj.humidity = data.humidity
 
-    # CHeck outdoor conditions using Netatmo.
+    # Check indoor weather conditions using Netatmo.
+    onNetatmoIndoor: (data) =>
+        @setRoomWeather "livingroom", data.indoor
+
+    # Check outdoor weather conditions using Netatmo.
     onNetatmoOutdoor: (data) =>
-        @setOutdoorWeather netatmo.data.outdoor
+        @setOutdoorWeather data.outdoor
+
+    # Check indoor weather conditions using Ninja Blocks.
+    onNinjaWeather: (data) =>
+        @setRoomWeather "kitchen", data.weather
+
+    # Check indoor weather conditions using The Ubi.
+    onUbiWeather: (data) =>
+        @setRoomWeather "bedroom", data.weather
+
+    # Check outdoor weather conditions using Weather Underground.
+    onWunderground: (data) =>
+        @setWeatherForecast data.today
 
     # GENERAL HELPERS
     # -------------------------------------------------------------------------
 
+    # Helper to get weather average readings.
+    getWeatherAverage = (where, prop) =>
+        avg = 0
+        count = 0
+
+        # Set properties to be read (indoor rooms or outdoor / forecast).
+        if where is "indoor"
+            arr = ["bedroom", "livingroom", "babyroom", "kitchen"]
+        else
+            arr = ["outdoor", "forecast"]
+
+        # Iterate readings.
+        for r in arr
+            if @data[r][prop]?
+                avg += @data[r][prop]
+                count += 1
+
+        # Return average reading for the specified property.
+        return avg / count
+
     # Helper to return room object with weather, title etc.
-    getRoomObject = (title) ->
+    getRoomObject = (title) =>
         weather = {temperature: null, humidity: null, co2: null}
         return {title: title, weather: weather}
 
