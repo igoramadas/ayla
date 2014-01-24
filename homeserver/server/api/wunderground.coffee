@@ -82,24 +82,29 @@ class Wunderground extends (require "./baseApi.coffee")
                     else if curValue.indexOf(nextValue) < 0
                         result[prop] += ", " + nextValue
 
-        callback null, result
+        # Return result.
+        return result
 
     # GET WEATHER DATA
     # -------------------------------------------------------------------------
 
     # Get the current weather conditions.
     getCurrentWeather: (callback) =>
+        logger.debug "Wunderground.getCurrentWeather"
+
         @apiRequest "conditions", (err, results) =>
             if err?
                 callback err
             else
-                @getAverageResult results, "current_observation", callback
+                currentConditions = @getAverageResult results, "current_observation"
+                @setData "current", currentConditions
 
     # JOBS
     # -------------------------------------------------------------------------
 
     # Refresh weather data and save to the database.
-    jobRefreshWeather: =>
+    jobGetWeather: =>
+        @getCurrentWeather()
 
 
 # Singleton implementation.

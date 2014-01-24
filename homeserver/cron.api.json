@@ -16,15 +16,15 @@
     "netatmo.coffee": [
         {
             "callback": "jobGetOutdoor",
-            "description": "Probe current outdoor conditions (weather).",
+            "description": "Probe current outdoor conditions.",
             "schedule": 900,
-            "enabled": false
+            "enabled": true
         },
         {
             "callback": "jobGetIndoor",
             "description": "Probe current indoor conditions.",
-            "schedule": 600,
-            "enabled": false
+            "schedule": 300,
+            "enabled": true
         }
     ],
     "network.coffee": [
@@ -53,10 +53,10 @@
     ],
     "wunderground.coffee": [
         {
-            "callback": "jobRefreshWeather",
+            "callback": "jobGetWeather",
             "description": "Get updated weather information.",
-            "schedule": 300,
-            "enabled": false
+            "schedule": 900,
+            "enabled": true
         }
     ]
 }

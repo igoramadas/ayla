@@ -45,6 +45,11 @@ class Hue extends (require "./baseApi.coffee")
 
     # Make a request to the Hue API.
     apiRequest: (urlPath, params, callback) =>
+        if not settings.hue?.api?
+            logger.warn "Hue.apiRequest", "Hue API settings are not defined. Abort!"
+            return
+
+        # Set correct parameters.
         if lodash.isFunction params
             callback = params
             params = null

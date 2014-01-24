@@ -41,6 +41,10 @@ class Email extends (require "./baseApi.coffee")
 
     # Open the IMAP email box.
     openBox: =>
+        if not settings.email?.imap?
+            logger.warn "Email.openBox", "IMAP email settings are not defined. Abort!"
+            return
+
         @imap.once "ready", =>
             @imap.openBox settings.email.imap.inboxName, false, (err, box) =>
                 if err?

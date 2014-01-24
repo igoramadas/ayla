@@ -42,7 +42,7 @@ class HomeManager extends (require "./baseManager.coffee")
         events.on "netamo.data.outdoor", @onNetatmoOutdoor
         events.on "ninja.data.weather", @onNinjaWeather
         events.on "ubi.data.weather", @onUbiWeather
-        events.on "wunderground.data", @onWunderground
+        events.on "wunderground.data.current", @onWunderground
 
         @baseStart()
 
@@ -109,7 +109,8 @@ class HomeManager extends (require "./baseManager.coffee")
 
     # Check outdoor weather conditions using Weather Underground.
     onWunderground: (data) =>
-        @setWeatherForecast data.today
+        console.warn data
+        @setWeatherForecast data
 
     # GENERAL HELPERS
     # -------------------------------------------------------------------------

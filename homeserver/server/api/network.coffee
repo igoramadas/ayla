@@ -51,8 +51,13 @@ class Network extends (require "./baseApi.coffee")
 
     # Check if Ayla server is on the home network.
     checkIP: =>
-        logger.debug "Network.checkIP", "Expected home IP: #{settings.network.home.ip}"
+        if not settings.network?.home?
+            logger.warn "Network.checkIP", "Home network settings are not defined. Skip!"
+            return
+        else
+            logger.debug "Network.checkIP", "Expected home IP: #{settings.network.home.ip}"
 
+        # Get and process current IP.
         ips = utils.getServerIP()
         ips = "0," + ips.join ","
         homeSubnet = settings.network.home.ip.substring 0, 7

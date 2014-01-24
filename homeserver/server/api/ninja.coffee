@@ -24,6 +24,10 @@ class Ninja extends (require "./baseApi.coffee")
 
     # Init the GitHub module.
     init: =>
+        if not settings.ninja?.api?
+            logger.warn "Ninja.init", "Ninja API settings are not defined!"
+            return
+
         @ninjaApi = ninjablocks.app {user_access_token: settings.ninja.api.userToken}
         @baseInit()
 
@@ -62,7 +66,11 @@ class Ninja extends (require "./baseApi.coffee")
 
     # Gets the list of registered devices with Ninja Blocks.
     getDeviceList: (callback) =>
-        logger.debug "Ninja.getDeviceList"
+        if not @ninjaApi?
+            logger.warn "Ninja.getDeviceList", "Ninja API object was not created. Abort!"
+            return
+        else
+            logger.debug "Ninja.getDeviceList"
 
         @ninjaApi.devices (err, result) =>
             if err?
@@ -82,6 +90,11 @@ class Ninja extends (require "./baseApi.coffee")
     # Actuate remote controlled RF433 sockets.The id can be the subdevice ID or the
     # short name defined on Ninja Blocks.
     actuate433: (id) =>
+        if not @ninjaApi?
+            logger.warn "Ninja.actuate433", "Ninja API object was not created. Abort!"
+            return
+
+        # Get correct list of subdevices based on the provided id.
         if @rf433.subDevices[id]?
             sockets = [@rf433.subDevices[id]]
         else
