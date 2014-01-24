@@ -109,7 +109,6 @@ class HomeManager extends (require "./baseManager.coffee")
 
     # Check outdoor weather conditions using Weather Underground.
     onWunderground: (data) =>
-        console.warn data
         @setWeatherForecast data
 
     # GENERAL HELPERS
