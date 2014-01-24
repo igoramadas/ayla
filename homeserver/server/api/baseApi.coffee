@@ -100,6 +100,11 @@ class BaseApi
     makeRequest: (reqUrl, params, callback) =>
         logger.debug "#{@moduleName}.makeHttpRequest", reqUrl, params
 
+        # The `params` is optional.
+        if not callback? and lodash.isFunction params
+            callback = params
+            params = null
+
         # Set request URL object.
         reqOptions = url.parse reqUrl
 
@@ -130,15 +135,14 @@ class BaseApi
             response.addListener "end", =>
                 if callback?
                     try
-                        response.downloadedData = JSON.parse response.downloadedData
+                        if lodash.isString response.downloadedData
+                            response.downloadedData = JSON.parse response.downloadedData
 
                         # Check for error on response.
                         if response.downloadedData.error?
                             respError = response.downloadedData.error
                         else if response.downloadedData[0]?.error?
                             respError = response.downloadedData[0].error
-                        else
-                            respError = null
 
                         callback respError, response.downloadedData
                     catch ex
@@ -149,7 +153,7 @@ class BaseApi
             callback {err: err, url: reqUrl, params: params} if callback?
 
         # Write body, if any, and end request.
-        req.write(body, settings.general.encoding) if body?
+        req.write body, settings.general.encoding if body?
         req.end()
 
     # Checks if auth data is valid and set. Returns false if not valid.

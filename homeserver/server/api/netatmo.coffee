@@ -28,6 +28,8 @@ class Netatmo extends (require "./baseApi.coffee")
 
     # Start collecting weather data.
     start: =>
+        @getIndoorConditions()
+        @getOutdoorConditions()
         @baseStart()
 
     # Stop collecting weather data.
@@ -118,7 +120,7 @@ class Netatmo extends (require "./baseApi.coffee")
         return false
 
     # Get outdoor readings from Netatmo. Default is to get only the most current data.
-    getOutdoorMeasure: (filter, callback) =>
+    getOutdoorConditions: (filter, callback) =>
         if lodash.isFunction filter
             callback = filter
             filter = null
@@ -130,9 +132,9 @@ class Netatmo extends (require "./baseApi.coffee")
         # Make the request for outdoor readings.
         @makeRequest "getmeasure", params, (err, result) =>
             if err?
-                @logError "Netatmo.getIndoorMeasure", filter, err
+                @logError "Netatmo.getIndoorConditions", filter, err
             else
-                logger.debug "Netatmo.getIndoorMeasure", filter
+                logger.debug "Netatmo.getIndoorConditions", filter
 
                 # Result represent current readings?
                 if isCurrent params
@@ -142,7 +144,7 @@ class Netatmo extends (require "./baseApi.coffee")
             callback err, result
 
     # Get indoor readings from Netatmo. Default is to get only the most current data.
-    getIndoorMeasure: (filter, callback) =>
+    getIndoorConditions: (filter, callback) =>
         if lodash.isFunction filter
             callback = filter
             filter = null
@@ -154,9 +156,9 @@ class Netatmo extends (require "./baseApi.coffee")
         # Make the request for indoor readings.
         @makeRequest "getmeasure", params, (err, result) =>
             if err?
-                @logError "Netatmo.getIndoorMeasure", filter, err
+                @logError "Netatmo.getIndoorConditions", filter, err
             else
-                logger.debug "Netatmo.getIndoorMeasure", filter
+                logger.debug "Netatmo.getIndoorConditions", filter
 
                 # Result represent current readings?
                 if isCurrent params
@@ -170,8 +172,8 @@ class Netatmo extends (require "./baseApi.coffee")
 
     # Get Netatmo dashboard data.
     getDashboard: (callback) =>
-        getOutdoor = (cb) => @getOutdoorMeasure (err, result) -> cb err, {outdoor: result}
-        getIndoor = (cb) => @getIndoorMeasure (err, result) -> cb err, {indoor: result}
+        getOutdoor = (cb) => @getOutdoorConditions (err, result) -> cb err, {outdoor: result}
+        getIndoor = (cb) => @getIndoorConditions (err, result) -> cb err, {indoor: result}
 
         async.parallel [getOutdoor, getIndoor], (err, result) =>
             callback err, result
@@ -181,11 +183,11 @@ class Netatmo extends (require "./baseApi.coffee")
 
     # Get current outdoor conditions (weather) every 30 minutes.
     jobGetOutdoor: =>
-        @getOutdoorMeasure (err, result) =>
+        @getOutdoorConditions (err, result) =>
 
     # Get current indoor conditions every 5 minutes.
     jobGetIndoor: =>
-        @getIndoorMeasure (err, result) =>
+        @getIndoorConditions (err, result) =>
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

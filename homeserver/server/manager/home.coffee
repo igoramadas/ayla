@@ -64,7 +64,7 @@ class HomeManager extends (require "./baseManager.coffee")
 
     # Helper to set current conditions for the specified room.
     setRoomWeather: (room, data) =>
-        logger.debug "HomeManager.setRoomWeather", room, data
+        logger.info "HomeManager.setRoomWeather", room, data
 
         roomObj = @data[room]
         roomObj.temperature = data.temperature
@@ -75,17 +75,17 @@ class HomeManager extends (require "./baseManager.coffee")
 
     # Helper to set current conditions for outdoors.
     setOutdoorWeather: (data) =>
-        logger.debug "HomeManager.setOutdoorWeather", data
+        logger.info "HomeManager.setOutdoorWeather", data
 
-        outdoorObj = @data[room]
-        outdoorObj.temperature = data.temperature
-        outdoorObj.humidity = data.humidity
+        @data.outdoor.temperature = data.temperature
+        @data.outdoor.humidity = data.humidity
 
     # Helper to set forecast conditions for outdoors.
     setWeatherForecast: (data) =>
-        outdoorObj = @data[room]
-        outdoorObj.temperature = data.temperature
-        outdoorObj.humidity = data.humidity
+        logger.info "HomeManager.setWeatherForecast", data
+
+        @data.forecast.temperature = data.temperature
+        @data.forecast.humidity = data.humidity
 
     # Check indoor weather conditions using Netatmo.
     onNetatmoIndoor: (data) =>

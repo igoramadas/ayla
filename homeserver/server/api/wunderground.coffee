@@ -8,7 +8,6 @@ class Wunderground extends (require "./baseApi.coffee")
     settings = expresser.settings
 
     async = require "async"
-    http = require "http"
     lodash = require "lodash"
     moment = require "moment"
 
@@ -21,6 +20,7 @@ class Wunderground extends (require "./baseApi.coffee")
 
     # Start collecting weather data.
     start: =>
+        @getCurrentWeather()
         @baseStart()
 
     # Stop collecting weather data.
@@ -41,8 +41,8 @@ class Wunderground extends (require "./baseApi.coffee")
 
         # Iterate stations and create a HTTP request for each station.
         for id in settings.wunderground.stationIds
-            do (id) ->
-                task = (cb) ->
+            do (id) =>
+                task = (cb) =>
                     reqUrl = settings.wunderground.api.url + settings.wunderground.api.clientId + "/#{path}/q/pws:#{id}.json"
                     @makeRequest reqUrl, cb
 
@@ -79,7 +79,7 @@ class Wunderground extends (require "./baseApi.coffee")
                     result[prop] = nextValue
                 else
                     if lodash.isNumber nextValue
-                        result[prop] = (curValue + nextValue) / 2
+                        result[prop] = ((curValue + nextValue) / 2).toFixed(2)
                     else if curValue.indexOf(nextValue) < 0
                         result[prop] += ", " + nextValue
 

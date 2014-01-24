@@ -8,11 +8,9 @@ class Ninja extends (require "./baseApi.coffee")
     settings = expresser.settings
 
     async = require "async"
-    https = require "https"
     lodash = require "lodash"
     moment = require "moment"
     ninjablocks = require "ninja-blocks"
-    querystring = require "querystring"
     security = require "../security.coffee"
 
     # Cached Ninja api and RF433 objects.
@@ -22,7 +20,7 @@ class Ninja extends (require "./baseApi.coffee")
     # INIT
     # -------------------------------------------------------------------------
 
-    # Init the GitHub module.
+    # Init the Ninja module.
     init: =>
         if not settings.ninja?.api?
             logger.warn "Ninja.init", "Ninja API settings are not defined!"
@@ -31,13 +29,12 @@ class Ninja extends (require "./baseApi.coffee")
         @ninjaApi = ninjablocks.app {user_access_token: settings.ninja.api.userToken}
         @baseInit()
 
-
-    # Start collecting weather data.
+    # Start collecting data from Ninja Blocks.
     start: =>
         @getDeviceList()
         @baseStart()
 
-    # Stop collecting weather data.
+    # Stop collecting data from Ninja Blocks.
     stop: =>
         @baseStop()
 
@@ -45,11 +42,14 @@ class Ninja extends (require "./baseApi.coffee")
     # -------------------------------------------------------------------------
 
     # This should be called whenever new weather related data is downloaded
-    # from the Ninja block.
-    setCurrentWeather: =>
+    # from the Ninja block. If no `devices` are passed, use the default from data.
+    setCurrentWeather: (devices) =>
+        devices = @data.devices if not devices?
         maxAge = moment().subtract("m", settings.general.currentDataMaxAgeMinutes).unix()
-        tempDevices = lodash.filter @data.devices, {device_type: "temperature"}
-        humiDevices = lodash.filter @data.devices, {device_type: "humidity"}
+
+        # Filter temperature and humidity devices.
+        tempDevices = lodash.filter devices, {device_type: "temperature"}
+        humiDevices = lodash.filter devices, {device_type: "humidity"}
         weather = {temperature: [], humidity: []}
 
         # Iterate all temperature devices and get recent data.

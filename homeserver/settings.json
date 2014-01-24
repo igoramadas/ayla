@@ -27,7 +27,7 @@
     },
     "general": {
         "appTitle": "Ayla",
-        "debug": true,
+        "debug": false,
         "currentDataMaxAgeMinutes": 30,
         "moduleErrorMaxAgeHours": 48,
         "moduleStopOnErrorCount": 10,
@@ -42,6 +42,7 @@
         }
     },
     "logger": {
+        "console": true,
         "local": {
             "enabled": false
         }
@@ -58,6 +59,6 @@
     "wunderground": {
         "resultFields": ["weather", "temp_c", "relative_humidity", "wind_degrees", "wind_kph", "pressure_mb",
                          "dewpoint_c", "feelslike_c", "visibility_km", "precip_1hr_metric"],
-        "stationIds": ["IBERLIN15", "IBERLINB42"]
+        "stationIds": ["IBERLIN15", "IBERLINB41"]
     }
 }
