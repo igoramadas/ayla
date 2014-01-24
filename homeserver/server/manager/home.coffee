@@ -55,13 +55,17 @@ class HomeManager extends (require "./baseManager.coffee")
 
     # Helper to verify if room weather is in good condition.
     checkRoomWeather: (room) =>
+        subject = "#{room.title} weather"
+
         if room.temperature > settings.home.temperature.max
-            @notify
+            @notify subject, "#{room.title} too warm", "It's #{room.temperature}C right now, fan will turn on automatically."
         else if room.temperature < settings.home.temperature.min
-            @notify
+            @notify subject, "#{room.title} too cold", "It's #{room.temperature}C right now, heating will turn on automatically."
 
     # Helper to set current conditions for the specified room.
     setRoomWeather: (room, data) =>
+        logger.debug "HomeManager.setRoomWeather", room, data
+
         roomObj = @data[room]
         roomObj.temperature = data.temperature
         roomObj.humidity = data.humidity
@@ -71,6 +75,8 @@ class HomeManager extends (require "./baseManager.coffee")
 
     # Helper to set current conditions for outdoors.
     setOutdoorWeather: (data) =>
+        logger.debug "HomeManager.setOutdoorWeather", data
+
         outdoorObj = @data[room]
         outdoorObj.temperature = data.temperature
         outdoorObj.humidity = data.humidity
@@ -91,11 +97,15 @@ class HomeManager extends (require "./baseManager.coffee")
 
     # Check indoor weather conditions using Ninja Blocks.
     onNinjaWeather: (data) =>
-        @setRoomWeather "kitchen", data.weather
+        weather = {}
+        weather.temperature = data.temperature[0] if data.temperature.length > 0
+        weather.humidity = data.humidity[0] if data.humidity.length > 0
+
+        @setRoomWeather "kitchen", weather
 
     # Check indoor weather conditions using The Ubi.
     onUbiWeather: (data) =>
-        @setRoomWeather "bedroom", data.weather
+        @setRoomWeather "bedroom", data
 
     # Check outdoor weather conditions using Weather Underground.
     onWunderground: (data) =>

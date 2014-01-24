@@ -45,15 +45,14 @@ class BaseManager
     # -------------------------------------------------------------------------
 
     # Used to send alerts and general notifications to the user.
-    notify: (template, subject, messages) =>
+    notify: (subject, messages, callback) =>
         logger.info "#{@moduleName}.notify", subject, messages
 
-        body = messages.join "\n"
+        body = messages.join "\n" if lodash.isArray messages
 
         # Set message options and send email.
         msgOptions = {to: settings.email.toMobile, subject: subject, body: body}
-        mailer.send msgOptions, (err, result) =>
-            callback err, result if callback?
+        mailer.send msgOptions, (err, result) => callback err, result if callback?
 
 
 # Exports API Base Module.

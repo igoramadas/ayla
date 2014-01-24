@@ -12,6 +12,7 @@ security = require "./server/security.coffee"
 
 # Init Expresser.
 expresser.init()
+expresser.settings.general.debug = true
 
 # Init the main modules.
 security.init => api.init => manager.init()

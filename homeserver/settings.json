@@ -28,6 +28,7 @@
     "general": {
         "appTitle": "Ayla",
         "debug": true,
+        "currentDataMaxAgeMinutes": 30,
         "moduleErrorMaxAgeHours": 48,
         "moduleStopOnErrorCount": 10,
         "parallelTasksLimit": 4,
@@ -47,7 +48,9 @@
     },
     "path": {
         "data": "/data/",
-        "emailTemplatesDir": "/data/emailTemplates/"
+        "emailTemplatesDir": "/data/emailTemplates/",
+        "sslKeyFile": "ssl.key",
+        "sslCertFile": "ssl.cer"
     },
     "security": {
         "maxAuthTokenAgeDays": 90

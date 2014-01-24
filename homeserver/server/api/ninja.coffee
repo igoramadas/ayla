@@ -3,6 +3,7 @@
 class Ninja extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
+    events = expresser.events
     logger = expresser.logger
     settings = expresser.settings
 
@@ -14,76 +15,90 @@ class Ninja extends (require "./baseApi.coffee")
     querystring = require "querystring"
     security = require "../security.coffee"
 
-    # Create Ninja App.
-    ninjaApp: null
+    # Cached Ninja api and RF433 objects.
+    ninjaApi: null
+    rf433: null
 
     # INIT
     # -------------------------------------------------------------------------
 
     # Init the GitHub module.
     init: =>
+        @ninjaApi = ninjablocks.app {user_access_token: settings.ninja.api.userToken}
         @baseInit()
-        @ninjaApp = ninjablocks.app {user_access_token: settings.ninja.appSecret}
+
 
     # Start collecting weather data.
     start: =>
+        @getDeviceList()
         @baseStart()
 
     # Stop collecting weather data.
     stop: =>
         @baseStop()
 
-    # API BASE METHODS
+    # GET DEVICE DATA
     # -------------------------------------------------------------------------
 
-    # Authentication helper for Ninja Blocks.
-    auth: (req, res) =>
-        security.processAuthToken "fitbit", req, res
+    # This should be called whenever new weather related data is downloaded
+    # from the Ninja block.
+    setCurrentWeather: =>
+        maxAge = moment().subtract("m", settings.general.currentDataMaxAgeMinutes).unix()
+        tempDevices = lodash.filter @data.devices, {device_type: "temperature"}
+        humiDevices = lodash.filter @data.devices, {device_type: "humidity"}
+        weather = {temperature: [], humidity: []}
 
-    # Make a request to the Ninja Blocks API.
-    makeRequest: (path, params, callback) =>
-        reqHasError = false
+        # Iterate all temperature devices and get recent data.
+        for t in tempDevices
+            if t.last_data?.timestamp > maxAge
+                weather.temperature.push {shortName: t.shortName, value: t.last_data.DA}
 
-        # Make the HTTP request to the Ninja API.
-        reqUrl = settings.ninja.api.url + path + "/" + params + "?user_access_token=" + settings.ninja.api.clientId
-        req = https.get reqUrl, (response) ->
-            response.downloadedData = ""
-            response.addListener "data", (data) -> response.downloadedData += data
-            response.addListener "end", -> callback null, JSON.parse response.downloadedData if not reqHasError
+        # Iterate all humidity devices and get recent data.
+        for t in humiDevices
+            if t.last_data?.timestamp > maxAge
+                weather.humidity.push {shortName: t.shortName, value: t.last_data.DA}
 
-        # On request error, trigger the callback straight away.
-        req.on "error", (err) ->
-            reqHasError = true
-            callback err
+        @setData "weather", weather
 
-    # GET DATA
-    # -------------------------------------------------------------------------
+    # Gets the list of registered devices with Ninja Blocks.
+    getDeviceList: (callback) =>
+        logger.debug "Ninja.getDeviceList"
 
-    # Get data for the specified device ID.
-    getDeviceData: (deviceId, callback) =>
-        if not deviceId? or not callback?
-            throw "Ninja.getDeviceData: parameters deviceId and callback must be specified!"
-
-        @makeRequest "device", deviceId, (err, result) =>
+        @ninjaApi.devices (err, result) =>
             if err?
-                logger.error "Ninja.getDeviceData", deviceId, err
+                @logError "getDeviceList", err
             else
-                logger.debug "Ninja.getDeviceData", deviceId, result
-            callback err, result
+                @setData "devices", result
+                @setCurrentWeather()
+                @rf433 = lodash.find result, {device_type: "rf433"} if not @rf433?
+                @rf433Id = lodash.findKey result, {device_type: "rf433"}
 
-    # RF 433 SENSORS
+            # Callback set?
+            callback err, result if callback?
+
+    # RF 433 SOCKETS
     # -------------------------------------------------------------------------
 
-    # Turn remote controlled sockets on or off. If no `id` is specified
-    # then on or off all sockets.
-    switchSocket: (id, turnOn) =>
+    # Actuate remote controlled RF433 sockets.The id can be the subdevice ID or the
+    # short name defined on Ninja Blocks.
+    actuate433: (id) =>
+        if @rf433.subDevices[id]?
+            sockets = [@rf433.subDevices[id]]
+        else
+            sockets = lodash.filter @rf433.subDevices, {shortName: id}
+
+        logger.debug "Ninja.actuate433", id, sockets
+
+        # Iterate and send command to subdevices.
+        for s in sockets
+            @ninjaApi.device(@rf433Id).actuate s.data
 
     # PAGES
     # -------------------------------------------------------------------------
 
     # Get the Fitbit dashboard data.
     getDashboard: (callback) =>
-        @getDeviceData "1313BB000456_0404_0_31", callback
+        @getDeviceList()
 
 
 # Singleton implementation.
