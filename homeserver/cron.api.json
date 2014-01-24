@@ -17,7 +17,7 @@
         {
             "callback": "jobGetOutdoor",
             "description": "Probe current outdoor conditions.",
-            "schedule": 900,
+            "schedule": 600,
             "enabled": true
         },
         {
@@ -55,7 +55,7 @@
         {
             "callback": "jobGetWeather",
             "description": "Get updated weather information.",
-            "schedule": 900,
+            "schedule": 600,
             "enabled": true
         }
     ]

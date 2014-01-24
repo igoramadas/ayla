@@ -33,6 +33,10 @@ class Wunderground extends (require "./baseApi.coffee")
     # Helper to make requests to Weather Underground for stations defined on the settings.
     # The callback result will be the average of station data.
     apiRequest: (path, callback) =>
+        if not settings.wunderground.api?
+            logger.warn "Wunderground.apiRequest", "Wundeground API settings are not defined. Abort!"
+            return
+
         tasks = []
 
         # Iterate stations and create a HTTP request for each station.
@@ -40,25 +44,22 @@ class Wunderground extends (require "./baseApi.coffee")
             do (id) ->
                 task = (cb) ->
                     reqUrl = settings.wunderground.api.url + settings.wunderground.api.clientId + "/#{path}/q/pws:#{id}.json"
-                    @makeRequest reqUrl, null, cb
+                    @makeRequest reqUrl, cb
 
                 # Add task and debug log.
                 tasks.push task
 
         # Run tasks in parallel.
-        async.parallelLimit tasks, settings.general.parallelLimit, (err, results) =>
+        async.parallelLimit tasks, settings.general.parallelTasksLimit, (err, results) =>
             if err?
-                logger.error "Wunderground.apiRequest", path, err
+                @logError "Wunderground.apiRequest", path, err
             else
                 logger.debug "Wunderground.apiRequest", path, results
 
             callback err, results if callback?
 
     # Helper to get average data from different stations.
-    getAverageResult: (data, field, callback) =>
-        if not callback?
-            throw new Error "Wunderground.getAverageResult: a callback must be specified."
-
+    getAverageResult: (data, field) =>
         result = {}
 
         # Iterate data and get average values.
@@ -93,11 +94,11 @@ class Wunderground extends (require "./baseApi.coffee")
         logger.debug "Wunderground.getCurrentWeather"
 
         @apiRequest "conditions", (err, results) =>
-            if err?
-                callback err
-            else
+            if not err?
                 currentConditions = @getAverageResult results, "current_observation"
                 @setData "current", currentConditions
+
+            callback err, currentConditions if callback?
 
     # JOBS
     # -------------------------------------------------------------------------

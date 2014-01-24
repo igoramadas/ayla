@@ -43,6 +43,11 @@ class Netatmo extends (require "./baseApi.coffee")
 
     # Make a request to the Netatmo API.
     makeRequest: (path, params, callback) =>
+        if not settings.netatmo?.api?
+            logger.warn "Netatmo.makeRequest", "Netatmo API settings are not defined. Abort!"
+            return
+
+        # Property set parameters.
         if not callback? and lodash.isFunction params
             callback = params
             params = null
@@ -125,7 +130,7 @@ class Netatmo extends (require "./baseApi.coffee")
         # Make the request for outdoor readings.
         @makeRequest "getmeasure", params, (err, result) =>
             if err?
-                logger.error "Netatmo.getIndoorMeasure", filter, err
+                @logError "Netatmo.getIndoorMeasure", filter, err
             else
                 logger.debug "Netatmo.getIndoorMeasure", filter
 
@@ -149,7 +154,7 @@ class Netatmo extends (require "./baseApi.coffee")
         # Make the request for indoor readings.
         @makeRequest "getmeasure", params, (err, result) =>
             if err?
-                logger.error "Netatmo.getIndoorMeasure", filter, err
+                @logError "Netatmo.getIndoorMeasure", filter, err
             else
                 logger.debug "Netatmo.getIndoorMeasure", filter
 
