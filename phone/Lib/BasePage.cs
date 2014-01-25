@@ -14,6 +14,8 @@ namespace AylaPhone
 
 		public BasePage()
 		{
+		    SupportedOrientations = SupportedPageOrientation.Portrait;
+	        Orientation = PageOrientation.Portrait;
 		}
 
 		protected override void OnNavigatedTo(NavigationEventArgs e)
