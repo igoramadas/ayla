@@ -1,4 +1,4 @@
-.idea/*
+.idea/
 atlassian-ide-plugin.xml
 ssl.cer
 ssl.key
