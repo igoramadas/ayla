@@ -16,13 +16,13 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
-            <TextBlock x:Name="TopTitle" Text="Ayla"/>
-            <TextBlock x:Name="PageName" Text="Home" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
+        <StackPanel x:Name="TitlePanel" Grid.Row="0" Style="{StaticResource TitlePanel}">
+            <TextBlock x:Name="TopTitle" Style="{StaticResource TopTitle}" />
+            <TextBlock x:Name="PageName" Text="Home" Style="{StaticResource PageName}"/>
         </StackPanel>
 
-		<StackPanel x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-			<toolkit:HubTile Title="Lights" Background="{x:Null}" IsHitTestVisible="False" Source="/Assets/Tiles/Lights.png" Padding="0"  />
+        <StackPanel x:Name="ContentPanel" Grid.Row="1" Style="{StaticResource ContentPanel}">
+            <toolkit:HubTile x:Name="HubLights" Source="/Assets/Tiles/Lights.png" Tap="HubLights_OnTap" />
         </StackPanel>
 	</Grid>
 
