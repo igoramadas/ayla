@@ -1,5 +1,7 @@
 # Ayla, the personal assistant
 
+#### http://ayla.codeplex.com
+
 Ayla is a smart, self-contained, super cool personal assistant. She gets data from a multitude of devices, sensors and
 services and tries to make my life easier by automating tasks and reminding me of things.
 

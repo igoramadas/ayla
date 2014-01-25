@@ -61,7 +61,7 @@ class Netatmo extends (require "./baseApi.coffee")
         # Make sure auth is valid.
         authError = @checkAuthData authCache
         if authError?
-            callback authError
+            callback authError if callback?
             return
 
         # Set default parameters.
@@ -141,7 +141,7 @@ class Netatmo extends (require "./baseApi.coffee")
                     body = getResultBody result, params
                     @setData "outdoor", body[0]
 
-            callback err, result
+            callback err, result if callback?
 
     # Get indoor readings from Netatmo. Default is to get only the most current data.
     getIndoorConditions: (filter, callback) =>
@@ -165,7 +165,7 @@ class Netatmo extends (require "./baseApi.coffee")
                     body = getResultBody result, params
                     @setData "indoor", body[0]
 
-            callback err, result
+            callback err, result if callback?
 
     # PAGES
     # -------------------------------------------------------------------------

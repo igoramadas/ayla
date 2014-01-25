@@ -159,7 +159,7 @@ class BaseApi
     # Checks if auth data is valid and set. Returns false if not valid.
     checkAuthData: (obj) =>
         if not obj?
-            logger.critical "#{@moduleName}.checkAuthData", "Auth data is missing."
+            logger.critical "#{@moduleName}", "Auth data is missing."
             return "Auth data is missing."
         return null
 

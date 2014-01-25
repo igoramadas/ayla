@@ -8,24 +8,22 @@ class ElectricImp extends (require "./baseApi.coffee")
     settings = expresser.settings
 
     async = require "async"
-    https = require "https"
     lodash = require "lodash"
     moment = require "moment"
-    querystring = require "querystring"
-    security = require "../security.coffee"
 
     # INIT
     # -------------------------------------------------------------------------
 
-    # Init the GitHub module.
+    # Init the Electric Imp module.
     init: =>
         @baseInit()
 
-    # Start collecting weather data.
+    # Start collecting Electric Imp data.
     start: =>
+        @getDeviceData()
         @baseStart()
 
-    # Stop collecting weather data.
+    # Stop collecting Electric Imp data.
     stop: =>
         @baseStop()
 
@@ -33,8 +31,20 @@ class ElectricImp extends (require "./baseApi.coffee")
     # -------------------------------------------------------------------------
 
     # Gets the data.
-    getData: =>
-        console.warn 1
+    getDeviceData: =>
+        @makeRequest settings.electricImp.api.url, (err, result) =>
+            if err?
+                @logError "ElectricImp.getDeviceData", err
+            else
+                @setData "current", result
+
+    # JOBS
+    # -------------------------------------------------------------------------
+
+    # Refresh weather data and save to the database.
+    jobGetWeather: =>
+        @getCurrentWeather()
+
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------
