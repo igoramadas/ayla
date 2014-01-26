@@ -14,7 +14,6 @@ security = require "./server/security.coffee"
 expresser.init()
 
 # Init the main modules.
-security.init => api.init => manager.init()
-
-# Set routes.
-routes.init()
+security.init -> api.init -> manager.init ->
+    routes.init()
+    expresser.mailer.send {to: settings.email.toMobile, subject: "Ayla home server started!", body: "Hi there, sir."}

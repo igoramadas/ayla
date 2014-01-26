@@ -10,11 +10,24 @@ using Microsoft.Phone.Shell;
 
 namespace AylaPhone
 {
-    public partial class HomeLightsPage : PhoneApplicationPage
+    public partial class HomeLightsPage
     {
+        #region Main methods
+
         public HomeLightsPage()
         {
             InitializeComponent();
         }
+
+        private void MainPage_Loaded(Object sender, RoutedEventArgs e)
+        {
+            var lights = HomeService.GetLights();
+        }
+
+        #endregion
+
+        #region Lights control
+
+        #endregion
     }
 }

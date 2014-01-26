@@ -31,8 +31,14 @@
         {
             "callback": "jobProbe",
             "description": "Probe network and update device statuses.",
-            "schedule": 30,
+            "schedule": 60,
             "enabled": false
+        },
+        {
+            "callback": "jobPingMobiles",
+            "description": "Ping user mobile phones every 20 seconds.",
+            "schedule": 20,
+            "enabled": true
         }
     ],
     "fitbit.coffee": [

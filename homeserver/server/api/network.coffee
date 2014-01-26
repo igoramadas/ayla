@@ -3,6 +3,7 @@
 class Network extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
+    events = expresser.events
     logger = expresser.logger
     settings = expresser.settings
     utils = expresser.utils
@@ -11,6 +12,7 @@ class Network extends (require "./baseApi.coffee")
     lodash = require "lodash"
     mdns = require "mdns"
     moment = require "moment"
+    netPing = require "net-ping"
 
     # PROPERTIES
     # -------------------------------------------------------------------------
@@ -20,6 +22,9 @@ class Network extends (require "./baseApi.coffee")
 
     # Is it running on the expected local network, or remotely?
     isHome: false
+
+    # Holds user ping status (online timestamp, otherwise null if offline).
+    onlineUsers: {}
 
     # INIT
     # -------------------------------------------------------------------------
@@ -37,9 +42,9 @@ class Network extends (require "./baseApi.coffee")
 
     # Start monitoring the network.
     start: =>
-        @baseStart()
-        @probe()
         @browser.start()
+        @probe()
+        @baseStart()
 
     # Stop monitoring the network.
     stop: =>
@@ -156,12 +161,45 @@ class Network extends (require "./baseApi.coffee")
                 existingDevice.up = false
                 existingDevice.mdns = false
 
+    # CHECK USER MOBILES
+    # -------------------------------------------------------------------------
+
+    # Ping user mobile phones to check if they're online or offline,
+    # based on ICMP ping via wifi network.
+    pingMobiles: =>
+        try
+            session = netPing.createSession()
+        catch ex
+            @logError "Network.pingMobilres", ex
+            return
+
+        # Iterate all users to ping their mobiles.
+        for k, user of settings.users
+            do (k, user) =>
+                session.pingHost user.mobileIP, (err, result) =>
+                    eventStatus = null
+
+                    if err?
+                        eventStatus = "offline" if not @onlineUsers[k]?
+                        @onlineUsers[k] = null
+                    else
+                        eventStatus = "online" if not @onlineUsers[k]?
+                        @onlineUsers[k] = moment().unix()
+
+                    # Emit event if status has changed.
+                    if eventStatus?
+                        events.emit "user.#{k}.#{eventStatus}"
+
     # JOBS
     # -------------------------------------------------------------------------
 
     # Keep probing network.
     jobProbe: =>
         @probe()
+
+    # Ping mobile phones every few seconds.
+    jobPingMobiles: =>
+        @pingMobiles()
 
 
 # Singleton implementation.
