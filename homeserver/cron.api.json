@@ -38,7 +38,7 @@
             "callback": "jobPingMobiles",
             "description": "Ping user mobile phones every 20 seconds.",
             "schedule": 20,
-            "enabled": true
+            "enabled": false
         }
     ],
     "fitbit.coffee": [
