@@ -65,23 +65,24 @@ class Wunderground extends (require "./baseApi.coffee")
         # Iterate data and get average values.
         for d in data
             for prop in settings.wunderground.resultFields
-                curValue = result[prop]
-                nextValue = d[field][prop]
+                if d[field][prop]?
+                    curValue = result[prop]
+                    nextValue = d[field][prop]
 
-                # Parse next value.
-                if nextValue.toString().indexOf("%") > 0
-                    nextValue = nextValue.toString().replace "%", ""
-                if not isNaN nextValue
-                    nextValue = parseFloat nextValue
+                    # Parse next value.
+                    if nextValue.toString().indexOf("%") > 0
+                        nextValue = nextValue.toString().replace "%", ""
+                    if not isNaN nextValue
+                        nextValue = parseFloat nextValue
 
-                # Set result data.
-                if not curValue?
-                    result[prop] = nextValue
-                else
-                    if lodash.isNumber nextValue
-                        result[prop] = ((curValue + nextValue) / 2).toFixed(2)
-                    else if curValue.indexOf(nextValue) < 0
-                        result[prop] += ", " + nextValue
+                    # Set result data.
+                    if not curValue?
+                        result[prop] = nextValue
+                    else
+                        if lodash.isNumber nextValue
+                            result[prop] = ((curValue + nextValue) / 2).toFixed(2)
+                        else if curValue.indexOf(nextValue) < 0
+                            result[prop] += ", " + nextValue
 
         # Return result.
         return result

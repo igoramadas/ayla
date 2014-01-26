@@ -32,6 +32,10 @@ class ElectricImp extends (require "./baseApi.coffee")
 
     # Gets the data.
     getDeviceData: =>
+        if not settings.electricImp?.api?
+            logger.warn "ElectricImp.getDeviceData", "Electric Imp API settings are not defined. Abort!"
+            return
+
         @makeRequest settings.electricImp.api.url, (err, result) =>
             if err?
                 @logError "ElectricImp.getDeviceData", err

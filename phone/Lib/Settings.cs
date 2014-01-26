@@ -10,7 +10,7 @@ namespace AylaPhone
 
         public static String HomeUrl
         {
-            get { return Get("HomeUrl", "https://home.ayla.pw/"); }
+            get { return Get("HomeUrl", "https://home.ayla.pw/phone/"); }
             set { Set("HomeUrl", value); }
         }
 

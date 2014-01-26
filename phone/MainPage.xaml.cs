@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Input;
 
 namespace AylaPhone
@@ -10,6 +11,11 @@ namespace AylaPhone
         public MainPage()
 		{
 			InitializeComponent();
+        }
+
+        private void Page_Loaded(Object sender, RoutedEventArgs e)
+        {
+            HomeService.GetLights();
         }
 
         #endregion

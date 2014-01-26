@@ -9,7 +9,7 @@
     xmlns:aylaPhone="clr-namespace:AylaPhone"
     mc:Ignorable="d"
     shell:SystemTray.IsVisible="True"
-    Loaded="MainPage_Unloaded"">
+    Loaded="Page_Loaded">
 
     <Grid x:Name="LayoutRoot">
         <Grid.RowDefinitions>

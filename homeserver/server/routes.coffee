@@ -8,18 +8,19 @@ class Routes
     logger = expresser.logger
     settings = expresser.settings
 
-    email = require "./api/email.coffee"
+    emailApi = require "./api/email.coffee"
     fs = require "fs"
     fitbit = require "./api/fitbit.coffee"
-    hue = require "./api/hue.coffee"
-    netatmo = require "./api/netatmo.coffee"
-    network = require "./api/network.coffee"
-    ninja = require "./api/ninja.coffee"
+    homeManager = require "./manager/home.coffee"
+    hueApi = require "./api/hue.coffee"
+    netatmoApi = require "./api/netatmo.coffee"
+    networkApi = require "./api/network.coffee"
+    ninjaApi = require "./api/ninja.coffee"
     path = require "path"
     security = require "./security.coffee"
-    toshl = require "./api/toshl.coffee"
-    withings = require "./api/withings.coffee"
-    wunderground = require "./api/wunderground.coffee"
+    toshlApi = require "./api/toshl.coffee"
+    withingsApi = require "./api/withings.coffee"
+    wundergroundApi = require "./api/wunderground.coffee"
 
     # INIT
     # -------------------------------------------------------------------------
@@ -31,9 +32,10 @@ class Routes
         # Main route.
         app.get "/", indexPage
 
-        # Commander routes.
-        app.get "/commander/:cmd/:params", commanderCallback
-        app.get "/commander/:cmd", commanderCallback
+        # API routes.
+        app.get "/api/home", apiHome
+        app.get "/api/commander/:cmd/:params", apiCommander
+        app.get "/api/commander/:cmd", apiCommander
 
         # Email routes.
         app.get "/email", emailPage
@@ -56,11 +58,6 @@ class Routes
 
         # Ninja Blocks routes.
         app.get "/ninja", ninjaPage
-
-        # Phone client routes.
-        app.get "/phone/fitness", phoneFitness
-        app.get "/phone/home", phoneHome
-        app.get "/phone/weather", phoneWeather
 
         # System routes.
         app.get "/system/jobs", systemJobsPage
@@ -88,11 +85,15 @@ class Routes
     indexPage = (req, res) ->
         renderPage req, res, "index"
 
-    # COMMANDER ROUTES
+    # API ROUTES
     # -------------------------------------------------------------------------
 
+    # The home data endpoint.
+    apiHome = (req, res) ->
+        renderData req, res, homeManager.data
+        
     # The commander processor.
-    commanderCallback = (req, res) ->
+    apiCommander = (req, res) ->
         renderPage req, res, "commander"
 
     # EMAIL ROUTES
@@ -100,22 +101,22 @@ class Routes
 
     # Main Email entrance page.
     emailPage = (req, res) ->
-        email.getDashboard (err, result) -> renderPage req, res, "email", {err: err, result: result}
+        emailApi.getDashboard (err, result) -> renderPage req, res, "email", {err: err, result: result}
 
     # FITBIT ROUTES
     # -------------------------------------------------------------------------
 
     # Main Fitbit entrance page.
     fitbitPage = (req, res) ->
-        fitbit.getDashboard (err, result) -> renderPage req, res, "fitbit", {err: err, result: result}
+        fitbitApi.getDashboard (err, result) -> renderPage req, res, "fitbit", {err: err, result: result}
 
     # Get Fitbit OAuth tokens.
     fitbitAuth = (req, res) ->
-        fitbit.auth req, res
+        fitbitApi.auth req, res
 
     # Callback for Fitbit OAuth.
     fitbitAuthCallback = (req, res) ->
-        fitbit.auth req, res
+        fitbitApi.auth req, res
 
     # HOME ROUTES
     # -------------------------------------------------------------------------
@@ -134,22 +135,22 @@ class Routes
 
     # Main Netatmo entrance page.
     netatmoPage = (req, res) ->
-        netatmo.getDashboard (err, result) -> renderPage req, res, "netatmo", {err: err, result: result}
+        netatmoApi.getDashboard (err, result) -> renderPage req, res, "netatmo", {err: err, result: result}
 
     # Get Netatmo OAuth tokens.
     netatmoAuth = (req, res) ->
-        netatmo.auth req, res
+        netatmoApi.auth req, res
 
     # Callback for Netatmo OAuth.
     netatmoAuthCallback = (req, res) ->
-        netatmo.auth req, res
+        netatmoApi.auth req, res
 
     # NINJA BLOCKS ROUTES
     # -------------------------------------------------------------------------
 
     # Main Fitbit entrance page.
     ninjaPage = (req, res) ->
-        ninja.getDashboard (err, result) -> renderPage req, res, "ninja", {err: err, result: result}
+        ninjaApi.getDashboard (err, result) -> renderPage req, res, "ninja", {err: err, result: result}
 
     # PHONE CLIENT ROUTES
     # -------------------------------------------------------------------------
@@ -182,40 +183,44 @@ class Routes
 
     # Main Toshl entrance page.
     toshlPage = (req, res) ->
-        toshl.getDashboard (err, result) -> renderPage req, res, "toshl", {err: err, result: result}
+        toshlApi.getDashboard (err, result) -> renderPage req, res, "toshl", {err: err, result: result}
 
     # Get Toshl OAuth tokens.
     toshlAuth = (req, res) ->
-        toshl.auth req, res
+        toshlApi.auth req, res
 
     # Callback for Toshl OAuth.
     toshlAuthCallback = (req, res) ->
-        toshl.auth req, res
+        toshlApi.auth req, res
 
     # WITHINGS ROUTES
     # -------------------------------------------------------------------------
 
     # Main Withings entrance page.
     withingsPage = (req, res) ->
-        withings.getDashboard (err, result) -> renderPage req, res, "withings", {err: err, result: result}
+        withingsApi.getDashboard (err, result) -> renderPage req, res, "withings", {err: err, result: result}
 
     # Get Withings OAuth tokens.
     withingsAuth = (req, res) ->
-        withings.auth req, res
+        withingsApi.auth req, res
 
     # Callback for Withings OAuth.
     withingsAuthCallback = (req, res) ->
-        withings.auth req, res
+        withingsApi.auth req, res
 
     # WUNDERGROUND ROUTES
     # -------------------------------------------------------------------------
 
     # Main Weather Underground entrance page.
     wundergroundPage = (req, res) ->
-        wunderground.getCurrentWeather (err, result) -> renderPage req, res, "wunderground", {err: err, result: result}
+        wundergroundApi.getCurrentWeather (err, result) -> renderPage req, res, "wunderground", {err: err, result: result}
 
     # HELPER METHODS
     # -------------------------------------------------------------------------
+
+    # Helper to render JSON data (mainly used by the /api/ routes).
+    renderData = (req, res, data) ->
+        res.json data
 
     # Helper to render pages.
     renderPage = (req, res, filename, options) ->

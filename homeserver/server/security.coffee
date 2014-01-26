@@ -157,7 +157,7 @@ class Security
             if err?
                 logger.error "Security.processAuthToken", "getAccessToken1", service, err
                 return
-            logger.debug "Security.processAuthToken", "getAccessToken1", service, additionalParameters
+            logger.debug "Security.processAuthToken", "getAccessToken1", service
 
             # Save auth details to DB and redirect user to service page.
             oauthData = lodash.defaults {token: oauth_token, tokenSecret: oauth_token_secret}, additionalParameters
@@ -166,13 +166,13 @@ class Security
 
         # Helper function to get the access token using OAUth 2.x.
         getAccessToken2 = (err, oauth_access_token, oauth_refresh_token, results) =>
-             if err?
+            if err?
                 logger.error "Security.processAuthToken", "getAccessToken2", service, err
                 return
-            logger.debug "Security.processAuthToken", "getAccessToken2", service, results
+            logger.debug "Security.processAuthToken", "getAccessToken2", service
 
             # Schedule token to be refreshed.
-            expires = results.expires_in or results.expire_in or 86400
+            expires = results?.expires_in or results?.expire_in or 86400
             lodash.delay @processAuthToken, expires * 0.9, service, options
 
             # Save auth details to DB and redirect user to service page.

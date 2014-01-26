@@ -48,8 +48,8 @@ class Network extends (require "./baseApi.coffee")
 
     # Stop monitoring the network.
     stop: =>
-        @baseStop()
         @browser.stop()
+        @baseStop()
 
     # GET NETWORK STATS
     # -------------------------------------------------------------------------
@@ -170,7 +170,7 @@ class Network extends (require "./baseApi.coffee")
         try
             session = netPing.createSession()
         catch ex
-            @logError "Network.pingMobilres", ex
+            @logError "Network.pingMobiles", ex
             return
 
         # Iterate all users to ping their mobiles.

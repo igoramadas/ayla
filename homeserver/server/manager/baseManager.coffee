@@ -41,8 +41,15 @@ class BaseManager
     baseStop: =>
         @running = false
 
-    # ALERTS AND NOTIFICATIONS
+    # BASE IMPLEMENTATION
     # -------------------------------------------------------------------------
+
+    # Helper to build an object with the requested data.
+    getDataObjects: =>
+        result = {}
+        args = lodash.toArray arguments
+        result[a] = @data[a] for a in args
+        return result
 
     # Used to send alerts and general notifications to the user.
     notify: (subject, messages, callback) =>

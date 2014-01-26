@@ -8,7 +8,8 @@
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     xmlns:aylaPhone="clr-namespace:AylaPhone"
     mc:Ignorable="d"
-    shell:SystemTray.IsVisible="True">
+    shell:SystemTray.IsVisible="True"
+    Loaded="Page_Loaded">
 
     <Grid x:Name="LayoutRoot">
         <Grid.RowDefinitions>

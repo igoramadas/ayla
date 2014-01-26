@@ -9,18 +9,21 @@ class HomeManager extends (require "./baseManager.coffee")
     mailer = expresser.mailer
     settings = expresser.settings
 
-    # COMPUTED PROPERTIES
+    # PROPERTIES
     # -------------------------------------------------------------------------
 
     # Computed weather stats.
-    weather:
-        indoor:
-            temperature: -> return getWeatherAverage "indoor", "temperature"
-            humidity: -> return getWeatherAverage "indoor", "temperature"
-            co2: -> return getWeatherAverage "indoor", "temperature"
-        outdoor:
-            temperature: -> return getWeatherAverage "outdoor", "temperature"
-            humidity: -> return getWeatherAverage "outdoor", "humidity"
+    weatherAvgData: =>
+        indoor = {}
+        indoor.temperature = getWeatherAverage "indoor", "temperature"
+        indoor.humidity = getWeatherAverage "indoor", "temperature"
+        indoor.co2 = getWeatherAverage "indoor", "temperature"
+
+        outdoor = {}
+        outdoor.temperature = getWeatherAverage "outdoor", "temperature"
+        outdoor.humidity = getWeatherAverage "outdoor", "humidity"
+
+        return {indoor: indoor, outdoor: outdoor}
 
     # INIT
     # -------------------------------------------------------------------------

@@ -6,6 +6,7 @@ class Manager
 
     expresser = require "expresser"
     logger = expresser.logger
+    mailer = expresser.mailer
     settings = expresser.settings
 
     fs = require "fs"
@@ -30,6 +31,9 @@ class Manager
                 module = require "./manager/#{f}"
                 module.init()
                 @modules[module.moduleId] = module
+
+        # Send email telling Ayla home server has started.
+        mailer.send {to: settings.email.toMobile, subject: "Ayla home server started!", body: "Hi there, sir."}
 
         # Proceed with callback?
         callback() if callback?

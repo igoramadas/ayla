@@ -14,22 +14,44 @@ namespace AylaPhone
 
         #endregion
 
-        #region Lights
+        #region Base Implementation
 
-        public static Task<List<Light>> GetLights()
+        // Base method to get and post data to the home server.
+        private static Task<String> MakeRequest(WebClient web, String path, String data = "")
         {
-            var tcs = new TaskCompletionSource<List<Light>>();
-            var web = new WebClient();
+            var tcs = new TaskCompletionSource<String>();
+            web.Headers["Content-Type"] = "application/json";
 
             web.DownloadStringCompleted += (sender, e) =>
             {
                 if (e.Error != null) tcs.TrySetException(e.Error);
                 else if (e.Cancelled) tcs.TrySetCanceled();
-                else tcs.TrySetResult(JsonConvert.DeserializeObject<List<Light>>(e.Result));
+                else tcs.TrySetResult(e.Result);
             };
 
-            web.DownloadStringAsync(new Uri(Settings.HomeUrl));
+            if (data != "")
+            {
+                web.DownloadStringAsync(new Uri(Settings.HomeUrl + path));
+            }
+            else
+            {
+                web.UploadStringAsync(new Uri(Settings.HomeUrl + path), "POST", data);
+            }
+            
             return tcs.Task;
+        }
+
+        #endregion
+
+        #region Lights
+
+        // Get list of lights from the home server.
+        public async static Task<List<Light>> GetLights()
+        {
+            var web = new WebClient();
+            var task = await MakeRequest(web, "lights");
+
+            return JsonConvert.DeserializeObject<List<Light>>(task);
         }
 
         #endregion

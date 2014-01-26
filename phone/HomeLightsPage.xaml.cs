@@ -19,7 +19,7 @@ namespace AylaPhone
             InitializeComponent();
         }
 
-        private void MainPage_Loaded(Object sender, RoutedEventArgs e)
+        private void Page_Loaded(Object sender, RoutedEventArgs e)
         {
             var lights = HomeService.GetLights();
         }
