@@ -110,10 +110,20 @@ class BaseApi
 
         # Set request parameters.
         if params?
-            reqOptions.method = params.method || "GET"
+            reqOptions.method = params.method || (if params.body? then "POST" else "GET")
+            reqOptions.headers = params.headers || {}
+
+            # Has body? If so, stringify it.
             if params.body?
                 body = params.body
                 body = JSON.stringify body if not lodash.isString body
+                reqOptions.headers["Content-Type"] = params.contentType || "application/x-www-form-urlencoded"
+                reqOptions.headers["Content-Length"] = params.contentLength || body.length
+
+                    # Has cookies?
+            if params.cookie?
+                reqOptions.headers["Cookie"] = params.cookie
+
         else
             reqOptions.method = "GET"
 
@@ -135,7 +145,7 @@ class BaseApi
             response.addListener "end", =>
                 if callback?
                     try
-                        parseJson = not params.parseJson? or params.parseJson
+                        parseJson = not params?.parseJson? or params.parseJson
 
                         # Do not parse JSON if parseJson is false or response is not a string.
                         if parseJson and lodash.isString response.downloadedData

@@ -14,12 +14,14 @@ class Network extends (require "./baseApi.coffee")
     moment = require "moment"
     url = require "url"
     xml2js = require "xml2js"
+    zombie = require "zombie"
 
     # PROPERTIES
     # -------------------------------------------------------------------------
 
-    # Local network discovery / browser.
-    browser: null
+    # Local network discovery and headless browsers.
+    mdnsBrowser: null
+    zombieBrowser: null
 
     # Is it running on the expected local network, or remotely?
     isHome: false
@@ -43,9 +45,9 @@ class Network extends (require "./baseApi.coffee")
 
     # Init the Network module.
     init: =>
-        @browser = mdns.createBrowser mdns.tcp("http")
-        @browser.on "serviceUp", @onServiceUp
-        @browser.on "serviceDown", @onServiceDown
+        @mdnsBrowser = mdns.createBrowser mdns.tcp("http")
+        @mdnsBrowser.on "serviceUp", @onServiceUp
+        @mdnsBrowser.on "serviceDown", @onServiceDown
 
         @data = {devices: [], router: {}}
 
@@ -54,12 +56,13 @@ class Network extends (require "./baseApi.coffee")
 
     # Start monitoring the network.
     start: =>
-        @browser.start()
+        @mdnsBrowser.start()
+        @probeRouter()
         @baseStart()
 
     # Stop monitoring the network.
     stop: =>
-        @browser.stop()
+        @mdnsBrowser.stop()
         @baseStop()
 
     # GET NETWORK STATS
@@ -125,18 +128,29 @@ class Network extends (require "./baseApi.coffee")
             routerUrl = settings.network.router.remoteUrl
 
         # Set POST body.
-        body = {"SERVICES": "RUNTIME.DEVICE.LANPCINFO,INET.INF"}
+        body = "SERVICES=RUNTIME.DEVICE.LANPCINFO"
 
-        # Set options and make request to router configuration.
-        @makeRequest routerUrl, {parseJson: false, body: body}, (err, result) =>
-            if err?
-                logger.error "Network.probeRouter", err
-            else
-                xml2js.parseString result, (xmlErr, parsedJson) =>
-                    if xmlErr?
-                        logger.error "Network.probeRouter", "XML to JSON", xmlErr
+        # Start headless browser to get login cookie.
+        @zombieBrowser = new zombie() if not @zombieBrowser?
+        @zombieBrowser.visit routerUrl, (e, browser) =>
+            @zombieBrowser.fill "#loginpwd", settings.network.router.password
+            @zombieBrowser.pressButton "#noGAC", (e, browser) =>
+                cookie = @zombieBrowser.cookies.toString()
+                reqParams = {parseJson: false, body: body, cookie: cookie}
+
+                logger.debug "Network.probeRouter", routerUrl, cookie
+
+                # Set options and make request to router configuration.
+                @makeRequest routerUrl + "getcfg.php", reqParams, (err, result) =>
+                    console.warn result
+                    if err?
+                        logger.error "Network.probeRouter", err
                     else
-                        @setData "router", parsedJson
+                        xml2js.parseString result, (xmlErr, parsedJson) =>
+                            if xmlErr?
+                                logger.error "Network.probeRouter", "XML to JSON", xmlErr
+                            else
+                                @setData "router", parsedJson
 
     # SERVICE DISCOVERY
     # -------------------------------------------------------------------------
