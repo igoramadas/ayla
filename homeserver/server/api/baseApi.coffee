@@ -135,7 +135,10 @@ class BaseApi
             response.addListener "end", =>
                 if callback?
                     try
-                        if lodash.isString response.downloadedData
+                        parseJson = not params.parseJson? or params.parseJson
+
+                        # Do not parse JSON if parseJson is false or response is not a string.
+                        if parseJson and lodash.isString response.downloadedData
                             response.downloadedData = JSON.parse response.downloadedData
 
                         # Check for error on response.

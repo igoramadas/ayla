@@ -1,6 +1,9 @@
 # AYLA
 # -----------------------------------------------------------------------------
 
+# Force live environment.
+process.env.NODE_ENV = "live"
+
 # Require Expresser.
 expresser = require "expresser"
 settings = expresser.settings

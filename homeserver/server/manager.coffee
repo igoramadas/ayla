@@ -33,7 +33,10 @@ class Manager
                 @modules[module.moduleId] = module
 
         # Send email telling Ayla home server has started.
-        mailer.send {to: settings.email.toMobile, subject: "Ayla home server started!", body: "Hi there, sir."}
+        if settings.email?.toMobile?
+            mailer.send {to: settings.email.toMobile, subject: "Ayla home server started!", body: "Hi there, sir."}
+        else
+            logger.warn "Manager.init", "Mailer settings are not defined. Start email won't be sent out."
 
         # Proceed with callback?
         callback() if callback?

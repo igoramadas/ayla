@@ -29,15 +29,15 @@
     ],
     "network.coffee": [
         {
-            "callback": "jobProbe",
-            "description": "Probe network and update device statuses.",
+            "callback": "jobProbeDevices",
+            "description": "Probe network devices and update their statuses.",
             "schedule": 60,
             "enabled": false
         },
         {
-            "callback": "jobPingMobiles",
-            "description": "Ping user mobile phones every 20 seconds.",
-            "schedule": 20,
+            "callback": "jobProbeRouter",
+            "description": "Probe network router and update its info.",
+            "schedule": 30,
             "enabled": false
         }
     ],

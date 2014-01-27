@@ -106,10 +106,12 @@ class Netatmo extends (require "./baseApi.coffee")
     # Helper to get API request parameters based on the filter.
     getParams = (filter) ->
         filter = {} if not filter?
-        params = {"device_id": settings.netatmo.deviceId}
-        params["scale"] = filter.scale or "30min"
-        params["date_end"] = filter.endDate or "last"
+
+        params = {}
+        params["device_id"] = settings.netatmo.deviceId if settings.netatmo?.deviceId?
         params["date_begin"] = filter.startDate if filter.startDate?
+        params["date_end"] = filter.endDate or "last"
+        params["scale"] = filter.scale or "30min"
 
         return params
 

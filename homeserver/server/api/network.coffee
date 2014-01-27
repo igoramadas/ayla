@@ -12,7 +12,8 @@ class Network extends (require "./baseApi.coffee")
     lodash = require "lodash"
     mdns = require "mdns"
     moment = require "moment"
-    netPing = require "net-ping"
+    url = require "url"
+    xml2js = require "xml2js"
 
     # PROPERTIES
     # -------------------------------------------------------------------------
@@ -26,6 +27,17 @@ class Network extends (require "./baseApi.coffee")
     # Holds user ping status (online timestamp, otherwise null if offline).
     onlineUsers: {}
 
+    # Return a list of devices marked as offline (up=false).
+    offlineDevices: =>
+        result = []
+
+        # Iterate network devices.
+        for sKey, sData of @data
+            for d in sData.devices
+                result.push d if not d.up
+
+        return result
+
     # INIT
     # -------------------------------------------------------------------------
 
@@ -35,7 +47,7 @@ class Network extends (require "./baseApi.coffee")
         @browser.on "serviceUp", @onServiceUp
         @browser.on "serviceDown", @onServiceDown
 
-        @data.local = {devices: []}
+        @data = {devices: [], router: {}}
 
         @checkIP()
         @baseInit()
@@ -43,7 +55,6 @@ class Network extends (require "./baseApi.coffee")
     # Start monitoring the network.
     start: =>
         @browser.start()
-        @probe()
         @baseStart()
 
     # Stop monitoring the network.
@@ -56,16 +67,16 @@ class Network extends (require "./baseApi.coffee")
 
     # Check if Ayla server is on the home network.
     checkIP: =>
-        if not settings.network?.home?
-            logger.warn "Network.checkIP", "Home network settings are not defined. Skip!"
+        if not settings.network?
+            logger.warn "Network.checkIP", "Network settings are not defined. Skip!"
             return
         else
-            logger.debug "Network.checkIP", "Expected home IP: #{settings.network.home.ip}"
+            logger.debug "Network.checkIP", "Expected home IP: #{settings.network.ip}"
 
         # Get and process current IP.
         ips = utils.getServerIP()
         ips = "0," + ips.join ","
-        homeSubnet = settings.network.home.ip.substring 0, 7
+        homeSubnet = settings.network.router.ip.substring 0, 7
 
         if ips.indexOf(",#{homeSubnet}") < 0
             @isHome = false
@@ -98,7 +109,7 @@ class Network extends (require "./baseApi.coffee")
         req.on "error", (err) ->
 
     # Probe the current network and check device statuses.
-    probe: =>
+    probeDevices: =>
         for nKey, nData of settings.network
             @data[nKey] = lodash.cloneDeep(nData) if not @data[nKey]?
 
@@ -106,16 +117,26 @@ class Network extends (require "./baseApi.coffee")
             if @data[nKey].devices?
                 @checkDevice d for d in @data[nKey].devices
 
-    # Return a list of devices marked as offline (up=false).
-    getOfflineDevices: =>
-        result = []
+    # Probe router for stats on connected LAN clients, WAN, etc.
+    probeRouter: =>
+        if @isHome
+            routerUrl = settings.network.router.localUrl
+        else
+            routerUrl = settings.network.router.remoteUrl
 
-        # Iterate network devices.
-        for sKey, sData of @data
-            for d in sData.devices
-                result.push d if not d.up
+        # Set POST body.
+        body = {"SERVICES": "RUNTIME.DEVICE.LANPCINFO,INET.INF"}
 
-        return result
+        # Set options and make request to router configuration.
+        @makeRequest routerUrl, {parseJson: false, body: body}, (err, result) =>
+            if err?
+                logger.error "Network.probeRouter", err
+            else
+                xml2js.parseString result, (xmlErr, parsedJson) =>
+                    if xmlErr?
+                        logger.error "Network.probeRouter", "XML to JSON", xmlErr
+                    else
+                        @setData "router", parsedJson
 
     # SERVICE DISCOVERY
     # -------------------------------------------------------------------------
@@ -147,7 +168,7 @@ class Network extends (require "./baseApi.coffee")
         existingDevice.up = true
         existingDevice.mdns = true
 
-        @data.local.devices.push existingDevice if isNew
+        @data.devices.push existingDevice if isNew
 
     # When a service disappears from the network.
     onServiceDown: (service) =>
@@ -161,45 +182,16 @@ class Network extends (require "./baseApi.coffee")
                 existingDevice.up = false
                 existingDevice.mdns = false
 
-    # CHECK USER MOBILES
-    # -------------------------------------------------------------------------
-
-    # Ping user mobile phones to check if they're online or offline,
-    # based on ICMP ping via wifi network.
-    pingMobiles: =>
-        try
-            session = netPing.createSession()
-        catch ex
-            @logError "Network.pingMobiles", ex
-            return
-
-        # Iterate all users to ping their mobiles.
-        for k, user of settings.users
-            do (k, user) =>
-                session.pingHost user.mobileIP, (err, result) =>
-                    eventStatus = null
-
-                    if err?
-                        eventStatus = "offline" if not @onlineUsers[k]?
-                        @onlineUsers[k] = null
-                    else
-                        eventStatus = "online" if not @onlineUsers[k]?
-                        @onlineUsers[k] = moment().unix()
-
-                    # Emit event if status has changed.
-                    if eventStatus?
-                        events.emit "user.#{k}.#{eventStatus}"
-
     # JOBS
     # -------------------------------------------------------------------------
 
-    # Keep probing network.
-    jobProbe: =>
-        @probe()
+    # Keep probing network devices every few seconds.
+    jobProbeDevices: =>
+        @probeDevices()
 
-    # Ping mobile phones every few seconds.
-    jobPingMobiles: =>
-        @pingMobiles()
+    # Keep probing network router every few seconds.
+    jobProbeRouter: =>
+        @probeRouter()
 
 
 # Singleton implementation.

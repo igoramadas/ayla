@@ -3,8 +3,9 @@ atlassian-ide-plugin.xml
 data/
 logs/
 newrelic.js
+newrelic_agent.log
 node_modules/
 npm-shrinkwrap.json
-settings.production.json
+settings.live.json
 ssl.cer
 ssl.key
