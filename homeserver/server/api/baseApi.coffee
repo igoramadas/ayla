@@ -117,10 +117,14 @@ class BaseApi
             if params.body?
                 body = params.body
                 body = JSON.stringify body if not lodash.isString body
-                reqOptions.headers["Content-Type"] = params.contentType || "application/x-www-form-urlencoded"
                 reqOptions.headers["Content-Length"] = params.contentLength || body.length
 
-                    # Has cookies?
+                if params.contentType?
+                    reqOptions.headers["Content-Type"] = params.contentType
+                else if params.isForm
+                    reqOptions.headers["Content-Type"] = "application/x-www-form-urlencoded"
+
+            # Has cookies?
             if params.cookie?
                 reqOptions.headers["Cookie"] = params.cookie
 

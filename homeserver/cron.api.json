@@ -38,7 +38,7 @@
             "callback": "jobProbeRouter",
             "description": "Probe network router and update its info.",
             "schedule": 30,
-            "enabled": false
+            "enabled": true
         }
     ],
     "fitbit.coffee": [

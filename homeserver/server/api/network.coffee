@@ -23,11 +23,15 @@ class Network extends (require "./baseApi.coffee")
     mdnsBrowser: null
     zombieBrowser: null
 
+    # Holds the login cookie for the router.
+    routerCookie: {timestamp: 0}
+
+    # Holds user status (online true, offline false) based on their mobile
+    # phones connected to the same network.
+    userStatus: {}
+
     # Is it running on the expected local network, or remotely?
     isHome: false
-
-    # Holds user ping status (online timestamp, otherwise null if offline).
-    onlineUsers: {}
 
     # Return a list of devices marked as offline (up=false).
     offlineDevices: =>
@@ -49,7 +53,10 @@ class Network extends (require "./baseApi.coffee")
         @mdnsBrowser.on "serviceUp", @onServiceUp
         @mdnsBrowser.on "serviceDown", @onServiceDown
 
+        # Set data and user statuses.
         @data = {devices: [], router: {}}
+        @userStatus = {}
+        @userStatus[username] = false for username, userdata of settings.users
 
         @checkIP()
         @baseInit()
@@ -128,29 +135,71 @@ class Network extends (require "./baseApi.coffee")
             routerUrl = settings.network.router.remoteUrl
 
         # Set POST body.
-        body = "SERVICES=RUNTIME.DEVICE.LANPCINFO"
+        body = "SERVICES=RUNTIME.DEVICE.LANPCINFO,RUNTIME.PHYINF"
 
-        # Start headless browser to get login cookie.
-        @zombieBrowser = new zombie() if not @zombieBrowser?
-        @zombieBrowser.visit routerUrl, (e, browser) =>
-            @zombieBrowser.fill "#loginpwd", settings.network.router.password
-            @zombieBrowser.pressButton "#noGAC", (e, browser) =>
-                cookie = @zombieBrowser.cookies.toString()
-                reqParams = {parseJson: false, body: body, cookie: cookie}
+        # Create a request helper, which is gonna be called whenever the login cookie is set.
+        getRouterConfig = =>
+            logger.debug "Network.probeRouter", "getRouterConfig", @routerCookie
+            reqParams = {parseJson: false, isForm: true, body: body, cookie: @routerCookie.data}
+            
+            @makeRequest routerUrl + "getcfg.php", reqParams, (err, result) =>
+                if not err?
+                    xml2js.parseString result, {explicitArray: false}, (xmlErr, parsedJson) =>
+                        if not xmlErr?
+                            routerObj = {timestamp: moment().unix()}
 
-                logger.debug "Network.probeRouter", routerUrl, cookie
+                            # Iterate router response to create a friendly object.
+                            # Looks complex but basically we're removing extra fields
+                            # and unecessary arrays to make a nice devices list.
+                            for m in parsedJson.postxml.module
 
-                # Set options and make request to router configuration.
-                @makeRequest routerUrl + "getcfg.php", reqParams, (err, result) =>
-                    console.warn result
-                    if err?
-                        logger.error "Network.probeRouter", err
-                    else
-                        xml2js.parseString result, (xmlErr, parsedJson) =>
-                            if xmlErr?
-                                logger.error "Network.probeRouter", "XML to JSON", xmlErr
-                            else
-                                @setData "router", parsedJson
+                                # Parse connected LAN devices.
+                                if m.service.toString() is "RUNTIME.DEVICE.LANPCINFO"
+                                    routerObj.lanDevices = m.runtime.lanpcinfo.entry
+
+                                # Parse connected Wifi devices.
+                                else if m.service.toString() is "RUNTIME.PHYINF"
+
+                                    # Parse wifi on 2.4 GHz.
+                                    uidWifi = settings.network.router.uidWifi24g
+                                    wifi24g = lodash.find m.runtime.phyinf, {uid: uidWifi}
+                                    routerObj.wifi24g = wifi24g.media.clients.entry
+
+                                    # Parse wifi on 2.4 GHz.
+                                    uidWifi = settings.network.router.uidWifi5g
+                                    wifi5g = lodash.find m.runtime.phyinf, {uid: uidWifi}
+                                    routerObj.wifi5g = wifi5g.media.clients.entry
+
+                            # Check user status based on connected devices (Wifi,using mac address).
+                            for username, userdata of settings.users
+                                isOnline = lodash.find routerObj.wifi24g, {macaddr: userdata.mac}
+                                isOnline = lodash.find routerObj.wifi5g, {macaddr: userdata.mac} if not isOnline?
+                                isOnline = isOnline?
+                                
+                                # User status just changed? Emit event to notify other modules.
+                                if isOnline and not @userStatus[username]
+                                    events.emit "network.user.status", {user: username, isOnline: true}
+                                else if not isOnline and @userStatus[username]
+                                    events.emit "network.user.status", {user: username, isOnline: false}
+
+                                @userStatus[username] = isOnline
+
+                            # Save router data.
+                            @setData "router", routerObj
+
+        # Check if router login cookie is still valid.
+        # Start headless browser to get login cookie otherwise.
+        if @routerCookie.timestamp < moment().subtract("s", 60).unix()
+            @zombieBrowser = new zombie() if not @zombieBrowser?
+            @zombieBrowser.visit routerUrl, (e, browser) =>
+                @zombieBrowser.fill "#loginpwd", settings.network.router.password
+                @zombieBrowser.pressButton "#noGAC", (e, browser) =>
+                    @routerCookie.data = @zombieBrowser.cookies.toString()
+                    @routerCookie.timestamp = moment().unix()
+                    logger.debug "Network.probeRouter", "Login cookie set"
+                    getRouterConfig()
+        else
+            getRouterConfig()
 
     # SERVICE DISCOVERY
     # -------------------------------------------------------------------------
