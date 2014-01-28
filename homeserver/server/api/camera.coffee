@@ -40,6 +40,11 @@ class Camera extends (require "./baseApi.coffee")
 
     # Save a snapshop for the specified camera.
     takeSnap: (id, callback) =>
+        if not settings.camera?.devices?
+            logger.warn "Camera.takeSnap", "No camera settings were found. Abort!"
+            return
+
+        # Camera ID is mandatory!
         if not id?
             throw new Error "The camera id must be specified."
 
@@ -98,6 +103,10 @@ class Camera extends (require "./baseApi.coffee")
 
     # Take camera snaps every `snapsIntervalSeconds` seconds.
     jobTakeSnaps: =>
+        if not settings.camera?.devices?
+            logger.warn "Camera.jobTakeSnaps", "No camera settings were found. Abort!"
+            return
+
         logger.info "Camera.jobTakeSnaps"
         for c in settings.camera.devices
             @takeSnap c.id if c.enabled
