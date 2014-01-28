@@ -80,7 +80,6 @@ class Hue extends (require "./baseApi.coffee")
 
                 # Log and emit refresh event.
                 logger.info "Hue.refreshHub", "#{lightCount} lights and #{groupCount} groups."
-                events.emit "hue.hub.refresh"
 
             callback err, results if callback?
 
@@ -121,6 +120,11 @@ class Hue extends (require "./baseApi.coffee")
     # Turn all lights on (true) or off (false).
     switchAllLights: (turnOn, callback) =>
         logger.debug "Hue.switchAllLights", turnOn
+        @setLightState @getLightIds(), {on: turnOn}, callback
+
+    # Turn group lights on (true) or off (false).
+    switchGroupLights: (turnOn, callback) =>
+        logger.debug "Hue.switchGroupLights", turnOn
         @setLightState @getLightIds(), {on: turnOn}, callback
 
     # Turn the specified light on (true) or off (false).

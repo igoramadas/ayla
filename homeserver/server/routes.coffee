@@ -8,6 +8,7 @@ class Routes
     logger = expresser.logger
     settings = expresser.settings
 
+    commander = require "./commander.coffee"
     emailApi = require "./api/email.coffee"
     fs = require "fs"
     fitbit = require "./api/fitbit.coffee"
@@ -34,8 +35,7 @@ class Routes
 
         # API routes.
         app.get "/api/home", apiHome
-        app.get "/api/commander/:cmd/:params", apiCommander
-        app.get "/api/commander/:cmd", apiCommander
+        app.post "/api/commander/:cmd", apiCommander
 
         # Email routes.
         app.get "/email", emailPage
@@ -94,7 +94,8 @@ class Routes
         
     # The commander processor.
     apiCommander = (req, res) ->
-        renderPage req, res, "commander"
+        commander.execute req.params.cmd, req.body, (err, result) ->
+            console.warn err, result
 
     # EMAIL ROUTES
     # -------------------------------------------------------------------------

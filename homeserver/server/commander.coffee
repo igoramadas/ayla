@@ -11,13 +11,15 @@ class Commander
     settings = expresser.settings
 
     hue = require "./api/hue.coffee"
+    lodash = require "lodash"
     network = require "./api/network.coffee"
     ninja = require "./api/ninja.coffee"
 
     # PARSE AND EXECUTE
     # -------------------------------------------------------------------------
 
-    # Parse and execute the specified command.
+    # Helper to parse and execute the specified command. This is called by
+    # external triggers (for example email action or SMS).
     execute: (cmd, options, callback) =>
         logger.debug "Commander.execute", cmd, options
 
@@ -26,6 +28,23 @@ class Commander
             for c in value
                 if cmd.indexOf(c) >= 0
                     try
+                        if options? and lodash.isString options
+
+                            # First try parsing options as json.
+                            try
+                                options = JSON.parse options
+                            # Can't parse JSON? Try as multipart form data then.
+                            catch ex
+                                parsedOptions = {}
+                                arr = options.split ","
+
+                                # Iterate all key / value pairs then update options.
+                                for a in arr
+                                    keyValue = a.split "="
+                                    parsedOptions[keyValue[0]] = keyValue[1]
+                                options = parsedOptions
+
+                        # Execute!
                         eval (this[key] options, callback)
                     catch ex
                         logger.error "Commander.execute", cmd, options, ex

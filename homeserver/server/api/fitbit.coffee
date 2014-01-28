@@ -91,7 +91,7 @@ class Fitbit extends (require "./baseApi.coffee")
     # JOBS
     # -------------------------------------------------------------------------
 
-    # Scheduled job to refresh the hub data.
+    # Scheduled job to check for missing Fitbit data.
     jobCheckMissingData: =>
         for d in settings.fitbit.checkMissingDataDays
             do (d) =>

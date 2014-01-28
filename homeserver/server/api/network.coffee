@@ -110,13 +110,13 @@ class Network extends (require "./baseApi.coffee")
         # Not checked yet? Set `up` to false.
         device.up = false if not device.up?
 
-        # Try connecting.
+        # Try connecting and set device as online.
         req = http.get {host: device.localIP, port: device.localPort}, (response) ->
             response.addListener "data", (data) -> response.isValid = true
             response.addListener "end", -> device.up = true if response.isValid
 
-        # On request error, set device as down.
-        req.on "error", (err) ->
+        # On request error, set device as offline.
+        req.on "error", (err) -> device.up = false
 
     # Probe the current network and check device statuses.
     probeDevices: =>
@@ -192,13 +192,19 @@ class Network extends (require "./baseApi.coffee")
         if @routerCookie.timestamp < moment().subtract("s", 60).unix()
             @zombieBrowser = new zombie() if not @zombieBrowser?
             @zombieBrowser.visit routerUrl, (e, browser) =>
-                @zombieBrowser.fill "#loginpwd", settings.network.router.password
-                @zombieBrowser.pressButton "#noGAC", (e, browser) =>
-                    @routerCookie.data = @zombieBrowser.cookies.toString()
-                    @routerCookie.timestamp = moment().unix()
-                    logger.debug "Network.probeRouter", "Login cookie set"
-                    getRouterConfig()
+
+                # Only fill form and proceed with login if password field is found.
+                if @zombieBrowser.query("#loginpwd")?
+                    @zombieBrowser.fill "#loginpwd", settings.network.router.password
+                    @zombieBrowser.pressButton "#noGAC", (e, browser) =>
+                        @routerCookie.data = @zombieBrowser.cookies.toString()
+                        @routerCookie.timestamp = moment().unix()
+                        logger.debug "Network.probeRouter", "Login cookie set"
+
+                        # Proceed to the router config XML after cookie is set.
+                        getRouterConfig()
         else
+            # Proceed to the router config XML.
             getRouterConfig()
 
     # SERVICE DISCOVERY
@@ -208,28 +214,32 @@ class Network extends (require "./baseApi.coffee")
     onServiceUp: (service) =>
         logger.debug "Network.onServiceUp", service
 
-        for sKey, sData of @data
-            if sData.devices?
-                existingDevice = lodash.find sData.devices, (d) ->
-                    if service.adresses?
-                        return service.addresses.indexOf(d.localIP) >= 0 and service.port is d.localPort
-                    else
-                        return false
+        # Try parsing and identifying the new service.
+        try
+            for sKey, sData of @data
+                if sData.devices?
+                    existingDevice = lodash.find sData.devices, (d) ->
+                        if service.adresses?
+                            return service.addresses.indexOf(d.localIP) >= 0 and service.port is d.localPort
+                        else
+                            return false
 
-        # Create new device or update existing?
-        if not existingDevice?
-            logger.info "Network.onServiceUp", "New", service.name, service.addresses, service.port
-            existingDevice = {id: service.name}
-            isNew = true
-        else
-            logger.info "Network.onServiceUp", "Existing", service.name, service.addresses, service.port
-            isNew = false
+            # Create new device or update existing?
+            if not existingDevice?
+                logger.info "Network.onServiceUp", "New", service.name, service.addresses, service.port
+                existingDevice = {id: service.name}
+                isNew = true
+            else
+                logger.info "Network.onServiceUp", "Existing", service.name, service.addresses, service.port
+                isNew = false
 
-        # Set device properties.
-        existingDevice.host = service.host
-        existingDevice.addresses = service.addresses
-        existingDevice.up = true
-        existingDevice.mdns = true
+            # Set device properties.
+            existingDevice.host = service.host
+            existingDevice.addresses = service.addresses
+            existingDevice.up = true
+            existingDevice.mdns = true
+        catch ex
+            @logError "Network.onServiceUp", ex
 
         @data.devices.push existingDevice if isNew
 
@@ -237,13 +247,17 @@ class Network extends (require "./baseApi.coffee")
     onServiceDown: (service) =>
         logger.info "Network.onServiceDown", service.name
 
-        for sKey, sData of @data
-            existingDevice = lodash.find sData.devices, (d) =>
-                return service.addresses.indexOf d.localIP >= 0 and service.port is d.localPort
+        # Try parsing and identifying the removed service.
+        try
+            for sKey, sData of @data
+                existingDevice = lodash.find sData.devices, (d) =>
+                    return service.addresses.indexOf d.localIP >= 0 and service.port is d.localPort
 
-            if existingDevice?
-                existingDevice.up = false
-                existingDevice.mdns = false
+                if existingDevice?
+                    existingDevice.up = false
+                    existingDevice.mdns = false
+        catch ex
+            @logError "Network.onServiceDown", ex
 
     # JOBS
     # -------------------------------------------------------------------------

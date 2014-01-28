@@ -39,13 +39,15 @@ class HomeManager extends (require "./baseManager.coffee")
 
         @baseInit()
 
-    # Start the home manager and listen to data updates.
+    # Start the home manager and listen to data updates / events.
     start: =>
         events.on "netamo.data.indoor", @onNetatmoIndoor
         events.on "netamo.data.outdoor", @onNetatmoOutdoor
         events.on "ninja.data.weather", @onNinjaWeather
         events.on "ubi.data.weather", @onUbiWeather
         events.on "wunderground.data.current", @onWunderground
+
+        events.on "hue.data.hub", @onHueHub
 
         @baseStart()
 
@@ -113,6 +115,13 @@ class HomeManager extends (require "./baseManager.coffee")
     # Check outdoor weather conditions using Weather Underground.
     onWunderground: (data) =>
         @setWeatherForecast data
+
+    # LIGHTS
+    # -------------------------------------------------------------------------
+
+    # When Hue hub details are refreshed.
+    onHueHub: (data) =>
+
 
     # GENERAL HELPERS
     # -------------------------------------------------------------------------
