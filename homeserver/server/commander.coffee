@@ -10,10 +10,10 @@ class Commander
     mailer = expresser.mailer
     settings = expresser.settings
 
-    hue = require "./api/hue.coffee"
+    hueApi = require "./api/hue.coffee"
     lodash = require "lodash"
-    network = require "./api/network.coffee"
-    ninja = require "./api/ninja.coffee"
+    networkApi = require "./api/network.coffee"
+    ninjaApi = require "./api/ninja.coffee"
 
     # PARSE AND EXECUTE
     # -------------------------------------------------------------------------
@@ -50,21 +50,51 @@ class Commander
                         logger.error "Commander.execute", cmd, options, ex
                         callback ex if callback?
 
-    # HOME (LIGHTS, WEATHER) COMMANDS
+    # HOME GENERAL
+    # -------------------------------------------------------------------------
+
+    # Set movie mode ON by turning off all lights, turning on the ambilight
+    # behind the TV and starting XBMC.
+    movieMode: (options, callback) =>
+        logger.info "Commander.movieMode", options
+        cError = []
+        cResult = []
+
+        # Turn off all Hue lights.
+        hueApi.switchAllLights false, (err, result) =>
+            cResult.push result
+            cError.push err if err?
+
+        # Turn off all RF lights.
+        ninjaApi.actuate433 {category: "rf"}, (err, result) =>
+            cResult.push result
+            cError.push err if err?
+
+        # Turn on TV coloured light.
+        ninjaApi.actuate433 settings.ninja.tbLightId, (err, result) =>
+            cResult.push result
+            cError.push err if err?
+
+        # No errors? Set array to null.
+        cError = null if cError.length < 1
+
+        callback cError, cResult if callback?
+
+    # HOME LIGHTS
     # -------------------------------------------------------------------------
 
     # Turn the specified house lights off.
     turnLightsOff: (options, callback) =>
         logger.info "Commander.turnLightsOff", options
 
-        hue.switchAllLights false, (err, result) =>
+        hueApi.switchAllLights false, (err, result) =>
             callback err, result if callback?
 
     # Turn the specified house lights on.
     turnLightsOn: (options, callback) =>
         logger.info "Commander.turnLightsOn", options
 
-        hue.switchAllLights true, (err, result) =>
+        hueApi.switchAllLights true, (err, result) =>
             callback err, result if callback?
 
     # SYSTEM COMMANDS
@@ -73,7 +103,7 @@ class Commander
     # Notify user of devices down.
     notifyNetworkDevicesDown: (options, callback) =>
         logger.info "Commander.notifyNetworkDevicesDown", options
-        down = network.getOfflineDevices()
+        down = networkApi.getOfflineDevices()
 
         # Set correct subject and message body based on device status.
         if down.length > 0

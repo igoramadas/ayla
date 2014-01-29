@@ -118,9 +118,13 @@ class Wunderground extends (require "./baseApi.coffee")
     # JOBS
     # -------------------------------------------------------------------------
 
-    # Refresh weather data and save to the database.
+    # Refresh weather data every few minutes.
     jobGetWeather: =>
         @getCurrentWeather()
+
+    # Refresh astronomy data once a day.
+    jobGetAstronomy: =>
+        @getAstronomy()
 
 
 # Singleton implementation.

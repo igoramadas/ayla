@@ -49,6 +49,7 @@
         }
     },
     "path": {
+        "cameraSnaps": "/data/cameraSnaps/",
         "data": "/data/",
         "emailTemplatesDir": "/data/emailTemplates/",
         "sslKeyFile": "ssl.key",

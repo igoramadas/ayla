@@ -15,15 +15,15 @@ class Withings extends (require "./baseApi.coffee")
     # INIT
     # -------------------------------------------------------------------------
 
-    # Init the GitHub module.
+    # Init the Withings module.
     init: =>
         @baseInit()
 
-    # Start collecting weather data.
+    # Start collecting fitness and health data from Withings.
     start: =>
         @baseStart()
 
-    # Stop collecting weather data.
+    # Stop collecting fitness and health data from Withings.
     stop: =>
         @baseStop()
 
@@ -72,7 +72,7 @@ class Withings extends (require "./baseApi.coffee")
     # PAGES
     # -------------------------------------------------------------------------
 
-    # Get the Fitbit dashboard data.
+    # Get the Withings dashboard data.
     getDashboard: (callback) =>
         start = moment().subtract("d", 30).unix()
         end = moment().unix()

@@ -87,20 +87,23 @@ class Ninja extends (require "./baseApi.coffee")
     # RF 433 SOCKETS
     # -------------------------------------------------------------------------
 
-    # Actuate remote controlled RF433 sockets.The id can be the subdevice ID or the
-    # short name defined on Ninja Blocks.
-    actuate433: (id) =>
+    # Actuate remote controlled RF433 sockets.The filter can be the subdevice ID,
+    # short name defined or explicit filter.
+    actuate433: (filter) =>
         if not @ninjaApi?
             logger.warn "Ninja.actuate433", "Ninja API object was not created. Abort!"
             return
 
-        # Get correct list of subdevices based on the provided id.
-        if @rf433.subDevices[id]?
-            sockets = [@rf433.subDevices[id]]
-        else
-            sockets = lodash.filter @rf433.subDevices, {shortName: id}
+        logger.info "Ninja.actuate433", filter
 
-        logger.debug "Ninja.actuate433", id, sockets
+        # Get correct list of subdevices based on the provided filter.
+        if lodash.isObject filter
+            if @rf433.subDevices[filter]?
+                sockets = [@rf433.subDevices[filter]]
+            else
+                sockets = lodash.filter @rf433.subDevices, {shortName: filter}
+        else
+            sockets = lodash.filter @rf433.subDevices, filter
 
         # Iterate and send command to subdevices.
         for s in sockets
@@ -109,7 +112,7 @@ class Ninja extends (require "./baseApi.coffee")
     # PAGES
     # -------------------------------------------------------------------------
 
-    # Get the Fitbit dashboard data.
+    # Get the Ninja Blocks dashboard data.
     getDashboard: (callback) =>
         @getDeviceList()
 

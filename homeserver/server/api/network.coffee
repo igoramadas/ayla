@@ -8,10 +8,13 @@ class Network extends (require "./baseApi.coffee")
     settings = expresser.settings
     utils = expresser.utils
 
+    buffer = require "buffer"
+    dgram = require "dgram"
     http = require "http"
     lodash = require "lodash"
     mdns = require "mdns"
     moment = require "moment"
+    net = require "net"
     url = require "url"
     xml2js = require "xml2js"
     zombie = require "zombie"
@@ -190,6 +193,84 @@ class Network extends (require "./baseApi.coffee")
         else
             # Proceed to the router config XML.
             getRouterConfig()
+
+    # NETWORK COMMANDS
+    # -------------------------------------------------------------------------
+
+    # Helper to create a WOL magic packet.
+    wolMagicPacket = (mac) ->
+        nmacs = 16
+        mbytes = 6
+        buf = new buffer.Buffer mbytes        
+
+        # Parse and rewrite mac address.
+        if mac.length is 2 * mbytes + (mbytes - 1)
+            mac = mac.replace(new RegExp(mac[2], "g"), "")
+
+        # Check if mac is valid.
+        if mac.length isnt 2 * mbytes or mac.match(/[^a-fA-F0-9]/)
+            throw new Error "MAC address #{mac} is not valid."
+
+        i = 0
+        while i < mbytes
+            buf[i] = parseInt mac.substr(2 * i, 2), 16
+            ++i
+
+        result = new buffer.Buffer (1 + nmacs) * mbytes
+
+        i = 0
+        while i < mbytes
+            result[i] = 0xff
+            ++i
+
+        i = 0
+        while i < nmacs
+            buf.copy result, (i + 1) * mbytes, 0, buf.length
+            ++i
+
+        return result
+
+    # Send a wake-on-lan packet to the specified device.
+    wol: (mac, options, callback) =>
+        if not callback? and lodash.isFunction options
+            callback = options
+            options = null
+
+        if not mac?
+            throw new Error "A valid MAC address must be specified."
+        else
+            socket = null
+
+        # Socket post write helper.
+        postWrite = (err) ->
+            if err? or i is numPackets
+                socket.close()
+                clearTimeout timer_id  if timer_id
+                callback error  if callback
+
+        # Socket send helper.
+        sendWol = ->
+            socket.send packet, 0, packet.length, port, address, postWrite
+
+        # Set default options (IP, number of packets, interval and port).
+        address = options.ip or "255.255.255.255"
+        numPackets = options.packets or 3
+        interval = options.interval or 200
+        port = options.port or 9
+
+        # Create magic packet and the socket connection.
+        packet = wolMagicPacket mac
+        socket = dgram.createSocket((if net.isIPv6(address) then "udp6" else "udp4"))
+        socket.once "listening", -> socket.setBroadcast true
+
+        # Send packets!
+        i = 0
+        while i < options.packets
+            interval = i * interval
+            setTimeout sendWol, interval
+            i++
+
+        return true
 
     # SERVICE DISCOVERY
     # -------------------------------------------------------------------------

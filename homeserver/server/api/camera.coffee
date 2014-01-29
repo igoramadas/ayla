@@ -24,7 +24,7 @@ class Camera extends (require "./baseApi.coffee")
 
     # Init the Camera module and set snaps path.
     init: =>
-        @snapsPath = settings.path.data + "cameraSnaps/"
+        @snapsPath = settings.path.cameraSnaps
         @baseInit()
 
     # Start the camera API jobs.
