@@ -96,8 +96,6 @@ class Ninja extends (require "./baseApi.coffee")
             logger.warn "Ninja.actuate433", "Ninja API object was not created. Abort!"
             return
 
-        logger.info "Ninja.actuate433", filter
-
         # Get correct list of subdevices based on the provided filter.
         if lodash.isString filter or lodash.isNumber filter
             if @rf433.subDevices[filter]?
@@ -106,6 +104,9 @@ class Ninja extends (require "./baseApi.coffee")
                 sockets = lodash.filter @rf433.subDevices, {shortName: filter}
         else
             sockets = lodash.filter @rf433.subDevices, filter
+
+        # Log.
+        logger.info "Ninja.actuate433", lodash.pluck sockets, "shortName"
 
         # Iterate and send command to subdevices.
         for s in sockets

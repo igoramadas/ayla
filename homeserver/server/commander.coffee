@@ -76,18 +76,18 @@ class Commander
                 cResult.push result
 
         # Turn off all Hue lights.
-        #hueApi.switchAllLights false, (err, result) =>
-        #    cError.push err if err?
-        #    cResult.push result
+        hueApi.switchAllLights false, (err, result) =>
+            cError.push err if err?
+            cResult.push result
 
-        # Turn off all RF sockets (execute all commands with short name having "OFF").
-        lightsFilter = (d) -> return d.shortName.indexOf("OFF") >= 0
+        # Turn off all RF sockets (execute all commands with short name having "Off").
+        lightsFilter = (d) -> return d.shortName.indexOf("Off") >= 0 and d.shortName.indexOf("TV") < 0
         ninjaApi.actuate433 lightsFilter, (err, result) =>
             cError.push err if err?
             cResult.push result
 
-        # Turn on TV coloured light. Will actuate RF having "TV" and "ON" on the short name.
-        tvLightFilter = (d) -> return d.shortName.indexOf("TV") >= 0 and d.shortName.indexOf("ON") >= 0
+        # Turn on TV coloured light. Will actuate RF having "TV" and "On" on the short name.
+        tvLightFilter = (d) -> return d.shortName.indexOf("TV") >= 0 and d.shortName.indexOf("On") >= 0
         ninjaApi.actuate433 tvLightFilter, (err, result) =>
             cError.push err if err?
             cResult.push result
