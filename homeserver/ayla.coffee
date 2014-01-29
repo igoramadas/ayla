@@ -19,6 +19,3 @@ expresser.init()
 
 # Init the main modules.
 security.init -> api.init -> manager.init -> routes.init()
-
-expresser.events.on "network.user.status", (user) ->
-    console.warn user

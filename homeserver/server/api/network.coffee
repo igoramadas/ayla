@@ -55,8 +55,6 @@ class Network extends (require "./baseApi.coffee")
 
         # Set data and user statuses.
         @data = {devices: [], router: {}}
-        @userStatus = {}
-        @userStatus[username] = false for username, userdata of settings.users
 
         @checkIP()
         @baseInit()
@@ -169,20 +167,6 @@ class Network extends (require "./baseApi.coffee")
                                     uidWifi = settings.network.router.uidWifi5g
                                     wifi5g = lodash.find m.runtime.phyinf, {uid: uidWifi}
                                     routerObj.wifi5g = wifi5g.media.clients.entry
-
-                            # Check user status based on connected devices (Wifi,using mac address).
-                            for username, userdata of settings.users
-                                isOnline = lodash.find routerObj.wifi24g, {macaddr: userdata.mac}
-                                isOnline = lodash.find routerObj.wifi5g, {macaddr: userdata.mac} if not isOnline?
-                                isOnline = isOnline?
-                                
-                                # User status just changed? Emit event to notify other modules.
-                                if isOnline and not @userStatus[username]
-                                    events.emit "network.user.status", {user: username, isOnline: true}
-                                else if not isOnline and @userStatus[username]
-                                    events.emit "network.user.status", {user: username, isOnline: false}
-
-                                @userStatus[username] = isOnline
 
                             # Save router data.
                             @setData "router", routerObj
