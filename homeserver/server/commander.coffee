@@ -23,7 +23,11 @@ class Commander
     execute: (cmd, options, callback) =>
         logger.debug "Commander.execute", cmd, options
 
-        # Iterate all command triggers till it finds a matching one.
+        # Command exists as a function? Execute it.
+        if lodash.isFunction @[cmd]
+            return @[cmd] options, callback
+
+        # Otherwise iterate all command triggers till it finds a matching one.
         for key, value of settings.commands
             for c in value
                 if cmd.indexOf(c) >= 0
@@ -48,7 +52,7 @@ class Commander
                         eval (this[key] options, callback)
                     catch ex
                         logger.error "Commander.execute", cmd, options, ex
-                        callback ex if callback?
+                        callback {err: ex, command: cmd, options: options} if callback?
 
     # HOME GENERAL
     # -------------------------------------------------------------------------
@@ -61,20 +65,20 @@ class Commander
         cResult = []
 
         # Get media server info (tarantino).
-        tarantino = lodash.find settings.network?.devices, {hostname: "tarantino"}
+        tarantino = lodash.find settings.network?.devices, {host: "tarantino"}
 
         # Send wol command to the home server.
         if not tarantino?
             logger.warn "Commander.movieMode", "Media server (Tarantino) settings are not defined. Do not send WOL."
         else
-            networkApi.wol tarantino.mac, (err, result) =>
+            networkApi.wol tarantino.mac, tarantino.localIP, (err, result) =>
                 cError.push err if err?
                 cResult.push result
 
         # Turn off all Hue lights.
-        hueApi.switchAllLights false, (err, result) =>
-            cError.push err if err?
-            cResult.push result
+        #hueApi.switchAllLights false, (err, result) =>
+        #    cError.push err if err?
+        #    cResult.push result
 
         # Turn off all RF sockets (execute all commands with short name having "OFF").
         lightsFilter = (d) -> return d.shortName.indexOf("OFF") >= 0

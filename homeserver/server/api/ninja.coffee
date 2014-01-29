@@ -81,6 +81,8 @@ class Ninja extends (require "./baseApi.coffee")
                 @rf433 = lodash.find result, {device_type: "rf433"} if not @rf433?
                 @rf433Id = lodash.findKey result, {device_type: "rf433"}
 
+                logger.info "Ninja.getDeviceList", "#{result.length} devices updated."
+
             # Callback set?
             callback err, result if callback?
 
@@ -108,6 +110,13 @@ class Ninja extends (require "./baseApi.coffee")
         # Iterate and send command to subdevices.
         for s in sockets
             @ninjaApi.device(@rf433Id).actuate s.data
+
+    # JOBS
+    # -------------------------------------------------------------------------
+
+    # Refresh ninja device details every hour.
+    jobGetDeviceList: =>
+        @getDeviceList()
 
     # PAGES
     # -------------------------------------------------------------------------

@@ -13,6 +13,22 @@
             "enabled": false
         }
     ],
+    "fitbit.coffee": [
+        {
+            "callback": "jobCheckMissingData",
+            "description": "Notify missing sleep and activities data from Fitbit.",
+            "schedule": ["14:00:00"],
+            "enabled": false
+        }
+    ],
+    "hue.coffee": [
+        {
+            "callback": "jobRefreshHub",
+            "description": "Refresh Philips Hue hub data.",
+            "schedule": 60,
+            "enabled": false
+        }
+    ],
     "netatmo.coffee": [
         {
             "callback": "jobGetOutdoor",
@@ -41,20 +57,12 @@
             "enabled": true
         }
     ],
-    "fitbit.coffee": [
+    "ninja.coffee": [
         {
-            "callback": "jobCheckMissingData",
-            "description": "Notify missing sleep and activities data from Fitbit.",
-            "schedule": ["14:00:00"],
-            "enabled": false
-        }
-    ],
-    "hue.coffee": [
-        {
-            "callback": "jobRefreshHub",
-            "description": "Refresh Philips Hue hub data.",
-            "schedule": 60,
-            "enabled": false
+            "callback": "jobGetDeviceList",
+            "description": "Probe network router and update its info.",
+            "schedule": 3600,
+            "enabled": true
         }
     ],
     "wunderground.coffee": [

@@ -35,6 +35,7 @@ class Routes
 
         # API routes.
         app.get "/api/home", apiHome
+        app.get "/api/commander/:cmd", apiCommander
         app.post "/api/commander/:cmd", apiCommander
 
         # Email routes.
@@ -95,7 +96,10 @@ class Routes
     # The commander processor.
     apiCommander = (req, res) ->
         commander.execute req.params.cmd, req.body, (err, result) ->
-            console.warn err, result
+            if err?
+                res.json {error: err}
+            else
+                res.json result
 
     # EMAIL ROUTES
     # -------------------------------------------------------------------------

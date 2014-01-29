@@ -38,7 +38,7 @@ class Security
     refreshAuthTokens: (callback) =>
         @authCache = {}
 
-        database.get "authCache", {"active": true}, (err, result) =>
+        database.get "authcache", {"active": true}, (err, result) =>
             if err?
                 logger.critical "Security.refreshAuthTokens", err
                 callback err, false if callback?
@@ -69,14 +69,14 @@ class Security
         @authCache[service].data = data
 
         # Update current "authCache" collection and set related tokens `active` to false.
-        database.set "authCache", {active: false}, {patch: true, upsert: false, filter: {service: service}}, (err, result) =>
+        database.set "authcache", {active: false}, {patch: true, upsert: false, filter: {service: service}}, (err, result) =>
             if err?
                 logger.error "Security.saveAuthToken", service, "Set active=false", err
             else
                 logger.debug "Security.saveAuthToken", service, "Set active=false", "OK"
 
             # Save to database.
-            database.set "authCache", data, (err, result) =>
+            database.set "authcache", data, (err, result) =>
                 if err?
                     logger.error "Security.saveAuthToken", service, data, err
                 else
@@ -87,7 +87,7 @@ class Security
     # Remove old auth tokens from the database.
     cleanAuthTokens: (callback) =>
         minTimestamp = moment().unix() - (settings.security.maxAuthTokenAgeDays * 24 * 60 * 60)
-        database.del "authCache", {timestamp: {$lt: minTimestamp}}, (err, result) =>
+        database.del "authcache", {timestamp: {$lt: minTimestamp}}, (err, result) =>
             if err?
                 logger.error "Security.cleanAuthTokens", "Timestamp #{minTimestamp}", err
             else

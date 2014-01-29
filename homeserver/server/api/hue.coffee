@@ -10,7 +10,7 @@ class Hue extends (require "./baseApi.coffee")
 
     async = require "async"
     lodash = require "lodash"
-    network = require "./network.coffee"
+    networkApi = require "./network.coffee"
     url = require "url"
 
     # PROPERTIES
@@ -91,7 +91,7 @@ class Hue extends (require "./baseApi.coffee")
         if not filter?
             throw new Error "A valid light, array of lights or filter must be specified."
         else
-            logger.debug "Hue.setLightState", id, state
+            logger.debug "Hue.setLightState", filter, state
 
         # Set request parameter to use PUT and pass the full state and create tasks array.
         params = {method: "PUT", body: state}
@@ -100,9 +100,9 @@ class Hue extends (require "./baseApi.coffee")
         # Check if id is a single light or an array of lights (if any).
         if filter.lightId?
             if lodash.isArray filter.lightId
-                arr = id
+                arr = filter.lightId
             else
-                arr = [id]
+                arr = [filter.lightId]
 
             # Make the light state change request for all specified ids.
             for i of arr
@@ -111,9 +111,9 @@ class Hue extends (require "./baseApi.coffee")
         # Check if id is a single group or an array of groups (if any).
         if filter.groupId?
             if lodash.isArray filter.groupId
-                arr = id
+                arr = filter.groupId
             else
-                arr = [id]
+                arr = [filter.groupId]
 
             # Make the light state change request for all specified ids.
             for i of arr

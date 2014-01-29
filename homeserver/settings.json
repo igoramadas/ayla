@@ -15,6 +15,9 @@
         "turnLightsOn": ["turn lights on", "all lights on"],
         "notifyNetworkDevicesDown": ["which servers are down", "are servers down"]
     },
+    "database": {
+        "dataCacheExpireHours": 240
+    },
     "email" : {
         "newMessages": {
             "sinceDays": 30

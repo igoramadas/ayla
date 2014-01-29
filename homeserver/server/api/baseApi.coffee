@@ -10,11 +10,10 @@ class BaseApi
     settings = expresser.settings
     sockets = expresser.sockets
 
-    http = require "http"
-    https = require "https"
     lodash = require "lodash"
     moment = require "moment"
     path = require "path"
+    request = require "request"
     url = require "url"
 
     # PROPERTIES
@@ -44,6 +43,12 @@ class BaseApi
     # Called when the module starts.
     baseStart: =>
         @running = true
+
+        # Create database TTL index.
+        expires = settings.database.dataCacheExpireHours * 3600
+        database.db.collection("data-#{@moduleId}").ensureIndex {"datestamp": 1}, {expireAfterSeconds: expires}
+
+        # Start cron jobs.
         cron.start {module: "#{@moduleId}.coffee"}
 
     # Called when the module stops.
@@ -87,7 +92,7 @@ class BaseApi
 
         # Save the new data on the database?
         if options.saveToDatabase
-            database.set "data-#{@moduleId}", {key: key, data: value}, (err, result) =>
+            database.set "data-#{@moduleId}", {key: key, data: value, datestamp: new Date()}, (err, result) =>
                 if err?
                     logger.error "#{@moduleName}.setData", key, err
                 else
@@ -98,7 +103,7 @@ class BaseApi
 
     # Base helper to make HTTP / HTTPS requests.
     makeRequest: (reqUrl, params, callback) =>
-        logger.debug "#{@moduleName}.makeHttpRequest", reqUrl, params
+        logger.debug "#{@moduleName}.makeRequest", reqUrl, params
 
         # The `params` is optional.
         if not callback? and lodash.isFunction params
@@ -106,72 +111,59 @@ class BaseApi
             params = null
 
         # Set request URL object.
-        reqOptions = url.parse reqUrl
+        reqOptions = {uri: url.parse reqUrl, encoding: settings.general.encoding}
 
         # Set request parameters.
         if params?
             reqOptions.method = params.method || (if params.body? then "POST" else "GET")
             reqOptions.headers = params.headers || {}
 
-            # Has body? If so, stringify it.
+            # Has body? If so, set proper JSON or form data.
             if params.body?
-                body = params.body
-                body = JSON.stringify body if not lodash.isString body
-                reqOptions.headers["Content-Length"] = params.contentLength || body.length
+                if params.isForm
+                    reqOptions.form = params.body
+                else
+                    if lodash.isString params.body
+                        reqOptions.body = params.body
+                    else
+                        reqOptions.body = JSON.stringify params.body
 
-                if params.contentType?
-                    reqOptions.headers["Content-Type"] = params.contentType
-                else if params.isForm
-                    reqOptions.headers["Content-Type"] = "application/x-www-form-urlencoded"
+                    # Force a specific content type?
+                    if params.contentType?
+                        reqOptions.headers["Content-Type"] = params.contentType
 
             # Has cookies?
             if params.cookie?
                 reqOptions.headers["Cookie"] = params.cookie
 
+        # No custom parameters? Set default GET request.
         else
             reqOptions.method = "GET"
 
-        # Set correct request handler.
-        if reqUrl.indexOf("https://") < 0
-            httpHandler = http
-        else
-            httpHandler = https
-
         # Make the HTTP request.
-        req = httpHandler.request reqOptions, (response) ->
-            response.downloadedData = ""
+        request reqOptions, (err, resp, body) =>
+            if err?
+                callback {err: err, url: reqUrl, params: params} if callback?
+                return
 
-            # Append received data.
-            response.addListener "data", (data) ->
-                response.downloadedData += data
+            # Has callback?
+            if callback?
+                try
+                    parseJson = not params?.parseJson? or params.parseJson
 
-            # On end set the `downloadedData` property as JSON.
-            response.addListener "end", =>
-                if callback?
-                    try
-                        parseJson = not params?.parseJson? or params.parseJson
+                    # Do not parse JSON if parseJson is false or response is not a string.
+                    if parseJson and lodash.isString body
+                        body = JSON.parse body
 
-                        # Do not parse JSON if parseJson is false or response is not a string.
-                        if parseJson and lodash.isString response.downloadedData
-                            response.downloadedData = JSON.parse response.downloadedData
+                    # Check for error on response.
+                    if body.error?
+                        respError = body.error
+                    else if body[0]?.error?
+                        respError = body[0].error
 
-                        # Check for error on response.
-                        if response.downloadedData.error?
-                            respError = response.downloadedData.error
-                        else if response.downloadedData[0]?.error?
-                            respError = response.downloadedData[0].error
-
-                        callback respError, response.downloadedData
-                    catch ex
-                        callback ex
-
-        # On request error, trigger the callback straight away.
-        req.on "error", (err) ->
-            callback {err: err, url: reqUrl, params: params} if callback?
-
-        # Write body, if any, and end request.
-        req.write body, settings.general.encoding if body?
-        req.end()
+                    callback respError, body
+                catch ex
+                    callback {err: ex, url: reqUrl, params: params}
 
     # Checks if auth data is valid and set. Returns false if not valid.
     checkAuthData: (obj) =>

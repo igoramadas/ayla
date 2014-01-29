@@ -14,7 +14,6 @@ class Network extends (require "./baseApi.coffee")
     lodash = require "lodash"
     mdns = require "mdns"
     moment = require "moment"
-    net = require "net"
     url = require "url"
     xml2js = require "xml2js"
     zombie = require "zombie"
@@ -136,7 +135,7 @@ class Network extends (require "./baseApi.coffee")
             routerUrl = settings.network.router.remoteUrl
 
         # Set POST body.
-        body = "SERVICES=RUNTIME.DEVICE.LANPCINFO,RUNTIME.PHYINF"
+        body = {SERVICES: "RUNTIME.DEVICE.LANPCINFO,RUNTIME.PHYINF"}
 
         # Create a request helper, which is gonna be called whenever the login cookie is set.
         getRouterConfig = =>
@@ -214,63 +213,75 @@ class Network extends (require "./baseApi.coffee")
         i = 0
         while i < mbytes
             buf[i] = parseInt mac.substr(2 * i, 2), 16
-            ++i
+            i++
 
+        # Create result buffer.
         result = new buffer.Buffer (1 + nmacs) * mbytes
 
         i = 0
         while i < mbytes
             result[i] = 0xff
-            ++i
+            i++
 
         i = 0
         while i < nmacs
             buf.copy result, (i + 1) * mbytes, 0, buf.length
-            ++i
+            i++
 
         return result
 
-    # Send a wake-on-lan packet to the specified device.
-    wol: (mac, options, callback) =>
-        if not callback? and lodash.isFunction options
-            callback = options
-            options = null
+    # Send a wake-on-lan packet to the specified device. Using ports 7 and 9.
+    wol: (mac, ip, callback) =>
+        if not callback? and lodash.isFunction ip
+            callback = ip
+            ip = "255.255.255.255"
 
+        # The mac address is mandatory!
         if not mac?
             throw new Error "A valid MAC address must be specified."
-        else
-            socket = null
-
-        # Socket post write helper.
-        postWrite = (err) ->
-            if err? or i is numPackets
-                socket.close()
-                clearTimeout timer_id  if timer_id
-                callback error  if callback
-
-        # Socket send helper.
-        sendWol = ->
-            socket.send packet, 0, packet.length, port, address, postWrite
 
         # Set default options (IP, number of packets, interval and port).
-        address = options.ip or "255.255.255.255"
-        numPackets = options.packets or 3
-        interval = options.interval or 200
-        port = options.port or 9
+        numPackets = 3
 
         # Create magic packet and the socket connection.
         packet = wolMagicPacket mac
-        socket = dgram.createSocket((if net.isIPv6(address) then "udp6" else "udp4"))
+        socket = dgram.createSocket "udp4"
+        wolTimer = null
+        i = 0
+
+        # Resulting variables.
+        socketErr = null
+        socketResult = null
+
+        # Socket post write helper.
+        postWrite = (err, result) ->
+            if err? or i is (numPackets * 2)
+                try
+                    socket.close()
+                    clearTimeout wolTimer if wolTimer?
+                catch ex
+                    err = ex
+                callback err, result if callback?
+
+
+        # Socket send helper.
+        sendWol = ->
+            i += 1
+
+            # Delay sending.
+            socket.send packet, 0, packet.length, 7, ip, postWrite
+            socket.send packet, 0, packet.length, 9, ip, postWrite
+
+            if i < numPackets
+                wolTimer = setTimeout sendWol, 300
+            else
+                wolTimer = null
+
+        # Socket broadcast when listening.
         socket.once "listening", -> socket.setBroadcast true
 
         # Send packets!
-        i = 0
-        while i < options.packets
-            interval = i * interval
-            setTimeout sendWol, interval
-            i++
-
-        return true
+        sendWol()
 
     # SERVICE DISCOVERY
     # -------------------------------------------------------------------------
