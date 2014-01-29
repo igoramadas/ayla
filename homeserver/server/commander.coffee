@@ -60,20 +60,33 @@ class Commander
         cError = []
         cResult = []
 
+        # Get media server info (tarantino).
+        tarantino = lodash.find settings.network?.devices, {hostname: "tarantino"}
+
+        # Send wol command to the home server.
+        if not tarantino?
+            logger.warn "Commander.movieMode", "Media server (Tarantino) settings are not defined. Do not send WOL."
+        else
+            networkApi.wol tarantino.mac, (err, result) =>
+                cError.push err if err?
+                cResult.push result
+
         # Turn off all Hue lights.
         hueApi.switchAllLights false, (err, result) =>
-            cResult.push result
             cError.push err if err?
+            cResult.push result
 
-        # Turn off all RF lights.
-        ninjaApi.actuate433 {category: "rf"}, (err, result) =>
-            cResult.push result
+        # Turn off all RF sockets (execute all commands with short name having "OFF").
+        lightsFilter = (d) -> return d.shortName.indexOf("OFF") >= 0
+        ninjaApi.actuate433 lightsFilter, (err, result) =>
             cError.push err if err?
+            cResult.push result
 
-        # Turn on TV coloured light.
-        ninjaApi.actuate433 settings.ninja.tbLightId, (err, result) =>
-            cResult.push result
+        # Turn on TV coloured light. Will actuate RF having "TV" and "ON" on the short name.
+        tvLightFilter = (d) -> return d.shortName.indexOf("TV") >= 0 and d.shortName.indexOf("ON") >= 0
+        ninjaApi.actuate433 tvLightFilter, (err, result) =>
             cError.push err if err?
+            cResult.push result
 
         # No errors? Set array to null.
         cError = null if cError.length < 1

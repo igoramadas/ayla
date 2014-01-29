@@ -97,7 +97,7 @@ class Ninja extends (require "./baseApi.coffee")
         logger.info "Ninja.actuate433", filter
 
         # Get correct list of subdevices based on the provided filter.
-        if lodash.isObject filter
+        if lodash.isString filter or lodash.isNumber filter
             if @rf433.subDevices[filter]?
                 sockets = [@rf433.subDevices[filter]]
             else
