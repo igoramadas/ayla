@@ -35,6 +35,7 @@
         "owner": "Igor Ramadas"
     },
     "home": {
+        "autoControlLights": true,
         "temperature": {
             "min": 16,
             "ideal": 19,

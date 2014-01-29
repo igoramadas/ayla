@@ -100,9 +100,7 @@ class Email extends (require "./baseApi.coffee")
         msg.on "attributes", (attrs) -> msgAttributes = attrs
 
         # On message end, process parsed message and attributes.
-        msg.on "end", =>
-            processer = => @processMessage parsedMsg, msgAttributes
-            setTimeout processer, settings.email.imap.processDelay
+        msg.on "end", => lodash.delay  @processMessage, settings.email.imap.processDelay, parsedMsg, msgAttributes
 
     # After message has been downloaded, process it.
     processMessage: (parsedMsg, msgAttributes) =>

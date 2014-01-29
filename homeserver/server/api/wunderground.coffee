@@ -104,6 +104,17 @@ class Wunderground extends (require "./baseApi.coffee")
 
             callback err, currentConditions if callback?
 
+    # Get sunrise and sunset hours and other astronomy details for today.
+    getAstronomy: (callback) =>
+        logger.debug "Wunderground.getAstronomy"
+
+        @apiRequest "astronomy", (err, result) =>
+            if not err?
+                astronomy = result.moon_phase
+                @setData "astronomy", astronomy
+
+            callback err, astronomy if callback?
+
     # JOBS
     # -------------------------------------------------------------------------
 

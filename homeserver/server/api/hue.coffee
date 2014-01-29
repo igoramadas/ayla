@@ -87,9 +87,9 @@ class Hue extends (require "./baseApi.coffee")
     # -------------------------------------------------------------------------
 
     # Main function to set light state (switch, colour, brightness etc).
-    setLightState: (id, state, callback) =>
-        if not id?
-            throw new Error "A valid light (or array of) id must be specified."
+    setLightState: (filter, state, callback) =>
+        if not filter?
+            throw new Error "A valid light, array of lights or filter must be specified."
         else
             logger.debug "Hue.setLightState", id, state
 
@@ -97,40 +97,52 @@ class Hue extends (require "./baseApi.coffee")
         params = {method: "PUT", body: state}
         tasks = []
 
-        # Check if id is a single light or an array of lights.
-        if lodash.isArray id
-            arr = id
-        else
-            arr = [id]
+        # Check if id is a single light or an array of lights (if any).
+        if filter.lightId?
+            if lodash.isArray filter.lightId
+                arr = id
+            else
+                arr = [id]
 
-        # Make the light state change request for all specified ids.
-        for i of arr
-            do (i) => tasks.push (cb) => @apiRequest "lights/#{i}/state", params, cb
+            # Make the light state change request for all specified ids.
+            for i of arr
+                do (i) => tasks.push (cb) => @apiRequest "lights/#{i}/state", params, cb
+
+        # Check if id is a single group or an array of groups (if any).
+        if filter.groupId?
+            if lodash.isArray filter.groupId
+                arr = id
+            else
+                arr = [id]
+
+            # Make the light state change request for all specified ids.
+            for i of arr
+                do (i) => tasks.push (cb) => @apiRequest "groups/#{i}/action", params, cb
 
         # Execute requests in parallel.
         async.parallelLimit tasks, settings.general.parallelTasksLimit, (err, results) =>
             if err?
-                @logError "Hue.setLightState", id, state, err
+                @logError "Hue.setLightState", filter, state, err
             else
-                logger.info "Hue.setLightState", id, state
-                events.emit "hue.light.state", id, state
+                logger.info "Hue.setLightState", filter, state
+                events.emit "hue.lights.state", filter, state
 
             callback err, results if callback?
 
     # Turn all lights on (true) or off (false).
     switchAllLights: (turnOn, callback) =>
         logger.debug "Hue.switchAllLights", turnOn
-        @setLightState @getLightIds(), {on: turnOn}, callback
+        @setLightState {groupId: 0}, {on: turnOn}, callback
 
     # Turn group lights on (true) or off (false).
-    switchGroupLights: (turnOn, callback) =>
+    switchGroupLights: (id, turnOn, callback) =>
         logger.debug "Hue.switchGroupLights", turnOn
-        @setLightState @getLightIds(), {on: turnOn}, callback
+        @setLightState {groupId: id}, {on: turnOn}, callback
 
     # Turn the specified light on (true) or off (false).
     switchLight: (id, turnOn, callback) =>
         logger.debug "Hue.switchLight", id, turnOn
-        @setLightState id, {on: turnOn}, callback
+        @setLightState {lightId: id}, {on: turnOn}, callback
 
     # JOBS
     # -------------------------------------------------------------------------

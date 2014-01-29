@@ -37,7 +37,7 @@
         {
             "callback": "jobProbeRouter",
             "description": "Probe network router and update its info.",
-            "schedule": 30,
+            "schedule": 20,
             "enabled": true
         }
     ],

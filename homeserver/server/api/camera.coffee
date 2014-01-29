@@ -10,7 +10,7 @@ class Camera extends (require "./baseApi.coffee")
     fs = require "fs"
     lodash = require "lodash"
     moment = require "moment"
-    network = require "./network.coffee"
+    networkApi = require "./network.coffee"
     path = require "path"
 
     # PROPERTIES
@@ -64,7 +64,7 @@ class Camera extends (require "./baseApi.coffee")
         saveTo = @snapsPath + "#{id}.#{now}.jpg"
 
         # URL remote or local?
-        downloadUrl = if network.isHome then cam.localUrl else cam.remoteUrl
+        downloadUrl = if networkApi.isHome then cam.localUrl else cam.remoteUrl
 
         # Save (download) a snap from the camera.
         downloader.download downloadUrl, saveTo, (err, result) =>

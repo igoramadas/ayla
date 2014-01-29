@@ -10,6 +10,8 @@ class UserManager extends (require "./baseManager.coffee")
     settings = expresser.settings
 
     hueApi = require "../api/hue.coffee"
+    moment = require "moment"
+    wundergroundApi = require "../api/wunderground.coffee"
 
     # INIT
     # -------------------------------------------------------------------------
@@ -59,23 +61,48 @@ class UserManager extends (require "./baseManager.coffee")
         logger.info "UserManager.onUserStatus", data
         events.emit "usermanager.user.status", data
 
-        # Cancel lightsoff timer when someone is online.
+        # Auto control house lights?
+        @switchLightsOnStatus data if settings.home.autoControlLights
+
+    # LIGHT CONTROL
+    # -------------------------------------------------------------------------
+
+    # Switch house lights based on user status.
+    switchLightsOnStatus: (data) =>
+        logger.debug "UserManager.switchLightsOnStatus", data
+
+        # If user is online, check if lights should be turned on.
         if data.isOnline
             if @timers["lightsoff"]?
                 clearTimeout @timers["lightsoff"]
                 delete @timers["lightsoff"]
+
+            # Check if anyone is already home.
+            anyoneOnline = false
+            for u of @data.users
+                anyoneOnline = true if u.isOnline
+
+            # If first person online, get current time, sunrise and sunset hours.
+            if not anyoneOnline
+                currentHour = moment().hour()
+                sunrise = wundergroundApi.data.astronomy?.sunrise.hour or 7
+                sunset = wundergroundApi.data.astronomy?.sunset.hour or 17
+
+                # Is it dark now? Turn lights on!
+                if currentHour < sunrise or currentHour > sunset
+                    logger.info "UserManager.onUserStatus", "Auto turned lights ON, #{data.user} arrived."
+                    hueApi.switchAllLights true
+
         # Otherwise proceed wich checking if everyone's offline.
         else
             everyoneOffline = true
-
             for u of @data.users
                 everyoneOffline = false if u.isOnline
 
             # Everyone offline? Switch lights off after 60 seconds.
             if everyoneOffline
-                logger.info "UserManager.onUserStatus", "Everyone is offline now."
-                timer = -> hueApi.switchAllLights false
-                @timers["lightsoff"] = setTimeout timer, 60000
+                logger.info "UserManager.onUserStatus", "Everyone is offline, auto turn lights OFF soon."
+                @timers["lightsoff"] = lodash.delay hueApi.switchAllLights, 30000, false
 
 
 # Singleton implementation.
