@@ -55,7 +55,7 @@ class Hue extends (require "./baseApi.coffee")
             params = null
 
         # Set full URL and make the HTTP request.
-        baseUrl = (if network.isHome then settings.hue.api.localUrl else settings.hue.api.remoteUrl)
+        baseUrl = (if networkApi.isHome then settings.hue.api.localUrl else settings.hue.api.remoteUrl)
         reqUrl = baseUrl + settings.hue.api.user + "/" + urlPath
         @makeRequest reqUrl, params, callback
 

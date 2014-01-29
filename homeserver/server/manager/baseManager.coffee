@@ -15,6 +15,9 @@ class BaseManager
     # Holds all downloaded / processed data for that particular module.
     data: {}
 
+    # Holds timers and intervals.
+    timers: {}
+
     # Holds all errors that happened on the module.
     errors: {}
 

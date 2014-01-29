@@ -15,9 +15,6 @@ class Manager
     # Modules will be populated on init.
     modules: {}
 
-    # User actions will be populated on init.
-    userActions: {}
-
     # INIT
     # -------------------------------------------------------------------------
 
@@ -34,13 +31,6 @@ class Manager
                 module = require "./manager/#{f}"
                 module.init()
                 @modules[module.moduleId] = module
-
-        # Init user actions.
-        files = fs.readdirSync userActionsPath
-        for f in files
-            if f.indexOf(".coffee") > 0
-                userAction = require "./userActions/#{f}"
-                @modules[path.basename(f, ".coffee")] = userAction
 
         # Send email telling Ayla home server has started.
         if settings.email?.toMobile?
