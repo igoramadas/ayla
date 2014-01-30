@@ -176,19 +176,25 @@ class Network extends (require "./baseApi.coffee")
         # Check if router login cookie is still valid.
         # Start headless browser to get login cookie otherwise.
         if @routerCookie.timestamp < moment().subtract("s", 60).unix()
-            @zombieBrowser = new zombie() if not @zombieBrowser?
-            @zombieBrowser.visit routerUrl, (e, browser) =>
+            .fill@zombieBrowser = new zombie() if not @zombieBrowser?
 
-                # Only fill form and proceed with login if password field is found.
-                if @zombieBrowser.query("#loginpwd")?
-                    @zombieBrowser.fill "#loginpwd", settings.network.router.password
-                    @zombieBrowser.pressButton "#noGAC", (e, browser) =>
-                        @routerCookie.data = @zombieBrowser.cookies.toString()
-                        @routerCookie.timestamp = moment().unix()
-                        logger.debug "Network.probeRouter", "Login cookie set"
+            try
+                @zombieBrowser.visit routerUrl, (e, browser) =>
 
-                        # Proceed to the router config XML after cookie is set.
-                        getRouterConfig()
+                    # Only fill form and proceed with login if password field is found.
+                    if @zombieBrowser.document.getElementById("loginpwd")?
+                        @zombieBrowser.fill "#loginpwd", settings.network.router.password
+                        @zombieBrowser.pressButton "#noGAC", (e, browser) =>
+                            @routerCookie.data = @zombieBrowser.cookies.toString()
+                            @routerCookie.timestamp = moment().unix()
+                            @zombieBrowser.close()
+                            logger.debug "Network.probeRouter", "Login cookie set"
+
+                            # Proceed to the router config XML after cookie is set.
+                            getRouterConfig()
+            catch ex
+                logger.debug "Network.probeRouter", "Zombie error.", ex
+
         else
             # Proceed to the router config XML.
             getRouterConfig()
