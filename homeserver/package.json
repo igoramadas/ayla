@@ -10,6 +10,12 @@
     "domains": [
         "ayla.codeplex.com"
     ],
+    "scripts": {
+        "start": "node index.js",
+    },
+    "bin": {
+        "ayla": "./bin/ayla"
+    },
     "engines": {
         "node": "*"
     },

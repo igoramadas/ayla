@@ -1,11 +1,12 @@
-.idea/
+.idea/*.*
 atlassian-ide-plugin.xml
-data/
-logs/
+data/*.*
+logs/*.*
 newrelic.js
 newrelic_agent.log
-node_modules/
+node_modules/*.*
 npm-shrinkwrap.json
 settings.live.json
+settings.production.json
 ssl.cer
 ssl.key
