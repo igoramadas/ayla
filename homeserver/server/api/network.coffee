@@ -176,13 +176,18 @@ class Network extends (require "./baseApi.coffee")
         # Check if router login cookie is still valid.
         # Start headless browser to get login cookie otherwise.
         if @routerCookie.timestamp < moment().subtract("s", 60).unix()
-            .fill@zombieBrowser = new zombie() if not @zombieBrowser?
+            if not @zombieBrowser?
+                debug = settings.general.debug
+                @zombieBrowser = new zombie {debug: debug, silent: not debug}
 
+            # Browser calls inside a try - catch to avoid weird JS / headless problems.
             try
-                @zombieBrowser.visit routerUrl, (e, browser) =>
+                @zombieBrowser.visit routerUrl, (err, browser) =>
+                    if err?
+                        logger.debug "Network.probeRouter", "Zombie error.", err
 
                     # Only fill form and proceed with login if password field is found.
-                    if @zombieBrowser.document.getElementById("loginpwd")?
+                    else if @zombieBrowser.document?.getElementById("loginpwd")?
                         @zombieBrowser.fill "#loginpwd", settings.network.router.password
                         @zombieBrowser.pressButton "#noGAC", (e, browser) =>
                             @routerCookie.data = @zombieBrowser.cookies.toString()
