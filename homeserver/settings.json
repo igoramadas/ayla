@@ -24,7 +24,7 @@
         "newMessages": {
             "sinceDays": 30
         },
-        "randomGreetings": ["Hey cutie", "Hi sir"]
+        "randomGreetings": ["Hey cutie", "Hi sir", "What's up boss"]
     },
     "fitbit": {
         "checkMissingDataDays": [2, 5, 10],

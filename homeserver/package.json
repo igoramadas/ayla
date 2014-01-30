@@ -1,6 +1,6 @@
 {
     "name": "ayla",
-    "version": "0.0.9",
+    "version": "0.1.0",
     "description": "Ayla at your service.",
     "homepage": "http://ayla.codeplex.com",
     "author": "Igor Ramadas <igor@devv.com>",
@@ -11,7 +11,7 @@
         "ayla.codeplex.com"
     ],
     "scripts": {
-        "start": "node index.js",
+        "start": "node index.js"
     },
     "bin": {
         "ayla": "./bin/ayla"

@@ -69,28 +69,27 @@ class HomeManager extends (require "./baseManager.coffee")
 
     # Helper to set current conditions for the specified room.
     setRoomWeather: (room, data) =>
-        logger.info "HomeManager.setRoomWeather", room, data
-
         roomObj = @data[room]
         roomObj.temperature = data.temperature
         roomObj.humidity = data.humidity
         roomObj.co2 = data.co2
+        logger.info "HomeManager.setRoomWeather", roomObj
 
         @checkRoomWeather room
 
     # Helper to set current conditions for outdoors.
     setOutdoorWeather: (data) =>
-        logger.info "HomeManager.setOutdoorWeather", data
-
         @data.outdoor.temperature = data.temperature
         @data.outdoor.humidity = data.humidity
+        logger.info "HomeManager.setOutdoorWeather", @data.outdoor
 
     # Helper to set forecast conditions for outdoors.
     setWeatherForecast: (data) =>
-        logger.info "HomeManager.setWeatherForecast", data
-
-        @data.forecast.temperature = data.temperature
-        @data.forecast.humidity = data.humidity
+        @data.forecast.text = data.weather
+        @data.forecast.temperature = data.temperature or data.temp_c
+        @data.forecast.humidity = data.humidity or data.relative_humidity
+        @data.forecast.pressure = data.pressure or data.pressure_mb
+        logger.info "HomeManager.setWeatherForecast", @data.forecast
 
     # Check indoor weather conditions using Netatmo.
     onNetatmoIndoor: (data) =>
@@ -103,8 +102,8 @@ class HomeManager extends (require "./baseManager.coffee")
     # Check indoor weather conditions using Ninja Blocks.
     onNinjaWeather: (data) =>
         weather = {}
-        weather.temperature = data.temperature[0] if data.temperature.length > 0
-        weather.humidity = data.humidity[0] if data.humidity.length > 0
+        weather.temperature = data.temperature[0].value if data.temperature.length > 0
+        weather.humidity = data.humidity[0].value if data.humidity.length > 0
 
         @setRoomWeather "kitchen", weather
 

@@ -55,8 +55,7 @@ class Wunderground extends (require "./baseApi.coffee")
         # Iterate stations and create a HTTP request for each station.
         for q in queries
             do (q) =>
-                task = (cb) =>
-                    @makeRequest reqUrl + "#{q}.json", cb
+                task = (cb) => @makeRequest reqUrl + "#{q}.json", cb
 
                 # Add task and debug log.
                 tasks.push task
@@ -80,19 +79,19 @@ class Wunderground extends (require "./baseApi.coffee")
                 try
                     if d[field][prop]?
                         curValue = result[prop]
-                        nextValue = d[field][prop]
+                        nextValue = d[field][prop].toString()
 
                         # Parse next value.
-                        if nextValue.toString().indexOf("%") > 0
-                            nextValue = nextValue.toString().replace "%", ""
+                        if nextValue.indexOf("%") >= 0
+                            nextValue = nextValue.replace "%", ""
                         if not isNaN nextValue
                             nextValue = parseFloat nextValue
 
                         # Set result data.
-                        if not curValue?
+                        if not curValue? or curValue is ""
                             result[prop] = nextValue
                         else
-                            if not isNaN nextValue
+                            if not isNaN curValue
                                 result[prop] = ((curValue + nextValue) / 2).toFixed(2)
                             else if curValue.indexOf(nextValue) < 0
                                 result[prop] += ", " + nextValue

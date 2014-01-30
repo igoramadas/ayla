@@ -81,7 +81,7 @@ class Ninja extends (require "./baseApi.coffee")
                 @rf433 = lodash.find result, {device_type: "rf433"} if not @rf433?
                 @rf433Id = lodash.findKey result, {device_type: "rf433"}
 
-                logger.info "Ninja.getDeviceList", "#{result.length} devices updated."
+                logger.info "Ninja.getDeviceList", "Updated, #{lodash.size result} devices."
 
             # Callback set?
             callback err, result if callback?
