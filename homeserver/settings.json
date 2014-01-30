@@ -17,6 +17,7 @@
         "turnLightsOn": ["turn lights on", "all lights on"]
     },
     "database": {
+        "connString": "mongodb://localhost/ayla",
         "dataCacheExpireHours": 240
     },
     "email" : {

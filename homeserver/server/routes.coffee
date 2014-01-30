@@ -27,7 +27,7 @@ class Routes
     # -------------------------------------------------------------------------
 
     # Set most routes on init. The app (from Expresser) must be passed here.
-    init: =>
+    init: (callback) =>
         app = expresser.app.server
 
         # Main route.
@@ -78,6 +78,8 @@ class Routes
 
         # Weather underground routes.
         app.get "/wunderground", wundergroundPage
+
+        callback() if callback?
 
     # MAIN ROUTES
     # -------------------------------------------------------------------------
