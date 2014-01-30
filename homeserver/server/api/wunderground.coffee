@@ -32,19 +32,31 @@ class Wunderground extends (require "./baseApi.coffee")
 
     # Helper to make requests to Weather Underground for stations defined on the settings.
     # The callback result will be the average of station data.
-    apiRequest: (path, callback) =>
+    apiRequest: (path, options, callback) =>
         if not settings.wunderground.api?
             logger.warn "Wunderground.apiRequest", "Wundeground API settings are not defined. Abort!"
             return
 
+        if not callback? and lodash.isFunction options
+            callback = options
+            options = {}
+
+        # Set tasks and stations arrays.
         tasks = []
 
+        # Set queries based on options (default or stationIds).
+        if options.stationIds?
+            queries = options.stationIds
+            reqUrl = settings.wunderground.api.url + settings.wunderground.api.clientId + "/#{path}/q/pws:"
+        else
+            queries = [settings.wunderground.defaultQuery]
+            reqUrl = settings.wunderground.api.url + settings.wunderground.api.clientId + "/#{path}/q/"
+
         # Iterate stations and create a HTTP request for each station.
-        for id in settings.wunderground.stationIds
-            do (id) =>
+        for q in queries
+            do (q) =>
                 task = (cb) =>
-                    reqUrl = settings.wunderground.api.url + settings.wunderground.api.clientId + "/#{path}/q/pws:#{id}.json"
-                    @makeRequest reqUrl, cb
+                    @makeRequest reqUrl + "#{q}.json", cb
 
                 # Add task and debug log.
                 tasks.push task
@@ -97,7 +109,7 @@ class Wunderground extends (require "./baseApi.coffee")
     getCurrentWeather: (callback) =>
         logger.debug "Wunderground.getCurrentWeather"
 
-        @apiRequest "conditions", (err, results) =>
+        @apiRequest "conditions", {stationIds: settings.wunderground.stationIds}, (err, results) =>
             if not err?
                 currentConditions = @getAverageResult results, "current_observation"
                 @setData "current", currentConditions
@@ -110,7 +122,7 @@ class Wunderground extends (require "./baseApi.coffee")
 
         @apiRequest "astronomy", (err, result) =>
             if not err?
-                astronomy = result.moon_phase
+                astronomy = result[0].moon_phase
                 @setData "astronomy", astronomy
 
             callback err, astronomy if callback?

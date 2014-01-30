@@ -11,9 +11,10 @@
         "snapsMaxAgeDays": 3
     },
     "commands": {
+        "notifyNetworkDevicesDown": ["which servers are down", "are servers down"],
+        "movieMode": ["movie mode", "movie time", "start movie"],
         "turnLightsOff": ["turn lights off", "all lights off"],
-        "turnLightsOn": ["turn lights on", "all lights on"],
-        "notifyNetworkDevicesDown": ["which servers are down", "are servers down"]
+        "turnLightsOn": ["turn lights on", "all lights on"]
     },
     "database": {
         "dataCacheExpireHours": 240
@@ -62,6 +63,7 @@
         "maxAuthTokenAgeDays": 90
     },
     "wunderground": {
+        "defaultQuery": "Germany/Berlin",
         "resultFields": ["weather", "temp_c", "relative_humidity", "wind_degrees", "wind_kph", "pressure_mb",
                          "dewpoint_c", "feelslike_c", "visibility_km", "precip_1hr_metric"],
         "stationIds": ["IBERLIN15", "IBERLINB41"]
