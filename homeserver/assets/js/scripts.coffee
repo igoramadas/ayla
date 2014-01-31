@@ -21,6 +21,7 @@ onReady = ->
         currentPath = location.pathname
         $("#header").find(".#{currentPath}").addClass "selected"
         ayla.currentView.init() if ayla.currentView?
+        $(document).foundation()
 
 # Hey ho let's go!
 $(document).ready onReady

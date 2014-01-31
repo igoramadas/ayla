@@ -1,5 +1,5 @@
 doctype html
-html
+html.no-js
     head
         title Ayla
         meta(name="apple-mobile-web-app-capable", content="yes")
@@ -11,18 +11,27 @@ html
             != js(j)
     body
         #wrapper
-            #header
-                .contents
-                    h2 Ayla
-                    a.today(href="/today") Today
-                    a.home(href="/home") Home
-                    a.security(href="/security") Security
-                    a.fitness(href="/fitness") Fitness
-                    a.money(href="/money") Money
-                    a.system(href="/system") System
+            nav#header.top-bar
+                ul.title-area
+                    li.name
+                        h1
+                            a(href="/") Ayla
+                section.top-bar-section
+                    ul.left
+                        li
+                            a.today(href="/today") Today
+                        li
+                            a.home(href="/home") Home
+                        li
+                            a.security(href="/security") Security
+                        li
+                            a.fitness(href="/fitness") Fitness
+                        li
+                            a.money(href="/money") Money
+                        li
+                            a.system(href="/system") System
             #alerts
-                .contents
-                    label.title
-                    span.message
+                label.title
+                span.message
             h1= pageTitle
             block contents

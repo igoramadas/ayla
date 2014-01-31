@@ -1,5 +1,11 @@
 // GENERIC STYLES
 
+// Import foundation
+@import "normalize.css"
+@import "foundation.css"
+
+// ----------------------------------------------------------------------------
+
 // Variables
 lightBgColor = rgb(245, 250, 255)
 lightHoverColor = rgb(220, 230, 250)
@@ -27,44 +33,10 @@ lightHoverColor = rgb(220, 230, 250)
 // Body main styles
 body
     font-family OpenSansLight, sans-serif
-    font-size 18px
-    margin 0
-    padding 0
-    position relative
-    text-align center
-    width 100%
-
-// Center contents
-.contents
-    margin auto
-    width 900px
 
 // Main wrapper
 #wrapper
     margin auto
-
-// Top menu
-#header
-    background rgba(0, 0, 0, 0.8)
-    text-align left
-
-    h1
-        display inline-block
-        color rgb(255, 255, 255)
-        font-size 20px
-        margin 0 10px 0 0
-        padding 0
-    a
-        display inline-block
-        color rgb(255, 240, 220)
-        font-size 20px
-        padding 8px 10px 7px 10px
-        text-decoration none
-
-    a.selected
-        background rgb(255, 255, 255)
-        color rgb(0, 0, 0)
-        font-family OpenSans
 
 // Error and notification alerts
 #alerts
@@ -96,7 +68,9 @@ body
 table
     text-align left
 
-// IMPORT EXTRA STYLES
+// ----------------------------------------------------------------------------
+
+// Import extra styles
 @import datatables
 @import home
 @import system
