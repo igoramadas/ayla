@@ -8,6 +8,7 @@ class HomeManager extends (require "./baseManager.coffee")
     logger = expresser.logger
     mailer = expresser.mailer
     settings = expresser.settings
+    sockets = expresser.sockets
 
     # PROPERTIES
     # -------------------------------------------------------------------------
@@ -73,14 +74,21 @@ class HomeManager extends (require "./baseManager.coffee")
         roomObj.temperature = data.temperature
         roomObj.humidity = data.humidity
         roomObj.co2 = data.co2
+
+        # Emit updated room conditions to clients and log.
+        @emitData room
         logger.info "HomeManager.setRoomWeather", roomObj
 
+        # Check if room conditions are ok.
         @checkRoomWeather room
 
     # Helper to set current conditions for outdoors.
     setOutdoorWeather: (data) =>
         @data.outdoor.temperature = data.temperature
         @data.outdoor.humidity = data.humidity
+
+        # Emit updated outdoor conditions to clients and log.
+        @emitData "outdoor"
         logger.info "HomeManager.setOutdoorWeather", @data.outdoor
 
     # Helper to set forecast conditions for outdoors.
@@ -89,6 +97,9 @@ class HomeManager extends (require "./baseManager.coffee")
         @data.forecast.temperature = data.temperature or data.temp_c
         @data.forecast.humidity = data.humidity or data.relative_humidity
         @data.forecast.pressure = data.pressure or data.pressure_mb
+
+        # Emit updated forecast to clients and log.
+        @emitData "forecast"
         logger.info "HomeManager.setWeatherForecast", @data.forecast
 
     # Check indoor weather conditions using Netatmo.

@@ -10,6 +10,7 @@ class UserManager extends (require "./baseManager.coffee")
     settings = expresser.settings
 
     hueApi = require "../api/hue.coffee"
+    lodash = require "lodash"
     moment = require "moment"
     wundergroundApi = require "../api/wunderground.coffee"
 
@@ -57,22 +58,22 @@ class UserManager extends (require "./baseManager.coffee")
 
     # Update user status (online or offline) and automatically turn off lights
     # when there's no one home for a few minutes.
-    onUserStatus: (data) =>
-        logger.info "UserManager.onUserStatus", data
-        events.emit "usermanager.user.status", data
+    onUserStatus: (userStatus) =>
+        logger.info "UserManager.onUserStatus", userStatus
+        @emitData "user.status", userStatus
 
         # Auto control house lights?
-        @switchLightsOnStatus data if settings.home.autoControlLights
+        @switchLightsOnStatus userStatus if settings.home.autoControlLights
 
     # LIGHT CONTROL
     # -------------------------------------------------------------------------
 
     # Switch house lights based on user status.
-    switchLightsOnStatus: (data) =>
-        logger.debug "UserManager.switchLightsOnStatus", data
+    switchLightsOnStatus: (userStatus) =>
+        logger.debug "UserManager.switchLightsOnStatus", userStatus
 
         # If user is online, check if lights should be turned on.
-        if data.isOnline
+        if userStatus.isOnline
             if @timers["lightsoff"]?
                 clearTimeout @timers["lightsoff"]
                 delete @timers["lightsoff"]
@@ -90,7 +91,7 @@ class UserManager extends (require "./baseManager.coffee")
 
                 # Is it dark now? Turn lights on!
                 if currentHour < sunrise or currentHour > sunset
-                    logger.info "UserManager.onUserStatus", "Auto turned lights ON, #{data.user} arrived."
+                    logger.info "UserManager.onUserStatus", "Auto turned lights ON, #{userStatus.user} arrived."
                     hueApi.switchAllLights true
 
         # Otherwise proceed wich checking if everyone's offline.

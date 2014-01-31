@@ -1,4 +1,4 @@
-# SYSTEM NETWORK VIEW
+# HOME LIGHTS VIEW
 # --------------------------------------------------------------------------
 class HomeLightsView extends ayla.BaseView
 

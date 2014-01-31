@@ -175,10 +175,9 @@ class Network extends (require "./baseApi.coffee")
 
         # Check if router login cookie is still valid.
         # Start headless browser to get login cookie otherwise.
-        if @routerCookie.timestamp < moment().subtract("s", 60).unix()
+        if @routerCookie.timestamp < moment().subtract("s", 600).unix()
             if not @zombieBrowser?
-                debug = settings.general.debug
-                @zombieBrowser = new zombie {debug: debug, silent: not debug}
+                @zombieBrowser = new zombie {debug: settings.general.debug, silent: not settings.general.debug}
 
             # Browser calls inside a try - catch to avoid weird JS / headless problems.
             try
