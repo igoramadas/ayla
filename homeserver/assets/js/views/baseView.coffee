@@ -2,11 +2,19 @@
 # --------------------------------------------------------------------------
 class BaseView
 
+    # PROPERTIES
+    # ----------------------------------------------------------------------
+
+    # Holds view data.
+    data: {}
+
     # MAIN METHODS
     # ----------------------------------------------------------------------
 
     # Init the view and set elements.
     init: =>
+        @viewName = @__proto__.constructor.name.toString()
+
         @setElements()
         @onReady() if @onReady?
 
@@ -31,6 +39,17 @@ class BaseView
                 domId = s
 
             @dom[domId] = @dom.wrapper.find s
+
+    # Helper to create a model and automatically listen to data updates via sockets.
+    # The data can be an object or the model id.
+    createModel: (model, data, eventName) =>
+        data = {id: data} if _.isString data
+        modelObj = ayla["#{model}Model"]
+
+        if modelObj?
+            @data[data.id] = new modelObj data, eventName
+        else
+            logger @viewName, "createModel", model, "Invalid model type. Abort!"
 
 
 # BIND BASE VIEW AND OPTIONS TO WINDOW

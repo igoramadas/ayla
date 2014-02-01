@@ -38,6 +38,9 @@ class HomeManager extends (require "./baseManager.coffee")
         @data.outdoor = {}
         @data.forecast = {}
 
+        aaa = => @emitData "outdoor", {temperature: 55}
+        setTimeout aaa, 15000
+
         @baseInit()
 
     # Start the home manager and listen to data updates / events.
@@ -113,8 +116,8 @@ class HomeManager extends (require "./baseManager.coffee")
     # Check indoor weather conditions using Ninja Blocks.
     onNinjaWeather: (data) =>
         weather = {}
-        weather.temperature = data.temperature[0].value if data.temperature.length > 0
-        weather.humidity = data.humidity[0].value if data.humidity.length > 0
+        weather.temperature = data.temperature[0].value if data.temperature[0]?
+        weather.humidity = data.humidity[0].value if data.humidity[0]?
 
         @setRoomWeather "kitchen", weather
 
@@ -158,8 +161,7 @@ class HomeManager extends (require "./baseManager.coffee")
 
     # Helper to return room object with weather, title etc.
     getRoomObject = (title) =>
-        weather = {temperature: null, humidity: null, co2: null}
-        return {title: title, weather: weather}
+        return {title: title, temperature: null, humidity: null, co2: null}
 
 
 # Singleton implementation.

@@ -7,23 +7,19 @@ class WeatherModel extends ayla.baseModel
     # ----------------------------------------------------------------------
 
     # Construct a new weather model.
-    constructor: (@originalData) ->
+    constructor: (@originalData, @dataEventName) ->
+        @text = ko.observable()
         @temperature = ko.observable()
         @humidity = ko.observable()
         @pressure = ko.observable()
         @co2 = ko.observable()
 
-        # Init model.
-        @init @originalData
+        @init @originalData, @dataEventName
 
-    # Set light model data.
+    # Parse weather data.
     setData: (data) =>
-        return if not data?
+        @temperature data.temperature
 
-        @temperature @originalData.temperature
-        @humidity @originalData.humidity
-        @pressure @originalData.pressure
-        @co2 @originalData.co2
 
 
 # EXPORTS

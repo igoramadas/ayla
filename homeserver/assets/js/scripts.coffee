@@ -7,20 +7,23 @@
 #= require lib/placeholder.js
 #= require lib/foundation.js
 
+#= require sockets.coffee
 #= require models/baseModel.coffee
 #= require models/light.coffee
+#= require models/weather.coffee
 #= require models/room.coffee
 #= require views/baseView.coffee
-#= require sockets.coffee
 
 # Bind helper to log to console.
 window.logger = -> console.log.apply console, arguments
 
 # Start the app when document is ready and apply knockout bindings.
 onReady = ->
-        currentPath = location.pathname
-        $("#header").find(".#{currentPath}").addClass "selected"
+        ayla.sockets.init() if ayla.sockets?
         ayla.currentView.init() if ayla.currentView?
+
+        currentPath = location.pathname.substring 1
+        $("#header").find(".#{currentPath}").addClass "selected"
         $(document).foundation()
 
 # Hey ho let's go!

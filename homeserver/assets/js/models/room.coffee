@@ -7,16 +7,18 @@ class RoomModel extends ayla.baseModel
     # ----------------------------------------------------------------------
 
     # Construct a new room model.
-    constructor: (@originalData) ->
-        @temperature = ko.observable()
-        @humidity = ko.observable()
-        @pressure = ko.observable()
-        @co2 = ko.observable()
+    constructor: (@originalData, @dataEventName) ->
+        @title = ko.observable()
+        @weather = ko.observable()
+        @lights = ko.observable()
 
-        # Init model.
-        @init @originalData
+        @init @originalData, @dataEventName
+
+    # Parse room data.
+    setData: (data) =>
+        @title data.title
 
 
 # EXPORTS
 # --------------------------------------------------------------------------
- window.ayla.roomModel = RoomModel
+window.ayla.roomModel = RoomModel

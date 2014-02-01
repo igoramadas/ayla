@@ -72,6 +72,7 @@ class Ninja extends (require "./baseApi.coffee")
             guid = lodash.findKey devices, {device_type: "rf433"}
             if guid?
                 @data.rf433 = {guid: guid, device: devices[guid]}
+                logger.info "Ninja.setRf433", "Detected #{lodash.size devices[guid].subDevices} subdevices"
 
     # Gets the list of registered devices with Ninja Blocks.
     getDeviceList: (callback) =>

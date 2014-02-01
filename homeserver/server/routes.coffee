@@ -130,12 +130,13 @@ class Routes
 
     # Main home page.
     homePage = (req, res) ->
-        options = {pageTitle: "Home", data: [hue, netatmo, withings]}
+        options = {pageTitle: "Home", data: [hueApi, netatmoApi, withingsApi]}
         renderPage req, res, "home", options
 
     # Home light control page.
     homeLightsPage = (req, res) ->
-        renderPage req, res, "home.lights", {pageTitle: "Home lights", hub: hue.hub}
+        options = {pageTitle: "Home lights", data: [hueApi, ninjaApi]}
+        renderPage req, res, "home.lights", options
 
     # NETATMO ROUTES
     # -------------------------------------------------------------------------

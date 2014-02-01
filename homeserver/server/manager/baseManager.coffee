@@ -81,8 +81,8 @@ class BaseManager
 
         # Only emit if data is valid.
         if data?
-            sockets.emit "#{@moduleId}.data.#{property}", data
-            events.emit "usermanager.user.status", data
+            sockets.emit "#{@moduleId}.#{property}", data
+            events.emit "#{@moduleId}.#{property}", data
         else
             logger.debug "#{@moduleName}.emitData", dataName, "Data is null or not defined. Do not emit."
 

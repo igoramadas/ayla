@@ -137,6 +137,7 @@ class Commander
         mailer.send msgOptions, (err, result) =>
             callback err, result if callback?
 
+
 # Singleton implementation.
 # -----------------------------------------------------------------------------
 Commander.getInstance = ->

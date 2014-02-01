@@ -11,6 +11,11 @@ class HomeView extends ayla.BaseView
     # Init the System Jobs view.
     onReady: =>
         @dom["td.state"].click @lightToggle
+        @data.outdoor = @createModel "weather", "outdoor", "homemanager.outdoor"
+        @data.livingroom = @createModel "room", "livingroom", "homemanager.livingroom"
+
+    # Listen to important home events.
+    bindEvents: =>
 
     # LIGHT CONTROL
     # ----------------------------------------------------------------------

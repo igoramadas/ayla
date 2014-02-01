@@ -11,7 +11,7 @@ html.no-js
             != js(j)
     body
         #wrapper
-            nav#header.top-bar
+            nav#header.top-bar.fixed
                 ul.title-area
                     li.name
                         h1
@@ -30,5 +30,6 @@ html.no-js
                             a.money(href="/money") Money
                         li
                             a.system(href="/system") System
-            h2= pageTitle
-            block contents
+            div#contents
+                h2= pageTitle
+                block contents

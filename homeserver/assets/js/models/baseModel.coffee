@@ -10,7 +10,7 @@ class BaseModel
     # ----------------------------------------------------------------------
 
     # Init model and listen to socket events.
-    init: (data) =>
+    init: (data, eventName) =>
         if data?
             @id = data.id
             @setData data
@@ -18,14 +18,12 @@ class BaseModel
         # Set model name.
         @modelName = @__proto__.constructor.name.toString()
 
-        # Listen to socket events (only on client side).
-        ayla.sockets.on "#{@modelName.toLowerCase()}:#{@id}:data", @onData
-        ayla.sockets.on "#{@modelName.toLowerCase()}:#{@id}:error", @onError
+        # Listen to data updates.
+        ayla.sockets.on eventName, @onData if eventName?
 
     # Stop listening to socket events.
     dispose: =>
-        ayla.sockets.off "#{@modelName.toLowerCase()}:#{@id}:data", @onData
-        ayla.sockets.off "#{@modelName.toLowerCase()}:#{@id}:error", @onError
+        ayla.sockets.off @dataEventName, @onData if @dataEventName?
 
     # SOCKET SYNC
     # ----------------------------------------------------------------------

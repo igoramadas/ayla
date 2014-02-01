@@ -192,7 +192,8 @@ class Security
             if settings[service].api.oauthResponseType?
                 opts["response_type"] = settings[service].api.oauthResponseType
 
-            oauth.getOAuthAccessToken qs.code, opts, getAccessToken2
+            qCode = qs?.code
+            oauth.getOAuthAccessToken qCode, opts, getAccessToken2
 
         # Getting an OAuth1 access token?
         else if qs?.oauth_token?
