@@ -172,6 +172,15 @@ class BaseApi
             return "Auth data is missing."
         return null
 
+    # Helper to return a callback URL for the current API module.
+    getCallbackUrl: (urlPath) =>
+        baseUrl = settings.general.appUrl + @moduleId
+        atoken = settings.accessTokens[@moduleId]
+        return baseUrl  + "/" + urlPath + "?atoken=" + atoken
+
+    # ERRORS
+    # -------------------------------------------------------------------------
+
     # Logs module errors.
     logError: =>
         id = arguments[0]

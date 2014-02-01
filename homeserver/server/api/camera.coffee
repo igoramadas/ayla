@@ -3,6 +3,7 @@
 class Camera extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
+    events = expresser.events
     downloader = expresser.downloader
     logger = expresser.logger
     settings = expresser.settings
@@ -50,7 +51,7 @@ class Camera extends (require "./baseApi.coffee")
 
         # Find camera.
         id = id.id if id.id?
-        cam = lodash.find settings.camera.devices, {id: id}
+        cam = lodash.find settings.network.devices, {type: "camera", host: id}
 
         # Wrong cam?
         if not cam?
@@ -63,15 +64,19 @@ class Camera extends (require "./baseApi.coffee")
         now = moment().format settings.camera.dateFormat
         saveTo = @snapsPath + "#{id}.#{now}.jpg"
 
-        # URL remote or local?
-        downloadUrl = if networkApi.isHome then cam.localUrl else cam.remoteUrl
+        # URL remote or local? Construct path using local IP or remote host, port and image path.
+        if networkApi.isHome
+            downloadUrl = cam.ip + cam.localPort
+        else
+            downloadUrl = settings.network.router.remoteHost + cam.remotePort
+        downloadUrl = "http://#{downloadUrl}/#{cam.imagePath}"
 
         # Save (download) a snap from the camera.
         downloader.download downloadUrl, saveTo, (err, result) =>
             if err?
-                @logError "Camera.saveSnap", id, err
+                @logError "Camera.takeSnap", id, err
             else
-                logger.info "Camera.saveSnap", id, now
+                logger.info "Camera.takeSnap", id, now
             callback err, result if callback?
 
     # Remove old snaps depending on the `snapsMaxAgeDays` setting.

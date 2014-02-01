@@ -105,13 +105,13 @@ class Network extends (require "./baseApi.coffee")
         # Are addresses set?
         if not device.addresses?
             device.addresses = []
-            device.addresses.push device.localIP
+            device.addresses.push device.ip
 
         # Not checked yet? Set `up` to false.
         device.up = false if not device.up?
 
         # Try connecting and set device as online.
-        req = http.get {host: device.localIP, port: device.localPort}, (response) ->
+        req = http.get {host: device.ip, port: device.localPort}, (response) ->
             response.addListener "data", (data) -> response.isValid = true
             response.addListener "end", -> device.up = true if response.isValid
 
@@ -306,7 +306,7 @@ class Network extends (require "./baseApi.coffee")
                 if sData.devices?
                     existingDevice = lodash.find sData.devices, (d) ->
                         if service.adresses?
-                            return service.addresses.indexOf(d.localIP) >= 0 and service.port is d.localPort
+                            return service.addresses.indexOf(d.ip) >= 0 and service.port is d.localPort
                         else
                             return false
 
@@ -337,7 +337,7 @@ class Network extends (require "./baseApi.coffee")
         try
             for sKey, sData of @data
                 existingDevice = lodash.find sData.devices, (d) =>
-                    return service.addresses.indexOf d.localIP >= 0 and service.port is d.localPort
+                    return service.addresses.indexOf d.ip >= 0 and service.port is d.localPort
 
                 if existingDevice?
                     existingDevice.up = false

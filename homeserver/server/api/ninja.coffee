@@ -43,8 +43,8 @@ class Ninja extends (require "./baseApi.coffee")
 
     # This should be called whenever new weather related data is downloaded
     # from the Ninja block. If no `devices` are passed, use the default from data.
-    setCurrentWeather: (devices) =>
-        devices = @data.devices if not devices?
+    setCurrentWeather: =>
+        devices = @data.devices
         maxAge = moment().subtract("m", settings.general.currentDataMaxAgeMinutes).unix()
 
         # Filter temperature and humidity devices.
@@ -64,6 +64,15 @@ class Ninja extends (require "./baseApi.coffee")
 
         @setData "weather", weather
 
+    # Helper to set the main RF 433 device.
+    setRf433: (force) =>
+        devices = @data.devices
+
+        if not @data.rf433 or force
+            guid = lodash.findKey devices, {device_type: "rf433"}
+            if guid?
+                @data.rf433 = {guid: guid, device: devices[guid]}
+
     # Gets the list of registered devices with Ninja Blocks.
     getDeviceList: (callback) =>
         if not @ninjaApi?
@@ -72,14 +81,16 @@ class Ninja extends (require "./baseApi.coffee")
         else
             logger.debug "Ninja.getDeviceList"
 
+        # Get all devices from Ninja Blocks.
         @ninjaApi.devices (err, result) =>
             if err?
                 @logError "getDeviceList", err
             else
                 @setData "devices", result
+
+                # Set current weather and RF 433 device.
                 @setCurrentWeather()
-                @rf433 = lodash.find result, {device_type: "rf433"} if not @rf433?
-                @rf433Id = lodash.findKey result, {device_type: "rf433"}
+                @setRf433()
 
                 logger.info "Ninja.getDeviceList", "Updated, #{lodash.size result} devices."
 
@@ -96,21 +107,28 @@ class Ninja extends (require "./baseApi.coffee")
             logger.warn "Ninja.actuate433", "Ninja API object was not created. Abort!"
             return
 
+        # Make sure RF 433 is set and working.
+        if not @data.rf433?
+            logger.warn "Ninja.actuate433", "RF 433 device is not set. Abort!"
+            return
+
+        actuators = @data.rf433.device.subDevices
+
         # Get correct list of subdevices based on the provided filter.
         if lodash.isString filter or lodash.isNumber filter
-            if @rf433.subDevices[filter]?
-                sockets = [@rf433.subDevices[filter]]
+            if actuators[filter]?
+                sockets = [actuators[filter]]
             else
-                sockets = lodash.filter @rf433.subDevices, {shortName: filter}
+                sockets = lodash.filter actuators, {shortName: filter}
         else
-            sockets = lodash.filter @rf433.subDevices, filter
+            sockets = lodash.filter actuators, filter
 
         # Log.
         logger.info "Ninja.actuate433", lodash.pluck sockets, "shortName"
 
         # Iterate and send command to subdevices.
         for s in sockets
-            @ninjaApi.device(@rf433Id).actuate s.data
+            @ninjaApi.device(@data.rf433.device.guid).actuate s.data
 
     # JOBS
     # -------------------------------------------------------------------------

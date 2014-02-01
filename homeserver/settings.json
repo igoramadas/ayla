@@ -8,7 +8,7 @@
     },
     "camera": {
         "dateFormat": "YYYYMMDD-HHmmss",
-        "snapsMaxAgeDays": 3
+        "snapsMaxAgeDays": 10
     },
     "commands": {
         "notifyNetworkDevicesDown": ["which servers are down", "are servers down"],

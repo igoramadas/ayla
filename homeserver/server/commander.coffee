@@ -71,7 +71,7 @@ class Commander
         if not tarantino?
             logger.warn "Commander.movieMode", "Media server (Tarantino) settings are not defined. Do not send WOL."
         else
-            networkApi.wol tarantino.mac, tarantino.localIP, (err, result) =>
+            networkApi.wol tarantino.mac, tarantino.ip, (err, result) =>
                 cError.push err if err?
                 cResult.push result
 
@@ -127,7 +127,7 @@ class Commander
             subject = "There are #{down.length} devices down"
             body = ""
             for d in down
-                body += d.id + ", " + d.localIP
+                body += d.id + ", " + d.ip
         else
             subject = "No devices down on your networks"
             body = "All your devices seem to be running fine, congrats :-)"
