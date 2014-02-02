@@ -17,7 +17,7 @@ class LightModel extends ayla.baseModel
         @stateClass = ko.computed => return (if @on then "on" else "off")
 
         # Init model.
-        @init @originalData
+        @init "Light", @originalData
 
     # Set light model data.
     setData: (data) =>

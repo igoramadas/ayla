@@ -14,7 +14,7 @@ class WeatherModel extends ayla.baseModel
         @pressure = ko.observable()
         @co2 = ko.observable()
 
-        @init @originalData, @dataEventName
+        @init "Weather", @originalData, @dataEventName
 
     # Parse weather data.
     setData: (data) =>

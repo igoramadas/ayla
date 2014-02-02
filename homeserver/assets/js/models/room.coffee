@@ -12,7 +12,7 @@ class RoomModel extends ayla.baseModel
         @weather = ko.observable()
         @lights = ko.observable()
 
-        @init @originalData, @dataEventName
+        @init "Room", @originalData, @dataEventName
 
     # Parse room data.
     setData: (data) =>

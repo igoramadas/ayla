@@ -17,7 +17,6 @@ routes = require "./server/routes.coffee"
 security = require "./server/security.coffee"
 
 # Init security, api and manager after database has been validated.
-databaseValidated = -> database.onConnectionValidated = null
 database.onConnectionValidated = -> security.init -> api.init -> manager.init()
 
 # Init Expresser and routes.

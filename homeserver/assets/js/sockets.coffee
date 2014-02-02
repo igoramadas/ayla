@@ -2,36 +2,36 @@
 # --------------------------------------------------------------------------
 class Sockets
     
-    sobj = null
+    conn = null
 
     # STARTING AND STOPPING
     # ----------------------------------------------------------------------
 
     # Start listening to Socket.IO messages from the server.
     init: ->
-        if not sobj?
+        if not conn?
             url = window.location
-            sobj = io.connect "https://#{url.hostname}:#{url.port}"
+            conn = io.connect "https://#{url.hostname}:#{url.port}"
 
     # Stop listening to all socket messages from the server. Please note that this
     # will NOT kill the socket connection.
     stop: ->
-        sobj.off()
+        conn.off()
 
     # SOCKET SHORTCUT METHODS
     # ----------------------------------------------------------------------
 
     # Bind a listener to the socket.
     on: (event, callback) ->
-        sobj.on event, callback
+        conn.on event, callback
 
     # Unbind a listener.
     off: (event, callback) ->
-        sobj.off event, callback
+        conn.off event, callback
 
     # Emit an event to the server.
     emit: (event, data) ->
-        sobj.emit event, data
+        conn.emit event, data
 
 
 # BIND SOCKETS TO WINDOW.

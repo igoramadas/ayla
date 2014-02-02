@@ -60,6 +60,9 @@ class Routes
         # Ninja Blocks routes.
         app.get "/ninja", ninjaPage
 
+        # Status route.
+        app.get "/status", statusPage
+
         # System routes.
         app.get "/system/jobs", systemJobsPage
         app.get "/system/network", systemNetworkPage
@@ -174,6 +177,13 @@ class Routes
     # Phone client: retrieve weather data.
     phoneWeather = (req, res) ->
         console.warn 1
+
+    # STATUS ROUTES
+    # -------------------------------------------------------------------------
+
+    # Main status page.
+    statusPage = (req, res) ->
+        res.send "OK"
 
     # SYSTEM ROUTES
     # -------------------------------------------------------------------------
