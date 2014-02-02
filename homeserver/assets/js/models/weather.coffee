@@ -21,7 +21,6 @@ class WeatherModel extends ayla.baseModel
         @temperature data.temperature
 
 
-
 # EXPORTS
 # --------------------------------------------------------------------------
 window.ayla.weatherModel = WeatherModel

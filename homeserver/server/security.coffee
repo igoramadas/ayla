@@ -144,9 +144,10 @@ class Security
         # Helper function to get the request token using OAUth 1.x.
         getRequestToken1 = (err, oauth_token, oauth_token_secret, oauth_authorize_url, additionalParameters) =>
             if err?
-                logger.error "Security.processAuthToken", "getRequestToken1", service, oauth_token, oauth_token_secret, err
+                logger.error "Security.processAuthToken", "getRequestToken1", service, err
                 return
-            logger.debug "Security.processAuthToken", "getRequestToken1", service, oauth_token, oauth_token_secret, oauth_authorize_url, additionalParameters
+
+            logger.info "Security.processAuthToken", "getRequestToken1", service, oauth_token
 
             # Set token secret cache and redirect to authorization URL.
             @authCache[service].data.tokenSecret = oauth_token_secret
@@ -157,7 +158,8 @@ class Security
             if err?
                 logger.error "Security.processAuthToken", "getAccessToken1", service, err
                 return
-            logger.debug "Security.processAuthToken", "getAccessToken1", service
+
+            logger.info "Security.processAuthToken", "getAccessToken1", service, oauth_token
 
             # Save auth details to DB and redirect user to service page.
             oauthData = lodash.defaults {token: oauth_token, tokenSecret: oauth_token_secret}, additionalParameters
@@ -169,11 +171,12 @@ class Security
             if err?
                 logger.error "Security.processAuthToken", "getAccessToken2", service, err
                 return
-            logger.debug "Security.processAuthToken", "getAccessToken2", service
 
-            # Schedule token to be refreshed.
-            expires = results?.expires_in or results?.expire_in or 86400
-            lodash.delay @processAuthToken, expires * 0.9, service, options
+            logger.info "Security.processAuthToken", "getAccessToken2", service, oauth_access_token
+
+            # Schedule token to be refreshed automatically.
+            expires = results?.expires_in or results?.expires or 43200
+            lodash.delay @refreshAuthToken, expires * 0.9, service
 
             # Save auth details to DB and redirect user to service page.
             oauthData = {accessToken: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add("s", expires)}
@@ -203,6 +206,36 @@ class Security
             oauth.getOAuthAccessToken qs.oauth_token, @authCache[service].data.tokenSecret, extraParams, getAccessToken1
         else
             oauth.getOAuthRequestToken {}, getRequestToken1
+
+    # Helper to refresh an OAuth2 token.
+    refreshAuthToken: (service) =>
+        if not @authCache[service]?
+            logger.warn "Security.refreshAuthToken", service, "OAuth properties are not ready for this service. Abort refresh!"
+            return
+
+        # Get oauth object and refresh token and set grant type to refresh_token.
+        oauth = @authCache[service].oauth
+        refreshToken = @authCache[service].data.refreshToken
+        opts = {"grant_type": "refresh_token"}
+
+        if settings[service].api.oauthResponseType?
+            opts["response_type"] = settings[service].api.oauthResponseType
+
+        # Proceed and get OAuth2 tokens.
+        oauth.getOAuthAccessToken refreshToken, opts, (err, oauth_access_token, oauth_refresh_token, results) =>
+            if err?
+                logger.error "Security.refreshAuthToken", service, err
+                return
+
+            logger.info "Security.refreshAuthToken", service, oauth_access_token
+
+            # Schedule token to be refreshed.
+            expires = results?.expires_in or results?.expires or 43200
+            lodash.delay @refreshAuthToken, expires * 0.9, service
+
+            # Save auth details to DB and redirect user to service page.
+            oauthData = {accessToken: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add("s", expires)}
+            @saveAuthToken service, oauthData
 
 
 # Singleton implementation

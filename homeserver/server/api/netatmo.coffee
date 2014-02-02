@@ -77,6 +77,13 @@ class Netatmo extends (require "./baseApi.coffee")
         authCache.oauth.get reqUrl, authCache.data.accessToken, (err, result) =>
             result = JSON.parse result if result? and lodash.isString result
             err = JSON.parse err if err? and lodash.isString err
+
+            # Token might need to be refreshed.
+            if err?
+                msg = err.data?.error?.message or err.error?.message or err.data
+                if msg?.toString().indexOf("expired") > 0
+                    security.refreshAuthToken "netatmo"
+
             callback err, result
 
     # GET DATA

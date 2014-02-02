@@ -7,6 +7,7 @@ class Routes
     cron = expresser.cron
     logger = expresser.logger
     settings = expresser.settings
+    utils = expresser.utils
 
     commander = require "./commander.coffee"
     emailApi = require "./api/email.coffee"
@@ -183,7 +184,7 @@ class Routes
 
     # Main status page.
     statusPage = (req, res) ->
-        res.send "OK"
+        res.json utils.getServerInfo()
 
     # SYSTEM ROUTES
     # -------------------------------------------------------------------------
