@@ -10,7 +10,7 @@ class HomeManager extends (require "./baseManager.coffee")
     settings = expresser.settings
     sockets = expresser.sockets
 
-    # PROPERTIES
+    # COMPUTED PROPERTIES
     # -------------------------------------------------------------------------
 
     # Computed weather stats.
@@ -35,11 +35,8 @@ class HomeManager extends (require "./baseManager.coffee")
         @data.livingroom = getRoomObject "Living Room"
         @data.babyroom = getRoomObject "Noah's room"
         @data.kitchen = getRoomObject "Kitchen"
-        @data.outdoor = {}
-        @data.forecast = {}
-
-        aaa = => @emitData "outdoor", {temperature: 55}
-        setTimeout aaa, 15000
+        @data.outdoor = getOutdoorObject "Outdoor"
+        @data.forecast = getOutdoorObject "Forecast"
 
         @baseInit()
 
@@ -79,7 +76,7 @@ class HomeManager extends (require "./baseManager.coffee")
         roomObj.co2 = data.co2
 
         # Emit updated room conditions to clients and log.
-        @emitData room
+        @dataUpdated room
         logger.info "HomeManager.setRoomWeather", roomObj
 
         # Check if room conditions are ok.
@@ -91,18 +88,18 @@ class HomeManager extends (require "./baseManager.coffee")
         @data.outdoor.humidity = data.humidity
 
         # Emit updated outdoor conditions to clients and log.
-        @emitData "outdoor"
+        @dataUpdated "outdoor"
         logger.info "HomeManager.setOutdoorWeather", @data.outdoor
 
     # Helper to set forecast conditions for outdoors.
     setWeatherForecast: (data) =>
-        @data.forecast.text = data.weather
+        @data.forecast.condition = data.weather
         @data.forecast.temperature = data.temperature or data.temp_c
         @data.forecast.humidity = data.humidity or data.relative_humidity
         @data.forecast.pressure = data.pressure or data.pressure_mb
 
         # Emit updated forecast to clients and log.
-        @emitData "forecast"
+        @dataUpdated "forecast"
         logger.info "HomeManager.setWeatherForecast", @data.forecast
 
     # Check indoor weather conditions using Netatmo.
@@ -135,7 +132,6 @@ class HomeManager extends (require "./baseManager.coffee")
     # When Hue hub details are refreshed.
     onHueHub: (data) =>
 
-
     # GENERAL HELPERS
     # -------------------------------------------------------------------------
 
@@ -161,7 +157,11 @@ class HomeManager extends (require "./baseManager.coffee")
 
     # Helper to return room object with weather, title etc.
     getRoomObject = (title) =>
-        return {title: title, temperature: null, humidity: null, co2: null}
+        return {title: title, condition: "OK", temperature: null, humidity: null, pressure: null, co2: null, light: null}
+
+    # Helper to return outdoor weather.
+    getOutdoorObject = (title) =>
+        return {title: title, condition: "OK", temperature: null, humidity: null, pressure: null}
 
 
 # Singleton implementation.

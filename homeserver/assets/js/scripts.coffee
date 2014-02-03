@@ -6,12 +6,7 @@
 #= require lib/datatables.js
 #= require lib/placeholder.js
 #= require lib/foundation.js
-
 #= require sockets.coffee
-#= require models/baseModel.coffee
-#= require models/light.coffee
-#= require models/weather.coffee
-#= require models/room.coffee
 #= require views/baseView.coffee
 
 # Bind helper to log to console.
@@ -21,10 +16,6 @@ window.logger = -> console.log.apply console, arguments
 onReady = ->
         ayla.sockets.init() if ayla.sockets?
         ayla.currentView.init() if ayla.currentView?
-
-        currentPath = location.pathname.substring 1
-        $("#header").find(".#{currentPath}").addClass "selected"
-        $(document).foundation()
 
 # Hey ho let's go!
 $(document).ready onReady

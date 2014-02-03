@@ -9,6 +9,8 @@ html.no-js
         != css("styles")
         for j in loadJs
             != js(j)
+        script.
+            ayla.serverData = !{JSON.stringify(data)};
     body
         #wrapper
             nav#header.top-bar.fixed
@@ -18,18 +20,17 @@ html.no-js
                             a(href="/") Ayla
                 section.top-bar-section
                     ul.left
-                        li
-                            a.today(href="/today") Today
-                        li
-                            a.home(href="/home") Home
-                        li
-                            a.security(href="/security") Security
-                        li
-                            a.fitness(href="/fitness") Fitness
-                        li
-                            a.money(href="/money") Money
-                        li
-                            a.system(href="/system") System
+                        li.today
+                            a(href="/today") Today
+                        li.home
+                            a(href="/home") Home
+                        li.security
+                            a(href="/security") Security
+                        li.fitness
+                            a(href="/fitness") Fitness
+                        li.money
+                            a(href="/money") Money
+                        li.system
+                            a(href="/system") System
             div#contents
-                h2= pageTitle
                 block contents

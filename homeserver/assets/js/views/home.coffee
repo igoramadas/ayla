@@ -3,19 +3,15 @@
 class HomeView extends ayla.BaseView
 
     wrapperId: "home"
-    elements: ["table", "td.state"]
+    socketsName: "homemanager"
+    elements: [".bedroom",".livingroom", ".kitchen", ".babyroom", ".outdoor", ".forecast"]
 
     # MAIN METHODS
     # ----------------------------------------------------------------------
 
     # Init the System Jobs view.
     onReady: =>
-        @dom["td.state"].click @lightToggle
-        @data.outdoor = @createModel "weather", "outdoor", "homemanager.outdoor"
-        @data.livingroom = @createModel "room", "livingroom", "homemanager.livingroom"
-
-    # Listen to important home events.
-    bindEvents: =>
+        console.warn "ready"
 
     # LIGHT CONTROL
     # ----------------------------------------------------------------------

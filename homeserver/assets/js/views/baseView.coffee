@@ -13,10 +13,16 @@ class BaseView
 
     # Init the view and set elements.
     init: =>
-        @viewName = @__proto__.constructor.name.toString()
-
         @setElements()
+        @setHeader()
+        @setData()
+        @bindSockets()
+
+        # Call view `onReady` if present.
         @onReady() if @onReady?
+
+        # Knockout.js bindings.
+        ko.applyBindings @data if @data?
 
     # This will iterate over the `elements` property to create the dom cache
     # and set the main wrapper based on the `wrapperId` property. The list
@@ -40,16 +46,47 @@ class BaseView
 
             @dom[domId] = @dom.wrapper.find s
 
-    # Helper to create a model and automatically listen to data updates via sockets.
-    # The data can be an object or the model id.
-    createModel: (model, data, eventName) =>
-        data = {id: data} if _.isString data
-        modelObj = ayla["#{model}Model"]
+    # Set active navigation and header properties.
+    setHeader: =>
+        currentPath = location.pathname.substring 1
+        $("nav").find(".#{currentPath}").addClass "active"
+        $(document).foundation()
 
-        if modelObj?
-            @data[data.id] = new modelObj data, eventName
+    # Create a KO compatible object based on the original `serverData` property.
+    setData: =>
+        @data = {}
+        return if not ayla.serverData?
+
+        # Iterate passed data and populate the view's data property.
+        for key, value of ayla.serverData
+            @data[key] = ko.observable value
+
+    # Helper to listen to socket events sent by the server. If no event name is
+    # passed then use the view's default.
+    bindSockets: =>
+        return if not @socketsName?
+
+        # Listen to global sockets updates.
+        e = @socketsName
+        ayla.sockets.on e, (data) => @onData data
+
+        # Listen to socket updates for each data property.
+        for key, value of @data
+            do (key) =>
+                e = @socketsName + "." + key
+                ayla.sockets.on e, (data) => @onData data, key
+
+    # DATA UPDATES
+    # ----------------------------------------------------------------------
+
+    # Updates data sent by the server. A property can be passed so it will
+    # update data for that particular property, otherwise assume it's the full data object.
+    onData: (data, property) =>
+        console.warn this
+        if property?
+            @data[property] data
         else
-            logger @viewName, "createModel", model, "Invalid model type. Abort!"
+            @setData data
 
 
 # BIND BASE VIEW AND OPTIONS TO WINDOW

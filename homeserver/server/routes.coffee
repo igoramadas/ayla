@@ -15,6 +15,7 @@ class Routes
     fitbit = require "./api/fitbit.coffee"
     homeManager = require "./manager/home.coffee"
     hueApi = require "./api/hue.coffee"
+    lodash = require "lodash"
     netatmoApi = require "./api/netatmo.coffee"
     networkApi = require "./api/network.coffee"
     ninjaApi = require "./api/ninja.coffee"
@@ -134,12 +135,12 @@ class Routes
 
     # Main home page.
     homePage = (req, res) ->
-        options = {pageTitle: "Home", data: [hueApi, netatmoApi, withingsApi]}
+        options = {pageTitle: "Home", data: homeManager.data}
         renderPage req, res, "home", options
 
     # Home light control page.
     homeLightsPage = (req, res) ->
-        options = {pageTitle: "Home lights", data: [hueApi, ninjaApi]}
+        options = {pageTitle: "Home lights", data: {hue: hueApi.data, ninja: ninjaApi.data}}
         renderPage req, res, "home.lights", options
 
     # NETATMO ROUTES
@@ -247,11 +248,6 @@ class Routes
         options.pageTitle = filename if not options.pageTitle?
         options.title = settings.general.appTitle if not options.title?
         options.loadJs = [] if not options.loadJs?
-
-        # Data to be included.
-        if options.data?
-            options[d.moduleId] = d.data for d in options.data
-            delete options.data
 
         # Check if current view have an external JS to be loaded.
         jsName = filename.replace "jade",""

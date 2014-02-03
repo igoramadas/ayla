@@ -64,27 +64,24 @@ class BaseManager
         msgOptions = {to: settings.email.toMobile, subject: subject, body: body}
         mailer.send msgOptions, (err, result) => callback err, result if callback?
 
-    # Emit data to other modules using the Expresser events, and to clients using sockets.
-    # If value is not set, get from the current `data` object.
-    emitData: (property, value) =>
-        if property.indexOf(".") > 0
-            arr = property.split "."
-        else
-            arr = [property]
-
-        # Iterate property name.
+    # Called whenever data gets updated, will emit to other modules using the Expresser
+    # events and to clients using Socket.IO. If value is not set, get from the
+    # current `data` object.
+    dataUpdated: (property, value) =>
         if value?
             data = value
         else
-            data = @data
-            data = data[p] for p in arr
+            data = @data[property]
+
+        # Set data timestamp.
+        data.timestamp = moment().unix()
 
         # Only emit if data is valid.
         if data?
             sockets.emit "#{@moduleId}.#{property}", data
             events.emit "#{@moduleId}.#{property}", data
         else
-            logger.debug "#{@moduleName}.emitData", dataName, "Data is null or not defined. Do not emit."
+            logger.debug "#{@moduleName}.emitData", property, "Data is null or not defined. Do not emit."
 
 
 # Exports API Base Module.

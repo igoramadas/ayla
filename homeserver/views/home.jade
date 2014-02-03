@@ -2,14 +2,15 @@ extends layout
 
 block contents
     #home
-        div.climate
-            h3 Weather
-            div.indoor
-                div.temperature= netatmo.indoor.temperature
-                div.humidity= netatmo.indoor.humidity
-                div.co2= netatmo.indoor.co2
-                div.noise= netatmo.indoor.noise
-            div.outdoor
-                div.temperature= netatmo.outdoor.temperature
-                div.humidity= netatmo.outdoor.humidity
-        div.lights
+        script#weather-template(type="text/html")
+            label(data-bind="text: title")
+            span.condition(data-bind="text: condition")
+            span.temperature(data-bind="text: temperature")
+            span.humidity(data-bind="text: humidity")
+
+        div.weather
+            ul.small-block-grid-4
+                li.bedroom(data-bind="template: {name: 'weather-template', data: bedroom}")
+                li.livingroom(data-bind="template: {name: 'weather-template', data: livingroom}")
+                li.babyroom(data-bind="template: {name: 'weather-template', data: babyroom}")
+                li.kitchen(data-bind="template: {name: 'weather-template', data: kitchen}")

@@ -93,7 +93,7 @@ class Wunderground extends (require "./baseApi.coffee")
                         else
                             if not isNaN curValue
                                 result[prop] = ((curValue + nextValue) / 2).toFixed(2)
-                            else if curValue.indexOf(nextValue) < 0
+                            else if curValue.toString().indexOf(nextValue) < 0
                                 result[prop] += ", " + nextValue
                 catch ex
                     @logError "Wunderground.getAverageResult", ex
