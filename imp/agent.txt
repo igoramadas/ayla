@@ -1,0 +1,58 @@
+// AYLA IMP - AGENT CODE
+
+// Dats variables.
+local temperature = 0;
+local lightLevel = 0;
+local wifiStrength = 0;
+local doorClosed = false;
+
+server.log("Ayla Imp agent started!");
+
+// DEVICE EVENTS
+// ---------------------------------------------------
+
+device.on("temperature", function(value) {
+    temperature = value;
+});
+
+device.on("lightLevel", function(value) {
+    lightLevel = value;
+});
+
+device.on("wifiStrength", function(value) {
+    wifiStrength = value;
+});
+
+device.on("doorClosed", function(value) {
+    doorClosed = value;
+});
+
+// HTTP HANDLER
+// ---------------------------------------------------
+// Commands: wakeup, sleep
+// Command values are taken from the "v" query.
+
+function httpHandler(req, resp) {
+    local errormsg;
+    local v;
+
+    if ("command" in req.query) {
+        if ("v" in req.query)
+            v = req.query["v"];
+        else
+            v = 1;
+
+        executeCommand(req.query["command"], v);
+    }
+
+    resp.send(200, format("{\"temperature\":" + temperature + "," + "\"lightLevel\":" + lightLevel + "," + "\"doorClosed\":" + doorClosed + "," + "\"wifiStrength\":" + wifiStrength + "}"));
+}
+
+// HELPER FUNCTIONS
+// ---------------------------------------------------
+
+function executeCommand(command, value) {
+    device.send(command, value);
+}
+
+http.onrequest(httpHandler);

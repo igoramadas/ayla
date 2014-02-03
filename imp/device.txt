@@ -1,0 +1,446 @@
+// AYLA IMP - DEVICE CODE
+
+// Sleeping flag to check if device is sleeping.
+local running = false;
+
+// State values for LED light and button;
+local last_r = 0;
+local last_g = 0;
+local last_b = 0;
+
+// LOW LEVEL IMPLEMENTATION
+// ---------------------------------------------------
+
+// Strange stuff.
+const i2c_temp  = 0x92;
+const i2c_ioexp = 0x7C;
+
+hardware.i2c89.configure(CLOCK_SPEED_100_KHZ);
+hardware.pin2.configure(ANALOG_IN);
+
+pot <- 0.0;
+local i2c = hardware.i2c89;
+
+// IO Expander Class for SX1509.
+class IOExpander {
+    I2CPort = null;
+    I2CAddress = null;
+    IRQ_Callbacks = array(16);
+
+    constructor(port, address) {
+    
+        // Configure port and save address.
+        if (port == I2C_12) {
+            hardware.configure(I2C_12);
+            I2CPort = hardware.i2c12;
+        } else if (port == I2C_89) {
+            hardware.configure (I2C_89)
+            I2CPort = hardware.i2c89;
+        } else {
+            server.log(format("Invalid I2C port specified: %c", port));
+        }
+        
+        I2CAddress = address << 1;
+        hardware.pin1.configure(DIGITAL_IN, getIRQSources.bindenv(this));
+    }
+    
+    // Read a byte.
+    function read(register) {
+        local data = I2CPort.read(I2CAddress, format("%c", register), 1);
+        if (data != null) return data[0];
+
+        server.log("I2C Read Failed");
+        return -1;
+    }
+    
+    // Write a byte.
+    function write(register, data) {
+        I2CPort.write(I2CAddress, format("%c%c", register, data));
+    }
+    
+    // Write a bit to a register.
+    function writeBit(register, bitn, level) {
+        local value = read(register);
+        value = (level == 0) ? (value & ~(1<<bitn)) : (value | (1<<bitn));
+        write(register, value);
+    }
+    
+    // Write a masked bit pattern.
+    function writeMasked(register, data, mask) {
+        local value = read (register);
+        value = (value & ~mask) | (data & mask);
+        write (register, value);
+    }
+    
+    // Set a GPIO direction.
+    function setDir(gpio, output){
+        writeBit (gpio>=8?0x0e:0x0f, gpio&7, output?0:1);
+    }
+    
+    // Set a GPIO level.
+    function setPin(gpio, level){
+        writeBit (gpio>=8?0x10:0x11, gpio&7, level?1:0);
+    }
+
+    // Enable/disable a GPIO internal pull-up resistor.
+    function setPullUp(gpio, enable) {
+        writeBit (gpio>=8?0x06:0x07, gpio&7, enable);
+    }
+
+    // Set GPIO interrupt mask.
+    function setIRQMask(gpio, enable) {
+        writeBit (gpio>=8?0x12:0x13, gpio&7, enable);
+    }
+
+    // Set GPIO interrupt edges.
+    function setIRQEdges(gpio, rising, falling) {
+        local addr = 0x17 - (gpio>>2);
+        local mask = 0x03 << ((gpio&3)<<1);
+        local data = (2*falling + rising) << ((gpio&3)<<1);
+        writeMasked (addr, data, mask);
+    }
+
+    // Clear an interrupt.
+    function clearIRQ(gpio) {
+        writeBit (gpio>=8?0x18:0x19, gpio&7, 1);    
+        writeBit (gpio>=8?0x18:0x19, gpio&7, 1);
+    }
+
+    // IRQ callback.
+    function setIRQCallBack(pin, func) {
+        IRQ_Callbacks[pin] = func;
+    }
+
+    // Clear IRQ callback.
+    function clearIRQCallBack(pin) {
+        IRQ_Callbacks[pin] = null;
+    }
+
+    function getIRQSources() {
+        //0x18=RegInterruptSourceB (Pins 15->8), 1 is an interrupt and we write a 1 to clear the interrupt
+        //0x19=RegInterruptSourceA (Pins 7->0), 1 is an interrupt and we write a 1 to clear the interrupt
+        local sourceB = read(0x18);
+        local sourceA = read(0x19);
+
+        local irqSources = array(16);
+        local j = 0;
+            
+            for (local z=1; z < 256; z = z<<1) {
+                irqSources[j] = ((sourceA & z) == z);
+                irqSources[j+8] = ((sourceB & z) == z);
+                j++;
+            }
+
+            // TODO: This could be in the loop above if performance becomes an issue.
+            for (local pin = 0; pin < 16; pin++) {
+                if (irqSources[pin]) {
+                    IRQ_Callbacks[pin]();
+                    clearIRQ(pin);
+                }
+            }
+
+        //Array of the IO pins and who has active interrupts.
+        return irqSources;
+    }
+
+    // Get a GPIO input pin level.
+    function getPin(gpio) {
+        return (read(gpio>=8?0x10:0x11)&(1<<(gpio&7))) ? 1 : 0;
+    }
+}
+
+// Sensor Class for Hannah
+class Sensor extends IOExpander {
+    // IO Pin assignment
+    pin = null;
+    irq = null;
+ 
+    // Output port
+    outPort = null;
+    //Callback function for interrupt
+    callBack = null;
+ 
+    constructor(port, address, btnPin, irqPin, out, call)
+    {
+        base.constructor(port, address);
+ 
+        // Save assignments.
+        pin = btnPin;
+        irq = irqPin;
+        outPort = out;
+        callBack = call;
+ 
+        // Set event handler for irq.
+        if (irqPin != null)
+            irqPin.configure(DIGITAL_IN, irqHandler.bindenv(this));
+        else
+            setIRQCallBack(btnPin, irqHandler.bindenv(this))
+ 
+        // Configure pin as input, irq on both edges.
+        setDir(pin, 0);
+        setPullUp(pin,1)
+        setIRQMask(pin, 0);
+        setIRQEdges(pin, 1, 1);
+    }
+ 
+    function irqHandler()
+    {
+        local state = null;
+
+            // Get the pin state
+            state = getPin(pin) ? 0 : 1;
+            
+            // Output to port and display on node
+            if (outPort != null) {
+                outPort.set(state);
+            }
+ 
+            server.show(format("Sensor %d = %d", pin, state));
+            //server.log(format("Sensor %d = %d", pin, state));
+            //if (callBack != null && state == 1) callBack(); // if only activted state is needed 
+            if (callBack != null) callBack(state);  
+        // Clear the interrupt
+        clearIRQ(pin);
+        //imp.sleep(0.05);
+        //clearIRQ(pin);
+    }
+    
+    function readState()
+    {
+        local state = getPin(pin);
+ 
+        server.log(format("debug %d", state));
+        return state;
+    }
+}
+// RGB LED Class
+class RgbLed extends IOExpander{
+    // IO Pin assignments
+    pinR = null;
+    pinG = null;
+    pinB = null;
+    constructor(port, address, r, g, b){
+        base.constructor(port, address);
+        // Save pin assignments
+        pinR = r;
+        pinG = g;
+        pinB = b;
+        // Disable pin input buffers
+        writeBit(pinR>7?0x00:0x01, pinR>7?(pinR-7):pinR, 1);
+        writeBit(pinG>7?0x00:0x01, pinG>7?(pinG-7):pinG, 1);
+        writeBit(pinB>7?0x00:0x01, pinB>7?(pinB-7):pinB, 1);
+        // Set pins as outputs
+        writeBit(pinR>7?0x0E:0x0F, pinR>7?(pinR-7):pinR, 0);
+        writeBit(pinG>7?0x0E:0x0F, pinG>7?(pinG-7):pinG, 0);
+        writeBit(pinB>7?0x0E:0x0F, pinB>7?(pinB-7):pinB, 0);
+        // Set pins open drain
+        writeBit(pinR>7?0x0A:0x0B, pinR>7?(pinR-7):pinR, 1);
+        writeBit(pinG>7?0x0A:0x0B, pinG>7?(pinG-7):pinG, 1);
+        writeBit(pinB>7?0x0A:0x0B, pinB>7?(pinB-7):pinB, 1);
+        // Enable LED drive
+        writeBit(pinR>7?0x20:0x21, pinR>7?(pinR-7):pinR, 1);
+        writeBit(pinG>7?0x20:0x21, pinG>7?(pinG-7):pinG, 1);
+        writeBit(pinB>7?0x20:0x21, pinB>7?(pinB-7):pinB, 1);
+        // Set to use internal 2MHz clock, linear fading
+        write(0x1e, 0x50);
+        write(0x1f, 0x10);
+        // Initialise as inactive
+        setLevels(0, 0, 0);
+        setPin(pinR, 0);
+        setPin(pinG, 0);
+        setPin(pinB, 0);
+    }
+    // Set LED enabled state
+    function setLed(r, g, b){
+        if(r != null) writeBit(pinR>7?0x20:0x21, pinR&7, r);
+        if(g != null) writeBit(pinG>7?0x20:0x21, pinG&7, g);
+        if(b != null) writeBit(pinB>7?0x20:0x21, pinB&7, b);
+    }
+    // Set red, green and blue intensity levels
+    function setLevels(r, g, b){
+        if(r != null) write(pinR<4?0x2A+pinR*3:0x36+(pinR-4)*5, r);
+        if(g != null) write(pinG<4?0x2A+pinG*3:0x36+(pinG-4)*5, g);
+        if(b != null) write(pinB<4?0x2A+pinB*3:0x36+(pinB-4)*5, b);
+        
+        last_r = r;
+        last_g = g;
+        last_b = b;
+    }
+}
+
+
+
+// LED BLINKING
+// ---------------------------------------------------
+
+function blinker() {
+    if (last_r == 0 && last_r == 0 && last_r == 0) {
+        led.setLevels(255, 255, 255);
+    } else {
+        led.setLevels(0, 0, 0);
+    }
+}
+
+function cancelBlinker(i) {
+    local i;
+    
+    for (i = 0; i < blinkTimers.len(); i++) {
+        imp.cancelwakeup(blinkTimers[i]);
+    }
+    
+    blinkTimers = [];
+}
+
+// AGENT EVENTS
+// ---------------------------------------------------
+
+agent.on("start", function(seconds) {
+    start();
+});
+
+agent.on("sleep", function(seconds) {
+    sleep(seconds);
+});
+
+agent.on("led", function(colours) {
+    local r = colours.slice(0, 3);
+    local g = colours.slice(3, 6);
+    local b = colours.slice(6, 9);
+    
+    led.setLevels(100, 100, 100);
+});
+
+agent.on("stopBlink", function(i) {
+    cancelBlinker(i);
+});
+
+agent.on("blink", function(duration) {
+    local i;
+    cancelBlinker(i);
+    
+    for (i = 0; i < duration; i++) {
+        blinkTimers.push(imp.wakeup(0.1 + i, blinker));
+    }
+});
+
+// BUTTONS AND POTENT
+// ---------------------------------------------------
+
+// Helper to read potentiometer value.
+function getPotentiometer() {
+    local rawValue = (hardware.pin2.read()/65.5350);
+
+    if (math.abs(rawValue - pot) > 0.000000) {
+        local potValue = math.abs(rawValue / 10);
+        pot = rawValue;
+    }
+}
+
+// Triggers button 1.
+function triggerButton1 (state) {
+    if (state) {
+        onButtonPress();
+        agent.send("button1", state);
+    } else {
+        onButtonRelease();
+    }
+
+    running = 1;
+    
+}
+
+// Triggers button 2.
+function triggerButton2 (state) {
+    if (state) {
+        onButtonPress();
+        agent.send("button2", state);
+    } else {
+        onButtonRelease();
+    }
+    
+    running = 1;
+}
+
+// Dim LED to a light white colour when button is pressed.
+function onButtonPress() {
+    button_pressed = true;
+    led.setLevels(30, 30, 30);
+}
+
+// Reset LED to latest known value.
+function onButtonRelease() {
+    button_pressed = false;
+    led.setLevels(last_r, last_g, last_b);
+}
+
+// SENSOR HIGH LEVEL HELPERS
+// ---------------------------------------------------
+
+// Get the current temperature in Celsius.
+function getTemperature() {
+    local register = "\x00";
+    local result = i2c.read(i2c_temp, "\x00", 2);
+    local t = ((result[0] << 4) + (result[1] >> 4)) * 0.055;
+    
+    agent.send("temperature", t);
+}
+
+// Helper to get current light level.
+function getLightLevel(){
+    local lightLevel = hardware.lightlevel();
+    agent.send("lightLevel", lightLevel);   
+}
+
+// Get the current wifi signal strength.
+function getWifiStrength() {
+   local rssi = imp.rssi();
+   local bar = null;
+   
+   if (rssi < -87) bar = 0;
+   else if (rssi < -82) bar = 1;
+   else if (rssi < -77) bar = 2;
+   else if (rssi < -72) bar = 3;
+   else if (rssi < -67) bar = 4;
+   else bar = 5;
+   
+   agent.send("wifiStrength", bar);
+}
+
+// Trigger the hall switch (door sensor).
+function setDoorClosed(state) {
+    agent.send("doorClosed", state);
+}
+
+// CONTROL METHODS
+// ---------------------------------------------------
+
+// Poll sensors every 60 seconds.
+function poll() {
+    getTemperature();
+    getLightLevel();
+    getWifiStrength();
+    imp.deepsleepfor(50);
+}
+
+// Start the IMP and set LED to dim white.
+function start() {
+    server.log("Ayla Imp starting...");
+    imp.setpowersave(true);
+    imp.onidle(poll);
+}
+
+// Sleep the IMP for X seconds.
+function sleep(seconds) {
+    led.setLevels(0, 0, 0);
+    imp.sleep(seconds);
+}
+
+// BINDINGS AND STARTING
+// ---------------------------------------------------
+
+led <- RgbLed(I2C_89, 0x3E, 7, 5, 6);
+button1 <- Sensor(I2C_89, 0x3e, 0, null, null, triggerButton1);
+button2 <- Sensor(I2C_89, 0x3e, 1, null, null, triggerButton2);
+hallSwitch <- Sensor(I2C_89, 0x3e, 2, null, null, setDoorClosed);
+
+start();
