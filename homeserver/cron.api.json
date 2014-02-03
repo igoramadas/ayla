@@ -2,65 +2,73 @@
     "camera.coffee": [
         {
             "callback": "jobTakeSnaps",
-            "description": "Save a snap of enabled cameras to the data folder.",
+            "description": "Save a snap of enabled cameras to the data folder every 10 minutes.",
             "schedule": 600,
-            "enabled": false
+            "enabled": true
         },
         {
             "callback": "jobCleanSnaps",
-            "description": "Delete old camera snaps.",
+            "description": "Delete old camera snaps twice a day.",
             "schedule": ["11:00:00", "21:00:00"],
-            "enabled": false
+            "enabled": true
+        }
+    ],
+    "electricimp.coffee": [
+        {
+            "callback": "jobGetDeviceData",
+            "description": "Probe Electric Imp device sensors every 2 minutes.",
+            "schedule": 120,
+            "enabled": true
         }
     ],
     "fitbit.coffee": [
         {
             "callback": "jobCheckMissingData",
-            "description": "Notify missing sleep and activities data from Fitbit.",
+            "description": "Notify missing sleep data from Fitbit once a day.",
             "schedule": ["14:00:00"],
-            "enabled": false
+            "enabled": true
         }
     ],
     "hue.coffee": [
         {
             "callback": "jobRefreshHub",
-            "description": "Refresh Philips Hue hub data.",
+            "description": "Refresh Philips Hue hub data every minute.",
             "schedule": 60,
-            "enabled": false
+            "enabled": true
         }
     ],
     "netatmo.coffee": [
         {
             "callback": "jobGetOutdoor",
-            "description": "Probe current outdoor conditions.",
-            "schedule": 600,
+            "description": "Probe current outdoor conditions every 5 minutes.",
+            "schedule": 300,
             "enabled": true
         },
         {
             "callback": "jobGetIndoor",
-            "description": "Probe current indoor conditions.",
-            "schedule": 300,
+            "description": "Probe current indoor conditions every 3 minutes.",
+            "schedule": 180,
             "enabled": true
         }
     ],
     "network.coffee": [
         {
             "callback": "jobProbeDevices",
-            "description": "Probe network devices and update their statuses.",
+            "description": "Probe network devices and update their statuses every minute.",
             "schedule": 60,
-            "enabled": false
+            "enabled": true
         },
         {
             "callback": "jobProbeRouter",
-            "description": "Probe network router and update its info.",
-            "schedule": 20,
+            "description": "Probe network router to check for online users every 30 seconds.",
+            "schedule": 30,
             "enabled": true
         }
     ],
     "ninja.coffee": [
         {
             "callback": "jobGetDeviceList",
-            "description": "Probe network router and update its info.",
+            "description": "Probe Ninja Blocks device list every hour.",
             "schedule": 3600,
             "enabled": true
         }
@@ -68,7 +76,7 @@
     "wunderground.coffee": [
         {
             "callback": "jobGetWeather",
-            "description": "Get updated weather information.",
+            "description": "Get updated weather information every 10 minutes.",
             "schedule": 600,
             "enabled": true
         },

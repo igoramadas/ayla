@@ -141,14 +141,15 @@ class Netatmo extends (require "./baseApi.coffee")
         # Make the request for outdoor readings.
         @makeRequest "getmeasure", params, (err, result) =>
             if err?
-                @logError "Netatmo.getIndoorConditions", filter, err
+                @logError "Netatmo.getOutdoorConditions", filter, err
             else
-                logger.debug "Netatmo.getIndoorConditions", filter
-
-                # Result represent current readings?
+                # Data represents current readings or historical values?
                 if isCurrent params
                     body = getResultBody result, params
                     @setData "outdoor", body[0]
+                    logger.info "Netatmo.getOutdoorConditions", "Current", body[0]
+                else
+                    logger.info "Netatmo.getOutdoorConditions", filter, body
 
             callback err, result if callback?
 
@@ -167,12 +168,13 @@ class Netatmo extends (require "./baseApi.coffee")
             if err?
                 @logError "Netatmo.getIndoorConditions", filter, err
             else
-                logger.debug "Netatmo.getIndoorConditions", filter
-
-                # Result represent current readings?
+                # Data represents current readings or historical values?
                 if isCurrent params
                     body = getResultBody result, params
                     @setData "indoor", body[0]
+                    logger.info "Netatmo.getIndoorConditions", "Current", body[0]
+                else
+                    logger.info "Netatmo.getIndoorConditions", filter, body
 
             callback err, result if callback?
 
@@ -192,11 +194,12 @@ class Netatmo extends (require "./baseApi.coffee")
 
     # Get current outdoor conditions (weather) every 30 minutes.
     jobGetOutdoor: =>
-        @getOutdoorConditions (err, result) =>
+        @getOutdoorConditions()
 
     # Get current indoor conditions every 5 minutes.
     jobGetIndoor: =>
-        @getIndoorConditions (err, result) =>
+        @getIndoorConditions()
+
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

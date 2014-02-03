@@ -111,7 +111,7 @@ class Wunderground extends (require "./baseApi.coffee")
         @apiRequest "conditions", {stationIds: settings.wunderground.stationIds}, (err, results) =>
             if not err?
                 currentConditions = @getAverageResult results, "current_observation"
-                @setData "current", currentConditions
+                @setData "conditions", currentConditions
 
             callback err, currentConditions if callback?
 

@@ -10,6 +10,9 @@ class HomeManager extends (require "./baseManager.coffee")
     settings = expresser.settings
     sockets = expresser.sockets
 
+    lodash = require "lodash"
+    moment = require "moment"
+
     # COMPUTED PROPERTIES
     # -------------------------------------------------------------------------
 
@@ -31,10 +34,10 @@ class HomeManager extends (require "./baseManager.coffee")
 
     # Init the home manager.
     init: =>
-        @data.bedroom = getRoomObject "Bedroom"
-        @data.livingroom = getRoomObject "Living Room"
-        @data.babyroom = getRoomObject "Noah's room"
-        @data.kitchen = getRoomObject "Kitchen"
+        for key, room of settings.home.rooms
+            @data[key] = getRoomObject room.title
+
+        # Set outdoor weather objects.
         @data.outdoor = getOutdoorObject "Outdoor"
         @data.forecast = getOutdoorObject "Forecast"
 
@@ -42,13 +45,12 @@ class HomeManager extends (require "./baseManager.coffee")
 
     # Start the home manager and listen to data updates / events.
     start: =>
-        events.on "netamo.data.indoor", @onNetatmoIndoor
-        events.on "netamo.data.outdoor", @onNetatmoOutdoor
-        events.on "ninja.data.weather", @onNinjaWeather
-        events.on "ubi.data.weather", @onUbiWeather
-        events.on "wunderground.data.current", @onWunderground
-
+        events.on "electricimp.data.current", @onElectricImp
         events.on "hue.data.hub", @onHueHub
+        events.on "netatmo.data.indoor", @onNetatmoIndoor
+        events.on "netatmo.data.outdoor", @onNetatmoOutdoor
+        events.on "ninja.data.weather", @onNinjaWeather
+        events.on "wunderground.data.current", @onWunderground
 
         @baseStart()
 
@@ -62,25 +64,46 @@ class HomeManager extends (require "./baseManager.coffee")
     # Helper to verify if room weather is in good condition.
     checkRoomWeather: (room) =>
         subject = "#{room.title} weather"
+        room.codition = "Good"
 
-        if room.temperature > settings.home.temperature.max
-            @notify subject, "#{room.title} too warm", "It's #{room.temperature}C right now, fan will turn on automatically."
-        else if room.temperature < settings.home.temperature.min
-            @notify subject, "#{room.title} too cold", "It's #{room.temperature}C right now, heating will turn on automatically."
+        # Check temperatures.
+        if room.temperature?
+            if room.temperature > settings.home.idealConditions.temperature[2]
+                room.condition = "Too warm"
+                @notify subject, "#{room.title} too warm", "It's #{room.temperature}C right now, fan will turn on automatically."
+            else if room.temperature < settings.home.idealConditions.temperature[0]
+                room.condition = "Too cold"
+                @notify subject, "#{room.title} too cold", "It's #{room.temperature}C right now, heating will turn on automatically."
+
+        # Check humidity.
+        if room.humidity?
+            if room.humidity > settings.home.idealConditions.humidity[2]
+                room.condition = "Too humid"
+                @notify subject, "#{room.title} too humid", "It's #{room.humidity}% right now, please boil some water at the kitchen."
+            else if room.humidity < settings.home.idealConditions.humidity[0]
+                room.condition = "Too dry"
+                @notify subject, "#{room.title} too dry", "It's #{room.humidity}% right now, please open the windows."
+
+        # Check CO2.
+        if room.co2? and room.co2 > settings.home.idealConditions.co2[2]
+            room.condition = "Too much CO2"
+            @notify subject, "#{room.title} has too much CO2", "With #{room.co2}C right now, please open the windows."
 
     # Helper to set current conditions for the specified room.
-    setRoomWeather: (room, data) =>
+    setRoomWeather: (source, data) =>
+        room = lodash.findKey settings.home.rooms, {weatherSource: source}
+
         roomObj = @data[room]
-        roomObj.temperature = data.temperature
-        roomObj.humidity = data.humidity
-        roomObj.co2 = data.co2
+        roomObj.temperature = data.temperature or null
+        roomObj.humidity = data.humidity or null
+        roomObj.co2 = data.co2 or null
+
+        # Check if room conditions are ok.
+        @checkRoomWeather room
 
         # Emit updated room conditions to clients and log.
         @dataUpdated room
         logger.info "HomeManager.setRoomWeather", roomObj
-
-        # Check if room conditions are ok.
-        @checkRoomWeather room
 
     # Helper to set current conditions for outdoors.
     setOutdoorWeather: (data) =>
@@ -104,11 +127,11 @@ class HomeManager extends (require "./baseManager.coffee")
 
     # Check indoor weather conditions using Netatmo.
     onNetatmoIndoor: (data) =>
-        @setRoomWeather "livingroom", data.indoor
+        @setRoomWeather "netatmo", data
 
     # Check outdoor weather conditions using Netatmo.
     onNetatmoOutdoor: (data) =>
-        @setOutdoorWeather data.outdoor
+        @setOutdoorWeather data
 
     # Check indoor weather conditions using Ninja Blocks.
     onNinjaWeather: (data) =>
@@ -116,11 +139,11 @@ class HomeManager extends (require "./baseManager.coffee")
         weather.temperature = data.temperature[0].value if data.temperature[0]?
         weather.humidity = data.humidity[0].value if data.humidity[0]?
 
-        @setRoomWeather "kitchen", weather
+        @setRoomWeather "ninja", weather
 
-    # Check indoor weather conditions using The Ubi.
-    onUbiWeather: (data) =>
-        @setRoomWeather "bedroom", data
+    # Check indoor weather conditions using Electric Imp.
+    onElectricImp: (data) =>
+        @setRoomWeather "electricimp", data
 
     # Check outdoor weather conditions using Weather Underground.
     onWunderground: (data) =>
@@ -131,6 +154,7 @@ class HomeManager extends (require "./baseManager.coffee")
 
     # When Hue hub details are refreshed.
     onHueHub: (data) =>
+        console.warn "hue data manager received"
 
     # GENERAL HELPERS
     # -------------------------------------------------------------------------

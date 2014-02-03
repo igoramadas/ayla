@@ -9,6 +9,9 @@ class BaseManager
     settings = expresser.settings
     sockets = expresser.sockets
 
+    lodash = require "lodash"
+    moment = require "moment"
+
     # PROPERTIES
     # -------------------------------------------------------------------------
 

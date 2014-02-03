@@ -30,7 +30,7 @@ class ElectricImp extends (require "./baseApi.coffee")
     # GET DEVICE DATA
     # -------------------------------------------------------------------------
 
-    # Gets the data.
+    # Gets sensors data from the Electric Imp device.
     getDeviceData: =>
         if not settings.electricImp?.api?
             logger.warn "ElectricImp.getDeviceData", "Electric Imp API settings are not defined. Abort!"
@@ -45,9 +45,9 @@ class ElectricImp extends (require "./baseApi.coffee")
     # JOBS
     # -------------------------------------------------------------------------
 
-    # Refresh weather data and save to the database.
-    jobGetWeather: =>
-        @getCurrentWeather()
+    # Refresh Electric Imp data every 2 minutes.
+    jobGetDeviceData: =>
+        @getDeviceData()
 
 
 # Singleton implementation.

@@ -3,10 +3,11 @@ extends layout
 block contents
     #home
         script#weather-template(type="text/html")
-            label(data-bind="text: title")
-            span.condition(data-bind="text: condition")
-            span.temperature(data-bind="text: temperature")
-            span.humidity(data-bind="text: humidity")
+            div
+                h5(data-bind="text: title")
+                span.condition(data-bind="text: condition")
+                span.temperature(data-bind="text: temperature")
+                span.humidity(data-bind="text: humidity")
 
         div.weather
             ul.small-block-grid-4

@@ -233,7 +233,7 @@ class Routes
 
     # Main Weather Underground entrance page.
     wundergroundPage = (req, res) ->
-        wundergroundApi.getCurrentWeather (err, result) -> renderPage req, res, "wunderground", {err: err, result: result}
+        renderPage req, res, "wunderground", {err: err, result: result}
 
     # HELPER METHODS
     # -------------------------------------------------------------------------

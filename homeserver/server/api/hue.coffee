@@ -59,9 +59,9 @@ class Hue extends (require "./baseApi.coffee")
             device = lodash.find settings.network.devices, {type: "hue"}
 
             if networkApi.isHome
-                baseUrl = "http://#{device.ip}:#{device.localPort}/"
+                baseUrl = "http://#{device.ip}:#{device.localPort}/api/"
             else
-                baseUrl = "http://#{settings.network.router.remoteHost}:#{device.localPort}/"
+                baseUrl = "http://#{settings.network.router.remoteHost}:#{device.localPort}/api/"
 
             # Build full base API URL.
             @apiUrl = baseUrl + settings.hue.api.user + "/"
