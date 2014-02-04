@@ -1,7 +1,7 @@
 # SERVER: HOME MANAGER
 # -----------------------------------------------------------------------------
-# Handles automatic messages, trigger events, etc based on API's data.
-class HomeManager extends (require "./baseManager.coffee")
+# Handles home weather and climate conditions.
+class WeatherManager extends (require "./baseManager.coffee")
 
     expresser = require "expresser"
     events = expresser.events
@@ -32,7 +32,7 @@ class HomeManager extends (require "./baseManager.coffee")
     # INIT
     # -------------------------------------------------------------------------
 
-    # Init the home manager.
+    # Init the weather manager.
     init: =>
         @data.outdoor = getOutdoorObject "Outdoor"
         @data.forecast = getOutdoorObject "Forecast"
@@ -41,15 +41,11 @@ class HomeManager extends (require "./baseManager.coffee")
         for key, room of settings.home.rooms
             @data[key] = getRoomObject room.title
 
-        # Set hue.
-        @data.hue = []
-
         @baseInit()
 
-    # Start the home manager and listen to data updates / events.
+    # Start the weather manager and listen to data updates / events.
     start: =>
         events.on "electricimp.data.current", @onElectricImp
-        events.on "hue.data.hub", @onHueHub
         events.on "netatmo.data.indoor", @onNetatmoIndoor
         events.on "netatmo.data.outdoor", @onNetatmoOutdoor
         events.on "ninja.data.weather", @onNinjaWeather
@@ -57,7 +53,7 @@ class HomeManager extends (require "./baseManager.coffee")
 
         @baseStart()
 
-    # Stop the home manager.
+    # Stop the weather manager.
     stop: =>
         @baseStop()
 
@@ -145,7 +141,7 @@ class HomeManager extends (require "./baseManager.coffee")
 
         # Emit updated room conditions to clients and log.
         @dataUpdated room
-        logger.info "HomeManager.setRoomWeather", roomObj
+        logger.info "WeatherManager.setRoomWeather", roomObj
 
     # Helper to set current conditions for outdoors.
     setOutdoorWeather: (data) =>
@@ -154,7 +150,7 @@ class HomeManager extends (require "./baseManager.coffee")
 
         # Emit updated outdoor conditions to clients and log.
         @dataUpdated "outdoor"
-        logger.info "HomeManager.setOutdoorWeather", @data.outdoor
+        logger.info "WeatherManager.setOutdoorWeather", @data.outdoor
 
     # Helper to set forecast conditions for outdoors.
     setWeatherForecast: (data) =>
@@ -165,7 +161,7 @@ class HomeManager extends (require "./baseManager.coffee")
 
         # Emit updated forecast to clients and log.
         @dataUpdated "forecast"
-        logger.info "HomeManager.setWeatherForecast", @data.forecast
+        logger.info "WeatherManager.setWeatherForecast", @data.forecast
 
     # Check indoor weather conditions using Netatmo.
     onNetatmoIndoor: (data) =>
@@ -190,28 +186,6 @@ class HomeManager extends (require "./baseManager.coffee")
     # Check outdoor weather conditions using Weather Underground.
     onWunderground: (data) =>
         @setWeatherForecast data
-
-    # LIGHTS
-    # -------------------------------------------------------------------------
-
-    # Update hue lights and groups.
-    onHueHub: (data) =>
-        @data.hue = []
-
-        # Iterate groups.
-        for groupId, group of data.groups
-            groupData = {id: groupId, room: group.name, lights: []}
-            @data.hue.push groupData
-
-            # Iterate group lights.
-            for lightId in group.lights
-                lightData = data.lights[lightId]
-                state = {on: lightData.state.on, color: getHueHex lightData.state}
-                groupData.lights.push {id: lightId, name: lightData.name, state: state}
-
-        # Emit updated lights and save log.
-        @dataUpdated "hue"
-        logger.info "HomeManager.onHueHub", @data.hue
 
     # GENERAL HELPERS
     # -------------------------------------------------------------------------
@@ -244,40 +218,10 @@ class HomeManager extends (require "./baseManager.coffee")
     getOutdoorObject = (title) =>
         return {title: title, condition: "OK", temperature: null, humidity: null, pressure: null}
 
-    # Helper to get HEX color from a hue light state.
-    getHueHex = (state) ->
-        x = state.xy[0]
-        y = state.xy[1]
-        z = 1.0 - x - y
-        Y = state.bri
-        X = (Y / y) * x
-        Z = (Y / y) * z
-        r = X * 1.612 - Y * 0.203 - Z * 0.302
-        g = -X * 0.509 + Y * 1.412 + Z * 0.066
-        b = X * 0.026 - Y * 0.072 + Z * 0.962
-        r = (if r <= 0.0031308 then 12.92 * r else (1.0 + 0.055) * Math.pow(r, (1.0 / 2.4)) - 0.055)
-        g = (if g <= 0.0031308 then 12.92 * g else (1.0 + 0.055) * Math.pow(g, (1.0 / 2.4)) - 0.055)
-        b = (if b <= 0.0031308 then 12.92 * b else (1.0 + 0.055) * Math.pow(b, (1.0 / 2.4)) - 0.055)
-        cap = (x) -> Math.max 0, Math.min(1, x)
-
-        # Helper to convert RGB to hex.
-        rgbhex = (v) ->
-            v = Math.round(v * 255)
-            s = "0" + v.toString(16)
-            return s.substr -2
-
-        # Cap and transform RGB values.
-        r = rgbhex cap r
-        g = rgbhex cap g
-        b = rgbhex cap b
-
-        # Convert RGB to hex and return result.
-        return "##{r}#{g}#{b}"
-
 # Singleton implementation.
 # -----------------------------------------------------------------------------
-HomeManager.getInstance = ->
-    @instance = new HomeManager() if not @instance?
+WeatherManager.getInstance = ->
+    @instance = new WeatherManager() if not @instance?
     return @instance
 
-module.exports = exports = HomeManager.getInstance()
+module.exports = exports = WeatherManager.getInstance()

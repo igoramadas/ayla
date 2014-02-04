@@ -13,7 +13,7 @@ class Routes
     emailApi = require "./api/email.coffee"
     fs = require "fs"
     fitbit = require "./api/fitbit.coffee"
-    homeManager = require "./manager/home.coffee"
+    weatherManager = require "./manager/weather.coffee"
     hueApi = require "./api/hue.coffee"
     lodash = expresser.libs.lodash
     netatmoApi = require "./api/netatmo.coffee"
@@ -88,7 +88,7 @@ class Routes
 
     # The home data endpoint.
     apiHome = (req, res) ->
-        renderData req, res, homeManager.data
+        renderData req, res, weatherManager.data
         
     # The commander processor.
     apiCommander = (req, res) ->
@@ -206,7 +206,7 @@ class Routes
 
     # Weather info page.
     weatherPage = (req, res) ->
-        options = {pageTitle: "Weather", data: homeManager.data}
+        options = {pageTitle: "Weather", data: weatherManager.data}
         renderPage req, res, "weather", options
 
     # WITHINGS ROUTES

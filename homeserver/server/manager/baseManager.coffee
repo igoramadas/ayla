@@ -21,8 +21,11 @@ class BaseManager
     # Holds timers and intervals.
     timers: {}
 
-    # Holds all errors that happened on the module.
+    # Holds recent errors that happened on the module.
     errors: {}
+
+    # Holds recent notifications sent by the module.
+    notifications: {}
 
     # Sets if module is running (true) or suspended (false).
     running: false
@@ -52,13 +55,26 @@ class BaseManager
 
     # Used to send alerts and general notifications to the user.
     notify: (options, callback) =>
-        logger.info "#{@moduleName}.notify", subject, messages
+        expiryDate = moment().subtract("m", settings.general.moduleNotifyExpireMinutes).unix()
 
-        body = messages.join "\n" if lodash.isArray messages
+        # Check if same notification was sent recently. If so, abort here.
+        if @notifications[options.subject]?.timestamp > expiryDate
+            logger.debug "#{@moduleName}.notify", options.subject, "Abort! Notification was sent recently."
+            return
+        else
+            logger.info "#{@moduleName}.notify", options.subject
+
+        if lodash.isArray options.message
+            body = options.message.join "\n"
+        else
+            body = options.message
 
         # Set message options and send email.
-        msgOptions = {to: settings.email.toMobile, subject: subject, body: body}
+        msgOptions = {to: settings.email.toMobile, subject: options.subject, body: body}
         mailer.send msgOptions, (err, result) => callback err, result if callback?
+
+        # Add to the notifications cache.
+        @notifications[options.subject] = {options: options, timestamp: moment().unix()}
 
     # Called whenever data gets updated, will emit to other modules using the Expresser
     # events and to clients using Socket.IO. If value is not set, get from the

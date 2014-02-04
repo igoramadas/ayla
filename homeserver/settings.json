@@ -34,6 +34,7 @@
         "appTitle": "Ayla",
         "debug": false,
         "currentDataMaxAgeMinutes": 30,
+        "moduleNotifyExpireMinutes": 60,
         "moduleErrorMaxAgeHours": 48,
         "moduleStopOnErrorCount": 10,
         "parallelTasksLimit": 4,
