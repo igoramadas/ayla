@@ -9,9 +9,9 @@ class Email extends (require "./baseApi.coffee")
 
     fs = require "fs"
     imapModule = require "imap"
-    lodash = require "lodash"
+    lodash = expresser.libs.lodash
     mailparser = require("mailparser").MailParser
-    moment = require "moment"
+    moment = expresser.libs.moment
     util = require "util"
 
     # PROPERTIES

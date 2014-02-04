@@ -1,0 +1,23 @@
+extends layout
+
+block contents
+    #weather
+        script#weather-template(type="text/html")
+            div(data-bind="css: conditionCss")
+                span.label.secondary.right.condition(data-bind="text: condition")
+                h5(data-bind="text: title")
+                div.temperature
+                    span.legend Temp.
+                    span(data-bind="text: temperature ? temperature + ' C' : '-'")
+                div.humidity
+                    span.legend Hum.
+                    span(data-bind="text: humidity ? humidity + ' %' : '-'")
+                div.co2
+                    span.legend CO2
+                    span(data-bind="text: co2 ? co2 + ' ppm' : '-'")
+
+        ul.large-block-grid-4
+            li.bedroom(data-bind="template: {name: 'weather-template', data: bedroom}")
+            li.livingroom(data-bind="template: {name: 'weather-template', data: livingroom}")
+            li.babyroom(data-bind="template: {name: 'weather-template', data: babyroom}")
+            li.kitchen(data-bind="template: {name: 'weather-template', data: kitchen}")

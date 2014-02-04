@@ -1,8 +1,8 @@
 # HOME LIGHTS VIEW
 # --------------------------------------------------------------------------
-class HomeLightsView extends ayla.BaseView
+class LightsView extends ayla.BaseView
 
-    wrapperId: "home-lights"
+    wrapperId: "lights"
     elements: ["table", "td.state"]
 
     # MAIN METHODS
@@ -22,4 +22,4 @@ class HomeLightsView extends ayla.BaseView
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.currentView = new HomeLightsView()
+window.ayla.currentView = new LightsView()

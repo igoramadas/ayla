@@ -10,8 +10,8 @@ class BaseApi
     settings = expresser.settings
     sockets = expresser.sockets
 
-    lodash = require "lodash"
-    moment = require "moment"
+    lodash = expresser.libs.lodash
+    moment = expresser.libs.moment
     path = require "path"
     request = require "request"
     url = require "url"

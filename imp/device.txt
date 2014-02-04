@@ -380,7 +380,7 @@ function onButtonRelease() {
 function getTemperature() {
     local register = "\x00";
     local result = i2c.read(i2c_temp, "\x00", 2);
-    local t = ((result[0] << 4) + (result[1] >> 4)) * 0.055;
+    local t = ((result[0] << 4) + (result[1] >> 4)) * 0.057;
     
     agent.send("temperature", t);
 }
@@ -414,17 +414,16 @@ function setDoorClosed(state) {
 // CONTROL METHODS
 // ---------------------------------------------------
 
-// Poll sensors every 60 seconds.
+// Poll sensors every 2 minutes.
 function poll() {
     getTemperature();
     getLightLevel();
     getWifiStrength();
-    imp.deepsleepfor(50);
+    imp.deepsleepfor(120);
 }
 
 // Start the IMP and set LED to dim white.
 function start() {
-    server.log("Ayla Imp starting...");
     imp.setpowersave(true);
     imp.onidle(poll);
 }

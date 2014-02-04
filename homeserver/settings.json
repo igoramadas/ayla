@@ -18,7 +18,7 @@
     },
     "database": {
         "connString": "mongodb://localhost/ayla",
-        "dataCacheExpireHours": 240
+        "dataCacheExpireHours": 24
     },
     "email" : {
         "newMessages": {
@@ -42,9 +42,9 @@
     "home": {
         "autoControlLights": true,
         "idealConditions": {
-            "co2": [0, 600, 1800],
-            "humidity": [20, 40, 60],
-            "temperature": [17, 20, 25]
+            "co2": [0, 400, 1200, 3000],
+            "humidity": [25, 35, 60, 75],
+            "temperature": [15, 17, 22, 26]
         }
     },
     "logger": {

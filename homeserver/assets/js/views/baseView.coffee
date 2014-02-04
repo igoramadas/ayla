@@ -65,11 +65,13 @@ class BaseView
     # Helper to listen to socket events sent by the server. If no event name is
     # passed then use the view's default.
     bindSockets: =>
-        return if not @socketsName?
+        if not @socketsName?
+            @socketsName = "homemanager"
+        else if @socketsName is ""
+            return
 
         # Listen to global sockets updates.
-        e = @socketsName
-        ayla.sockets.on e, (data) => @onData data
+        ayla.sockets.on @socketsName, (data) => @onData data
 
         # Listen to socket updates for each data property.
         for key, value of @data

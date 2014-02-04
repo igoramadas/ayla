@@ -1,9 +1,8 @@
 # HOME VIEW
 # --------------------------------------------------------------------------
-class HomeView extends ayla.BaseView
+class WeatherView extends ayla.BaseView
 
-    wrapperId: "home"
-    socketsName: "homemanager"
+    wrapperId: "weather"
     elements: [".bedroom",".livingroom", ".kitchen", ".babyroom", ".outdoor", ".forecast"]
 
     # MAIN METHODS
@@ -30,4 +29,4 @@ class HomeView extends ayla.BaseView
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.currentView = new HomeView()
+window.ayla.currentView = new WeatherView()

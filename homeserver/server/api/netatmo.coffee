@@ -7,9 +7,9 @@ class Netatmo extends (require "./baseApi.coffee")
     logger = expresser.logger
     settings = expresser.settings
 
-    async = require "async"
-    lodash = require "lodash"
-    moment = require "moment"
+    async = expresser.libs.async
+    lodash = expresser.libs.lodash
+    moment = expresser.libs.moment
     querystring = require "querystring"
     security = require "../security.coffee"
 

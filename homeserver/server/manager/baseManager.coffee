@@ -9,8 +9,8 @@ class BaseManager
     settings = expresser.settings
     sockets = expresser.sockets
 
-    lodash = require "lodash"
-    moment = require "moment"
+    lodash = expresser.libs.lodash
+    moment = expresser.libs.moment
 
     # PROPERTIES
     # -------------------------------------------------------------------------
@@ -47,18 +47,11 @@ class BaseManager
     baseStop: =>
         @running = false
 
-    # BASE IMPLEMENTATION
+    # NOTIFICATIONS
     # -------------------------------------------------------------------------
 
-    # Helper to build an object with the requested data.
-    getDataObjects: =>
-        result = {}
-        args = lodash.toArray arguments
-        result[a] = @data[a] for a in args
-        return result
-
     # Used to send alerts and general notifications to the user.
-    notify: (subject, messages, callback) =>
+    notify: (options, callback) =>
         logger.info "#{@moduleName}.notify", subject, messages
 
         body = messages.join "\n" if lodash.isArray messages

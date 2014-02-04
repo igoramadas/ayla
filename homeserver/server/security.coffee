@@ -11,8 +11,8 @@ class Security
     utils = expresser.utils
 
     crypto = require "crypto"
-    lodash = require "lodash"
-    moment = require "moment"
+    lodash = expresser.libs.lodash
+    moment = expresser.libs.moment
     oauthModule = require "oauth"
     packageJson = require "../package.json"
     url = require "url"
@@ -28,16 +28,17 @@ class Security
 
     # Init the Security module and refresh auth tokens from the database.
     init: (callback) =>
-        @refreshAuthTokens callback
+        @loadAuthTokens callback
 
     # AUTH SYNC
     # -------------------------------------------------------------------------
 
     # Get most recent auth tokens from the database and update the `authCache` collection.
     # Callback (err, result) is optional.
-    refreshAuthTokens: (callback) =>
+    loadAuthTokens: (callback) =>
         @authCache = {}
 
+        # Get tokens saved on the database.
         database.get "authcache", {"active": true}, (err, result) =>
             if err?
                 logger.critical "Security.refreshAuthTokens", err
@@ -49,6 +50,17 @@ class Security
                     @authCache[t.service] = {oauth: oauth, data: t}
                 if callback?
                     callback null, true
+
+    # Remove old auth tokens from the database.
+    cleanAuthTokens: (callback) =>
+        minTimestamp = moment().unix() - (settings.security.maxAuthTokenAgeDays * 24 * 60 * 60)
+        database.del "authcache", {timestamp: {$lt: minTimestamp}}, (err, result) =>
+            if err?
+                logger.error "Security.cleanAuthTokens", "Timestamp #{minTimestamp}", err
+            else
+                logger.debug "Security.cleanAuthTokens", "Timestamp #{minTimestamp}", "OK"
+            if callback?
+                callback err, result
 
     # Save the specified auth token to the database.
     saveAuthToken: (service, params, callback) =>
@@ -83,17 +95,6 @@ class Security
                     logger.debug "Security.saveAuthToken", service, data, "OK"
                 if callback?
                     callback err, result
-
-    # Remove old auth tokens from the database.
-    cleanAuthTokens: (callback) =>
-        minTimestamp = moment().unix() - (settings.security.maxAuthTokenAgeDays * 24 * 60 * 60)
-        database.del "authcache", {timestamp: {$lt: minTimestamp}}, (err, result) =>
-            if err?
-                logger.error "Security.cleanAuthTokens", "Timestamp #{minTimestamp}", err
-            else
-                logger.debug "Security.cleanAuthTokens", "Timestamp #{minTimestamp}", "OK"
-            if callback?
-                callback err, result
 
     # HELPERS
     # -------------------------------------------------------------------------
@@ -174,9 +175,9 @@ class Security
 
             logger.info "Security.processAuthToken", "getAccessToken2", service, oauth_access_token
 
-            # Schedule token to be refreshed automatically.
+            # Schedule token to be refreshed automatically with 10% of the expiry time left.
             expires = results?.expires_in or results?.expires or 43200
-            lodash.delay @refreshAuthToken, expires * 0.9, service
+            lodash.delay @refreshAuthToken, expires * 900, service
 
             # Save auth details to DB and redirect user to service page.
             oauthData = {accessToken: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add("s", expires)}
@@ -213,7 +214,11 @@ class Security
             logger.warn "Security.refreshAuthToken", service, "OAuth properties are not ready for this service. Abort refresh!"
             return
 
+        # Abort if token is already being refreshed.
+        return if @authCache[service].refreshing
+
         # Get oauth object and refresh token and set grant type to refresh_token.
+        @authCache[service].refreshing = true
         oauth = @authCache[service].oauth
         refreshToken = @authCache[service].data.refreshToken
         opts = {"grant_type": "refresh_token"}
@@ -223,15 +228,17 @@ class Security
 
         # Proceed and get OAuth2 tokens.
         oauth.getOAuthAccessToken refreshToken, opts, (err, oauth_access_token, oauth_refresh_token, results) =>
+            @authCache[service].refreshing = false
+
             if err?
                 logger.error "Security.refreshAuthToken", service, err
                 return
 
             logger.info "Security.refreshAuthToken", service, oauth_access_token
 
-            # Schedule token to be refreshed.
+            # Schedule token to be refreshed with 10% of time left.
             expires = results?.expires_in or results?.expires or 43200
-            lodash.delay @refreshAuthToken, expires * 0.9, service
+            lodash.delay @refreshAuthToken, expires * 900, service
 
             # Save auth details to DB and redirect user to service page.
             oauthData = {accessToken: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add("s", expires)}

@@ -9,8 +9,8 @@ class Camera extends (require "./baseApi.coffee")
     settings = expresser.settings
 
     fs = require "fs"
-    lodash = require "lodash"
-    moment = require "moment"
+    lodash = expresser.libs.lodash
+    moment = expresser.libs.moment
     networkApi = require "./network.coffee"
     path = require "path"
 
@@ -41,11 +41,6 @@ class Camera extends (require "./baseApi.coffee")
 
     # Save a snapshop for the specified camera.
     takeSnap: (id, callback) =>
-        if not settings.camera?.devices?
-            logger.warn "Camera.takeSnap", "No camera settings were found. Abort!"
-            return
-
-        # Camera ID is mandatory!
         if not id?
             throw new Error "The camera id must be specified."
 

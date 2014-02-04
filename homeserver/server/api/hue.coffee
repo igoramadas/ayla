@@ -8,8 +8,8 @@ class Hue extends (require "./baseApi.coffee")
     settings = expresser.settings
     utils = expresser.utils
 
-    async = require "async"
-    lodash = require "lodash"
+    async = expresser.libs.async
+    lodash = expresser.libs.lodash
     networkApi = require "./network.coffee"
     url = require "url"
 

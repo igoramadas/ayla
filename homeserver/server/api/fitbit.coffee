@@ -9,9 +9,9 @@ class Fitbit extends (require "./baseApi.coffee")
     mailer = expresser.mailer
     settings = expresser.settings
 
-    async = require "async"
-    lodash = require "lodash"
-    moment = require "moment"
+    async = expresser.libs.async
+    lodash = expresser.libs.lodash
+    moment = expresser.libs.moment
     security = require "../security.coffee"
 
     # INIT

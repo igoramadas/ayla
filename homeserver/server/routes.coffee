@@ -15,7 +15,7 @@ class Routes
     fitbit = require "./api/fitbit.coffee"
     homeManager = require "./manager/home.coffee"
     hueApi = require "./api/hue.coffee"
-    lodash = require "lodash"
+    lodash = expresser.libs.lodash
     netatmoApi = require "./api/netatmo.coffee"
     networkApi = require "./api/network.coffee"
     ninjaApi = require "./api/ninja.coffee"
@@ -32,56 +32,46 @@ class Routes
     init: (callback) =>
         app = expresser.app.server
 
-        # Main route.
         app.get "/", indexPage
 
-        # API routes.
         app.get "/api/home", apiHome
         app.get "/api/commander/:cmd", apiCommander
         app.post "/api/commander/:cmd", apiCommander
 
-        # Email routes.
         app.get "/email", emailPage
 
-        # Fitbit routes.
         app.get "/fitbit", fitbitPage
         app.get "/fitbit/auth", fitbitAuth
         app.get "/fitbit/auth/callback", fitbitAuthCallback
         app.post "/fitbit/auth/callback", fitbitAuthCallback
 
-        # Home rules.
-        app.get "/home", homePage
-        app.get "/home/lights", homeLightsPage
+        app.get "/lights", lightsPage
 
-        # Netatmo routes.
         app.get "/netatmo", netatmoPage
         app.get "/netatmo/auth", netatmoAuth
         app.get "/netatmo/auth/callback", netatmoAuthCallback
         app.post "/netatmo/auth/callback", netatmoAuthCallback
 
-        # Ninja Blocks routes.
+        app.get "/network", networkPage
+
         app.get "/ninja", ninjaPage
 
-        # Status route.
         app.get "/status", statusPage
 
-        # System routes.
-        app.get "/system/jobs", systemJobsPage
-        app.get "/system/network", systemNetworkPage
+        app.get "/system", systemPage
 
-        # Toshl routes.
         app.get "/toshl", toshlPage
         app.get "/toshl/auth", toshlAuth
         app.get "/toshl/auth/callback", toshlAuthCallback
         app.post "/toshl/auth/callback", toshlAuthCallback
 
-        # Withings routes.
+        app.get "/weather", weatherPage
+
         app.get "/withings", withingsPage
         app.get "/withings/auth", withingsAuth
         app.get "/withings/auth/callback", withingsAuthCallback
         app.post "/withings/auth/callback", withingsAuthCallback
 
-        # Weather underground routes.
         app.get "/wunderground", wundergroundPage
 
         callback() if callback?
@@ -130,16 +120,11 @@ class Routes
     fitbitAuthCallback = (req, res) ->
         fitbitApi.auth req, res
 
-    # HOME ROUTES
+    # LIGHTS ROUTES
     # -------------------------------------------------------------------------
 
-    # Main home page.
-    homePage = (req, res) ->
-        options = {pageTitle: "Home", data: homeManager.data}
-        renderPage req, res, "home", options
-
-    # Home light control page.
-    homeLightsPage = (req, res) ->
+    # L:ight control page.
+    lightsPage = (req, res) ->
         options = {pageTitle: "Home lights", data: {hue: hueApi.data, ninja: ninjaApi.data}}
         renderPage req, res, "home.lights", options
 
@@ -157,6 +142,13 @@ class Routes
     # Callback for Netatmo OAuth.
     netatmoAuthCallback = (req, res) ->
         netatmoApi.auth req, res
+
+    # NETWORK ROUTES
+    # -------------------------------------------------------------------------
+
+    # Network overview page.
+    networkPage = (req, res) ->
+        renderPage req, res, "network", {pageTitle: "Network overview", data: networkApi.data}
 
     # NINJA BLOCKS ROUTES
     # -------------------------------------------------------------------------
@@ -190,13 +182,9 @@ class Routes
     # SYSTEM ROUTES
     # -------------------------------------------------------------------------
 
-    # Cron jobs page.
-    systemJobsPage = (req, res) ->
+    # System info page.
+    systemPage = (req, res) ->
         renderPage req, res, "system.jobs", {pageTitle: "Scheduled jobs", jobs: cron.jobs}
-
-    # Network overview page.
-    systemNetworkPage = (req, res) ->
-        renderPage req, res, "system.network", {pageTitle: "Network overview", status: network.status}
 
     # TOSHL ROUTES
     # -------------------------------------------------------------------------
@@ -212,6 +200,14 @@ class Routes
     # Callback for Toshl OAuth.
     toshlAuthCallback = (req, res) ->
         toshlApi.auth req, res
+
+    # WEATHER ROUTES
+    # -------------------------------------------------------------------------
+
+    # Weather info page.
+    weatherPage = (req, res) ->
+        options = {pageTitle: "Weather", data: homeManager.data}
+        renderPage req, res, "weather", options
 
     # WITHINGS ROUTES
     # -------------------------------------------------------------------------
@@ -248,11 +244,18 @@ class Routes
         options.pageTitle = filename if not options.pageTitle?
         options.title = settings.general.appTitle if not options.title?
         options.loadJs = [] if not options.loadJs?
+        options.loadCss = [] if not options.loadCss?
 
-        # Check if current view have an external JS to be loaded.
-        jsName = filename.replace "jade",""
-        jsPath = path.resolve __dirname, "../", "assets/js/views/#{jsName}.coffee"
-        options.loadJs.push "views/#{jsName}.js" if fs.existsSync jsPath
+        # Set base file name.
+        baseName = filename.replace ".jade",""
+
+        # Check if current view has an external JS to be loaded.
+        jsPath = path.resolve __dirname, "../", "assets/js/views/#{baseName}.coffee"
+        options.loadJs.push "views/#{baseName}.js" if fs.existsSync jsPath
+
+        # Check if current view has an external CSS to be loaded.
+        cssPath = path.resolve __dirname, "../", "assets/css/#{baseName}.styl"
+        options.loadCss.push "#{baseName}.css" if fs.existsSync cssPath
 
         # Force .jade extension.
         filename += ".jade" if filename.indexOf(".jade") < 0

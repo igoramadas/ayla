@@ -11,7 +11,7 @@ class Commander
     settings = expresser.settings
 
     hueApi = require "./api/hue.coffee"
-    lodash = require "lodash"
+    lodash = expresser.libs.lodash
     networkApi = require "./api/network.coffee"
     ninjaApi = require "./api/ninja.coffee"
 

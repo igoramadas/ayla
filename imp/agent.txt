@@ -1,6 +1,7 @@
 // AYLA IMP - AGENT CODE
 
 // Dats variables.
+local timestamp = 0;
 local temperature = 0;
 local lightLevel = 0;
 local wifiStrength = 0;
@@ -10,20 +11,27 @@ server.log("Ayla Imp agent started!");
 
 // DEVICE EVENTS
 // ---------------------------------------------------
+function setTimestamp() {
+    timestamp = time();
+}
 
 device.on("temperature", function(value) {
+    setTimestamp();
     temperature = value;
 });
 
 device.on("lightLevel", function(value) {
+    setTimestamp();
     lightLevel = value;
 });
 
 device.on("wifiStrength", function(value) {
+    setTimestamp();
     wifiStrength = value;
 });
 
 device.on("doorClosed", function(value) {
+    setTimestamp();
     doorClosed = value;
 });
 
@@ -33,19 +41,21 @@ device.on("doorClosed", function(value) {
 // Command values are taken from the "v" query.
 
 function httpHandler(req, resp) {
+    server.log("Ayla Imp http request");
+    
     local errormsg;
     local v;
-
+    
     if ("command" in req.query) {
         if ("v" in req.query)
             v = req.query["v"];
         else
             v = 1;
-
+        
         executeCommand(req.query["command"], v);
     }
 
-    resp.send(200, format("{\"temperature\":" + temperature + "," + "\"lightLevel\":" + lightLevel + "," + "\"doorClosed\":" + doorClosed + "," + "\"wifiStrength\":" + wifiStrength + "}"));
+    resp.send(200, format("{\"timestamp\":" + timestamp + ", \"temperature\":" + temperature + ", \"lightLevel\":" + lightLevel + ", \"doorClosed\":" + doorClosed + ", \"wifiStrength\":" + wifiStrength + "}"));
 }
 
 // HELPER FUNCTIONS

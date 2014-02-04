@@ -4,12 +4,18 @@ html.no-js
         title Ayla
         meta(name="apple-mobile-web-app-capable", content="yes")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
+
         script(src="/socket.io/socket.io.js")
         script window.ayla = {};
+
         != js("scripts")
-        != css("styles")
         for j in loadJs
             != js(j)
+
+        != css("styles")
+        for c in loadCss
+            != css(c)
+
         if data
             script.
                 ayla.serverData = !{JSON.stringify(data)};
@@ -24,10 +30,12 @@ html.no-js
                         a(href="#") Menu
                 section.top-bar-section
                     ul.left
-                        li.today
-                            a(href="/today") Today
-                        li.home
-                            a(href="/home") Home
+                        li.overview
+                            a(href="/") Overview
+                        li.weather
+                            a(href="/weather") Weather
+                        li.lights
+                            a(href="/lights") Lights
                         li.security
                             a(href="/security") Security
                         li.fitness

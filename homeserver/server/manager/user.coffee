@@ -10,8 +10,8 @@ class UserManager extends (require "./baseManager.coffee")
     settings = expresser.settings
 
     hueApi = require "../api/hue.coffee"
-    lodash = require "lodash"
-    moment = require "moment"
+    lodash = expresser.libs.lodash
+    moment = expresser.libs.moment
     wundergroundApi = require "../api/wunderground.coffee"
 
     # INIT

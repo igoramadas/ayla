@@ -1,8 +1,8 @@
-# SYSTEM NETWORK VIEW
+# SYSTEM JOBS VIEW
 # --------------------------------------------------------------------------
-class SystemNetworkView extends ayla.BaseView
+class SystemView extends ayla.BaseView
 
-    wrapperId: "system-network"
+    wrapperId: "system"
     elements: ["table"]
 
     # MAIN METHODS
@@ -10,9 +10,9 @@ class SystemNetworkView extends ayla.BaseView
 
     # Init the System Jobs view.
     onReady: =>
-        @dom.table.dataTable ayla.optsDataDTables
+        @dom.table.dataTable()
 
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.currentView = new SystemNetworkView()
+window.ayla.currentView = new SystemView()

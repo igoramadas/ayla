@@ -10,8 +10,8 @@ class HomeManager extends (require "./baseManager.coffee")
     settings = expresser.settings
     sockets = expresser.sockets
 
-    lodash = require "lodash"
-    moment = require "moment"
+    lodash = expresser.libs.lodash
+    moment = expresser.libs.moment
 
     # COMPUTED PROPERTIES
     # -------------------------------------------------------------------------
@@ -67,29 +67,65 @@ class HomeManager extends (require "./baseManager.coffee")
     # Helper to verify if room weather is in good condition.
     checkRoomWeather: (room) =>
         room.condition = "Good"
+        notifyOptions = {}
 
         # Check temperatures.
         if room.temperature?
-            if room.temperature > settings.home.idealConditions.temperature[2]
+            if room.temperature > settings.home.idealConditions.temperature[3]
                 room.condition = "Too warm"
-                @notify "#{room.title} too warm", "It's #{room.temperature}C right now, fan will turn on automatically."
+                notifyOptions.critical = true
+                notifyOptions.subject = "#{room.title} too warm"
+                notifyOptions.message = "It's #{room.temperature}C right now, fans will turn on automatically."
+            else if room.temperature > settings.home.idealConditions.temperature[2]
+                room.condition = "A bit warm"
+                notifyOptions.subject =  "#{room.title} is warm"
+                notifyOptions.message = "It's #{room.temperature}C right now, please turn in the fans."
+            else if room.temperature < settings.home.idealConditions.temperature[1]
+                room.condition = "A bit cold"
+                notifyOptions.subject =  "#{room.title} is cold"
+                notifyOptions.message = "It's #{room.temperature}C right now, please turn on the heating."
             else if room.temperature < settings.home.idealConditions.temperature[0]
                 room.condition = "Too cold"
-                @notify "#{room.title} too cold", "It's #{room.temperature}C right now, heating will turn on automatically."
+                notifyOptions.critical = true
+                notifyOptions.subject =  "#{room.title} too cold"
+                notifyOptions.message = "It's #{room.temperature}C right now, heating will turn on automatically."
 
         # Check humidity.
         if room.humidity?
-            if room.humidity > settings.home.idealConditions.humidity[2]
+            if room.temperature > settings.home.idealConditions.humidity[3]
                 room.condition = "Too humid"
-                @notify "#{room.title} too humid", "It's #{room.humidity}% right now, please boil some water at the kitchen."
-            else if room.humidity < settings.home.idealConditions.humidity[0]
+                notifyOptions.critical = true
+                notifyOptions.subject = "#{room.title} too humid"
+                notifyOptions.message = "It's #{room.humidity}% right now, please open the windows immediately."
+            else if room.temperature > settings.home.idealConditions.humidity[2]
+                room.condition = "A bit humid"
+                notifyOptions.subject =  "#{room.title} a bit humid"
+                notifyOptions.message = "It's #{room.humidity}% right now, please open the windows."
+            else if room.temperature < settings.home.idealConditions.humidity[1]
+                room.condition = "A bit dry"
+                notifyOptions.subject =  "#{room.title} a bit dry"
+                notifyOptions.message = "It's #{room.humidity}% right now, please turn on the air humidifier."
+            else if room.temperature < settings.home.idealConditions.humidity[0]
                 room.condition = "Too dry"
-                @notify "#{room.title} too dry", "It's #{room.humidity}% right now, please open the windows."
+                notifyOptions.critical = true
+                notifyOptions.subject =  "#{room.title} too dry"
+                notifyOptions.message = "It's #{room.humidity}% right now, please turn on the shower for some steam."
 
         # Check CO2.
-        if room.co2? and room.co2 > settings.home.idealConditions.co2[2]
-            room.condition = "Too much CO2"
-            @notify "#{room.title} has too much CO2", "With #{room.co2}C right now, please open the windows."
+        if room.co2?
+            if room.co2 > settings.home.idealConditions.co2[23]
+                room.condition = "CO2 too high"
+                notifyOptions.critical = true
+                notifyOptions.subject = "#{room.title} CO2 is too high"
+                notifyOptions.message =  "With #{room.co2} ppm right now, please open the windows immediately."
+            else if room.co2 > settings.home.idealConditions.co2[23]
+                room.condition = "CO2 high"
+                notifyOptions.subject = "#{room.title} CO2 is high"
+                notifyOptions.message =  "With #{room.co2} ppm right now, please open the windows."
+
+        # Send notification?
+        if notifyOptions.subject?
+            @notify notifyOptions
 
     # Helper to set current conditions for the specified room.
     setRoomWeather: (source, data) =>
@@ -99,6 +135,10 @@ class HomeManager extends (require "./baseManager.coffee")
         roomObj.temperature = data.temperature or null
         roomObj.humidity = data.humidity or null
         roomObj.co2 = data.co2 or null
+
+        # Round values.
+        roomObj.temperature = parseFloat(roomObj.temperature).toFixed 1 if roomObj.temperature?
+        roomObj.humidity = parseFloat(roomObj.humidity).toFixed 1 if roomObj.humidity?
 
         # Check if room conditions are ok.
         @checkRoomWeather roomObj
@@ -166,7 +206,8 @@ class HomeManager extends (require "./baseManager.coffee")
             # Iterate group lights.
             for lightId in group.lights
                 lightData = data.lights[lightId]
-                groupData.lights.push {id: lightId, name: lightData.name, state: lightData.state}
+                state = {on: lightData.state.on, color: getHueHex lightData.state}
+                groupData.lights.push {id: lightId, name: lightData.name, state: state}
 
         # Emit updated lights and save log.
         @dataUpdated "hue"
@@ -203,6 +244,35 @@ class HomeManager extends (require "./baseManager.coffee")
     getOutdoorObject = (title) =>
         return {title: title, condition: "OK", temperature: null, humidity: null, pressure: null}
 
+    # Helper to get HEX color from a hue light state.
+    getHueHex = (state) ->
+        x = state.xy[0]
+        y = state.xy[1]
+        z = 1.0 - x - y
+        Y = state.bri
+        X = (Y / y) * x
+        Z = (Y / y) * z
+        r = X * 1.612 - Y * 0.203 - Z * 0.302
+        g = -X * 0.509 + Y * 1.412 + Z * 0.066
+        b = X * 0.026 - Y * 0.072 + Z * 0.962
+        r = (if r <= 0.0031308 then 12.92 * r else (1.0 + 0.055) * Math.pow(r, (1.0 / 2.4)) - 0.055)
+        g = (if g <= 0.0031308 then 12.92 * g else (1.0 + 0.055) * Math.pow(g, (1.0 / 2.4)) - 0.055)
+        b = (if b <= 0.0031308 then 12.92 * b else (1.0 + 0.055) * Math.pow(b, (1.0 / 2.4)) - 0.055)
+        cap = (x) -> Math.max 0, Math.min(1, x)
+
+        # Helper to convert RGB to hex.
+        rgbhex = (v) ->
+            v = Math.round(v * 255)
+            s = "0" + v.toString(16)
+            return s.substr -2
+
+        # Cap and transform RGB values.
+        r = rgbhex cap r
+        g = rgbhex cap g
+        b = rgbhex cap b
+
+        # Convert RGB to hex and return result.
+        return "##{r}#{g}#{b}"
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

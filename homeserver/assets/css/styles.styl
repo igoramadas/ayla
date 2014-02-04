@@ -1,8 +1,8 @@
 // GENERIC STYLES
 
-// Import foundation
-@import "normalize.css"
-@import "foundation.css"
+// Import css libs
+@import normalize
+@import foundation
 
 // ----------------------------------------------------------------------------
 
@@ -35,7 +35,6 @@ gridBlockPadding = 5px
 // Body main styles
 body
     font-family OpenSansLight, sans-serif
-    text-align center
 
 // Main wrapper
 #wrapper
@@ -43,18 +42,30 @@ body
 
 // Main contents
 #contents
-    margin 15px
-    text-align left
+    margin 13px
 
 // ----------------------------------------------------------------------------
+
+// Overriding datatables styles
+.dataTables_wrapper
+    clear both
+
+    // Main sub classes
+    .dataTables
+        clear both
+    .dataTables_filter
+        float right
+    .dataTables_length
+        float left
+    .odd, .even
+        background lightBgColor
+
+    // Sorting related
+    .sorting_desc, .sorting_asc
+        background lightHoverColor
+    .sorting_1
+        background lightHoverColor
 
 // Foundation: topbar navigation
 .top-bar-section li.active a
     background-color rgb(0, 0, 0) !important
-
-// ----------------------------------------------------------------------------
-
-// Import extra styles
-@import datatables
-@import home
-@import system
