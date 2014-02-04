@@ -28,6 +28,7 @@ class Hue extends (require "./baseApi.coffee")
 
     # Start the module and refresh the Hue hub data.
     start: =>
+        @refreshHub()
         @baseStart()
 
     # Stop the module and cancel the Hue hub refresh jobs.

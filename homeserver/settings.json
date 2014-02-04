@@ -45,6 +45,7 @@
             "co2": [0, 600, 1800],
             "humidity": [20, 40, 60],
             "temperature": [17, 20, 25]
+        }
     },
     "logger": {
         "console": true,

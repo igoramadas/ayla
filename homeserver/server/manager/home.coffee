@@ -34,12 +34,15 @@ class HomeManager extends (require "./baseManager.coffee")
 
     # Init the home manager.
     init: =>
+        @data.outdoor = getOutdoorObject "Outdoor"
+        @data.forecast = getOutdoorObject "Forecast"
+
+        # Set rooms.
         for key, room of settings.home.rooms
             @data[key] = getRoomObject room.title
 
-        # Set outdoor weather objects.
-        @data.outdoor = getOutdoorObject "Outdoor"
-        @data.forecast = getOutdoorObject "Forecast"
+        # Set hue.
+        @data.hue = []
 
         @baseInit()
 
@@ -63,31 +66,30 @@ class HomeManager extends (require "./baseManager.coffee")
 
     # Helper to verify if room weather is in good condition.
     checkRoomWeather: (room) =>
-        subject = "#{room.title} weather"
-        room.codition = "Good"
+        room.condition = "Good"
 
         # Check temperatures.
         if room.temperature?
             if room.temperature > settings.home.idealConditions.temperature[2]
                 room.condition = "Too warm"
-                @notify subject, "#{room.title} too warm", "It's #{room.temperature}C right now, fan will turn on automatically."
+                @notify "#{room.title} too warm", "It's #{room.temperature}C right now, fan will turn on automatically."
             else if room.temperature < settings.home.idealConditions.temperature[0]
                 room.condition = "Too cold"
-                @notify subject, "#{room.title} too cold", "It's #{room.temperature}C right now, heating will turn on automatically."
+                @notify "#{room.title} too cold", "It's #{room.temperature}C right now, heating will turn on automatically."
 
         # Check humidity.
         if room.humidity?
             if room.humidity > settings.home.idealConditions.humidity[2]
                 room.condition = "Too humid"
-                @notify subject, "#{room.title} too humid", "It's #{room.humidity}% right now, please boil some water at the kitchen."
+                @notify "#{room.title} too humid", "It's #{room.humidity}% right now, please boil some water at the kitchen."
             else if room.humidity < settings.home.idealConditions.humidity[0]
                 room.condition = "Too dry"
-                @notify subject, "#{room.title} too dry", "It's #{room.humidity}% right now, please open the windows."
+                @notify "#{room.title} too dry", "It's #{room.humidity}% right now, please open the windows."
 
         # Check CO2.
         if room.co2? and room.co2 > settings.home.idealConditions.co2[2]
             room.condition = "Too much CO2"
-            @notify subject, "#{room.title} has too much CO2", "With #{room.co2}C right now, please open the windows."
+            @notify "#{room.title} has too much CO2", "With #{room.co2}C right now, please open the windows."
 
     # Helper to set current conditions for the specified room.
     setRoomWeather: (source, data) =>
@@ -99,7 +101,7 @@ class HomeManager extends (require "./baseManager.coffee")
         roomObj.co2 = data.co2 or null
 
         # Check if room conditions are ok.
-        @checkRoomWeather room
+        @checkRoomWeather roomObj
 
         # Emit updated room conditions to clients and log.
         @dataUpdated room
@@ -152,9 +154,23 @@ class HomeManager extends (require "./baseManager.coffee")
     # LIGHTS
     # -------------------------------------------------------------------------
 
-    # When Hue hub details are refreshed.
+    # Update hue lights and groups.
     onHueHub: (data) =>
-        console.warn "hue data manager received"
+        @data.hue = []
+
+        # Iterate groups.
+        for groupId, group of data.groups
+            groupData = {id: groupId, room: group.name, lights: []}
+            @data.hue.push groupData
+
+            # Iterate group lights.
+            for lightId in group.lights
+                lightData = data.lights[lightId]
+                groupData.lights.push {id: lightId, name: lightData.name, state: lightData.state}
+
+        # Emit updated lights and save log.
+        @dataUpdated "hue"
+        logger.info "HomeManager.onHueHub", @data.hue
 
     # GENERAL HELPERS
     # -------------------------------------------------------------------------

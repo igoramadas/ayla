@@ -11,7 +11,14 @@ class HomeView extends ayla.BaseView
 
     # Init the System Jobs view.
     onReady: =>
-        console.warn "ready"
+        @dataProcessor @data
+
+    # Parse and process data coming from the server.
+    dataProcessor: (data) =>
+        if data.condition?
+            condition = if _.isFunction data.condition then data.condition() else data.condition
+            data.conditionCss = ko.computed ->
+                return condition.toLowerCase().replace(/\s/g, "-")
 
     # LIGHT CONTROL
     # ----------------------------------------------------------------------

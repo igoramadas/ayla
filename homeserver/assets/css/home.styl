@@ -1,10 +1,36 @@
 // HOME RELATED STYLES
 
-// Weather blocks.
+// Weather variables
+warmColor = rgba(250, 170, 160, 0.8)
+coldColor = rgba(160, 200, 250, 0.8)
+humidColor = rgba(190, 220, 250, 0.8)
+dryColor = rgba(200, 170, 170, 0.8)
+
+// Weather blocks
 .weather
-    ul li div
+    ul li > div
         border 1px solid rgb(200, 200, 200)
         margin gridBlockMargin
         padding gridBlockPadding
 
+        // Specific conditions
+        &.good
+            border-color rgba(190, 250, 190, 0.8)
+        &.too-warm
+            border-color warmColor
+        &.too-cold
+            border-color coldColor
+        &.too-humid
+            border-color humidColor
+            label
+                background-color humidColor
+        &.too-dry
+            border-color dryColor
+
+        // Weather labels
         label
+            margin-top 3px
+
+        // Inner details
+        div > span
+            margin-right 5px

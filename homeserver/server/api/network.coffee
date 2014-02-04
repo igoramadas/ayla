@@ -33,7 +33,7 @@ class Network extends (require "./baseApi.coffee")
     userStatus: {}
 
     # Is it running on the expected local network, or remotely?
-    isHome: false
+    isHome: true
 
     # Return a list of devices marked as offline (up=false).
     offlineDevices: =>

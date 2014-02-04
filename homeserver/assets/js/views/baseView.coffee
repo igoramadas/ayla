@@ -59,6 +59,7 @@ class BaseView
 
         # Iterate passed data and populate the view's data property.
         for key, value of ayla.serverData
+            @dataProcessor value if @dataProcessor?
             @data[key] = ko.observable value
 
     # Helper to listen to socket events sent by the server. If no event name is
@@ -82,8 +83,8 @@ class BaseView
     # Updates data sent by the server. A property can be passed so it will
     # update data for that particular property, otherwise assume it's the full data object.
     onData: (data, property) =>
-        console.warn this
         if property?
+            @dataProcessor data if @dataProcessor?
             @data[property] data
         else
             @setData data

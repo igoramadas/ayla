@@ -3,11 +3,18 @@ extends layout
 block contents
     #home
         script#weather-template(type="text/html")
-            div
+            div(data-bind="css: conditionCss")
+                label.label.secondary.right.condition(data-bind="text: condition")
                 h5(data-bind="text: title")
-                span.condition(data-bind="text: condition")
-                span.temperature(data-bind="text: temperature")
-                span.humidity(data-bind="text: humidity")
+                div.temperature
+                    span(data-bind="text: temperature ? temperature : '?'")
+                    span C
+                div.humidity
+                    span(data-bind="text: humidity ? humidity : '?'")
+                    span %
+                div.co2
+                    span(data-bind="text: co2 ? co2 : '?'")
+                    span CO2
 
         div.weather
             ul.small-block-grid-4
@@ -15,3 +22,12 @@ block contents
                 li.livingroom(data-bind="template: {name: 'weather-template', data: livingroom}")
                 li.babyroom(data-bind="template: {name: 'weather-template', data: babyroom}")
                 li.kitchen(data-bind="template: {name: 'weather-template', data: kitchen}")
+
+        div.lights
+            ul.small-block-grid-3(data-bind="foreach: hue")
+                li
+                    h5(data-bind="text: room")
+                    div(data-bind="foreach: lights")
+                        span(data-bind="text: name")
+                        div(data-bind="with: state")
+                            span(data-bind="text: on")
