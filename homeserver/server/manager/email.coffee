@@ -1,10 +1,12 @@
-# EMAIL API
+# SERVER: EMAIL MANAGER
 # -----------------------------------------------------------------------------
-class Email extends (require "./baseApi.coffee")
+# Handles email messages to execute custom actions.
+class EmailManager extends (require "./baseManager.coffee")
 
     expresser = require "expresser"
     events = expresser.events
     logger = expresser.logger
+    mailer = expresser.mailer
     settings = expresser.settings
 
     fs = require "fs"
@@ -20,16 +22,39 @@ class Email extends (require "./baseApi.coffee")
     # The IMAP client.
     imap: null
 
+    # The default email and mobile email addresses, taken from
+    # the users collections on settings. Set on init.
+    defaultTo: null
+    defaultToMobile: null
+
     # INIT
     # -------------------------------------------------------------------------
 
     # Init the Email module and start listening to new message events from the server.
     init: =>
         @imap = new imapModule settings.email.imap
+
+        # Get default user to set email and mobile email.
+        defaultUser = lodash.find settings.users, {isDefault: true}
+
+        # Set default email if a default user was set, or warn that defaults
+        # will be taken from the Expresser Mailer.
+        @defaultTo = defaultUser.email if defaultUser?.email?
+        @defaultToMobile = defaultUser.emailMobile if defaultUser?.emailMobile?
+
         @baseInit()
 
     # Start listening to new message events from the server.
     start: =>
+        events.on "emailmanager.send", @sendEmail
+        events.on "fitbit.sleep.missing", @onFitbitSleepMissing
+
+        # Send email telling Ayla home server has started managing emails.
+        if @defaultToMobile?
+            mailer.send {to: @defaultToMobile, subject: "Ayla home server started!", body: "Hi there, sir."}
+        else
+            logger.warn "Manager.init", "No default user was set, or no mobile email was found."
+
         @openBox()
         @baseStart()
 
@@ -38,6 +63,9 @@ class Email extends (require "./baseApi.coffee")
         @baseStop()
         @imap.closeBox()
         @imap.end()
+
+    # READ MESSAGES
+    # -------------------------------------------------------------------------
 
     # Open the IMAP email box.
     openBox: =>
@@ -63,9 +91,6 @@ class Email extends (require "./baseApi.coffee")
 
         # Connect to the IMAP server.
         @imap.connect()
-
-    # READ MESSAGES
-    # -------------------------------------------------------------------------
 
     # Fetch new messages from the server.
     fetchNewMessages: =>
@@ -144,6 +169,19 @@ class Email extends (require "./baseApi.coffee")
             else
                 logger.debug "Email.archiveMessage", parsedMsg.attributes.uid
 
+    # SEND MESSAGES
+    # -------------------------------------------------------------------------
+
+    # Default way to send emails. Called when a module triggers the `emailmanager.send` event.
+    # If no `to` is present on the options send to the `defaultTo` specified above, or
+    # to the `defaultToMobile` in case `options.mobile` is true.
+    onSend: (options) =>
+        if not options.to?
+            options.to = if options.mobile then @defaultToMobile else @defaultTo
+
+        # Send the email using the Expresser Mailer module.
+        mailer.send options, (err, result) => callback err, result if callback?
+
     # MESSAGE ACTIONS
     # -------------------------------------------------------------------------
 
@@ -165,19 +203,30 @@ class Email extends (require "./baseApi.coffee")
         # Return actions.
         return actions
 
-    # PAGES
+    # FITBIT MESSAGES
     # -------------------------------------------------------------------------
 
-    # Get the Email dashboard data.
-    getDashboard: (callback) =>
-        @getNewMessages (err, result) =>
-            console.warn err, result
+    # Notify user of missing sleep data by email.
+    onFitbitSleepMissing: (data) =>
+        msgOptions = {to: settings.email.toDefault, subject: "Missing sleep data for #{date}", keywords: {}}
+        msgOptions.template = "fitbitMissingSleep"
+        msgOptions.keywords.date = date
+        msgOptions.keywords.dateUrl = date.replace "-", "/"
+
+        # Send the email.
+        mailer.send msgOptions, (errM, resultM) =>
+            if errM?
+                @logError "Fitbit.jobCheckMissingData", "mailer.send", errM
+                return false
+            else
+                logger.info "Fitbit.jobCheckMissingData", "Notified of missing sleep on #{date}."
+
 
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------
-Email.getInstance = ->
-    @instance = new Email() if not @instance?
+EmailManager.getInstance = ->
+    @instance = new EmailManager() if not @instance?
     return @instance
 
-module.exports = exports = Email.getInstance()
+module.exports = exports = EmailManager.getInstance()

@@ -6,7 +6,6 @@ class Fitbit extends (require "./baseApi.coffee")
     database= expresser.database
     events = expresser.events
     logger = expresser.logger
-    mailer = expresser.mailer
     settings = expresser.settings
 
     async = expresser.libs.async
@@ -101,22 +100,9 @@ class Fitbit extends (require "./baseApi.coffee")
                         @logError "Fitbit.jobCheckMissingData", "getSleep", date, err
                         return false
 
-                    # Has sleep data? Stop here.
+                    # Has sleep data? Stop here, otherwise emit missing sleep event.
                     return if result?.sleep?.length > 0
-
-                    # No results found, so mail the user.
-                    msgOptions = {to: settings.email.toDefault, subject: "Missing sleep data for #{date}", keywords: {}}
-                    msgOptions.template = "fitbitMissingSleep"
-                    msgOptions.keywords.date = date
-                    msgOptions.keywords.dateUrl = date.replace "-", "/"
-
-                    # Send the email.
-                    mailer.send msgOptions, (errM, resultM) =>
-                        if errM?
-                            @logError "Fitbit.jobCheckMissingData", "mailer.send", errM
-                            return false
-                        else
-                            logger.info "Fitbit.jobCheckMissingData", "Notified of missing sleep on #{date}."
+                    events.emit "fitbit.sleep.missing", result
 
     # PAGES
     # -------------------------------------------------------------------------

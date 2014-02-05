@@ -7,7 +7,6 @@ class Commander
     database = expresser.database
     events = expresser.events
     logger = expresser.logger
-    mailer = expresser.mailer
     settings = expresser.settings
 
     hueApi = require "./api/hue.coffee"
@@ -112,29 +111,6 @@ class Commander
         logger.info "Commander.turnLightsOn", options
 
         hueApi.switchAllLights true, (err, result) =>
-            callback err, result if callback?
-
-    # SYSTEM COMMANDS
-    # -------------------------------------------------------------------------
-
-    # Notify user of devices down.
-    notifyNetworkDevicesDown: (options, callback) =>
-        logger.info "Commander.notifyNetworkDevicesDown", options
-        down = networkApi.getOfflineDevices()
-
-        # Set correct subject and message body based on device status.
-        if down.length > 0
-            subject = "There are #{down.length} devices down"
-            body = ""
-            for d in down
-                body += d.id + ", " + d.ip
-        else
-            subject = "No devices down on your networks"
-            body = "All your devices seem to be running fine, congrats :-)"
-
-        # Set message options and send email.
-        msgOptions = {to: settings.email.toMobile, subject: subject, body: body}
-        mailer.send msgOptions, (err, result) =>
             callback err, result if callback?
 
 

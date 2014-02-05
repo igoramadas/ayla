@@ -5,7 +5,6 @@ class BaseManager
     expresser = require "expresser"
     events = expresser.events
     logger = expresser.logger
-    mailer = expresser.mailer
     settings = expresser.settings
     sockets = expresser.sockets
 
@@ -64,14 +63,14 @@ class BaseManager
         else
             logger.info "#{@moduleName}.notify", options.subject
 
+        # Merge message with blank lines if passed as array.
         if lodash.isArray options.message
             body = options.message.join "\n"
         else
             body = options.message
 
         # Set message options and send email.
-        msgOptions = {to: settings.email.toMobile, subject: options.subject, body: body}
-        mailer.send msgOptions, (err, result) => callback err, result if callback?
+        events.emit "emailmanager.send", {mobile: true, subject: options.subject, body: body}
 
         # Add to the notifications cache.
         @notifications[options.subject] = {options: options, timestamp: moment().unix()}

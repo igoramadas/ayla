@@ -6,7 +6,6 @@ class WeatherManager extends (require "./baseManager.coffee")
     expresser = require "expresser"
     events = expresser.events
     logger = expresser.logger
-    mailer = expresser.mailer
     settings = expresser.settings
     sockets = expresser.sockets
 

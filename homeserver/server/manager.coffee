@@ -6,7 +6,6 @@ class Manager
 
     expresser = require "expresser"
     logger = expresser.logger
-    mailer = expresser.mailer
     settings = expresser.settings
 
     fs = require "fs"
@@ -22,7 +21,6 @@ class Manager
     init: (callback) =>
         rootPath = path.join __dirname, "../"
         managerPath = rootPath + "server/manager/"
-        userActionsPath = rootPath + "server/userActions/"
 
         # Init modules.
         files = fs.readdirSync managerPath
@@ -31,12 +29,6 @@ class Manager
                 module = require "./manager/#{f}"
                 module.init()
                 @modules[module.moduleId] = module
-
-        # Send email telling Ayla home server has started.
-        if settings.email?.toMobile?
-            mailer.send {to: settings.email.toMobile, subject: "Ayla home server started!", body: "Hi there, sir."}
-        else
-            logger.warn "Manager.init", "Mailer settings are not defined. Start email won't be sent out."
 
         # Proceed with callback?
         callback() if callback?
