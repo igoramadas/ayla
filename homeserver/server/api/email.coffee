@@ -30,8 +30,8 @@ class Email extends (require "./baseApi.coffee")
 
     # Start listening to new message events from the server.
     start: =>
-        @baseStart()
         @openBox()
+        @baseStart()
 
     # Stop listening to new messages and disconnect. Set `running` to false.
     stop: =>
@@ -45,17 +45,17 @@ class Email extends (require "./baseApi.coffee")
             logger.warn "Email.openBox", "IMAP email settings are not defined. Abort!"
             return
 
+        # Once IMAP is ready, open the inbox and start listening to messages.
         @imap.once "ready", =>
             @imap.openBox settings.email.imap.inboxName, false, (err, box) =>
                 if err?
                     @logError "Email.openBox", err
                     @imap.disconnect()
-                    return false
-
-                # Inbox open, set running to true and fetch new messages.
-                @running = true
-                @fetchNewMessages()
-                @imap.on "mail", @fetchNewMessages
+                    @running = false
+                else
+                    @running = true
+                    @fetchNewMessages()
+                    @imap.on "mail", @fetchNewMessages
 
         # Handle IMAP errors.
         @imap.on "error", (err) =>
@@ -92,7 +92,7 @@ class Email extends (require "./baseApi.coffee")
                 output = fs.createWriteStream att.generatedFileName
                 att.stream.pipe output
             catch ex
-                @logError "Email.downloadMessage.attachment", err
+                @logError "Email.downloadMessage.attachment", ex
 
         # Parse message attributes and body chunks.
         parser.on "end", (result) -> parsedMsg = result
@@ -108,39 +108,62 @@ class Email extends (require "./baseApi.coffee")
 
         # Make sure the `from` is set.
         if not hasFrom
-            logger.warn "Email.processMessage", "No 'from' address, skip message."
+            logger.warn "Email.processMessage", "No valid 'from' address, skip message."
             return false
-        else
-            parsedMsg.from = parsedMsg.from[0]
-            logger.info "Email.processMessage", msgAttributes.uid, parsedMsg.from.address, parsedMsg.subject
 
-        # Set message attributes.
+        # Set parsed message properties.
+        parsedMsg.from = parsedMsg.from[0]
         parsedMsg.attributes = msgAttributes
+        logger.info "Email.processMessage", msgAttributes.uid, parsedMsg.from.address, parsedMsg.subject
 
-        # Check if message has a from rule.
-        fromRule = lodash.find settings.email.rules, {from: parsedMsg.from.address}
-        action = new (require "../emailActions/#{fromRule.action}.coffee") if fromRule?
+        # Get message actions.
+        actions = @getMessageActions parsedMsg
 
-        # Has action? Process it!
-        if action?
-            action.process parsedMsg, (err, result) =>
-                if err?
-                    @logError "Email.processMessage.#{fromRule.action}", msgAttributes.uid, err
-                else
-                    logger.debug "Email.processMessage.#{fromRule.action}", msgAttributes.uid, "Processed"
-                    @archiveMessage parsedMsg
-        else
+        # Has action? Process them!
+        if actions.length > 0
+            for action in actions
+                action?.process parsedMsg, (err, result) =>
+                    if err?
+                        @logError "Email.processMessage", msgAttributes.uid, action.id, err
+                    else
+                        logger.info "Email.processMessage", msgAttributes.uid, action.id, result
+
+            # Archive messages if they had macthing actions.
             @archiveMessage parsedMsg
 
     # Archive a processed message.
     archiveMessage: (parsedMsg) =>
-        uid = parsedMsg.attributes.uid
+        if not settings.email.imap?.archiveName?
+            logger.warn "Email.archiveMessage", "The IMAP archive setting is not defined. Abort!"
+            return
 
-        @imap.move uid, settings.email.imap.archiveName, (err) =>
+        # Move message to the archive box.
+        @imap.move parsedMsg.attributes.uid, settings.email.imap.archiveName, (err) =>
             if err?
-                @logError "Email.archiveMessage", uid, parsedMsg.from.address, parsedMsg.subject, err
+                @logError "Email.archiveMessage", parsedMsg.attributes.uid
             else
-                logger.info "Email.archiveMessage", uid, parsedMsg.from.address, parsedMsg.subject
+                logger.debug "Email.archiveMessage", parsedMsg.attributes.uid
+
+    # MESSAGE ACTIONS
+    # -------------------------------------------------------------------------
+
+    # Get actions for the specified message based on email rules, or return null if no actions are found.
+    getMessageActions: (parsedMsg) =>
+        actions = []
+
+        # Get and merge all matching rules.
+        from = lodash.find settings.email.rules, (rule) -> return parsedMsg.from.address.indexOf(rule.from) >=0
+        subject = lodash.find settings.email.rules, (rule) -> return parsedMsg.subject.indexOf(rule.subject) >=0
+        rules = lodash.merge from, subject
+
+        # Iterate rules and get related action scripts.
+        for r in rules
+            a = new (require "../emailActions/#{r.id}.coffee")
+            a.id = r.id
+            actions.push a
+
+        # Return actions.
+        return actions
 
     # PAGES
     # -------------------------------------------------------------------------

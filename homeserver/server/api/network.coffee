@@ -86,9 +86,9 @@ class Network extends (require "./baseApi.coffee")
         # Get and process current IP.
         ips = utils.getServerIP()
         ips = "0," + ips.join ","
-        homeSubnet = settings.network.router.ip.substring 0, 7
+        homeSubnet = settings.network.router?.ip?.substring 0, 7
 
-        if ips.indexOf(",#{homeSubnet}") < 0
+        if not homeSubnet? or ips.indexOf(",#{homeSubnet}") < 0
             @isHome = false
         else
             @isHome = true
