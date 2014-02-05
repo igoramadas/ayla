@@ -21,6 +21,7 @@ class Wunderground extends (require "./baseApi.coffee")
     # Start collecting weather data.
     start: =>
         @getCurrentWeather()
+        @getAstronomy()
         @baseStart()
 
     # Stop collecting weather data.
@@ -111,7 +112,7 @@ class Wunderground extends (require "./baseApi.coffee")
         @apiRequest "conditions", {stationIds: settings.wunderground.stationIds}, (err, results) =>
             if not err?
                 currentConditions = @getAverageResult results, "current_observation"
-                @setData "conditions", currentConditions
+                @setData "current", currentConditions
 
             callback err, currentConditions if callback?
 

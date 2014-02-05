@@ -34,10 +34,11 @@ class WeatherManager extends (require "./baseManager.coffee")
 
     # Init the weather manager.
     init: =>
+        @data.astronomy = {sunrise: "7:00", sunset: "18:00"}
         @data.outdoor = getOutdoorObject "Outdoor"
         @data.forecast = getOutdoorObject "Forecast"
 
-        # Set rooms.
+        # Create individual rooms.
         for key, room of settings.home.rooms
             @data[key] = getRoomObject room.title
 
@@ -49,7 +50,8 @@ class WeatherManager extends (require "./baseManager.coffee")
         events.on "netatmo.data.indoor", @onNetatmoIndoor
         events.on "netatmo.data.outdoor", @onNetatmoOutdoor
         events.on "ninja.data.weather", @onNinjaWeather
-        events.on "wunderground.data.current", @onWunderground
+        events.on "wunderground.data.astronomy", @onWundergroundAstronomy
+        events.on "wunderground.data.current", @onWundergroundCurrent
 
         @baseStart()
 
@@ -88,20 +90,20 @@ class WeatherManager extends (require "./baseManager.coffee")
 
         # Check humidity.
         if room.humidity?
-            if room.temperature > settings.home.idealConditions.humidity[3]
+            if room.humidity > settings.home.idealConditions.humidity[3]
                 room.condition = "Too humid"
                 notifyOptions.critical = true
                 notifyOptions.subject = "#{room.title} too humid"
                 notifyOptions.message = "It's #{room.humidity}% right now, please open the windows immediately."
-            else if room.temperature > settings.home.idealConditions.humidity[2]
+            else if room.humidity > settings.home.idealConditions.humidity[2]
                 room.condition = "A bit humid"
                 notifyOptions.subject =  "#{room.title} a bit humid"
                 notifyOptions.message = "It's #{room.humidity}% right now, please open the windows."
-            else if room.temperature < settings.home.idealConditions.humidity[1]
+            else if room.humidity < settings.home.idealConditions.humidity[1]
                 room.condition = "A bit dry"
                 notifyOptions.subject =  "#{room.title} a bit dry"
                 notifyOptions.message = "It's #{room.humidity}% right now, please turn on the air humidifier."
-            else if room.temperature < settings.home.idealConditions.humidity[0]
+            else if room.humidity < settings.home.idealConditions.humidity[0]
                 room.condition = "Too dry"
                 notifyOptions.critical = true
                 notifyOptions.subject =  "#{room.title} too dry"
@@ -154,14 +156,47 @@ class WeatherManager extends (require "./baseManager.coffee")
 
     # Helper to set forecast conditions for outdoors.
     setWeatherForecast: (data) =>
+        currentHour = moment().hour()
+        sunriseHour = parseInt @data.astronomy.sunrise?.split(":")[0]
+        sunsetHour = parseInt @data.astronomy.sunset?.split(":")[0]
+        icon = data.icon.replace(".gif", "").replace("nt_", "")
+
         @data.forecast.condition = data.weather
         @data.forecast.temperature = data.temperature or data.temp_c
         @data.forecast.humidity = data.humidity or data.relative_humidity
         @data.forecast.pressure = data.pressure or data.pressure_mb
 
+        # Set forecast icon.
+        if "fog,hazy,cloudy,mostlycloudy".indexOf(icon) >= 0
+            @data.forecast.icon = "cloud"
+        else if "chancerain,rain,chancesleet,sleet".indexOf(icon) >= 0
+            @data.forecast.icon = "rain"
+        else if "chanceflurries,flurries,chancesnow,snow".indexOf(icon) >= 0
+            @data.forecast.icon = "snow"
+        else if "clear,sunny".indexOf(icon) >= 0
+            @data.forecast.icon = "sunny"
+        else if "mostlysunny,partlysunny,partlycloudy".indexOf(icon) >= 0
+            @data.forecast.icon = "sunny-cloudy"
+        else if "chancestorms,tstorms".indexOf(icon) >= 0
+            @data.forecast.icon = "thunder"
+
+        # Force moon icon when clear skies at night.
+        if @data.forecast.icon.indexOf("sunny") >= 0 and currentHour < sunriseHour or currentHour > sunsetHour
+            @data.forecast.icon = "moon"
+
         # Emit updated forecast to clients and log.
         @dataUpdated "forecast"
         logger.info "WeatherManager.setWeatherForecast", @data.forecast
+
+    # Helper to set current astronomy details, like sunrise and moon phase.
+    setAstronomy: (data) =>
+        @data.astronomy.sunrise = "#{data.sunrise.hour}:#{data.sunrise.minute}"
+        @data.astronomy.sunset = "#{data.sunset.hour}:#{data.sunset.minute}"
+        @data.astronomy.moon = data.phaseofMoon
+
+        # Emit astronomy data and log.
+        @dataUpdated "astronomy"
+        logger.info "WeatherManager.setAstronomy", @data.astronomy
 
     # Check indoor weather conditions using Netatmo.
     onNetatmoIndoor: (data) =>
@@ -184,8 +219,12 @@ class WeatherManager extends (require "./baseManager.coffee")
         @setRoomWeather "electricimp", data
 
     # Check outdoor weather conditions using Weather Underground.
-    onWunderground: (data) =>
+    onWundergroundCurrent: (data) =>
         @setWeatherForecast data
+
+    # Check astronomy for today using Weather Underground.
+    onWundergroundAstronomy: (data) =>
+        @setAstronomy data
 
     # GENERAL HELPERS
     # -------------------------------------------------------------------------
@@ -212,11 +251,11 @@ class WeatherManager extends (require "./baseManager.coffee")
 
     # Helper to return room object with weather, title etc.
     getRoomObject = (title) =>
-        return {title: title, condition: "OK", temperature: null, humidity: null, pressure: null, co2: null, light: null}
+        return {title: title, condition: "Unknown", temperature: null, humidity: null, pressure: null, co2: null, light: null}
 
     # Helper to return outdoor weather.
     getOutdoorObject = (title) =>
-        return {title: title, condition: "OK", temperature: null, humidity: null, pressure: null}
+        return {title: title, condition: "Unknown", temperature: null, humidity: null, pressure: null}
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

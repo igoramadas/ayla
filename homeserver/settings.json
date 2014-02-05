@@ -67,7 +67,7 @@
     "wunderground": {
         "defaultQuery": "Germany/Berlin",
         "resultFields": ["weather", "temp_c", "relative_humidity", "wind_degrees", "wind_kph", "pressure_mb",
-                         "dewpoint_c", "feelslike_c", "visibility_km", "precip_1hr_metric"],
+                         "dewpoint_c", "feelslike_c", "visibility_km", "precip_1hr_metric", "icon"],
         "stationIds": ["IBERLIN15", "IBERLINB41"]
     }
 }

@@ -1,38 +1,82 @@
 // WEATHER PAGE STYLES
 
 // Weather variables
+goodColor = rgba(180, 240, 190, 0.8)
 warmColor = rgba(250, 170, 160, 0.8)
 coldColor = rgba(160, 200, 250, 0.8)
 humidColor = rgba(190, 220, 250, 0.8)
 dryColor = rgba(200, 170, 170, 0.8)
 
-// Weather blocks
 #weather
-    ul li > div
-        border 1px solid rgb(200, 200, 200)
-        margin 5px
-        padding 5px
 
-        // Specific conditions
+    // Main 2 col grid
+    ul.maingrid > li > div
+        min-height 500px
+
+    // Outside weather
+    div.cloud
+        background url("../images/weather-cloud.png") no-repeat top right
+    div.moon
+        background url("../images/weather-moon.png") no-repeat top right
+    div.rain
+        background url("../images/weather-rain.png") no-repeat top right
+    div.snow
+        background url("../images/weather-snow.png") no-repeat top right
+    div.sunny
+        background url("../images/weather-sunny.png") no-repeat top right
+    div.sunny-cloudy
+        background url("../images/weather-sunny-cloudy.png") no-repeat top right
+    div.thunder
+        background url("../images/weather-thunder.png") no-repeat top right
+
+    // Weather sub headers
+    div.summary
+        display inline-block
+        font-size 170%
+        margin 9px 0 0 20px
+        span
+            margin-right 12px
+
+    // Weather legends
+    span.legend
+        display inline-block
+        min-width 70px
+
+    // Indoor rooms
+    div.room
+        div
+            clear both
+        .label
+            margin-left 10px
+            margin-top 2px
+
+        // Colour labels
         &.good
-            border-color rgba(190, 250, 190, 0.8)
-        &.too-warm
+            border-color goodColor
+            .label
+                background-color goodColor
+        &.warm, &.too-warm
             border-color warmColor
-        &.too-cold
+            .label
+                background-color warmColor
+        &.cold, &.too-cold
             border-color coldColor
-        &.too-humid
+            .label
+                background-color coldColor
+        &.a-bit-humid, &.too-humid
             border-color humidColor
             .label
                 background-color humidColor
-        &.too-dry
+        &.a-bit-dry, &.too-dry
             border-color dryColor
+            .label
+                background-color dryColor
 
         // Weather labels
         span.label
             margin-top 3px
 
-        // Inner details
-        div
-            span.legend
-                display inline-block
-                min-width 60px
+    // Outdoor info
+    li.outside
+        h5
+            clear both

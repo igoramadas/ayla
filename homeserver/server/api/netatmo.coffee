@@ -136,6 +136,7 @@ class Netatmo extends (require "./baseApi.coffee")
 
         # Set outdoor parameters.
         params = getParams filter
+        params["module_id"] = settings.netatmo?.outdoorModuleId if not params["module_id"]?
         params["type"] = "Temperature,Humidity"
 
         # Make the request for outdoor readings.

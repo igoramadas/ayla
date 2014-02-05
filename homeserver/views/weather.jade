@@ -2,22 +2,51 @@ extends layout
 
 block contents
     #weather
-        script#weather-template(type="text/html")
-            div(data-bind="css: conditionCss")
-                span.label.secondary.right.condition(data-bind="text: condition")
-                h5(data-bind="text: title")
+        script#room-template(type="text/html")
+            div.room(data-bind="css: conditionCss")
+                h5.left(data-bind="text: title")
+                span.label.secondary.condition(data-bind="text: condition")
                 div.temperature
                     span.legend Temp.
-                    span(data-bind="text: temperature ? temperature + ' C' : '-'")
+                    span(data-bind="text: temperature ? temperature + '°C' : '-'")
                 div.humidity
                     span.legend Hum.
-                    span(data-bind="text: humidity ? humidity + ' %' : '-'")
+                    span(data-bind="text: humidity ? humidity + '%' : '-'")
                 div.co2
                     span.legend CO2
                     span(data-bind="text: co2 ? co2 + ' ppm' : '-'")
 
-        ul.large-block-grid-4
-            li.bedroom(data-bind="template: {name: 'weather-template', data: bedroom}")
-            li.livingroom(data-bind="template: {name: 'weather-template', data: livingroom}")
-            li.babyroom(data-bind="template: {name: 'weather-template', data: babyroom}")
-            li.kitchen(data-bind="template: {name: 'weather-template', data: kitchen}")
+        ul.maingrid.large-block-grid-2
+
+            li.inside
+                div
+                    h2.left Inside
+                    div.summary(data-bind="with: indoorAvg")
+                        span.temperature(data-bind="text: temperature + '°C'")
+                        span.humidity(data-bind="text: humidity + '%'")
+                        span.co2(data-bind="text: co2 + 'ppm'")
+
+                    ul.rooms.large-block-grid-2
+                        li.bedroom(data-bind="template: {name: 'room-template', data: bedroom}")
+                        li.livingroom(data-bind="template: {name: 'room-template', data: livingroom}")
+                        li.babyroom(data-bind="template: {name: 'room-template', data: babyroom}")
+                        li.kitchen(data-bind="template: {name: 'room-template', data: kitchen}")
+
+            li.outside
+                div(data-bind="css: forecast().icon")
+                    h2.left Outside
+                    div.summary(data-bind="with: outdoor")
+                        span.temperature(data-bind="text: temperature ? temperature + '°C' : '-'")
+                        span.humidity(data-bind="text: humidity ? humidity + '%' : '-'")
+
+                    div(data-bind="with: forecast")
+                        h5 Forecast
+                        div.temperature
+                            span.legend Temp.
+                            span(data-bind="text: temperature ? temperature + '°C' : '-'")
+                        div.humidity
+                            span.legend Humidity
+                            span(data-bind="text: humidity ? humidity + ' %' : '-'")
+                        div.pressure
+                            span.legend Pressure
+                            span(data-bind="text: pressure ? pressure + ' mb' : '-'")
