@@ -118,25 +118,22 @@ class EmailManager extends (require "./baseManager.coffee")
 
     # Download the specified message and load the related Email Action.
     downloadMessage: (account, msg, seqno) =>
-        parser = new mailparser {streamAttachments: true}
+        parser = new mailparser {streamAttachments: false}
         msgAttributes = {}
         parsedMsg = {}
 
-        # Parse email attachments.
-        parser.on "attachment", (att) =>
-            try
-                output = fs.createWriteStream att.generatedFileName
-                att.stream.pipe output
-            catch ex
-                logger.error "EmailManager.downloadMessage.attachment", seqno, ex
-
-        # Parse message attributes and body chunks.
+        # Parse mail message using mailparser.
         parser.on "end", (result) -> parsedMsg = result
-        msg.on "body", (stream, info) -> stream.pipe parser
-        msg.on "attributes", (attrs) -> msgAttributes = attrs
 
-        # On message end, process parsed message and attributes.
-        msg.on "end", => lodash.delay  @processMessage, 500, account, parsedMsg, msgAttributes
+        # Get message attributes and body chunks, and on end proccess the message.
+        msg.on "body", (stream, info) -> stream.pipe parser
+        msg.once "attributes", (attrs) -> msgAttributes = attrs
+        msg.once "end", =>
+            parser.end()
+
+            # Delayed processing to make sure parsedMsg is set.
+            timedProcess = => @processMessage account, parsedMsg, msgAttributes
+            setTimeout timedProcess, 500
 
     # After message has been downloaded, process it.
     processMessage: (account, parsedMsg, msgAttributes) =>
@@ -191,12 +188,17 @@ class EmailManager extends (require "./baseManager.coffee")
     getMessageActions: (account, parsedMsg) =>
         actions = []
 
-        # Get and merge all matching rules.
+        # Get matching rules for `from` and `subject` fields.
         from = lodash.find account.rules, (rule) ->
+            return false if not rule.from?
             return parsedMsg.from.address.indexOf(rule.from) >=0 or rule.from.indexOf(parsedMsg.from.address) >= 0
         subject = lodash.find account.rules, (rule) ->
+            return false if not rule.subject?
             return parsedMsg.subject.indexOf(rule.subject) >=0 or rule.subject.indexOf(parsedMsg.subject) >= 0
+
+        # Get rules result list.
         rules = lodash.merge from, subject
+        rules = [] if not rules?
 
         # Iterate rules and get related action scripts.
         for r in rules
