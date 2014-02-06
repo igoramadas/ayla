@@ -9,7 +9,7 @@ class EmailAction_Amazon
     # -------------------------------------------------------------------------
 
     # Process message from Amazon.
-    process: (msg, callback) =>
+    process: (account, msg, callback) =>
         logger.debug "EmailAction_Amazon", msg
 
 

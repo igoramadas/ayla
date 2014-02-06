@@ -10,7 +10,6 @@ class Routes
     utils = expresser.utils
 
     commander = require "./commander.coffee"
-    emailApi = require "./api/email.coffee"
     fs = require "fs"
     fitbit = require "./api/fitbit.coffee"
     weatherManager = require "./manager/weather.coffee"
@@ -37,8 +36,6 @@ class Routes
         app.get "/api/home", apiHome
         app.get "/api/commander/:cmd", apiCommander
         app.post "/api/commander/:cmd", apiCommander
-
-        app.get "/email", emailPage
 
         app.get "/fitbit", fitbitPage
         app.get "/fitbit/auth", fitbitAuth
@@ -97,13 +94,6 @@ class Routes
                 res.json {error: err}
             else
                 res.json result
-
-    # EMAIL ROUTES
-    # -------------------------------------------------------------------------
-
-    # Main Email entrance page.
-    emailPage = (req, res) ->
-        emailApi.getDashboard (err, result) -> renderPage req, res, "email", {err: err, result: result}
 
     # FITBIT ROUTES
     # -------------------------------------------------------------------------

@@ -5,12 +5,11 @@ class EmailAction_Fyve
     expresser = require "expresser"
     logger = expresser.logger
 
-
     # ACTIONS
     # -------------------------------------------------------------------------
 
     # Process message from Fyve.
-    process: (msg, callback) =>
+    process: (account, msg, callback) =>
 
 
 

@@ -5,12 +5,11 @@ class EmailAction_Toshl
     expresser = require "expresser"
     logger = expresser.logger
 
-
     # ACTIONS
     # -------------------------------------------------------------------------
 
     # Process message from Toshl.
-    process: (msg, callback) =>
+    process: (account, msg, callback) =>
 
 
 

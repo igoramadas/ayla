@@ -11,7 +11,7 @@ class EmailAction_Command
     # -------------------------------------------------------------------------
 
     # Process command messages.
-    process: (msg, callback) =>
+    process: (account, msg, callback) =>
         logger.debug "EmailAction_Command", msg
 
         # Only proceed if subject is valid.
