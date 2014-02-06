@@ -19,8 +19,8 @@ class EmailManager extends (require "./baseManager.coffee")
     # PROPERTIES
     # -------------------------------------------------------------------------
 
-    # The IMAP client.
-    imap: null
+    # Holds all email accounts with IMAP clients.
+    accounts: {}
 
     # The default email and mobile email addresses, taken from
     # the users collections on settings. Set on init.
@@ -32,8 +32,6 @@ class EmailManager extends (require "./baseManager.coffee")
 
     # Init the Email module and start listening to new message events from the server.
     init: =>
-        @imap = new imapModule settings.email.imap
-
         # Get default user to set email and mobile email.
         defaultUser = lodash.find settings.users, {isDefault: true}
 
@@ -55,55 +53,61 @@ class EmailManager extends (require "./baseManager.coffee")
         else
             logger.warn "Manager.init", "No default user was set, or no mobile email was found."
 
-        @openBox()
+        # Create IMAP clients, one for each email account.
+        for key, email of settings.emailAccounts
+            e = email
+            e.client = new imapModule e.imap
+            @accounts[key] = e
+            @openBox @accounts[key]
+
         @baseStart()
 
     # Stop listening to new messages and disconnect. Set `running` to false.
     stop: =>
+        for i of @accounts
+            i.closeBox()
+            i.end()
+
         @baseStop()
-        @imap.closeBox()
-        @imap.end()
 
     # READ MESSAGES
     # -------------------------------------------------------------------------
 
-    # Open the IMAP email box.
-    openBox: =>
-        if not settings.email?.imap?
-            logger.warn "Email.openBox", "IMAP email settings are not defined. Abort!"
+    # Open the IMAP email box for the specified account.
+    openBox: (account) =>
+        if not account?.client?
+            logger.warn "Email.openBox", "The specified account has no valid IMAP client. Abort!"
             return
 
         # Once IMAP is ready, open the inbox and start listening to messages.
-        @imap.once "ready", =>
-            @imap.openBox settings.email.imap.inboxName, false, (err, box) =>
+        account.client.once "ready", =>
+            account.client.openBox account.inboxName, false, (err, box) =>
                 if err?
-                    @logError "Email.openBox", err
-                    @imap.disconnect()
-                    @running = false
+                    @logError "Email.openBox", account.imap.user, err
+                    account.client.disconnect()
                 else
-                    @running = true
-                    @fetchNewMessages()
-                    @imap.on "mail", @fetchNewMessages
+                    @fetchNewMessages account
+                    account.client.on "mail", => @fetchNewMessages account
 
         # Handle IMAP errors.
-        @imap.on "error", (err) =>
-            @logError "Email", err
+        account.client.on "error", (err) =>
+            @logError "Email.openBox", account.imap.user, err
 
         # Connect to the IMAP server.
-        @imap.connect()
+        account.client.connect()
 
-    # Fetch new messages from the server.
-    fetchNewMessages: =>
-        @imap.search ["UNSEEN"], (err, results) =>
+    # Fetch new unread messages for the specified account.
+    fetchNewMessages: (account) =>
+        account.client.search ["UNSEEN"], (err, results) =>
             if err?
-                @logError "Email.fetchNewMessages", err
+                @logError "Email.fetchNewMessages", account.imap.user, err
             else if not results? or results.length < 1
-                logger.debug "Email.fetchNewMessages", "No new messages"
+                logger.debug "Email.fetchNewMessages", account.imap.user, "No new messages"
             else
-                logger.info "Email.fetchNewMessages", results.length
-                fetcher = @imap.fetch results, {size: true, struct: true, markSeen: false, bodies: ""}
+                logger.info "Email.fetchNewMessages", account.imap.user, results.length
+                fetcher = account.client.fetch results, {size: true, struct: true, markSeen: false, bodies: ""}
                 fetcher.on "message", @downloadMessage
-                fetcher.once "error", (err) => @logError "Email.fetchNewMessages", err
+                fetcher.once "error", (err) => @logError "Email.fetchNewMessages", account.imap.user, err
 
     # Download the specified message and load the related Email Action.
     downloadMessage: (msg, seqno) =>
@@ -117,7 +121,7 @@ class EmailManager extends (require "./baseManager.coffee")
                 output = fs.createWriteStream att.generatedFileName
                 att.stream.pipe output
             catch ex
-                @logError "Email.downloadMessage.attachment", ex
+                @logError "Email.downloadMessage.attachment", seqno, ex
 
         # Parse message attributes and body chunks.
         parser.on "end", (result) -> parsedMsg = result
@@ -125,7 +129,7 @@ class EmailManager extends (require "./baseManager.coffee")
         msg.on "attributes", (attrs) -> msgAttributes = attrs
 
         # On message end, process parsed message and attributes.
-        msg.on "end", => lodash.delay  @processMessage, settings.email.imap.processDelay, parsedMsg, msgAttributes
+        msg.on "end", => lodash.delay  @processMessage, 500, parsedMsg, msgAttributes
 
     # After message has been downloaded, process it.
     processMessage: (parsedMsg, msgAttributes) =>
@@ -163,7 +167,7 @@ class EmailManager extends (require "./baseManager.coffee")
             return
 
         # Move message to the archive box.
-        @imap.move parsedMsg.attributes.uid, settings.email.imap.archiveName, (err) =>
+        @accounts.move parsedMsg.attributes.uid, settings.email.imap.archiveName, (err) =>
             if err?
                 @logError "Email.archiveMessage", parsedMsg.attributes.uid
             else
@@ -175,7 +179,7 @@ class EmailManager extends (require "./baseManager.coffee")
     # Default way to send emails. Called when a module triggers the `emailmanager.send` event.
     # If no `to` is present on the options send to the `defaultTo` specified above, or
     # to the `defaultToMobile` in case `options.mobile` is true.
-    onSend: (options) =>
+    sendEmail: (options) =>
         if not options.to?
             options.to = if options.mobile then @defaultToMobile else @defaultTo
 
