@@ -106,12 +106,12 @@ class EmailManager extends (require "./baseManager.coffee")
             else
                 logger.info "Email.fetchNewMessages", account.imap.user, results.length
                 fetcher = account.client.fetch results, {size: true, struct: true, markSeen: false, bodies: ""}
-                fetcher.on "message", @downloadMessage
+                fetcher.on "message", (msg, seqno) => @downloadMessage account, msg, seqno
                 fetcher.once "error", (err) => @logError "Email.fetchNewMessages", account.imap.user, err
 
     # Download the specified message and load the related Email Action.
-    downloadMessage: (msg, seqno) =>
-        parser = new mailparser settings.email.mailparser
+    downloadMessage: (account, msg, seqno) =>
+        parser = new mailparser {streamAttachments: true}
         msgAttributes = {}
         parsedMsg = {}
 
@@ -129,24 +129,24 @@ class EmailManager extends (require "./baseManager.coffee")
         msg.on "attributes", (attrs) -> msgAttributes = attrs
 
         # On message end, process parsed message and attributes.
-        msg.on "end", => lodash.delay  @processMessage, 500, parsedMsg, msgAttributes
+        msg.on "end", => lodash.delay  @processMessage, 500, account, parsedMsg, msgAttributes
 
     # After message has been downloaded, process it.
-    processMessage: (parsedMsg, msgAttributes) =>
+    processMessage: (account, parsedMsg, msgAttributes) =>
         hasFrom = parsedMsg.from[0]?.address?
 
         # Make sure the `from` is set.
         if not hasFrom
-            logger.warn "Email.processMessage", "No valid 'from' address, skip message."
+            logger.warn "Email.processMessage", account.imap.user, "No valid 'from' address, skip message."
             return false
 
         # Set parsed message properties.
         parsedMsg.from = parsedMsg.from[0]
         parsedMsg.attributes = msgAttributes
-        logger.info "Email.processMessage", msgAttributes.uid, parsedMsg.from.address, parsedMsg.subject
+        logger.info "Email.processMessage", account.imap.user, msgAttributes.uid, parsedMsg.from.address, parsedMsg.subject
 
         # Get message actions.
-        actions = @getMessageActions parsedMsg
+        actions = @getMessageActions account, parsedMsg
 
         # Has action? Process them!
         if actions.length > 0
@@ -155,23 +155,48 @@ class EmailManager extends (require "./baseManager.coffee")
                     if err?
                         @logError "Email.processMessage", msgAttributes.uid, action.id, err
                     else
+                        # All good? Archive messages unless action has the `doNotArchive` flag.
+                        @archiveMessage account, parsedMsg unless action.doNotArchive
                         logger.info "Email.processMessage", msgAttributes.uid, action.id, result
 
-            # Archive messages if they had macthing actions.
-            @archiveMessage parsedMsg
+    # Archive a processed message for the specified account.
+    archiveMessage: (account, parsedMsg) =>
+        return if parsedMsg.archiving
 
-    # Archive a processed message.
-    archiveMessage: (parsedMsg) =>
-        if not settings.email.imap?.archiveName?
-            logger.warn "Email.archiveMessage", "The IMAP archive setting is not defined. Abort!"
+        if not account.archiveName?
+            logger.warn "Email.archiveMessage", account.imap.user, "The specified account has no archive setting defined. Abort!"
             return
 
+        # Set `archibing` flag to prevent duplicate archive routines.
+        parsedMsg.archiving = true
+
         # Move message to the archive box.
-        @accounts.move parsedMsg.attributes.uid, settings.email.imap.archiveName, (err) =>
+        account.client.move parsedMsg.attributes.uid, account.archiveName, (err) =>
             if err?
-                @logError "Email.archiveMessage", parsedMsg.attributes.uid
+                @logError "Email.archiveMessage", account.imap.user, parsedMsg.attributes.uid
             else
-                logger.debug "Email.archiveMessage", parsedMsg.attributes.uid
+                logger.debug "Email.archiveMessage", account.imap.user, parsedMsg.attributes.uid
+
+    # MESSAGE ACTIONS
+    # -------------------------------------------------------------------------
+
+    # Get actions for the specified message based on email rules, or return null if no actions are found.
+    getMessageActions: (account, parsedMsg) =>
+        actions = []
+
+        # Get and merge all matching rules.
+        from = lodash.find account.rules, (rule) -> return parsedMsg.from.address.indexOf(rule.from) >=0
+        subject = lodash.find account.rules, (rule) -> return parsedMsg.subject.indexOf(rule.subject) >=0
+        rules = lodash.merge from, subject
+
+        # Iterate rules and get related action scripts.
+        for r in rules
+            a = new (require "../emailActions/#{r.action}.coffee")
+            a.id = r.id
+            actions.push a
+
+        # Return actions.
+        return actions
 
     # SEND MESSAGES
     # -------------------------------------------------------------------------
@@ -185,27 +210,6 @@ class EmailManager extends (require "./baseManager.coffee")
 
         # Send the email using the Expresser Mailer module.
         mailer.send options, (err, result) => callback err, result if callback?
-
-    # MESSAGE ACTIONS
-    # -------------------------------------------------------------------------
-
-    # Get actions for the specified message based on email rules, or return null if no actions are found.
-    getMessageActions: (parsedMsg) =>
-        actions = []
-
-        # Get and merge all matching rules.
-        from = lodash.find settings.email.rules, (rule) -> return parsedMsg.from.address.indexOf(rule.from) >=0
-        subject = lodash.find settings.email.rules, (rule) -> return parsedMsg.subject.indexOf(rule.subject) >=0
-        rules = lodash.merge from, subject
-
-        # Iterate rules and get related action scripts.
-        for r in rules
-            a = new (require "../emailActions/#{r.id}.coffee")
-            a.id = r.id
-            actions.push a
-
-        # Return actions.
-        return actions
 
     # FITBIT MESSAGES
     # -------------------------------------------------------------------------
