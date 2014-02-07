@@ -147,7 +147,7 @@ class EmailManager extends (require "./baseManager.coffee")
         # Set parsed message properties.
         parsedMsg.from = parsedMsg.from[0]
         parsedMsg.attributes = msgAttributes
-        logger.info "EmailManager.processMessage", account.imap.user, msgAttributes.uid, parsedMsg.from.address, parsedMsg.subject
+        logger.debug "EmailManager.processMessage", account.imap.user, msgAttributes.uid, parsedMsg.from.address, parsedMsg.subject
 
         # Get message actions.
         actions = @getMessageActions account, parsedMsg
@@ -158,10 +158,9 @@ class EmailManager extends (require "./baseManager.coffee")
                 action?.process account, parsedMsg, (err, result) =>
                     if err?
                         logger.error "EmailManager.processMessage", msgAttributes.uid, action.action, err
-                    else
-                        # All good? Archive messages unless action has the `doNotArchive` flag.
-                        @archiveMessage account, parsedMsg unless action.doNotArchive
+                    else if result isnt false
                         logger.info "EmailManager.processMessage", msgAttributes.uid, action.action, result
+                        @archiveMessage account, parsedMsg unless action.doNotArchive
 
     # Archive a processed message for the specified account.
     archiveMessage: (account, parsedMsg) =>
@@ -188,16 +187,28 @@ class EmailManager extends (require "./baseManager.coffee")
     getMessageActions: (account, parsedMsg) =>
         actions = []
 
-        # Get matching rules for `from` and `subject` fields.
+        # Get matching `from` rules.
         from = lodash.find account.rules, (rule) ->
             return false if not rule.from?
-            return parsedMsg.from.address.indexOf(rule.from) >=0 or rule.from.indexOf(parsedMsg.from.address) >= 0
+            return false if rule.hasAttachments and parsedMsg.attachments.length < 1
+
+            arr = if lodash.isArray(rule.from) then rule.from else [rule.from]
+            for a in arr
+                return true if parsedMsg.address.from.indexOf(a) >= 0
+            return false
+
+        # Get matching `subject` rules.
         subject = lodash.find account.rules, (rule) ->
             return false if not rule.subject?
-            return parsedMsg.subject.indexOf(rule.subject) >=0 or rule.subject.indexOf(parsedMsg.subject) >= 0
+            return false if rule.hasAttachments and parsedMsg.attachments.length < 1
 
-        # Get rules result list.
-        rules = lodash.merge from, subject
+            arr = if lodash.isArray(rule.subject) then rule.subject else [rule.subject]
+            for a in arr
+                return true if parsedMsg.subject.indexOf(a) >= 0
+            return false
+
+        # Get rules result list by merging results agove.
+        rules = lodash.union from, subject
         rules = [] if not rules?
 
         # Iterate rules and get related action scripts.
@@ -218,7 +229,7 @@ class EmailManager extends (require "./baseManager.coffee")
     # Default way to send emails. Called when a module triggers the `emailmanager.send` event.
     # If no `to` is present on the options send to the `defaultTo` specified above, or
     # to the `defaultToMobile` in case `options.mobile` is true.
-    sendEmail: (options) =>
+    sendEmail: (options, callback) =>
         if not options.to?
             options.to = if options.mobile then @defaultToMobile else @defaultTo
 

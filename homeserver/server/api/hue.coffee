@@ -16,8 +16,9 @@ class Hue extends (require "./baseApi.coffee")
     # PROPERTIES
     # -------------------------------------------------------------------------
 
-    # Holds the current URL in use for the API (local or remote).
-    apiUrl: null
+    # Holds the current URL in use for the API (local and remote).
+    localApiUrl: null
+    remoteApiUrl: null
 
     # INIT
     # -------------------------------------------------------------------------
@@ -55,20 +56,17 @@ class Hue extends (require "./baseApi.coffee")
             callback = params
             params = null
 
-        # Set full API URL based on ip or remote host and port.
-        if not @apiUrl?
-            device = lodash.find settings.network.devices, {type: "hue"}
+        # Get device info from settings.
+        device = lodash.find settings.network.devices, {type: "hue"}
 
-            if networkApi.isHome
-                baseUrl = "http://#{device.ip}:#{device.localPort}/api/"
-            else
-                baseUrl = "http://#{settings.network.router.remoteHost}:#{device.localPort}/api/"
-
-            # Build full base API URL.
-            @apiUrl = baseUrl + settings.hue.api.user + "/"
+        # Get correct URL depending on home or remote location.
+        if networkApi.isHome
+            baseUrl = "http://#{device.ip}:#{device.localPort}/api/#{settings.hue.api.user}"
+        else
+            baseUrl = "http://#{settings.network.router.remoteHost}:#{device.remotePort}/api/#{settings.hue.api.user}"
 
         # Make request!
-        reqUrl = @apiUrl + urlPath
+        reqUrl = baseUrl + urlPath
         @makeRequest reqUrl, params, callback
 
     # GET HUB DATA

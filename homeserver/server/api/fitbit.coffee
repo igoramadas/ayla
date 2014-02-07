@@ -50,35 +50,80 @@ class Fitbit extends (require "./baseApi.coffee")
 
         # Make request using OAuth.
         authCache.oauth.get reqUrl, authCache.data.token, authCache.data.tokenSecret, (err, result) ->
+            if err?
+                @logError "Fitbit.apiRequest", path, params, err
+            else
+                logger.debug "Fitbit.apiRequest", path, params, result
+
             result = JSON.parse result if lodash.isString result
             callback err, result if callback?
 
     # GET DATA
     # -------------------------------------------------------------------------
 
-    # Get sleep data for the specified date.
-    getSleep: (date, callback) =>
-        if not date? or not callback?
-            throw new Error "Fitbit.getSleep: parameters date and callback must be specified."
+    # Helper to check if API results are newer than the current value for the specified key.
+    # This is called by the `setCurrent` method below.
+    checkCurrent = (results, key) =>
+        current = @data[key]
+        return null if not current?
 
-        @apiRequest "user/-/sleep/date/#{date}.json", (err, result) =>
-            if err?
-                @logError "Fitbit.getSleep", date, err
-            else
-                logger.debug "Fitbit.getSleep", date, result
-            callback err, result
+        # Iterate results and compare data.
+        for r in results[key]
+            newValue = r if moment(r.date, settings.fitbit.dateFormat) > moment(current.timestamp)
 
-    # Get activity data (steps, calories, etc) for the specified date.
+        return newValue
+
+    # Check if the returned results represent current data for body or sleep.
+    setCurrent = (results) =>
+        results = [results] if not lodash.isArray results
+
+        for r in results
+            newFat = checkCurrent r, "fat" if r.fat?
+            newWeight = checkCurrent r, "weight" if r.weight?
+            newSleep = checkCurrent r, "sleep" if r.sleep?
+
+            @setData "fat", newFat if newFat?
+            @setData "weight", newWeight if newWeight?
+            @setData "sleep", newSleep if newSleep?
+
+    # Get activity data (steps, calories, etc) for the specified date, or yesterday if no `date` is provided.
     getActivities: (date, callback) =>
-        if not date? or not callback?
-            throw new Error "Fitbit.getSteps: parameters date and callback must be specified."
+        date = moment().subtract("d", 1).format settings.fitbit.dateFormat if not date?
 
         @apiRequest "user/-/activities/date/#{date}.json", (err, result) =>
-            if err?
-                @logError "Fitbit.getSteps", date, err
-            else
-                logger.debug "Fitbit.getSteps", date, result
-            callback err, result
+            if not err?
+                setCurrent result
+
+            callback err, result if callback?
+
+    # Get sleep data for the specified date, or for yesterday if no `date` is provided.
+    getSleep: (date, callback) =>
+        date = moment().subtract("d", 1).format settings.fitbit.dateFormat if not date?
+
+        @apiRequest "user/-/sleep/date/#{date}.json", (err, result) =>
+            if not err?
+                setCurrent result
+
+            callback err, result if callback?
+
+    # Get weight and body fat data for the specified date range.
+    # If no `startDate` and `endDate` are passed then get data for the past week.
+    getBody: (startDate, endDate, callback) =>
+        startDate = moment().subtract("w", 1).format settings.fitbit.dateFormat if not startDate?
+        endDate = moment().format settings.fitbit.dateFormat if not endDate?
+
+        # There are 2 API requests, one for weight and one for fat.
+        tasks = []
+        tasks.push (cb) => @apiRequest "user/-/body/log/weight/date/#{startDate}/#{endDate}.json", (err, result) => cb err, result
+        tasks.push (cb) => @apiRequest "user/-/body/log/fat/date/#{startDate}/#{endDate}.json", (err, result) => cb err, result
+
+        # Get body weight and fat using async.
+        async.parallelLimit tasks, settings.general.parallelTasksLimit, (err, results) =>
+            if not err?
+                setCurrent results
+            else if callback?
+                results = lodash.merge results[0], results[1]
+                callback err, results
 
     # POST DATA
     # -------------------------------------------------------------------------
@@ -90,11 +135,13 @@ class Fitbit extends (require "./baseApi.coffee")
     # JOBS
     # -------------------------------------------------------------------------
 
-    # Scheduled job to check for missing Fitbit data.
+    # Scheduled job to check for missing Fitbit sleep and weight data.
     jobCheckMissingData: =>
         for d in settings.fitbit.checkMissingDataDays
             do (d) =>
                 date = moment().subtract("d", d).format settings.fitbit.dateFormat
+
+                # Check if user forgot to add sleep data X days ago.
                 @getSleep date, (err, result) =>
                     if err?
                         @logError "Fitbit.jobCheckMissingData", "getSleep", date, err

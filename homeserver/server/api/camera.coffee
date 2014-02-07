@@ -61,10 +61,9 @@ class Camera extends (require "./baseApi.coffee")
 
         # URL remote or local? Construct path using local IP or remote host, port and image path.
         if networkApi.isHome
-            downloadUrl = cam.ip + cam.localPort
+            downloadUrl = "http://#{cam.ip}:#{cam.localPort}/#{cam.imagePath}"
         else
-            downloadUrl = settings.network.router.remoteHost + cam.remotePort
-        downloadUrl = "http://#{downloadUrl}/#{cam.imagePath}"
+            downloadUrl = "http://#{settings.network.router.remoteHost}:#{cam.remotePort}/#{cam.imagePath}"
 
         # Save (download) a snap from the camera.
         downloader.download downloadUrl, saveTo, (err, result) =>

@@ -31,8 +31,11 @@ class Api
         for f in files
             if f isnt "baseApi.coffee" and f.indexOf(".coffee") > 0
                 module = require "./api/#{f}"
-                module.init()
-                @modules[module.moduleId] = module
+                if module.disabled
+                    logger.debug "Api.init", f, "Module is disabled. Abort init."
+                else
+                    module.init()
+                    @modules[module.moduleId] = module
 
         # Load cron jobs.
         cron.load cronPath, {basePath: apiPath}

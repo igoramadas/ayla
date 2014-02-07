@@ -12,6 +12,9 @@ class Withings extends (require "./baseApi.coffee")
     moment = expresser.libs.moment
     security = require "../security.coffee"
 
+    # Disable Withings till API gets sorted out.
+    disabled: true
+
     # INIT
     # -------------------------------------------------------------------------
 
@@ -62,22 +65,19 @@ class Withings extends (require "./baseApi.coffee")
         if not callback?
             throw "Withings.getWeight: parameters date and callback must be specified!"
 
-        @makeRequest "measure", "getmeas", (err, result, resp) =>
+        # Set defaults.
+        startTimestamp = moment().subtract("M", 1).unix() if not startTimestamp?
+        endTimestamp = moment().unix() if not endTimestamp?
+
+        params = {startdate: startTimestamp, enddate: endTimestamp}
+
+        @makeRequest "measure", "getmeas", params, (err, result, resp) =>
             if err?
                 logger.error "Withings.getWeight", startTimestamp, endTimestamp, err
             else
                 logger.debug "Withings.getWeight", startTimestamp, endTimestamp, result
-            callback err, result
 
-    # PAGES
-    # -------------------------------------------------------------------------
-
-    # Get the Withings dashboard data.
-    getDashboard: (callback) =>
-        start = moment().subtract("d", 30).unix()
-        end = moment().unix()
-        @getWeight start, end, (err, result) =>
-            console.warn result
+            callback err, result if callback?
 
 
 # Singleton implementation.

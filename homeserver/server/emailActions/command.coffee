@@ -11,17 +11,13 @@ class EmailAction_Command
     # -------------------------------------------------------------------------
 
     # Process command messages.
-    process: (account, msg, callback) =>
-        logger.debug "EmailAction_Command", msg
-
-        # Only proceed if subject is valid.
-        if not msg.subject? or msg.subject is ""
-            logger.warn "EmailAction_Command", msg.attributes.id, "No subject, abort."
-            callback null, false
-            return false
+    process: (account, parsedMsg, callback) =>
+        if not parsedMsg.subject? or parsedMsg.subject is ""
+            logger.warn "EmailAction_Command", parsedMsg.attributes.id, "No subject on message. Abort!"
+            return callback null, false
 
         # Execute command.
-        commander.execute msg.subject, msg.text, callback
+        commander.execute parsedMsg.subject, parsedMsg.text, callback
 
 
 # Exports (not singleton!)

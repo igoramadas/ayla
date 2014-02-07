@@ -52,8 +52,6 @@ class Network extends (require "./baseApi.coffee")
     # Init the Network module.
     init: =>
         @mdnsBrowser = mdns.createBrowser mdns.tcp("http")
-        @mdnsBrowser.on "serviceUp", @onServiceUp
-        @mdnsBrowser.on "serviceDown", @onServiceDown
 
         # Set data and user statuses.
         @data = {devices: [], router: {}}
@@ -63,12 +61,16 @@ class Network extends (require "./baseApi.coffee")
 
     # Start monitoring the network.
     start: =>
+        @mdnsBrowser.on "serviceUp", @onServiceUp
+        @mdnsBrowser.on "serviceDown", @onServiceDown
         @mdnsBrowser.start()
         @probeRouter()
         @baseStart()
 
     # Stop monitoring the network.
     stop: =>
+        @mdnsBrowser.off "serviceUp", @onServiceUp
+        @mdnsBrowser.off "serviceDown", @onServiceDown
         @mdnsBrowser.stop()
         @baseStop()
 
@@ -85,10 +87,10 @@ class Network extends (require "./baseApi.coffee")
 
         # Get and process current IP.
         ips = utils.getServerIP()
-        ips = "0," + ips.join ","
+        ips = ips.join ","
         homeSubnet = settings.network.router?.ip?.substring 0, 7
 
-        if not homeSubnet? or ips.indexOf(",#{homeSubnet}") < 0
+        if not homeSubnet? or ips.indexOf(homeSubnet) < 0
             @isHome = false
         else
             @isHome = true
