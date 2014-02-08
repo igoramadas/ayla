@@ -27,7 +27,8 @@
         "randomGreetings": ["Hey cutie", "Hi sir", "What's up boss"]
     },
     "fitbit": {
-        "checkMissingDataDays": [2, 5, 10],
+        "missingSleepDays": [2, 5],
+        "missingWeightAfterDays": 10,
         "dateFormat": "YYYY-MM-DD"
     },
     "general": {

@@ -23,6 +23,12 @@
     ],
     "fitbit.coffee": [
         {
+            "callback": "jobCheckGeneralFitness",
+            "description": "Check general fitness levels once a day.",
+            "schedule": ["10:00:00"],
+            "enabled": true
+        },
+        {
             "callback": "jobCheckMissingData",
             "description": "Notify missing sleep data from Fitbit once a day.",
             "schedule": ["14:00:00"],

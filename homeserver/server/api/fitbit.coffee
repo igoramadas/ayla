@@ -125,19 +125,20 @@ class Fitbit extends (require "./baseApi.coffee")
                 results = lodash.merge results[0], results[1]
                 callback err, results
 
-    # POST DATA
-    # -------------------------------------------------------------------------
-
-    # Post an activity to Fitbit.
-    postActivity: (activity, callback) =>
-        console.warn activity
-
     # JOBS
     # -------------------------------------------------------------------------
 
-    # Scheduled job to check for missing Fitbit sleep and weight data.
+    # Scheduled job to get general fitness data (activities and body) once a day.
+    jobCheckGeneralFitness: =>
+        @getActivities()
+        @getBody()
+
+    # Scheduled job to check for missing Fitbit sleep and weight data once a day.
     jobCheckMissingData: =>
-        for d in settings.fitbit.checkMissingDataDays
+        if @data.weight?.timestamp < moment().subtract("d", settings.fitbit.missingWeightAfterDays).unix()
+            events.emit "fitbit.weight.missing", @data.weight
+
+        for d in settings.fitbit.missingSleepDays
             do (d) =>
                 date = moment().subtract("d", d).format settings.fitbit.dateFormat
 

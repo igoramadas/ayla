@@ -65,9 +65,15 @@ class Hue extends (require "./baseApi.coffee")
         else
             baseUrl = "http://#{settings.network.router.remoteHost}:#{device.remotePort}/api/#{settings.hue.api.user}"
 
-        # Make request!
         reqUrl = baseUrl + urlPath
-        @makeRequest reqUrl, params, callback
+
+        # Make request. The hue API sometimes is not super stable, so try once
+        # again before triggering errors to the callback.
+        @makeRequest reqUrl, params, (err, result) =>
+            if not err?
+                callback err, result
+            else
+                lodash.delay @makeRequest, 500, reqUrl, params, callback
 
     # GET HUB DATA
     # -------------------------------------------------------------------------
