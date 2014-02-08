@@ -72,11 +72,12 @@ class Fitbit extends (require "./baseApi.coffee")
     # Helper to check if API results are newer than the current value for the specified key.
     # This is called by the `setCurrent` method below.
     isCurrentData: (results, key) =>
-        current = @data[key] or {timestamp: 0}
+        current = @data[key]
+        dateFormat = settings.fitbit.dateFormat
 
         # Iterate results and compare data.
         for r in results[key]
-            newValue = r if moment(r.date, settings.fitbit.dateFormat) > moment(current.timestamp)
+            newValue = r if not current? or moment(r.date, dateFormat) > moment(current.date, dateFormat)
 
         return newValue
 

@@ -1,14 +1,14 @@
 # AYLA
 # -----------------------------------------------------------------------------
 
-# Force live environment.
-process.env.NODE_ENV = "live"
-
 # Require Expresser.
 expresser = require "expresser"
 database = expresser.database
 logger = expresser.logger
 settings = expresser.settings
+
+# Load private settings.
+settings.loadFromJson "settings.private.json"
 
 # Required modules.
 api = require "./server/api.coffee"

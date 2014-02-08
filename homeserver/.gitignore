@@ -6,7 +6,7 @@ newrelic.js
 newrelic_agent.log
 node_modules/
 npm-shrinkwrap.json
-settings.ayla.json
 settings.live.json
+settings.private.json
 ssl.cer
 ssl.key
