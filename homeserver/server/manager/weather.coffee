@@ -33,18 +33,18 @@ class WeatherManager extends (require "./baseManager.coffee")
 
     # Init the weather manager.
     init: =>
-        @data.astronomy = {sunrise: "7:00", sunset: "18:00"}
-        @data.outdoor = getOutdoorObject "Outdoor"
-        @data.forecast = getOutdoorObject "Forecast"
+        astronomy = {sunrise: "7:00", sunset: "18:00"}
+        outdoor = getOutdoorObject "Outdoor"
+        forecast = getOutdoorObject "Forecast"
 
-        # Create individual rooms.
-        for key, room of settings.home.rooms
-            @data[key] = getRoomObject room.title
-
-        @baseInit()
+        @baseInit {astronomy: astronomy, outdoor: outdoor, forecast: forecast}
 
     # Start the weather manager and listen to data updates / events.
     start: =>
+        for key, room of settings.home.rooms
+            if not @data[key]?
+                @data[key] = getRoomObject room.title
+
         events.on "electricimp.data.current", @onElectricImp
         events.on "netatmo.data.indoor", @onNetatmoIndoor
         events.on "netatmo.data.outdoor", @onNetatmoOutdoor
@@ -56,6 +56,13 @@ class WeatherManager extends (require "./baseManager.coffee")
 
     # Stop the weather manager.
     stop: =>
+        events.off "electricimp.data.current", @onElectricImp
+        events.off "netatmo.data.indoor", @onNetatmoIndoor
+        events.off "netatmo.data.outdoor", @onNetatmoOutdoor
+        events.off "ninja.data.weather", @onNinjaWeather
+        events.off "wunderground.data.astronomy", @onWundergroundAstronomy
+        events.off "wunderground.data.current", @onWundergroundCurrent
+
         @baseStop()
 
     # WEATHER AND CLIMATE

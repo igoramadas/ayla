@@ -11,7 +11,7 @@ class Routes
 
     commander = require "./commander.coffee"
     fs = require "fs"
-    fitbit = require "./api/fitbit.coffee"
+    fitbitApi = require "./api/fitbit.coffee"
     weatherManager = require "./manager/weather.coffee"
     hueApi = require "./api/hue.coffee"
     lodash = expresser.libs.lodash
@@ -31,44 +31,36 @@ class Routes
     init: (callback) =>
         app = expresser.app.server
 
+        # Main routes.
         app.get "/", indexPage
+        app.get "/fitness", fitnessPage
+        app.get "/lights", lightsPage
+        app.get "/system", systemPage
+        app.get "/weather", weatherPage
 
+        # API related routes.
         app.get "/api/home", apiHome
         app.get "/api/commander/:cmd", apiCommander
         app.post "/api/commander/:cmd", apiCommander
-
         app.get "/fitbit", fitbitPage
         app.get "/fitbit/auth", fitbitAuth
         app.get "/fitbit/auth/callback", fitbitAuthCallback
         app.post "/fitbit/auth/callback", fitbitAuthCallback
-
-        app.get "/lights", lightsPage
-
         app.get "/netatmo", netatmoPage
         app.get "/netatmo/auth", netatmoAuth
         app.get "/netatmo/auth/callback", netatmoAuthCallback
         app.post "/netatmo/auth/callback", netatmoAuthCallback
-
         app.get "/network", networkPage
-
         app.get "/ninja", ninjaPage
-
         app.get "/status", statusPage
-
-        app.get "/system", systemPage
-
         app.get "/toshl", toshlPage
         app.get "/toshl/auth", toshlAuth
         app.get "/toshl/auth/callback", toshlAuthCallback
         app.post "/toshl/auth/callback", toshlAuthCallback
-
-        app.get "/weather", weatherPage
-
         app.get "/withings", withingsPage
         app.get "/withings/auth", withingsAuth
         app.get "/withings/auth/callback", withingsAuthCallback
         app.post "/withings/auth/callback", withingsAuthCallback
-
         app.get "/wunderground", wundergroundPage
 
         callback() if callback?
@@ -79,6 +71,25 @@ class Routes
     # The index homepage.
     indexPage = (req, res) ->
         renderPage req, res, "index"
+
+    # Fitness info page.
+    fitnessPage = (req, res) ->
+        options = {pageTitle: "Fitness", data: fitbitApi.data}
+        renderPage req, res, "fitness", options
+
+    # L:ight control page.
+    lightsPage = (req, res) ->
+        options = {pageTitle: "Home lights", data: {hue: hueApi.data, ninja: ninjaApi.data}}
+        renderPage req, res, "home.lights", options
+
+    # System info page.
+    systemPage = (req, res) ->
+        renderPage req, res, "system.jobs", {pageTitle: "Scheduled jobs", jobs: cron.jobs}
+
+    # Weather info page.
+    weatherPage = (req, res) ->
+        options = {pageTitle: "Weather", data: weatherManager.data}
+        renderPage req, res, "weather", options
 
     # API ROUTES
     # -------------------------------------------------------------------------
@@ -109,14 +120,6 @@ class Routes
     # Callback for Fitbit OAuth.
     fitbitAuthCallback = (req, res) ->
         fitbitApi.auth req, res
-
-    # LIGHTS ROUTES
-    # -------------------------------------------------------------------------
-
-    # L:ight control page.
-    lightsPage = (req, res) ->
-        options = {pageTitle: "Home lights", data: {hue: hueApi.data, ninja: ninjaApi.data}}
-        renderPage req, res, "home.lights", options
 
     # NETATMO ROUTES
     # -------------------------------------------------------------------------
@@ -169,13 +172,6 @@ class Routes
     statusPage = (req, res) ->
         res.json utils.getServerInfo()
 
-    # SYSTEM ROUTES
-    # -------------------------------------------------------------------------
-
-    # System info page.
-    systemPage = (req, res) ->
-        renderPage req, res, "system.jobs", {pageTitle: "Scheduled jobs", jobs: cron.jobs}
-
     # TOSHL ROUTES
     # -------------------------------------------------------------------------
 
@@ -190,14 +186,6 @@ class Routes
     # Callback for Toshl OAuth.
     toshlAuthCallback = (req, res) ->
         toshlApi.auth req, res
-
-    # WEATHER ROUTES
-    # -------------------------------------------------------------------------
-
-    # Weather info page.
-    weatherPage = (req, res) ->
-        options = {pageTitle: "Weather", data: weatherManager.data}
-        renderPage req, res, "weather", options
 
     # WITHINGS ROUTES
     # -------------------------------------------------------------------------

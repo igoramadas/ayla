@@ -201,10 +201,7 @@ class Security
 
         # Getting an OAuth1 access token?
         else if qs?.oauth_token?
-            extraParams = {}
-            extraParams.userid = qs.userid if qs.userid?
-            extraParams.oauth_verifier = qs.oauth_verifier if qs.oauth_verifier?
-            oauth.getOAuthAccessToken qs.oauth_token, @authCache[service].data.tokenSecret, extraParams, getAccessToken1
+            oauth.getOAuthAccessToken qs.oauth_token, @authCache[service].data.tokenSecret, qs.oauth_verifier, getAccessToken1
         else
             oauth.getOAuthRequestToken {}, getRequestToken1
 

@@ -17,8 +17,7 @@ class LightsManager extends (require "./baseManager.coffee")
 
     # Init the lights manager.
     init: =>
-        @data.hue = []
-        @baseInit()
+        @baseInit {hue: []}
 
     # Start the lights manager and listen to data updates / events.
     start: =>
@@ -28,6 +27,8 @@ class LightsManager extends (require "./baseManager.coffee")
 
     # Stop the lights manager.
     stop: =>
+        events.off "hue.data.hub", @onHueHub
+
         @baseStop()
 
     # WEATHER AND CLIMATE

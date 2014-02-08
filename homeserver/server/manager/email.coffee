@@ -32,7 +32,6 @@ class EmailManager extends (require "./baseManager.coffee")
 
     # Init the Email module and start listening to new message events from the server.
     init: =>
-        # Get default user to set email and mobile email.
         defaultUser = lodash.find settings.users, {isDefault: true}
 
         # Set default email if a default user was set, or warn that defaults
@@ -190,7 +189,7 @@ class EmailManager extends (require "./baseManager.coffee")
         # Get matching `from` rules.
         from = lodash.find account.rules, (rule) ->
             return false if not rule.from?
-            return false if rule.hasAttachments and parsedMsg.attachments.length < 1
+            return false if rule.hasAttachments and parsedMsg.attachments?.length < 1
 
             arr = if lodash.isArray(rule.from) then rule.from else [rule.from]
             for a in arr
@@ -200,7 +199,7 @@ class EmailManager extends (require "./baseManager.coffee")
         # Get matching `subject` rules.
         subject = lodash.find account.rules, (rule) ->
             return false if not rule.subject?
-            return false if rule.hasAttachments and parsedMsg.attachments.length < 1
+            return false if rule.hasAttachments and parsedMsg.attachments?.length < 1
 
             arr = if lodash.isArray(rule.subject) then rule.subject else [rule.subject]
             for a in arr

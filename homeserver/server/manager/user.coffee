@@ -19,22 +19,22 @@ class UserManager extends (require "./baseManager.coffee")
 
     # Init the home manager.
     init: =>
-        @data.users = {}
-
-        # Iterate and populate user data.
-        for username, userdata of settings.users
-            @data.users[username] = {isOnline: false}
-
-        @baseInit()
+        @baseInit {users: {}}
 
     # Start the home manager and listen to data updates / events.
     start: =>
+        for username, userdata of settings.users
+            if not @data.users[username]?
+                @data.users[username] = {isOnline: false}
+
         events.on "network.data.router", @onNetworkRouter
 
         @baseStart()
 
     # Stop the home manager.
     stop: =>
+        events.off "network.data.router", @onNetworkRouter
+
         @baseStop()
 
     # USER STATUS

@@ -16,18 +16,6 @@ class BaseApi
     request = require "request"
     url = require "url"
 
-    # PROPERTIES
-    # -------------------------------------------------------------------------
-
-    # Holds all downloaded / processed data for that particular module.
-    data: {}
-
-    # Holds all errors that happened on the module.
-    errors: {}
-
-    # Sets if module is running (true) or suspended (false).
-    running: false
-
     # INIT
     # -------------------------------------------------------------------------
 
@@ -35,6 +23,11 @@ class BaseApi
     baseInit: =>
         @moduleName = @__proto__.constructor.name.toString()
         @moduleId = @moduleName.toLowerCase()
+
+        # Create data and errors collections, and set running to default if not set yet.
+        @data = {} if not @data?
+        @errors = {} if not @errors?
+        @running = false if not @running?
 
         # Log and start.
         logger.debug "#{@moduleName}.init"

@@ -22,6 +22,7 @@ class Fitbit extends (require "./baseApi.coffee")
 
     # Start the Fitbit module.
     start: =>
+        @getBody()
         @baseStart()
 
     # Stop the Fitbit module.
@@ -36,24 +37,31 @@ class Fitbit extends (require "./baseApi.coffee")
         security.processAuthToken "fitbit", req, res
 
     # Make a request to the Fitbit API.
-    apiRequest: (path, params, callback) =>
+    makeRequest: (path, params, callback) =>
         if not callback? and lodash.isFunction params
             callback = params
             params = null
 
-        # Get data from the security module and set request URL.
         authCache = security.authCache["fitbit"]
+
+        # Make sure cached auth is valid.
+        authError = @checkAuthData authCache
+        if authError?
+            callback authError if callback?
+            return
+            
+        # Set full request URL.
         reqUrl = settings.fitbit.api.url + path
         reqUrl += "?" + params if params?
 
-        logger.debug "Fitbit.apiRequest", reqUrl
+        logger.debug "Fitbit.makeRequest", reqUrl
 
         # Make request using OAuth.
         authCache.oauth.get reqUrl, authCache.data.token, authCache.data.tokenSecret, (err, result) ->
             if err?
-                @logError "Fitbit.apiRequest", path, params, err
+                @logError "Fitbit.makeRequest", path, params, err
             else
-                logger.debug "Fitbit.apiRequest", path, params, result
+                logger.debug "Fitbit.makeRequest", path, params, result
 
             result = JSON.parse result if lodash.isString result
             callback err, result if callback?
@@ -63,9 +71,8 @@ class Fitbit extends (require "./baseApi.coffee")
 
     # Helper to check if API results are newer than the current value for the specified key.
     # This is called by the `setCurrent` method below.
-    checkCurrent = (results, key) =>
-        current = @data[key]
-        return null if not current?
+    isCurrentData: (results, key) =>
+        current = @data[key] or {timestamp: 0}
 
         # Iterate results and compare data.
         for r in results[key]
@@ -74,13 +81,13 @@ class Fitbit extends (require "./baseApi.coffee")
         return newValue
 
     # Check if the returned results represent current data for body or sleep.
-    setCurrent = (results) =>
+    setCurrentData: (results) =>
         results = [results] if not lodash.isArray results
 
         for r in results
-            newFat = checkCurrent r, "fat" if r.fat?
-            newWeight = checkCurrent r, "weight" if r.weight?
-            newSleep = checkCurrent r, "sleep" if r.sleep?
+            newFat = @isCurrentData r, "fat" if r.fat?
+            newWeight = @isCurrentData r, "weight" if r.weight?
+            newSleep = @isCurrentData r, "sleep" if r.sleep?
 
             @setData "fat", newFat if newFat?
             @setData "weight", newWeight if newWeight?
@@ -90,9 +97,9 @@ class Fitbit extends (require "./baseApi.coffee")
     getActivities: (date, callback) =>
         date = moment().subtract("d", 1).format settings.fitbit.dateFormat if not date?
 
-        @apiRequest "user/-/activities/date/#{date}.json", (err, result) =>
+        @makeRequest "user/-/activities/date/#{date}.json", (err, result) =>
             if not err?
-                setCurrent result
+                @setCurrentData result
 
             callback err, result if callback?
 
@@ -100,9 +107,9 @@ class Fitbit extends (require "./baseApi.coffee")
     getSleep: (date, callback) =>
         date = moment().subtract("d", 1).format settings.fitbit.dateFormat if not date?
 
-        @apiRequest "user/-/sleep/date/#{date}.json", (err, result) =>
+        @makeRequest "user/-/sleep/date/#{date}.json", (err, result) =>
             if not err?
-                setCurrent result
+                @setCurrentData result
 
             callback err, result if callback?
 
@@ -114,13 +121,13 @@ class Fitbit extends (require "./baseApi.coffee")
 
         # There are 2 API requests, one for weight and one for fat.
         tasks = []
-        tasks.push (cb) => @apiRequest "user/-/body/log/weight/date/#{startDate}/#{endDate}.json", (err, result) => cb err, result
-        tasks.push (cb) => @apiRequest "user/-/body/log/fat/date/#{startDate}/#{endDate}.json", (err, result) => cb err, result
+        tasks.push (cb) => @makeRequest "user/-/body/log/weight/date/#{startDate}/#{endDate}.json", (err, result) => cb err, result
+        tasks.push (cb) => @makeRequest "user/-/body/log/fat/date/#{startDate}/#{endDate}.json", (err, result) => cb err, result
 
         # Get body weight and fat using async.
         async.parallelLimit tasks, settings.general.parallelTasksLimit, (err, results) =>
             if not err?
-                setCurrent results
+                @setCurrentData results
             else if callback?
                 results = lodash.merge results[0], results[1]
                 callback err, results

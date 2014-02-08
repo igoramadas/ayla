@@ -11,31 +11,23 @@ class BaseManager
     lodash = expresser.libs.lodash
     moment = expresser.libs.moment
 
-    # PROPERTIES
-    # -------------------------------------------------------------------------
-
-    # Holds all downloaded / processed data for that particular module.
-    data: {}
-
-    # Holds timers and intervals.
-    timers: {}
-
-    # Holds recent errors that happened on the module.
-    errors: {}
-
-    # Holds recent notifications sent by the module.
-    notifications: {}
-
-    # Sets if module is running (true) or suspended (false).
-    running: false
-
     # INIT
     # -------------------------------------------------------------------------
 
-    # Called when the module inits.
-    baseInit: =>
+    # Called when the module inits. The `initialData` is optional.
+    baseInit: (initialData) =>
         @moduleName = @__proto__.constructor.name.toString()
         @moduleId = @moduleName.toLowerCase()
+
+        # Create initial data or a blank object if none was passed.
+        initialData = {} if not initialData?
+        @data = initialData if not @data?
+
+        # Create base objects that were not created yet.
+        @errors = {}
+        @timers = {}
+        @notifications = {}
+        @running = false
 
         # Log and start.
         logger.debug "#{@moduleName}.init"
