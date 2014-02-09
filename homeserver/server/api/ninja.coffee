@@ -22,15 +22,13 @@ class Ninja extends (require "./baseApi.coffee")
 
     # Init the Ninja module.
     init: =>
-        if not settings.ninja?.api?
-            logger.warn "Ninja.init", "Ninja API settings are not defined!"
-            return
-
-        @ninjaApi = ninjablocks.app {user_access_token: settings.ninja.api.userToken}
         @baseInit()
 
     # Start collecting data from Ninja Blocks.
     start: =>
+        if settings.ninja?.api?
+            @ninjaApi = ninjablocks.app {user_access_token: settings.ninja.api.userToken}
+
         @getDeviceList()
         @baseStart()
 
@@ -77,7 +75,7 @@ class Ninja extends (require "./baseApi.coffee")
     # Gets the list of registered devices with Ninja Blocks.
     getDeviceList: (callback) =>
         if not @ninjaApi?
-            logger.warn "Ninja.getDeviceList", "Ninja API object was not created. Abort!"
+            logger.warn "Ninja.getDeviceList", "Ninja API not set (probably missing settings). Abort!"
             return
         else
             logger.debug "Ninja.getDeviceList"
@@ -105,7 +103,7 @@ class Ninja extends (require "./baseApi.coffee")
     # short name defined or explicit filter.
     actuate433: (filter) =>
         if not @ninjaApi?
-            logger.warn "Ninja.actuate433", "Ninja API object was not created. Abort!"
+            logger.warn "Ninja.actuate433", "Ninja API not set (probably missing settings). Abort!"
             return
 
         # Make sure RF 433 is set and working.

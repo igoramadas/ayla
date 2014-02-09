@@ -48,7 +48,7 @@ class EmailManager extends (require "./baseManager.coffee")
 
         # Send email telling Ayla home server has started managing emails.
         if @defaultToMobile?
-            mailer.send {to: @defaultToMobile, subject: "Ayla home server started!", body: "Hi there, sir."}
+            mailer.send {to: @defaultToMobile, subject: "Ayla home server started!"}
         else
             logger.warn "Manager.init", "No default user was set, or no mobile email was found."
 

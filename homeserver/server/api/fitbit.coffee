@@ -23,6 +23,7 @@ class Fitbit extends (require "./baseApi.coffee")
     # Start the Fitbit module.
     start: =>
         @getBody()
+        @getSleep()
         @baseStart()
 
     # Stop the Fitbit module.
@@ -71,12 +72,12 @@ class Fitbit extends (require "./baseApi.coffee")
 
     # Helper to check if API results are newer than the current value for the specified key.
     # This is called by the `setCurrent` method below.
-    isCurrentData: (results, key) =>
-        current = @data[key]
+    isCurrentData: (result, key) =>
+        current = @data[key] if not current?
         dateFormat = settings.fitbit.dateFormat
 
         # Iterate results and compare data.
-        for r in results[key]
+        for r in result[key]
             newValue = r if not current? or moment(r.date, dateFormat) > moment(current.date, dateFormat)
 
         return newValue
@@ -90,9 +91,9 @@ class Fitbit extends (require "./baseApi.coffee")
             newWeight = @isCurrentData r, "weight" if r.weight?
             newSleep = @isCurrentData r, "sleep" if r.sleep?
 
-            @setData "fat", newFat if newFat?
-            @setData "weight", newWeight if newWeight?
-            @setData "sleep", newSleep if newSleep?
+        @setData "fat", newFat if newFat?
+        @setData "weight", newWeight if newWeight?
+        @setData "sleep", newSleep if newSleep?
 
     # Get activity data (steps, calories, etc) for the specified date, or yesterday if no `date` is provided.
     getActivities: (date, callback) =>

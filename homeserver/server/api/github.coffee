@@ -6,6 +6,9 @@ class GitHub extends (require "./baseApi.coffee")
     logger = expresser.logger
     settings = expresser.settings
 
+    # Disable GitHub, not being used at the moment.
+    disabled: true
+
     # INIT
     # -------------------------------------------------------------------------
     
@@ -13,11 +16,11 @@ class GitHub extends (require "./baseApi.coffee")
     init: =>
         @baseInit()
     
-    # Start collecting weather data.
+    # Start collecting data from Github.
     start: =>
         @baseStart()
     
-    # Stop collecting weather data.
+    # Stop collecting data from Github.
     stop: =>
         @baseStop()
 

@@ -42,16 +42,16 @@ class Wunderground extends (require "./baseApi.coffee")
             callback = options
             options = {}
 
-        # Set tasks and stations arrays.
         tasks = []
+        reqUrl = "#{settings.wunderground.api.url}#{settings.wunderground.api.clientId}/#{path}/q/"
 
         # Set queries based on options (default or stationIds).
+        # If `stationIds` is set, add pws: to the URL.
         if options.stationIds?
+            reqUrl += "pws:"
             queries = options.stationIds
-            reqUrl = settings.wunderground.api.url + settings.wunderground.api.clientId + "/#{path}/q/pws:"
         else
             queries = [settings.wunderground.defaultQuery]
-            reqUrl = settings.wunderground.api.url + settings.wunderground.api.clientId + "/#{path}/q/"
 
         # Iterate stations and create a HTTP request for each station.
         for q in queries
@@ -83,7 +83,7 @@ class Wunderground extends (require "./baseApi.coffee")
                         nextValue = d[field][prop].toString()
 
                         # Parse next value.
-                        if nextValue?.indexOf("%") >= 0
+                        if nextValue.indexOf("%") >= 0
                             nextValue = nextValue.replace "%", ""
                         if not isNaN nextValue
                             nextValue = parseFloat nextValue
@@ -94,7 +94,7 @@ class Wunderground extends (require "./baseApi.coffee")
                         else
                             if not isNaN curValue
                                 result[prop] = ((curValue + nextValue) / 2).toFixed(2)
-                            else if curValue?.toString().indexOf(nextValue) < 0
+                            else if curValue.toString().indexOf(nextValue) < 0
                                 result[prop] += ", " + nextValue
                 catch ex
                     @logError "Wunderground.getAverageResult", ex

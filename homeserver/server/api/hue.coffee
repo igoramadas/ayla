@@ -73,7 +73,7 @@ class Hue extends (require "./baseApi.coffee")
             if not err?
                 callback err, result
             else
-                lodash.delay @makeRequest, 500, reqUrl, params, callback
+                lodash.delay @makeRequest, 1000, reqUrl, params, callback
 
     # GET HUB DATA
     # -------------------------------------------------------------------------

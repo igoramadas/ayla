@@ -52,12 +52,9 @@ class Network extends (require "./baseApi.coffee")
     # Init the Network module.
     init: =>
         @mdnsBrowser = mdns.createBrowser mdns.tcp("http")
-
-        # Set data and user statuses.
-        @data = {devices: [], router: {}}
-
         @checkIP()
-        @baseInit()
+
+        @baseInit {devices: [], router: {}}
 
     # Start monitoring the network.
     start: =>
@@ -65,6 +62,7 @@ class Network extends (require "./baseApi.coffee")
         @mdnsBrowser.on "serviceDown", @onServiceDown
         @mdnsBrowser.start()
         @probeRouter()
+
         @baseStart()
 
     # Stop monitoring the network.
@@ -72,6 +70,7 @@ class Network extends (require "./baseApi.coffee")
         @mdnsBrowser.off "serviceUp", @onServiceUp
         @mdnsBrowser.off "serviceDown", @onServiceDown
         @mdnsBrowser.stop()
+
         @baseStop()
 
     # GET NETWORK STATS

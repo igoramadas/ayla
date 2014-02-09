@@ -49,12 +49,6 @@
             "temperature": [15, 17, 22, 26]
         }
     },
-    "logger": {
-        "console": true,
-        "local": {
-            "enabled": false
-        }
-    },
     "path": {
         "cameraSnaps": "/data/cameraSnaps/",
         "data": "/data/",

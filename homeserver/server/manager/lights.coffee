@@ -244,6 +244,7 @@ class LightsManager extends (require "./baseManager.coffee")
         # Convert RGB to hex and return result.
         return "##{r}#{g}#{b}"
 
+
 # Singleton implementation.
 # -----------------------------------------------------------------------------
 LightsManager.getInstance = ->

@@ -1,5 +1,14 @@
 extends layout
 
 block contents
-    #fitbit
-        h1 Fitbit!
+    #fitness
+        ul.maingrid.large-block-grid-3
+            li.weight
+                span(data-bind="text: weight().value")
+                span kg
+            li.fat
+                span(data-bind="text: fat().value")
+                span % fat
+            li.bmi
+                span(data-bind="text: weight().bmi")
+                span bmi

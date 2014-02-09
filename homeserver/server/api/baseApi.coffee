@@ -20,14 +20,15 @@ class BaseApi
     # -------------------------------------------------------------------------
 
     # Called when the module inits.
-    baseInit: =>
+    baseInit: (initialData) =>
         @moduleName = @__proto__.constructor.name.toString()
         @moduleId = @moduleName.toLowerCase()
 
-        # Create data and errors collections, and set running to default if not set yet.
-        @data = {} if not @data?
-        @errors = {} if not @errors?
-        @running = false if not @running?
+        # Create initial data or a blank object if none was passed.
+        initialData = {} if not initialData?
+        @data = initialData if not @data?
+        @errors = {}
+        @running = false
 
         # Log and start.
         logger.debug "#{@moduleName}.init"
@@ -156,7 +157,7 @@ class BaseApi
 
                     callback respError, body
                 catch ex
-                    callback {err: ex, url: reqUrl, params: params}
+                    callback {exception: ex, url: reqUrl, params: params}
 
     # Checks if auth data is valid and set. Returns false if not valid.
     checkAuthData: (obj) =>

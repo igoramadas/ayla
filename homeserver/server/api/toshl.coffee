@@ -19,11 +19,11 @@ class Toshl extends (require "./baseApi.coffee")
     init: =>
         @baseInit()
 
-    # Start the network module.
+    # Start the Toshl module.
     start: =>
         @baseStart()
 
-    # Stop the network module.
+    # Stop the Toshl module.
     stop: =>
         @baseStop()
 

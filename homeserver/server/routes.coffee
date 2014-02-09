@@ -12,7 +12,7 @@ class Routes
     commander = require "./commander.coffee"
     fs = require "fs"
     fitbitApi = require "./api/fitbit.coffee"
-    weatherManager = require "./manager/weather.coffee"
+    fitnessManager = require "./manager/fitness.coffee"
     hueApi = require "./api/hue.coffee"
     lodash = expresser.libs.lodash
     netatmoApi = require "./api/netatmo.coffee"
@@ -21,6 +21,7 @@ class Routes
     path = require "path"
     security = require "./security.coffee"
     toshlApi = require "./api/toshl.coffee"
+    weatherManager = require "./manager/weather.coffee"
     withingsApi = require "./api/withings.coffee"
     wundergroundApi = require "./api/wunderground.coffee"
 
@@ -74,7 +75,7 @@ class Routes
 
     # Fitness info page.
     fitnessPage = (req, res) ->
-        options = {pageTitle: "Fitness", data: fitbitApi.data}
+        options = {pageTitle: "Fitness", data: fitnessManager.data}
         renderPage req, res, "fitness", options
 
     # L:ight control page.
