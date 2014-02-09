@@ -1,6 +1,7 @@
-# MANAGER BASE MODULE
+# BASE MANAGER
 # -----------------------------------------------------------------------------
-class BaseManager
+# All managers (files under /manager) inherit from this BaseManager.
+class BaseManager extends (require "../baseModule.coffee")
 
     expresser = require "expresser"
     events = expresser.events
@@ -11,40 +12,10 @@ class BaseManager
     lodash = expresser.libs.lodash
     moment = expresser.libs.moment
 
-    # INIT
-    # -------------------------------------------------------------------------
-
-    # Called when the module inits. The `initialData` is optional.
-    baseInit: (initialData) =>
-        @moduleName = @__proto__.constructor.name.toString()
-        @moduleId = @moduleName.toLowerCase()
-
-        # Create initial data or a blank object if none was passed.
-        initialData = {} if not initialData?
-        @data = initialData if not @data?
-
-        # Create base objects that were not created yet.
-        @errors = {}
-        @timers = {}
-        @notifications = {}
-        @running = false
-
-        # Log and start.
-        logger.debug "#{@moduleName}.init"
-        @start()
-
-    # Called when the module starts.
-    baseStart: =>
-        @running = true
-
-    # Called when the module stops.
-    baseStop: =>
-        @running = false
-
     # NOTIFICATIONS
     # -------------------------------------------------------------------------
 
-    # Used to send alerts and general notifications to the user.
+    # Used to send alerts and general notifications to users.
     notify: (options, callback) =>
         expiryDate = moment().subtract("m", settings.general.moduleNotifyExpireMinutes).unix()
 

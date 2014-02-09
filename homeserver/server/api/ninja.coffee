@@ -41,9 +41,10 @@ class Ninja extends (require "./baseApi.coffee")
 
     # This should be called whenever new weather related data is downloaded
     # from the Ninja block. If no `devices` are passed, use the default from data.
+    # Consider the data as "current" if it was taken less than 2 hours ago.
     setCurrentWeather: =>
         devices = @data.devices
-        maxAge = moment().subtract("m", settings.general.currentDataMaxAgeMinutes).unix()
+        maxAge = moment().subtract("h", 2).unix()
 
         # Filter temperature and humidity devices.
         tempDevices = lodash.filter devices, {device_type: "temperature"}

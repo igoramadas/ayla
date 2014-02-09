@@ -1,64 +1,100 @@
+// AYLA SETTINGS
+// Ayla uses the Expresser platform, therefore I recommend having a look
+// at https://expresser.codeplex.com to understand how settings work.
+// The properties below are the defaults for Ayla, and do not include
+// private API keys, tokens, passwords, user preferences etc. For this
+// you'll have to create a settings.private.json file.
+// Private settings are marked below with PRIVATE on its description.
+
 {
+    // PRIVATE! Access tokens for external modules, for example if you
+    // set callbacks on Ninja Blocks or IFTTT.
+    "accessTokens": {
+        // "ninja": "myninja",
+        // "another": "somekey"
+    },
+    // Web app defaults, please note that for SSL to work you'll need
+    // to have a ssl.key and ssl.cer files.
     "app": {
         "port": 8443,
         "ssl": {
-            "enabled": true,
-            "redirectorPort": 8080
+            "enabled": true
         }
     },
+    // Camera date format while saving snaps, and max age of snaps before
+    // they get deleted.
     "camera": {
         "dateFormat": "YYYYMMDD-HHmmss",
         "snapsMaxAgeDays": 10
     },
+    // These are the default commands that can be sent via text or voice.
+    // The command codes are defined on the /server/commander.coffee file.
     "commands": {
         "notifyNetworkDevicesDown": ["which servers are down", "are servers down"],
         "movieMode": ["movie mode", "movie time", "start movie"],
         "turnLightsOff": ["turn lights off", "all lights off"],
         "turnLightsOn": ["turn lights on", "all lights on"]
     },
+    // Connect to local MongoDB and delete cached API data after 24 hours by default.
     "database": {
         "connString": "mongodb://localhost/ayla",
         "dataCacheExpireHours": 24
     },
-    "email" : {
-        "newMessages": {
-            "sinceDays": 30
-        },
-        "randomGreetings": ["Hey cutie", "Hi sir", "What's up boss"]
+    // PRIVATE! Settings to connect to your Electric Imp devices.
+    // Please note that you must use the Ayla Imp code on them,
+    // both agent and device codes (available on our GIT repo under the /imp folder).
+    "electricImp": {
+        "agentUrl": "https://agent.electricimp.com/"
+        // "devices": ["MY_DEVICE_ID_1", "DEVICE_2"]
     },
+    // Fitbit options. Check if user is missing sleep data 2 and 5 days ago, if
+    // weight hasn't been set for more than 10 days, and default date format is YEAR-MONTH-DAY.
     "fitbit": {
         "missingSleepDays": [2, 5],
         "missingWeightAfterDays": 10,
         "dateFormat": "YYYY-MM-DD"
     },
+    // General app settings. Debug is disabled by default.
     "general": {
         "appTitle": "Ayla",
         "debug": false,
-        "currentDataMaxAgeMinutes": 30,
+        // The `moduleNotifyExpireMinutes` is used to avoid sending repeated notifications.
+        // By default it won't resend the same notification if last was sent less than 60 minutes ago.
         "moduleNotifyExpireMinutes": 60,
+        // Modules errors will stay logged on the module itself for up to 48 hours.
+        // Used to check module's health (for example if it's throwing too many errors).
         "moduleErrorMaxAgeHours": 48,
+        // Call the module's `stop` method automatically if the same error
+        // happens 10 times in less than 48 hours.
         "moduleStopOnErrorCount": 10,
-        "parallelTasksLimit": 4,
-        "owner": "Igor Ramadas"
+        // Maximum module's tasks to execute in parallel.
+        "parallelTasksLimit": 4
     },
+    // Home settings.
     "home": {
         "autoControlLights": true,
+        // The ideal conditions are arrays of values [criticallyLow, low, high, criticallyHigh].
         "idealConditions": {
             "co2": [0, 400, 1200, 3000],
             "humidity": [25, 35, 60, 75],
             "temperature": [15, 17, 22, 26]
         }
     },
+    // Path to various settings and data.
     "path": {
         "cameraSnaps": "/data/cameraSnaps/",
         "data": "/data/",
         "emailTemplatesDir": "/data/emailTemplates/",
+        // You'll need to get your own certificates if you want to use HTTPS!
         "sslKeyFile": "ssl.key",
         "sslCertFile": "ssl.cer"
     },
+    // Security settings. OAUth tokens will be saved for up to 30 days, even if they expire.
+    // But of course only the most recent tokens are used by the system.
     "security": {
-        "maxAuthTokenAgeDays": 90
+        "maxAuthTokenAgeDays": 30
     },
+    // Weather Underground settings. By default it will query conditions in Prenzlauer Berg, Berlin.
     "wunderground": {
         "defaultQuery": "Germany/Berlin",
         "resultFields": ["weather", "temp_c", "relative_humidity", "wind_degrees", "wind_kph", "pressure_mb",

@@ -1,9 +1,9 @@
-# API BASE MODULE
+# BASE API
 # -----------------------------------------------------------------------------
-class BaseApi
+# All API modules (files under /api) inherit from this BaseApi.
+class BaseApi extends (require "../baseModule.coffee")
 
     expresser = require "expresser"
-    cron = expresser.cron
     database = expresser.database
     events = expresser.events
     logger = expresser.logger
@@ -15,40 +15,6 @@ class BaseApi
     path = require "path"
     request = require "request"
     url = require "url"
-
-    # INIT
-    # -------------------------------------------------------------------------
-
-    # Called when the module inits.
-    baseInit: (initialData) =>
-        @moduleName = @__proto__.constructor.name.toString()
-        @moduleId = @moduleName.toLowerCase()
-
-        # Create initial data or a blank object if none was passed.
-        initialData = {} if not initialData?
-        @data = initialData if not @data?
-        @errors = {}
-        @running = false
-
-        # Log and start.
-        logger.debug "#{@moduleName}.init"
-        @start()
-
-    # Called when the module starts.
-    baseStart: =>
-        @running = true
-
-        # Create database TTL index.
-        expires = settings.database.dataCacheExpireHours * 3600
-        database.db.collection("data-#{@moduleId}").ensureIndex {"datestamp": 1}, {expireAfterSeconds: expires}
-
-        # Start cron jobs.
-        cron.start {module: "#{@moduleId}.coffee"}
-
-    # Called when the module stops.
-    baseStop: =>
-        @running = false
-        cron.stop {module: "#{@moduleId}.coffee"}
 
     # DATA HANDLING
     # -------------------------------------------------------------------------
@@ -72,12 +38,16 @@ class BaseApi
     setData: (key, value, options) =>
         @data[key] = value
 
+        # Value must be a object! If not passed as object, create one with {value: value}.
+        value = {value: value} if lodash.isString value or lodash.isNumber value
+
         # Set default options to emit sockets and save to db.
         options = {} if not options?
         options = lodash.defaults options, {eventsEmit: true, socketsEmit: true, saveToDatabase: true}
 
         # Emit new data to central event dispatched?
         if options.eventsEmit
+            events.emit "#{@moduleId}.data", key, value
             events.emit "#{@moduleId}.data.#{key}", value
 
         # Emit new data to clients using Sockets?
@@ -172,37 +142,7 @@ class BaseApi
         atoken = settings.accessTokens[@moduleId]
         return baseUrl  + "/" + urlPath + "?atoken=" + atoken
 
-    # ERRORS
-    # -------------------------------------------------------------------------
 
-    # Logs module errors.
-    logError: =>
-        id = arguments[0]
-        args = lodash.toArray arguments
-
-        # Append to the errors log.
-        @errors[id] = [] if not @errors[id]?
-        @errors[id].push {timestamp: moment().unix(), data: args}
-        count = @errors[id].length
-
-        # Too many consecutive errors? Stop the module.
-        if count is settings.general.moduleStopOnErrorCount
-            logger.critical id, "Too many consecutive errors (#{count}) logged.", "Module will now stop."
-            @stop()
-
-        logger.error.apply logger, args
-
-    # Helper to clear old errors.
-    clearErrors: =>
-        maxAge = moment().subtract("h", settings.general.moduleErrorMaxAgeHours).unix()
-
-        # Iterate errors by ID, then internal data, and remove everything which is too old.
-        for key, value of @errors
-            for d in value
-                if d.timestamp < maxAge
-                    lodash.remove value, d
-            if value.length < 1
-                delete @errors[key]
 
 
 # Exports API Base Module.

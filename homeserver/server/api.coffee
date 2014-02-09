@@ -6,6 +6,7 @@ class Api
 
     expresser = require "expresser"
     cron = expresser.cron
+    database = expresser.database
     events = expresser.events
     logger = expresser.logger
     settings = expresser.settings
@@ -34,6 +35,9 @@ class Api
                 if module.disabled
                     logger.debug "Api.init", f, "Module is disabled. Abort init."
                 else
+                    # Create database TTL index and init module.
+                    expires = settings.database.dataCacheExpireHours * 3600
+                    database.db.collection("data-#{@moduleId}").ensureIndex {"datestamp": 1}, {expireAfterSeconds: expires}
                     module.init()
                     @modules[module.moduleId] = module
 
