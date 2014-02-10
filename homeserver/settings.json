@@ -42,6 +42,12 @@
     // Fitbit options. Check if user is missing sleep data 2 and 5 days ago, if
     // weight hasn't been set for more than 10 days, and default date format is YEAR-MONTH-DAY.
     "fitbit": {
+        // API clientId and secret must be set on the private settings file.
+        "api": {
+            "url": "https://api.fitbit.com/1/",
+            "oauthUrl": "https://api.fitbit.com/oauth/",
+            "oauthVersion": "1.0"
+        },
         "missingSleepDays": [2, 5],
         "missingWeightAfterDays": 10,
         "dateFormat": "YYYY-MM-DD"
@@ -75,6 +81,23 @@
         // happens 10 times in less than 48 hours.
         "stopOnErrorCount": 10
     },
+    // Netatmo settings. The API clientId, secret, password and username must
+    // be set on the private settings file.
+    "netatmo": {
+        "api": {
+            "url": "https://api.netatmo.net/api/",
+            "oauthPathAuthorize": "oauth2/authorize",
+            "oauthPathToken": "oauth2/token",
+            "oauthUrl": "https://api.netatmo.net/",
+            "oauthVersion": "2.0"
+        }
+    },
+    // Ninja Blocks API userToken must be set on the private settings file.
+    "ninja": {
+        "api": {
+            "url": "https://a.ninja.is/rest/v0/"
+        }
+    },
     // Path to various settings and data.
     "path": {
         "cameraSnaps": "/data/cameraSnaps/",
@@ -89,13 +112,35 @@
     "security": {
         "maxAuthTokenAgeDays": 30
     },
-    // Toshl settings.
+    // Toshl settings. The API clientId, secret and oauthState must be set on the private settings file.
     "toshl": {
+        "api": {
+            "url": "https://api.toshl.com/",
+            "oauthPathAuthorize": "oauth2/authorize",
+            "oauthPathToken": "oauth2/token",
+            "oauthResponseType": "code",
+            "oauthUrl": "https://toshl.com/",
+            "oauthVersion": "2.0",
+            "oauthUseHeader": true
+        },
         "recentExpensesDays": 10,
         "dateFormat": "YYYY-MM-DD"
     },
+    // Withings settings. API clientId and secret must be set on the private settings file,
+    // along with the account userId.
+    "withings": {
+        "api": {
+            "url": "http://wbsapi.withings.net/",
+            "oauthUrl": "https://oauth.withings.com/account/",
+            "oauthVersion": "1.0"
+        }
+    },
     // Weather Underground settings. By default it will query conditions in Prenzlauer Berg, Berlin.
+    // The API clientId must be set on the private settings file.
     "wunderground": {
+        "api": {
+            "url": "http://api.wunderground.com/api/"
+        },
         "defaultQuery": "Germany/Berlin",
         "resultFields": ["weather", "temp_c", "relative_humidity", "wind_degrees", "wind_kph", "pressure_mb",
                          "dewpoint_c", "feelslike_c", "visibility_km", "precip_1hr_metric", "icon"],

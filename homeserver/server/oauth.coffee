@@ -48,7 +48,7 @@ class OAuth
                     @data[t.user] = t
 
                     # Needs refresh?
-                    @refresh t.user if t.expires? and moment() > moment(t.expires)
+                    @refresh t.user if t.expires? and moment().unix() > t.expires
 
                 if callback?
                     callback null, true
@@ -113,7 +113,7 @@ class OAuth
         version = settings[service].api.oauthVersion
 
         if version is "2.0"
-            return new oauthModule.OAuth2(
+            obj = new oauthModule.OAuth2(
                 settings[service].api.clientId,
                 settings[service].api.secret,
                 settings[service].api.oauthUrl,
@@ -121,7 +121,7 @@ class OAuth
                 settings[service].api.oauthPathToken,
                 headers)
         else
-            return new oauthModule.OAuth(
+            obj = new oauthModule.OAuth(
                 settings[service].api.oauthUrl + "request_token",
                 settings[service].api.oauthUrl + "access_token",
                 settings[service].api.clientId,
@@ -131,6 +131,14 @@ class OAuth
                 "HMAC-SHA1",
                 null,
                 headers)
+
+        # Use authorization header instead of passing token via querystrings?
+        if settings[service].api.oauthUseHeader
+            obj.useAuthorizationHeaderforGET true
+
+        return obj
+
+        return obj
 
     # Get an OAuth protected resource. If no `user` is passed it will use the default one.
     get: (reqUrl, user, callback) =>
@@ -258,8 +266,11 @@ class OAuth
             logger.info "OAuth.refresh", @service, oauth_access_token
 
             # Schedule token to be refreshed with 10% of time left.
-            expires = results?.expires_in or results?.expires or 43200
+            expires = results?.expires_in or results?.expires or @data[user].expires or 43200
             lodash.delay @refresh, expires * 900, user
+
+            # If no refresh token is returned, keep the last one.
+            oauth_refresh_token = @data[user].refreshToken if not oauth_refresh_token? or oauth_refresh_token is ""
 
             # Save oauth details to DB and redirect user to service page.
             oauthData = {user: user, accessToken: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add("s", expires).unix()}

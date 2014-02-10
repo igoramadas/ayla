@@ -68,20 +68,23 @@ class Toshl extends (require "./baseApi.coffee")
     getExpenses: (filter, callback) =>
         params = filter or {}
 
-        @apiRequest "expenses", params, (err, result) =>
-            console.warn err, result
+        @apiRequest "expenses", params, callback
 
     # JOBS
     # -------------------------------------------------------------------------
 
     # Get recent expenses from Toshl.
     jobGetRecentExpenses: =>
-        logger.info "Netatmo.getRecentExpenses"
+        logger.info "Toshl.jobGetRecentExpenses"
 
         from = moment().subtract("d", settings.toshl.recentExpensesDays).format settings.toshl.dateFormat
         to = moment().format settings.toshl.dateFormat
 
-        @getExpenses {from: from, to: to}
+        @getExpenses {from: from, to: to}, (err, result) =>
+            if err?
+                @logError "Toshl.jobGetRecentExpenses", err
+            else
+                @setData "recentExpenses", result
 
 
 # Singleton implementation.
