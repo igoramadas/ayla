@@ -1,5 +1,7 @@
 # NINJA BLOCKS API
 # -----------------------------------------------------------------------------
+# Module for Ninja Blocks and connected RF 433 devices
+# More info at www.ninjablocks.com.
 class Ninja extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
@@ -11,7 +13,6 @@ class Ninja extends (require "./baseApi.coffee")
     lodash = expresser.libs.lodash
     moment = expresser.libs.moment
     ninjablocks = require "ninja-blocks"
-    security = require "../security.coffee"
 
     # Cached Ninja api and RF433 objects.
     ninjaApi: null

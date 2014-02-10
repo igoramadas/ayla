@@ -1,5 +1,7 @@
 # UBI API
 # -----------------------------------------------------------------------------
+# Module to collect data from Ubi sensors and send Ubi commands.
+# More info at www.theubi.com.
 class Ubi extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
@@ -10,7 +12,6 @@ class Ubi extends (require "./baseApi.coffee")
     async = expresser.libs.async
     lodash = expresser.libs.lodash
     moment = expresser.libs.moment
-    security = require "../security.coffee"
 
     # INIT
     # -------------------------------------------------------------------------

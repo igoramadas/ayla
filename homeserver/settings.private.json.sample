@@ -1,0 +1,262 @@
+{
+    "accessTokens": {
+        "ninja": "String",
+        "ubi": "String"
+    },
+    "electricImp": {
+        "devices": [
+            "String"
+        ]
+    },
+    "emailAccounts": {
+        "main": {
+            "archiveName": "String",
+            "inboxName": "String",
+            "imap": {
+                "host": "String",
+                "password": "String",
+                "port": "Number",
+                "user": "String",
+                "tls": "Boolean",
+                "tlsOptions": {
+                    "rejectUnauthorized": "Boolean"
+                }
+            },
+            "rules": [
+                {
+                    "action": "String",
+                    "from": [
+                        "String",
+                        "String",
+                        "String"
+                    ]
+                }
+            ]
+        },
+        "igor": {
+            "archiveName": "String",
+            "inboxName": "String",
+            "imap": {
+                "host": "String",
+                "password": "String",
+                "port": "Number",
+                "user": "String",
+                "tls": "Boolean",
+                "tlsOptions": {
+                    "rejectUnauthorized": "Boolean"
+                }
+            },
+            "rules": [
+                {
+                    "action": "String",
+                    "subject": [
+                        "String",
+                        "String"
+                    ],
+                    "hasAttachments": "Boolean"
+                }
+            ]
+        }
+    },
+    "fitbit": {
+        "api": {
+            "clientId": "String",
+            "secret": "String",
+            "url": "String",
+            "oauthUrl": "String",
+            "oauthVersion": "String"
+        }
+    },
+    "general": {
+        "appUrl": "String"
+    },
+    "github": {
+        "api": {
+            "token": "String"
+        }
+    },
+    "home": {
+        "rooms": {
+            "bedroom": {
+                "title": "String",
+                "symbol": "String",
+                "floor": "Number",
+                "weatherSource": "String"
+            },
+            "livingroom": {
+                "title": "String",
+                "symbol": "String",
+                "floor": "Number",
+                "weatherSource": "String"
+            },
+            "babyroom": {
+                "title": "String",
+                "symbol": "String",
+                "floor": "Number",
+                "weatherSource": "String"
+            },
+            "kitchen": {
+                "title": "String",
+                "symbol": "String",
+                "floor": "Number",
+                "weatherSource": "String"
+            }
+        }
+    },
+    "hue": {
+        "api": {
+            "user": "String"
+        }
+    },
+    "logger": {
+        "criticalEmailTo": "String"
+    },
+    "mailer": {
+        "from": "String",
+        "smtp": {
+            "password": "String",
+            "service": "String",
+            "user": "String"
+        }
+    },
+    "netatmo": {
+        "api": {
+            "clientId": "String",
+            "secret": "String",
+            "password": "String",
+            "url": "String",
+            "username": "String",
+            "oauthPathAuthorize": "String",
+            "oauthPathToken": "String",
+            "oauthUrl": "String",
+            "oauthVersion": "String"
+        },
+        "deviceId": "String",
+        "outdoorModuleId": "String"
+    },
+    "network": {
+        "router": {
+            "description": "String",
+            "host": "String",
+            "ip": "String",
+            "remoteHost": "String",
+            "localPort": "Number",
+            "remotePort": "Number",
+            "password": "String",
+            "uidWifi24g": "String",
+            "uidWifi5g": "String"
+        },
+        "devices": [
+            {
+                "description": "String",
+                "host": "String",
+                "type": "String",
+                "mac": "String",
+                "ip": "String",
+                "localPort": "Number",
+                "remotePort": "Number"
+            },
+            {
+                "description": "String",
+                "host": "String",
+                "type": "String",
+                "mac": "String",
+                "ip": "String",
+                "localPort": "Number",
+                "remotePort": "Number"
+            },
+            {
+                "description": "String",
+                "host": "String",
+                "type": "String",
+                "mac": "String",
+                "ip": "String",
+                "localPort": "Number"
+            },
+            {
+                "description": "String",
+                "host": "String",
+                "type": "String",
+                "mac": "String",
+                "ip": "String",
+                "localPort": "Number",
+                "remotePort": "Number",
+                "webPath": "String"
+            },
+            {
+                "description": "String",
+                "host": "String",
+                "type": "String",
+                "mac": "String",
+                "ip": "String",
+                "localPort": "Number",
+                "remotePort": "Number",
+                "imagePath": "String"
+            }
+        ]
+    },
+    "newRelic": {
+        "appName": "String",
+        "licenseKey": "String"
+    },
+    "ninja": {
+        "api": {
+            "userToken": "String",
+            "url": "String"
+        }
+    },
+    "shoeboxed": {
+        "email": "String"
+    },
+    "toshl": {
+        "api": {
+            "clientId": "String",
+            "secret": "String",
+            "url": "String",
+            "oauthPathAuthorize": "String",
+            "oauthPathToken": "String",
+            "oauthResponseType": "String",
+            "oauthUrl": "String",
+            "oauthVersion": "String"
+        }
+    },
+    "ubi": {
+        "apiUrl": "String"
+    },
+    "users": {
+        "igor": {
+            "isDefault": "Boolean",
+            "name": "String",
+            "email": "String",
+            "emailMobile": "String",
+            "mac": "String",
+            "mobileIP": "String",
+            "fitness": {
+                "desiredWeight": "Number",
+                "desiredFat": "Number"
+            }
+        },
+        "sabine": {
+            "name": "String",
+            "email": "String",
+            "mac": "String",
+            "mobileIP": "String"
+        }
+    },
+    "withings": {
+        "api": {
+            "clientId": "String",
+            "secret": "String",
+            "url": "String",
+            "oauthUrl": "String",
+            "oauthVersion": "String"
+        },
+        "userId": "Number"
+    },
+    "wunderground": {
+        "api": {
+            "clientId": "String",
+            "url": "String"
+        }
+    }
+}

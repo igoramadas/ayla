@@ -1,5 +1,7 @@
 # WITHINGS API
 # -----------------------------------------------------------------------------
+# Module to get weight and air data from Withings smart scales.
+# More info at www.withings.com.
 class Withings extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
@@ -10,7 +12,6 @@ class Withings extends (require "./baseApi.coffee")
     async = expresser.libs.async
     lodash = expresser.libs.lodash
     moment = expresser.libs.moment
-    security = require "../security.coffee"
 
     # Disable Withings till API gets sorted out.
     disabled: true

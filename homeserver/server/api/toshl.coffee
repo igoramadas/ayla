@@ -1,5 +1,7 @@
 # TOSHL API
 # -----------------------------------------------------------------------------
+# Module to read and add finance data to Toshl.
+# More info at www.toshl.com.
 class Toshl extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
@@ -10,7 +12,6 @@ class Toshl extends (require "./baseApi.coffee")
     lodash = expresser.libs.lodash
     moment = expresser.libs.moment
     querystring = require "querystring"
-    security = require "../security.coffee"
 
     # INIT
     # -------------------------------------------------------------------------

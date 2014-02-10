@@ -1,5 +1,7 @@
 # FITBIT API
 # -----------------------------------------------------------------------------
+# Module for activities, sleep and body data using Fitbit trackers.
+# More info at www.fitbit.com.
 class Fitbit extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
@@ -11,7 +13,6 @@ class Fitbit extends (require "./baseApi.coffee")
     async = expresser.libs.async
     lodash = expresser.libs.lodash
     moment = expresser.libs.moment
-    security = require "../security.coffee"
 
     # INIT
     # -------------------------------------------------------------------------
@@ -22,8 +23,11 @@ class Fitbit extends (require "./baseApi.coffee")
 
     # Start the Fitbit module.
     start: =>
-        @getBody()
-        @getSleep()
+        @oauthInit (err, result) =>
+            if not err?
+                @getBody()
+                @getSleep()
+
         @baseStart()
 
     # Stop the Fitbit module.
@@ -33,24 +37,16 @@ class Fitbit extends (require "./baseApi.coffee")
     # API BASE METHODS
     # -------------------------------------------------------------------------
 
-    # Authentication helper for Fitbit.
-    auth: (req, res) =>
-        security.processAuthToken "fitbit", req, res
-
     # Make a request to the Fitbit API.
     makeRequest: (path, params, callback) =>
+        if not @oauth.client?
+            callback "OAuth client is not ready. Please check Fitbit API settings." if callback?
+            return
+
         if not callback? and lodash.isFunction params
             callback = params
             params = null
 
-        authCache = security.authCache["fitbit"]
-
-        # Make sure cached auth is valid.
-        authError = @checkAuthData authCache
-        if authError?
-            callback authError if callback?
-            return
-            
         # Set full request URL.
         reqUrl = settings.fitbit.api.url + path
         reqUrl += "?" + params if params?
@@ -58,7 +54,7 @@ class Fitbit extends (require "./baseApi.coffee")
         logger.debug "Fitbit.makeRequest", reqUrl
 
         # Make request using OAuth.
-        authCache.oauth.get reqUrl, authCache.data.token, authCache.data.tokenSecret, (err, result) ->
+        @oauth.get reqUrl, (err, result) ->
             if err?
                 @logError "Fitbit.makeRequest", path, params, err
             else

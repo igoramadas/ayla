@@ -1,5 +1,6 @@
 # CAMERA API
 # -----------------------------------------------------------------------------
+# Module to take snaps from cameras or other picture sources.
 class Camera extends (require "./baseApi.coffee")
 
     expresser = require "expresser"

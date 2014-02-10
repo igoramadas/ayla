@@ -1,5 +1,7 @@
 # NETATMO API
 # -----------------------------------------------------------------------------
+# Module to collect weather data from Netatmo devices.
+# More info at www.netatmo.com.
 class Netatmo extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
@@ -11,7 +13,6 @@ class Netatmo extends (require "./baseApi.coffee")
     lodash = expresser.libs.lodash
     moment = expresser.libs.moment
     querystring = require "querystring"
-    security = require "../security.coffee"
 
     # PROPERTIES
     # -------------------------------------------------------------------------
@@ -28,8 +29,11 @@ class Netatmo extends (require "./baseApi.coffee")
 
     # Start collecting weather data.
     start: =>
-        @getIndoorConditions()
-        @getOutdoorConditions()
+        @oauthInit (err, result) =>
+            if not err?
+                @getIndoorConditions()
+                @getOutdoorConditions()
+
         @baseStart()
 
     # Stop collecting weather data.
@@ -39,28 +43,15 @@ class Netatmo extends (require "./baseApi.coffee")
     # API BASE METHODS
     # -------------------------------------------------------------------------
 
-    # Authentication helper for Netatmo.
-    auth: (req, res) =>
-        security.processAuthToken "netatmo", req, res
-
     # Make a request to the Netatmo API.
     makeRequest: (path, params, callback) =>
-        if not settings.netatmo?.api?
-            logger.warn "Netatmo.makeRequest", "Netatmo API settings are not defined. Abort!"
+        if not @oauth.client?
+            callback "OAuth client is not ready. Please check Fitbit API settings." if callback?
             return
 
-        # Property set parameters.
         if not callback? and lodash.isFunction params
             callback = params
             params = null
-
-        authCache = security.authCache["netatmo"]
-
-        # Make sure cached auth is valid.
-        authError = @checkAuthData authCache
-        if authError?
-            callback authError if callback?
-            return
 
         # Set default parameters and request URL.
         reqUrl = settings.netatmo.api.url + path + "?"
@@ -73,7 +64,7 @@ class Netatmo extends (require "./baseApi.coffee")
         logger.debug "Netatmo.makeRequest", reqUrl
 
         # Make request using OAuth. Force parse err and result as JSON.
-        authCache.oauth.get reqUrl, authCache.data.accessToken, (err, result) =>
+        @oauth.get reqUrl, (err, result) =>
             result = JSON.parse result if result? and lodash.isString result
             err = JSON.parse err if err? and lodash.isString err
 

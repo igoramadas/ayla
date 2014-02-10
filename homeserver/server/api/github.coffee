@@ -1,5 +1,6 @@
 # GITHUB API
 # -----------------------------------------------------------------------------
+# Module for GitHub ntegration.
 class GitHub extends (require "./baseApi.coffee")
 
     expresser = require "expresser"

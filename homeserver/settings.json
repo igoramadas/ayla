@@ -4,15 +4,8 @@
 // The properties below are the defaults for Ayla, and do not include
 // private API keys, tokens, passwords, user preferences etc. For this
 // you'll have to create a settings.private.json file.
-// Private settings are marked below with PRIVATE on its description.
 
 {
-    // PRIVATE! Access tokens for external modules, for example if you
-    // set callbacks on Ninja Blocks or IFTTT.
-    "accessTokens": {
-        // "ninja": "myninja",
-        // "another": "somekey"
-    },
     // Web app defaults, please note that for SSL to work you'll need
     // to have a ssl.key and ssl.cer files.
     "app": {
@@ -45,7 +38,6 @@
     // both agent and device codes (available on our GIT repo under the /imp folder).
     "electricImp": {
         "agentUrl": "https://agent.electricimp.com/"
-        // "devices": ["MY_DEVICE_ID_1", "DEVICE_2"]
     },
     // Fitbit options. Check if user is missing sleep data 2 and 5 days ago, if
     // weight hasn't been set for more than 10 days, and default date format is YEAR-MONTH-DAY.

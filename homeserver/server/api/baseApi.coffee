@@ -16,6 +16,14 @@ class BaseApi extends (require "../baseModule.coffee")
     request = require "request"
     url = require "url"
 
+    # AUTH HANDLING
+    # -------------------------------------------------------------------------
+
+    # Helper to create an OAuth object.
+    oauthInit: (callback) =>
+        @oauth = new (require "../oauth.coffee") @moduleId
+        @oauth.loadTokens callback
+
     # DATA HANDLING
     # -------------------------------------------------------------------------
 
@@ -52,6 +60,7 @@ class BaseApi extends (require "../baseModule.coffee")
 
         # Emit new data to clients using Sockets?
         if options.socketsEmit
+            sockets.emit "#{@moduleId}.data", key, value
             sockets.emit "#{@moduleId}.data.#{key}", value
 
         # Save the new data on the database?
@@ -128,13 +137,6 @@ class BaseApi extends (require "../baseModule.coffee")
                     callback respError, body
                 catch ex
                     callback {exception: ex, url: reqUrl, params: params}
-
-    # Checks if auth data is valid and set. Returns false if not valid.
-    checkAuthData: (obj) =>
-        if not obj?
-            logger.critical "#{@moduleName}", "Auth data is missing."
-            return "Auth data is missing."
-        return null
 
     # Helper to return a callback URL for the current API module.
     getCallbackUrl: (urlPath) =>

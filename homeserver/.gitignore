@@ -1,6 +1,7 @@
 .idea/
 atlassian-ide-plugin.xml
 data/
+docs/
 logs/
 newrelic.js
 newrelic_agent.log

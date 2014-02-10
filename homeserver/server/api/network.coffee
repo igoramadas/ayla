@@ -1,5 +1,6 @@
 # NETWORK API
 # -----------------------------------------------------------------------------
+# Module for internal network management and discovery.
 class Network extends (require "./baseApi.coffee")
 
     expresser = require "expresser"

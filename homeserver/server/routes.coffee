@@ -19,7 +19,6 @@ class Routes
     networkApi = require "./api/network.coffee"
     ninjaApi = require "./api/ninja.coffee"
     path = require "path"
-    security = require "./security.coffee"
     toshlApi = require "./api/toshl.coffee"
     weatherManager = require "./manager/weather.coffee"
     withingsApi = require "./api/withings.coffee"
@@ -116,11 +115,11 @@ class Routes
 
     # Get Fitbit OAuth tokens.
     fitbitAuth = (req, res) ->
-        fitbitApi.auth req, res
+        fitbitApi.oauth.process req, res
 
     # Callback for Fitbit OAuth.
     fitbitAuthCallback = (req, res) ->
-        fitbitApi.auth req, res
+        fitbitApi.oauth.process req, res
 
     # NETATMO ROUTES
     # -------------------------------------------------------------------------
@@ -131,11 +130,11 @@ class Routes
 
     # Get Netatmo OAuth tokens.
     netatmoAuth = (req, res) ->
-        netatmoApi.auth req, res
+        netatmoApi.oauth.process req, res
 
     # Callback for Netatmo OAuth.
     netatmoAuthCallback = (req, res) ->
-        netatmoApi.auth req, res
+        netatmoApi.oauth.process req, res
 
     # NETWORK ROUTES
     # -------------------------------------------------------------------------
@@ -182,11 +181,11 @@ class Routes
 
     # Get Toshl OAuth tokens.
     toshlAuth = (req, res) ->
-        toshlApi.auth req, res
+        toshlApi.oauth.process req, res
 
     # Callback for Toshl OAuth.
     toshlAuthCallback = (req, res) ->
-        toshlApi.auth req, res
+        toshlApi.oauth.process req, res
 
     # WITHINGS ROUTES
     # -------------------------------------------------------------------------
@@ -197,11 +196,11 @@ class Routes
 
     # Get Withings OAuth tokens.
     withingsAuth = (req, res) ->
-        withingsApi.auth req, res
+        withingsApi.oauth.process req, res
 
     # Callback for Withings OAuth.
     withingsAuthCallback = (req, res) ->
-        withingsApi.auth req, res
+        withingsApi.oauth.process req, res
 
     # WUNDERGROUND ROUTES
     # -------------------------------------------------------------------------

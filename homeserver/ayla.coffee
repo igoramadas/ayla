@@ -14,10 +14,9 @@ settings.loadFromJson "settings.private.json"
 api = require "./server/api.coffee"
 manager = require "./server/manager.coffee"
 routes = require "./server/routes.coffee"
-security = require "./server/security.coffee"
 
 # Init security, api and manager after database has been validated.
-database.onConnectionValidated = -> security.init -> api.init -> manager.init()
+database.onConnectionValidated = -> api.init -> manager.init()
 
 # Init Expresser and routes.
 expresser.init()

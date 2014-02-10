@@ -1,8 +1,8 @@
 # ELECTRIC IMP API
 # -----------------------------------------------------------------------------
-# Module for Electric Imp devices (http://electricimp.com).
-# Compatible with the Hannah Dev Board running the agent and device code
-# located under the /imp folder.
+# Module for Electric Imp devices. Compatible with the Hannah Dev Board
+# running the agent and device code located under the /imp folder.
+# More info at www.electricimp.com.
 class ElectricImp extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
@@ -43,7 +43,7 @@ class ElectricImp extends (require "./baseApi.coffee")
         deviceIds = [deviceIds] if not lodash.isArray deviceIds
 
         # For each device make a request and save resulting data.
-        for id in ids
+        for id in deviceIds
             do (id) =>
                 @makeRequest settings.electricImp.agentUrl + id, (err, result) =>
                     if err?
