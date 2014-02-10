@@ -145,8 +145,6 @@ class BaseApi extends (require "../baseModule.coffee")
         return baseUrl  + "/" + urlPath + "?atoken=" + atoken
 
 
-
-
 # Exports API Base Module.
 # -----------------------------------------------------------------------------
 module.exports = exports = BaseApi

@@ -24,7 +24,7 @@ class Fitbit extends (require "./baseApi.coffee")
     # Start the Fitbit module.
     start: =>
         @oauthInit (err, result) =>
-            if not err?
+            if err?
                 @getBody()
                 @getSleep()
 
