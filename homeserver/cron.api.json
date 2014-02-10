@@ -2,8 +2,8 @@
     "camera.coffee": [
         {
             "callback": "jobTakeSnaps",
-            "description": "Save a snap of enabled cameras to the data folder every 10 minutes.",
-            "schedule": 600,
+            "description": "Save a snap of enabled cameras to the data folder every 15 minutes.",
+            "schedule": 900,
             "enabled": true
         },
         {

@@ -34,7 +34,6 @@ class Camera extends (require "./baseApi.coffee")
             else
                 @snapsPath = settings.path.cameraSnaps
 
-            @jobTakeSnaps()
         @baseStart()
 
     # Stop the camera API jobs.

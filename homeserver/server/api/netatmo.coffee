@@ -31,8 +31,8 @@ class Netatmo extends (require "./baseApi.coffee")
     start: =>
         @oauthInit (err, result) =>
             if not err?
-                @getIndoorConditions()
-                @getOutdoorConditions()
+                @getIndoor()
+                @getOutdoor()
 
         @baseStart()
 
@@ -119,12 +119,12 @@ class Netatmo extends (require "./baseApi.coffee")
         return false
 
     # Get outdoor readings from Netatmo. Default is to get only the most current data.
-    getOutdoorConditions: (filter, callback) =>
+    getOutdoor: (filter, callback) =>
         if lodash.isFunction filter
             callback = filter
             filter = null
 
-        # Set outdoor parameters.
+        # Set outdoor parameters. If no module_id is passed, use the one defined on the settings.
         params = getParams filter
         params["module_id"] = settings.netatmo?.outdoorModuleId if not params["module_id"]?
         params["type"] = "Temperature,Humidity"
@@ -132,20 +132,20 @@ class Netatmo extends (require "./baseApi.coffee")
         # Make the request for outdoor readings.
         @makeRequest "getmeasure", params, (err, result) =>
             if err?
-                @logError "Netatmo.getOutdoorConditions", filter, err
+                @logError "Netatmo.getOutdoor", filter, err
             else
                 # Data represents current readings or historical values?
                 if isCurrent params
                     body = getResultBody result, params
                     @setData "outdoor", body[0]
-                    logger.info "Netatmo.getOutdoorConditions", "Current", body[0]
+                    logger.info "Netatmo.getOutdoor", "Current", body[0]
                 else
-                    logger.info "Netatmo.getOutdoorConditions", filter, body
+                    logger.info "Netatmo.getOutdoor", filter, body
 
             callback err, result if callback?
 
     # Get indoor readings from Netatmo. Default is to get only the most current data.
-    getIndoorConditions: (filter, callback) =>
+    getIndoor: (filter, callback) =>
         if lodash.isFunction filter
             callback = filter
             filter = null
@@ -157,39 +157,32 @@ class Netatmo extends (require "./baseApi.coffee")
         # Make the request for indoor readings.
         @makeRequest "getmeasure", params, (err, result) =>
             if err?
-                @logError "Netatmo.getIndoorConditions", filter, err
+                @logError "Netatmo.getIndoor", filter, err
             else
                 # Data represents current readings or historical values?
                 if isCurrent params
                     body = getResultBody result, params
                     @setData "indoor", body[0]
-                    logger.info "Netatmo.getIndoorConditions", "Current", body[0]
+                    logger.info "Netatmo.getIndoor", "Current", body[0]
                 else
-                    logger.info "Netatmo.getIndoorConditions", filter, body
+                    logger.info "Netatmo.getIndoor", filter, body
 
             callback err, result if callback?
-
-    # PAGES
-    # -------------------------------------------------------------------------
-
-    # Get Netatmo dashboard data.
-    getDashboard: (callback) =>
-        getOutdoor = (cb) => @getOutdoorConditions (err, result) -> cb err, {outdoor: result}
-        getIndoor = (cb) => @getIndoorConditions (err, result) -> cb err, {indoor: result}
-
-        async.parallel [getOutdoor, getIndoor], (err, result) =>
-            callback err, result
 
     # JOBS
     # -------------------------------------------------------------------------
 
     # Get current outdoor conditions (weather) every 30 minutes.
     jobGetOutdoor: =>
-        @getOutdoorConditions()
+        logger.info "Netatmo.jobGetOutdoor"
+
+        @getOutdoor()
 
     # Get current indoor conditions every 5 minutes.
     jobGetIndoor: =>
-        @getIndoorConditions()
+        logger.info "Netatmo.jobGetIndoor"
+
+        @getIndoor()
 
 
 # Singleton implementation.

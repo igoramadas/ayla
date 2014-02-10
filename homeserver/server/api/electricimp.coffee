@@ -58,6 +58,8 @@ class ElectricImp extends (require "./baseApi.coffee")
 
     # Refresh Electric Imp data every 2 minutes.
     jobGetDeviceData: =>
+        logger.info "ElectricImp.jobGetDeviceData"
+
         @getDeviceData()
 
 

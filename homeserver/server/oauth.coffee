@@ -33,6 +33,8 @@ class OAuth
     # Get most recent auth tokens from the database and update the `oauth` DB collection.
     # Callback (err, result) is optional.
     loadTokens: (callback) =>
+        @defaultUser = lodash.findKey settings.users, {isDefault: true}
+
         database.get "oauth", {"service": @service, "active": true}, (err, result) =>
             if err?
                 logger.critical "OAuth.loadTokens", err
@@ -74,11 +76,10 @@ class OAuth
         data.userId = params.userid if params.userid?
 
         # Make sure user is associated, or assume default user.
-        if not @data.user? or @data.user is ""
-            @data.user = lodash.findKey settings.users, {isDefault: true}
+        data.user = @defaultUser if not data.user? or data.user is ""
 
         # Set local oauth cache.
-        @data = data
+        @data[data.user] = data
 
         # Update oauth collection and set related tokens `active` to false.
         database.set "oauth", {active: false}, {patch: true, upsert: false, filter: {service: @service}}, (err, result) =>
@@ -125,12 +126,23 @@ class OAuth
                 null,
                 headers)
 
-    # Get an OAuth protected resource.
-    get: (reqUrl, callback) =>
+    # Get an OAuth protected resource. If no `user` is passed it will use the default one.
+    get: (reqUrl, user, callback) =>
+        if not callback? and lodash.isFunction user
+            callback = user
+            user = null
+
+        user = @defaultUser if not user?
+
+        if not @data[user]?
+            callback "No oauth data for #{user}. Please authorize first on #{@service} for that user."
+            return
+
+        # OAuth2 have only an access token, OAuth1 has a token and a secret.
         if settings[@service].api.oauthVersion is "2.0"
-            @client.get reqUrl, @data.accessToken, callback
+            @client.get reqUrl, @data[user].accessToken, callback
         else
-            @client.get reqUrl, @data.token, @data.tokenSecret, callback
+            @client.get reqUrl, @data[user].token, @data[user].tokenSecret, callback
 
     # Try getting OAuth data for a particular request / response.
     process: (options, req, res) =>

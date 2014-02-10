@@ -76,12 +76,11 @@ class BaseApi extends (require "../baseModule.coffee")
 
     # Base helper to make HTTP / HTTPS requests.
     makeRequest: (reqUrl, params, callback) =>
-        logger.debug "#{@moduleName}.makeRequest", reqUrl, params
-
-        # The `params` is optional.
         if not callback? and lodash.isFunction params
             callback = params
             params = null
+
+        logger.debug "#{@moduleName}.makeRequest", reqUrl, params
 
         # Set request URL object.
         reqOptions = {uri: url.parse reqUrl, encoding: settings.general.encoding}

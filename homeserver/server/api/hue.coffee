@@ -15,13 +15,6 @@ class Hue extends (require "./baseApi.coffee")
     networkApi = require "./network.coffee"
     url = require "url"
 
-    # PROPERTIES
-    # -------------------------------------------------------------------------
-
-    # Holds the current URL in use for the API (local and remote).
-    localApiUrl: null
-    remoteApiUrl: null
-
     # INIT
     # -------------------------------------------------------------------------
 
@@ -70,12 +63,12 @@ class Hue extends (require "./baseApi.coffee")
         reqUrl = baseUrl + urlPath
 
         # Make request. The hue API sometimes is not super stable, so try once
-        # again before triggering errors to the callback.
+        # more before triggering errors to the callback.
         @makeRequest reqUrl, params, (err, result) =>
             if not err?
                 callback err, result
             else
-                lodash.delay @makeRequest, 1000, reqUrl, params, callback
+                lodash.delay @makeRequest, 1000, urlPath, params, callback
 
     # GET HUB DATA
     # -------------------------------------------------------------------------
@@ -167,6 +160,8 @@ class Hue extends (require "./baseApi.coffee")
 
     # Scheduled job to refresh the hub data.
     jobRefreshHub: =>
+        logger.info "Hue.jobRefreshHub"
+
         @refreshHub()
 
 

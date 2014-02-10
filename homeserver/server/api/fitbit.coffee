@@ -135,11 +135,15 @@ class Fitbit extends (require "./baseApi.coffee")
 
     # Scheduled job to get general fitness data (activities and body) once a day.
     jobCheckGeneralFitness: =>
+        logger.info "Fitbit.jobCheckGeneralFitness"
+
         @getActivities()
         @getBody()
 
     # Scheduled job to check for missing Fitbit sleep and weight data once a day.
     jobCheckMissingData: =>
+        logger.info "Fitbit.jobCheckMissingData"
+
         if @data.weight?.timestamp < moment().subtract("d", settings.fitbit.missingWeightAfterDays).unix()
             events.emit "fitbit.weight.missing", @data.weight
 
@@ -157,17 +161,6 @@ class Fitbit extends (require "./baseApi.coffee")
                     return if result?.sleep?.length > 0
                     events.emit "fitbit.sleep.missing", result
 
-    # PAGES
-    # -------------------------------------------------------------------------
-
-    # Get the Fitbit dashboard data.
-    getDashboard: (callback) =>
-        yesterday = moment().subtract("d", 1).format settings.fitbit.dateFormat
-        getSleepYesterday = (cb) => @getSleep yesterday, (err, result) -> cb err, {sleepYesterday: result}
-        getActivitiesYesterday = (cb) => @getActivities yesterday, (err, result) -> cb err, {activitiesYesterday: result}
-
-        async.parallel [getSleepYesterday, getActivitiesYesterday], (err, result) =>
-            callback err, result
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------
