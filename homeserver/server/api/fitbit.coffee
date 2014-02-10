@@ -38,7 +38,7 @@ class Fitbit extends (require "./baseApi.coffee")
     # -------------------------------------------------------------------------
 
     # Make a request to the Fitbit API.
-    makeRequest: (path, params, callback) =>
+    apiRequest: (path, params, callback) =>
         if not @oauth.client?
             callback "OAuth client is not ready. Please check Fitbit API settings." if callback?
             return
@@ -51,14 +51,14 @@ class Fitbit extends (require "./baseApi.coffee")
         reqUrl = settings.fitbit.api.url + path
         reqUrl += "?" + params if params?
 
-        logger.debug "Fitbit.makeRequest", reqUrl
+        logger.debug "Fitbit.apiRequest", reqUrl
 
         # Make request using OAuth.
         @oauth.get reqUrl, (err, result) ->
             if err?
-                @logError "Fitbit.makeRequest", path, params, err
+                @logError "Fitbit.apiRequest", path, params, err
             else
-                logger.debug "Fitbit.makeRequest", path, params, result
+                logger.debug "Fitbit.apiRequest", path, params, result
 
             result = JSON.parse result if lodash.isString result
             callback err, result if callback?
@@ -95,7 +95,7 @@ class Fitbit extends (require "./baseApi.coffee")
     getActivities: (date, callback) =>
         date = moment().subtract("d", 1).format settings.fitbit.dateFormat if not date?
 
-        @makeRequest "user/-/activities/date/#{date}.json", (err, result) =>
+        @apiRequest "user/-/activities/date/#{date}.json", (err, result) =>
             if not err?
                 @setCurrentData result
 
@@ -105,7 +105,7 @@ class Fitbit extends (require "./baseApi.coffee")
     getSleep: (date, callback) =>
         date = moment().subtract("d", 1).format settings.fitbit.dateFormat if not date?
 
-        @makeRequest "user/-/sleep/date/#{date}.json", (err, result) =>
+        @apiRequest "user/-/sleep/date/#{date}.json", (err, result) =>
             if not err?
                 @setCurrentData result
 
@@ -119,8 +119,8 @@ class Fitbit extends (require "./baseApi.coffee")
 
         # There are 2 API requests, one for weight and one for fat.
         tasks = []
-        tasks.push (cb) => @makeRequest "user/-/body/log/weight/date/#{startDate}/#{endDate}.json", (err, result) => cb err, result
-        tasks.push (cb) => @makeRequest "user/-/body/log/fat/date/#{startDate}/#{endDate}.json", (err, result) => cb err, result
+        tasks.push (cb) => @apiRequest "user/-/body/log/weight/date/#{startDate}/#{endDate}.json", (err, result) => cb err, result
+        tasks.push (cb) => @apiRequest "user/-/body/log/fat/date/#{startDate}/#{endDate}.json", (err, result) => cb err, result
 
         # Get body weight and fat using async.
         async.parallelLimit tasks, settings.general.parallelTasksLimit, (err, results) =>

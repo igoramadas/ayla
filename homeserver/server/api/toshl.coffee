@@ -31,25 +31,31 @@ class Toshl extends (require "./baseApi.coffee")
     # API BASE METHODS
     # -------------------------------------------------------------------------
 
-    # Authentication helper for Toshl.
-    auth: (req, res) =>
-        security.processAuthToken "toshl", req, res
-
     # Make a request to the Toshl API.
     apiRequest: (path, params, callback) =>
+        if not @oauth.client?
+            callback "OAuth client is not ready. Please check Toshl API settings." if callback?
+            return
+
         if not callback? and lodash.isFunction params
             callback = params
             params = null
 
         # Get data from the security module and set request URL.
-        authCache = security.authCache["toshl"]
         reqUrl = settings.toshl.api.url + path
         reqUrl += "?" + params if params?
 
         logger.debug "Toshl.apiRequest", reqUrl
 
         # Make request using OAuth.
-        authCache.oauth.get reqUrl, authCache.data.token, authCache.data.tokenSecret, callback
+        @oauth.get reqUrl, (err, result) =>
+            if err?
+                @logError "Toshl.apiRequest", path, params, err
+            else
+                logger.debug "Toshl.apiRequest", path, params, result
+
+            result = JSON.parse result if lodash.isString result
+            callback err, result if callback?
 
     # GET DATA
     # -------------------------------------------------------------------------
@@ -58,12 +64,17 @@ class Toshl extends (require "./baseApi.coffee")
     getExpenses: (filter, callback) =>
         logger.debug "Toshl.getExpenses", filter
 
-    # PAGES
+    # JOBS
     # -------------------------------------------------------------------------
 
-    # Get the Toshl dashboard data.
-    getDashboard: (callback) =>
-        @getExpenses()
+    # Get recent expenses from Toshl.
+    getRecentExpenses: =>
+        logger.info "Netatmo.getRecentExpenses"
+
+        from = moment().subtract("d", settings.toshl.recentExpensesDays)
+        to = moment()
+
+        @getExpenses {dateFrom: from, dateTo: to}
 
 
 # Singleton implementation.

@@ -31,10 +31,14 @@ class Api
 
         for f in files
             if f isnt "baseApi.coffee" and f.indexOf(".coffee") > 0
-                module = require "./api/#{f}"
-                if module.disabled
-                    logger.debug "Api.init", f, "Module is disabled. Abort init."
+                disabled = lodash.contains settings.modules.disabled, f.replace(".coffee", "")
+
+                # Only add if not on the disabled modules setting.
+                if disabled
+                    logger.debug "Api.init", f, "Module is disabled and won't be instantiated."
                 else
+                    module = require "./api/#{f}"
+
                     # Create database TTL index and init module.
                     expires = settings.database.dataCacheExpireHours * 3600
                     database.db.collection("data-#{@moduleId}").ensureIndex {"datestamp": 1}, {expireAfterSeconds: expires}

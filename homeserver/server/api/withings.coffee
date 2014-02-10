@@ -13,9 +13,6 @@ class Withings extends (require "./baseApi.coffee")
     lodash = expresser.libs.lodash
     moment = expresser.libs.moment
 
-    # Disable Withings till API gets sorted out.
-    disabled: true
-
     # INIT
     # -------------------------------------------------------------------------
 

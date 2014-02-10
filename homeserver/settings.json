@@ -50,16 +50,7 @@
     "general": {
         "appTitle": "Ayla",
         "debug": false,
-        // The `moduleNotifyExpireMinutes` is used to avoid sending repeated notifications.
-        // By default it won't resend the same notification if last was sent less than 60 minutes ago.
-        "moduleNotifyExpireMinutes": 60,
-        // Modules errors will stay logged on the module itself for up to 48 hours.
-        // Used to check module's health (for example if it's throwing too many errors).
-        "moduleErrorMaxAgeHours": 48,
-        // Call the module's `stop` method automatically if the same error
-        // happens 10 times in less than 48 hours.
-        "moduleStopOnErrorCount": 10,
-        // Maximum module's tasks to execute in parallel.
+        // Maximum tasks to execute in parallel using async.
         "parallelTasksLimit": 4
     },
     // Home settings.
@@ -71,6 +62,18 @@
             "humidity": [25, 35, 60, 75],
             "temperature": [15, 17, 22, 26]
         }
+    },
+    // Modules (API and managers) settings.
+    "modules": {
+        // The `notifyExpireMinutes` is used to avoid sending repeated notifications.
+        // By default it won't resend the same notification if last was sent less than 60 minutes ago.
+        "notifyExpireMinutes": 60,
+        // Modules errors will stay logged on the module itself for up to 48 hours.
+        // Used to check module's health (for example if it's throwing too many errors).
+        "errorMaxAgeHours": 48,
+        // Call the module's `stop` method automatically if the same error
+        // happens 10 times in less than 48 hours.
+        "stopOnErrorCount": 10
     },
     // Path to various settings and data.
     "path": {
@@ -85,6 +88,10 @@
     // But of course only the most recent tokens are used by the system.
     "security": {
         "maxAuthTokenAgeDays": 30
+    },
+    // Toshl settings.
+    "toshl": {
+        "recentExpensesDays": 10
     },
     // Weather Underground settings. By default it will query conditions in Prenzlauer Berg, Berlin.
     "wunderground": {

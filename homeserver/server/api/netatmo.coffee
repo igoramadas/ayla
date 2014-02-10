@@ -44,9 +44,9 @@ class Netatmo extends (require "./baseApi.coffee")
     # -------------------------------------------------------------------------
 
     # Make a request to the Netatmo API.
-    makeRequest: (path, params, callback) =>
+    apiRequest: (path, params, callback) =>
         if not @oauth.client?
-            callback "OAuth client is not ready. Please check Fitbit API settings." if callback?
+            callback "OAuth client is not ready. Please check Netatmo API settings." if callback?
             return
 
         if not callback? and lodash.isFunction params
@@ -61,7 +61,7 @@ class Netatmo extends (require "./baseApi.coffee")
         # Add parameters to request URL.
         reqUrl += querystring.stringify params
 
-        logger.debug "Netatmo.makeRequest", reqUrl
+        logger.debug "Netatmo.apiRequest", reqUrl
 
         # Make request using OAuth. Force parse err and result as JSON.
         @oauth.get reqUrl, (err, result) =>
@@ -116,7 +116,8 @@ class Netatmo extends (require "./baseApi.coffee")
     isCurrent = (params) ->
         if params["date_end"] is "last"
             return true
-        return false
+        else
+            return false
 
     # Get outdoor readings from Netatmo. Default is to get only the most current data.
     getOutdoor: (filter, callback) =>
@@ -130,7 +131,7 @@ class Netatmo extends (require "./baseApi.coffee")
         params["type"] = "Temperature,Humidity"
 
         # Make the request for outdoor readings.
-        @makeRequest "getmeasure", params, (err, result) =>
+        @apiRequest "getmeasure", params, (err, result) =>
             if err?
                 @logError "Netatmo.getOutdoor", filter, err
             else
@@ -155,15 +156,22 @@ class Netatmo extends (require "./baseApi.coffee")
         params["type"] = "Temperature,Humidity,Pressure,CO2,Noise"
 
         # Make the request for indoor readings.
-        @makeRequest "getmeasure", params, (err, result) =>
+        @apiRequest "getmeasure", params, (err, result) =>
             if err?
                 @logError "Netatmo.getIndoor", filter, err
             else
                 # Data represents current readings or historical values?
                 if isCurrent params
                     body = getResultBody result, params
-                    @setData "indoor", body[0]
-                    logger.info "Netatmo.getIndoor", "Current", body[0]
+
+                    # If a specific module ID was passed then use it,
+                    # otherwise save indoor data as "main".
+                    if params["module_id"]?
+                        @setData "indoor_#{params["module_id"]}", body[0]
+                        logger.info "Netatmo.getIndoor", "Current #{params["module_id"]}", body[0]
+                    else
+                        @setData "indoor", body[0]
+                        logger.info "Netatmo.getIndoor", "Current main", body[0]
                 else
                     logger.info "Netatmo.getIndoor", filter, body
 

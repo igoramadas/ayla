@@ -67,7 +67,7 @@ class BaseModule
         count = @errors[id].length
 
         # Too many consecutive errors? Stop the module.
-        if count is settings.general.moduleStopOnErrorCount
+        if count is settings.general.stopOnErrorCount
             logger.critical id, "Too many consecutive errors (#{count}) logged.", "Module will now stop."
             @stop()
 
@@ -75,7 +75,7 @@ class BaseModule
 
     # Helper to clear old errors.
     clearErrors: =>
-        maxAge = moment().subtract("h", settings.general.moduleErrorMaxAgeHours).unix()
+        maxAge = moment().subtract("h", settings.general.errorMaxAgeHours).unix()
 
         # Iterate errors by ID, then internal data, and remove everything which is too old.
         for key, value of @errors
