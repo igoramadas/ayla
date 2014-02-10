@@ -9,6 +9,7 @@ class Manager
     settings = expresser.settings
 
     fs = require "fs"
+    lodash = expresser.libs.lodash
     path = require "path"
 
     # Modules will be populated on init.

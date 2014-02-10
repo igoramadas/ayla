@@ -39,7 +39,6 @@ class Routes
         app.get "/weather", weatherPage
 
         # API related routes.
-        app.get "/api/home", apiHome
         app.get "/api/commander/:cmd", apiCommander
         app.post "/api/commander/:cmd", apiCommander
         app.get "/fitbit", fitbitPage
@@ -94,10 +93,6 @@ class Routes
     # API ROUTES
     # -------------------------------------------------------------------------
 
-    # The home data endpoint.
-    apiHome = (req, res) ->
-        renderData req, res, weatherManager.data
-        
     # The commander processor.
     apiCommander = (req, res) ->
         commander.execute req.params.cmd, req.body, (err, result) ->
@@ -111,7 +106,7 @@ class Routes
 
     # Main Fitbit entrance page.
     fitbitPage = (req, res) ->
-        fitbitApi.getDashboard (err, result) -> renderPage req, res, "fitbit", {err: err, result: result}
+        renderApiPage req, res, fitbitApi
 
     # Get Fitbit OAuth tokens.
     fitbitAuth = (req, res) ->
@@ -126,7 +121,7 @@ class Routes
 
     # Main Netatmo entrance page.
     netatmoPage = (req, res) ->
-        netatmoApi.getDashboard (err, result) -> renderPage req, res, "netatmo", {err: err, result: result}
+        renderApiPage req, res, netatmoApi
 
     # Get Netatmo OAuth tokens.
     netatmoAuth = (req, res) ->
@@ -148,7 +143,7 @@ class Routes
 
     # Main Fitbit entrance page.
     ninjaPage = (req, res) ->
-        ninjaApi.getDashboard (err, result) -> renderPage req, res, "ninja", {err: err, result: result}
+        renderApiPage req, res, ninjaApi
 
     # PHONE CLIENT ROUTES
     # -------------------------------------------------------------------------
@@ -177,7 +172,7 @@ class Routes
 
     # Main Toshl entrance page.
     toshlPage = (req, res) ->
-        toshlApi.getDashboard (err, result) -> renderPage req, res, "toshl", {err: err, result: result}
+        renderApiPage req, res, toshlApi
 
     # Get Toshl OAuth tokens.
     toshlAuth = (req, res) ->
@@ -192,7 +187,7 @@ class Routes
 
     # Main Withings entrance page.
     withingsPage = (req, res) ->
-        withingsApi.getDashboard (err, result) -> renderPage req, res, "withings", {err: err, result: result}
+        renderApiPage req, res, withingsApi
 
     # Get Withings OAuth tokens.
     withingsAuth = (req, res) ->
@@ -207,14 +202,15 @@ class Routes
 
     # Main Weather Underground entrance page.
     wundergroundPage = (req, res) ->
-        renderPage req, res, "wunderground", {err: err, result: result}
+        renderApiPage req, res, wundergroundApi
 
     # HELPER METHODS
     # -------------------------------------------------------------------------
 
-    # Helper to render JSON data (mainly used by the /api/ routes).
-    renderData = (req, res, data) ->
-        res.json data
+    # Helper to show an overview about the specified API module.
+    renderApiPage = (req, res, module) ->
+        options = {title: module.moduleName, data: module.data}
+        renderPage req, res, "api", options
 
     # Helper to render pages.
     renderPage = (req, res, filename, options) ->

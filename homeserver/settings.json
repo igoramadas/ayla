@@ -91,7 +91,8 @@
     },
     // Toshl settings.
     "toshl": {
-        "recentExpensesDays": 10
+        "recentExpensesDays": 10,
+        "dateFormat": "YYYY-MM-DD"
     },
     // Weather Underground settings. By default it will query conditions in Prenzlauer Berg, Berlin.
     "wunderground": {

@@ -41,9 +41,15 @@ class OAuth
                 callback err, false if callback?
             else
                 logger.debug "OAuth.loadTokens", result
+
+                # Iterate results to create OAuth clients for all users.
                 for t in result
                     @client = getClient @service
                     @data[t.user] = t
+
+                    # Needs refresh?
+                    @refresh t.user if t.expires? and moment() > moment(t.expires)
+
                 if callback?
                     callback null, true
 
@@ -103,7 +109,7 @@ class OAuth
     # Helper to the an OAuth client for a particular service.
     getClient = (service) ->
         callbackUrl = settings.general.appUrl + service + "/auth/callback"
-        headers = {"Accept": "*/*", "Connection": "close", "User-Agent": "Ayla #{packageJson.version}"}
+        headers = {"Accept": "*/*", "Connection": "close", "User-Agent": "Ayla OAuth Client"}
         version = settings[service].api.oauthVersion
 
         if version is "2.0"
@@ -145,16 +151,13 @@ class OAuth
             @client.get reqUrl, @data[user].token, @data[user].tokenSecret, callback
 
     # Try getting OAuth data for a particular request / response.
-    process: (options, req, res) =>
-        if not res? and req?
-            res = req
-            req = options
-            options = null
+    process: (req, res) =>
+        user = req.session.user or @defaultUser
 
-        # Check if OAuth client was already created, if not then create one.
+        # Make sure OAuth client is set.
         if not @client?
             @client = getClient @service
-            @data = {}
+            @data[user] = {}
 
         # Check if request has token on querystring.
         qs = url.parse(req.url, true).query if req?
@@ -168,7 +171,7 @@ class OAuth
             logger.info "OAuth.process", "getRequestToken1", @service, oauth_token
 
             # Set token secret cache and redirect to authorization URL.
-            @data.tokenSecret = oauth_token_secret
+            @data[user].tokenSecret = oauth_token_secret
             res?.redirect "#{settings[@service].api.oauthUrl}authorize?oauth_token=#{oauth_token}"
 
         # Helper function to get the access token using OAUth 1.x.
@@ -180,7 +183,7 @@ class OAuth
             logger.info "OAuth.process", "getAccessToken1", @service, oauth_token
 
             # Save oauth details to DB and redirect user to service page.
-            oauthData = lodash.defaults {token: oauth_token, tokenSecret: oauth_token_secret}, additionalParameters
+            oauthData = lodash.defaults {user: user, token: oauth_token, tokenSecret: oauth_token_secret}, additionalParameters
             @saveToken oauthData
             res?.redirect "/#{@service}"
 
@@ -194,10 +197,10 @@ class OAuth
 
             # Schedule token to be refreshed automatically with 10% of the expiry time left.
             expires = results?.expires_in or results?.expires or 43200
-            lodash.delay @refresh, expires * 900, @service
+            lodash.delay @refresh, expires * 900, user
 
             # Save oauth details to DB and redirect user to service page.
-            oauthData = {accessToken: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add("s", expires)}
+            oauthData = {user: user, accessToken: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add("s", expires).unix()}
             @saveToken oauthData
             res?.redirect "/#{@service}"
 
@@ -210,20 +213,28 @@ class OAuth
             else
                 opts = {"grant_type": "authorization_code"}
 
-            if settings[service].api.oauthResponseType?
+            if settings[@service].api.oauthResponseType?
                 opts["response_type"] = settings[@service].api.oauthResponseType
 
-            qCode = qs?.code
-            @client.getOAuthAccessToken qCode, opts, getAccessToken2
+            if settings[@service].api.oauthState?
+                opts["state"] = settings[@service].api.oauthState
 
-            # Getting an OAuth1 access token?
+            # Get authorization code from querystring.
+            qCode = qs?.code
+
+            if qCode?
+                @client.getOAuthAccessToken qCode, opts, getAccessToken2
+            else
+                res.redirect @client.getAuthorizeUrl opts
+
+        # Getting an OAuth1 access token?
         else if qs?.oauth_token?
-            @client.getOAuthAccessToken qs.oauth_token, @data.tokenSecret, qs.oauth_verifier, getAccessToken1
+            @client.getOAuthAccessToken qs.oauth_token, @data[user].tokenSecret, qs.oauth_verifier, getAccessToken1
         else
             @client.getOAuthRequestToken {}, getRequestToken1
 
     # Helper to refresh an OAuth2 token.
-    refresh: =>
+    refresh: (user) =>
         if not @client?
             logger.warn "OAuth.refresh", @service, "OAuth client not ready. Abort refresh!"
             return
@@ -233,11 +244,8 @@ class OAuth
 
         # Get oauth object and refresh token and set grant type to refresh_token.
         @refreshing = true
-        refreshToken = @data.refreshToken
+        refreshToken = @data[user].refreshToken
         opts = {"grant_type": "refresh_token"}
-
-        if settings[@service].api.oauthResponseType?
-            opts["response_type"] = settings[@service].api.oauthResponseType
 
         # Proceed and get OAuth2 tokens.
         @client.getOAuthAccessToken refreshToken, opts, (err, oauth_access_token, oauth_refresh_token, results) =>
@@ -251,10 +259,10 @@ class OAuth
 
             # Schedule token to be refreshed with 10% of time left.
             expires = results?.expires_in or results?.expires or 43200
-            lodash.delay @refresh, expires * 900, @service
+            lodash.delay @refresh, expires * 900, user
 
             # Save oauth details to DB and redirect user to service page.
-            oauthData = {accessToken: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add("s", expires)}
+            oauthData = {user: user, accessToken: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add("s", expires).unix()}
             @saveToken oauthData
 
 

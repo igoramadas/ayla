@@ -8,7 +8,6 @@ class Toshl extends (require "./baseApi.coffee")
     logger = expresser.logger
     settings = expresser.settings
 
-    async = expresser.libs.async
     lodash = expresser.libs.lodash
     moment = expresser.libs.moment
     querystring = require "querystring"
@@ -22,6 +21,10 @@ class Toshl extends (require "./baseApi.coffee")
 
     # Start the Toshl module.
     start: =>
+        @oauthInit (err, result) =>
+            if not err?
+                @jobGetRecentExpenses()
+
         @baseStart()
 
     # Stop the Toshl module.
@@ -43,7 +46,7 @@ class Toshl extends (require "./baseApi.coffee")
 
         # Get data from the security module and set request URL.
         reqUrl = settings.toshl.api.url + path
-        reqUrl += "?" + params if params?
+        reqUrl += "?" + querystring.stringify params if params?
 
         logger.debug "Toshl.apiRequest", reqUrl
 
@@ -60,21 +63,25 @@ class Toshl extends (require "./baseApi.coffee")
     # GET DATA
     # -------------------------------------------------------------------------
 
-    # Get expenses with the specified filters.
+    # Get expenses with the specified filter. Filter can have the following
+    # properties: from, to, tags, per_page, page.
     getExpenses: (filter, callback) =>
-        logger.debug "Toshl.getExpenses", filter
+        params = filter or {}
+
+        @apiRequest "expenses", params, (err, result) =>
+            console.warn err, result
 
     # JOBS
     # -------------------------------------------------------------------------
 
     # Get recent expenses from Toshl.
-    getRecentExpenses: =>
+    jobGetRecentExpenses: =>
         logger.info "Netatmo.getRecentExpenses"
 
-        from = moment().subtract("d", settings.toshl.recentExpensesDays)
-        to = moment()
+        from = moment().subtract("d", settings.toshl.recentExpensesDays).format settings.toshl.dateFormat
+        to = moment().format settings.toshl.dateFormat
 
-        @getExpenses {dateFrom: from, dateTo: to}
+        @getExpenses {from: from, to: to}
 
 
 # Singleton implementation.

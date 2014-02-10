@@ -56,9 +56,9 @@ class Hue extends (require "./baseApi.coffee")
 
         # Get correct URL depending on home or remote location.
         if networkApi.isHome
-            baseUrl = "http://#{device.ip}:#{device.localPort}/api/#{settings.hue.api.user}"
+            baseUrl = "http://#{device.ip}:#{device.localPort}/api/#{settings.hue.api.user}/"
         else
-            baseUrl = "http://#{settings.network.router.remoteHost}:#{device.remotePort}/api/#{settings.hue.api.user}"
+            baseUrl = "http://#{settings.network.router.remoteHost}:#{device.remotePort}/api/#{settings.hue.api.user}/"
 
         reqUrl = baseUrl + urlPath
 
@@ -68,7 +68,7 @@ class Hue extends (require "./baseApi.coffee")
             if not err?
                 callback err, result
             else
-                lodash.delay @makeRequest, 1000, urlPath, params, callback
+                lodash.delay @makeRequest, 1000, reqUrl, params, callback
 
     # GET HUB DATA
     # -------------------------------------------------------------------------

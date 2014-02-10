@@ -1,18 +1,18 @@
-# NETWORK VIEW
+# API VIEW
 # --------------------------------------------------------------------------
-class NetworkView extends ayla.BaseView
+class ApiView extends ayla.BaseView
 
-    wrapperId: "network"
-    elements: ["table"]
+    wrapperId: "api"
+    elements: [".apidata"]
 
     # MAIN METHODS
     # ----------------------------------------------------------------------
 
-    # Init the Network view.
+    # Init the API data table.
     onReady: =>
-        @dom.table.dataTable ayla.optsDataDTables
+        @dom.apidata.JSONView ayla.serverData
 
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.currentView = new NetworkView()
+window.ayla.currentView = new ApiView()

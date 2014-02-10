@@ -1,4 +1,4 @@
-# HOME VIEW
+# FITNESS VIEW
 # --------------------------------------------------------------------------
 class FitnessView extends ayla.BaseView
 
