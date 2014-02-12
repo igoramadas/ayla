@@ -10,59 +10,144 @@
     <link href="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.1.1/css/foundation.min.css" type="text/css" />
     <style type="text/css">
         body {
+            background: rgb(200, 200, 200);
             font-family: 'Myriad Pro', Calibri, Helvetica, Arial, sans-serif;
+            font-size: 1.6em;
             text-align: center;
         }
         h1 {
-            font-size: 10em;
+            font-size: 8em;
+            margin: 0;
+            margin-left: 148px;
             text-align: center;
         }
+        h3 {
+            border-right: 5px solid rgb(150, 150, 150);
+            font-size: 2.6em;
+            margin: 0;
+            padding-left: 20px;
+            padding-right: 15px;
+        }
+        p {
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+        a {
+            color: rgb(80, 120, 180);
+            text-decoration: none;
+        }
+        a:hover, a:active {
+            color: rgb(120, 160, 240);
+            text-decoration: underline;
+        }
         #wrapper {
+            background: rgb(255, 255, 255);
+            border: 1px solid rgb(150, 150, 150);
             margin: auto;
-            max-width: 900px;
+            max-width: 1000px;
             text-align: left;
         }
-        .panel h3 {
-
+        #fork {
+            background: url(http://s27.postimg.org/ge4nrg4pr/codeplex.png) no-repeat right;
+            cursor: pointer;
+            height: 149px;
+            margin: auto;
+            width: 149px;
+            float: right;
+            right: 0;
+            top: 0;
         }
     </style>
 </head>
 <body>
     <div id="wrapper">
+        <div id="fork" onclick="document.location.href='http://ayla.codeplex.com'"></div>
         <h1>Ayla</h1>
         <div class="panel">
-            <h3>What</h3>
+            <h3>What?</h3>
             <p>
-                An open-source personal assistant and home automation software
-                created by Igor Ramadas.
+                A personal assistant and home automation software
+                created by Igor Ramadas. Do you know Iron Man (the movie / comics)?
+                His always-on assistant, Jarvis? That's the idea.
+            </p>
+            <p>
+                Too warm inside the house? Turn on the fan. Too cold? Turn on the heating.
+                Will it rain overnight? Alert me before so I can leave the bikes inside.
+                House door opened when no one was supposed to be home? Take a picture with
+                the outside camera and send it to my mobile. Forgot to log sleep using
+                <a href="http://fitbit.com">Fitbit</a>? Remember me to manually log it next day.
+                Received email from Amazon with order confirmation? Automatically forward the
+                invoice to <a href="http://shoeboxed.com">Shoeboxed</a> and
+                add expenses to <a href="http://toshl.com">Toshl</a>. Started snowing?
+                Change indoor mood lights to warm orange. Sunshine and sweaty hot? Light
+                colour gets blueish. Detected via mobile that I stopped at a train station?
+                Push notification asking if it should create a metro ticket
+                expense. Detected that there's no one home? Automatically switch all
+                lights off. Etc, etc, etc...
             </p>
         </div>
         <div class="panel">
-            <h3>Why</h3>
+            <h3>Why?</h3>
             <p>
                 Because I couldn't find any reasonable solution out there. There are a few
-                personal assistants for iOS and Android. A few home automation softwares
+                personal assistants for iOS and Android. A few home automation systems
                 and platforms like X10, Insteon and ZigBee. A few fitness trackers and
-                services. A few... too many of everything.
+                services. A few expenses managers. Dozen cloud services with different
+                purposes. A few... too many of everything.
+                They all do their very specific job very well but can't communicate
+                with each other. So Ayla steps in to coordinate them.
             </p>
             <p>
-                Ayla won't replace any of the above but instead it integrates with them.
+                Why not just using <a href="http://ifttt.com">IFTTT</a>?
+                First because it doesn't support some of the services I use,
+                and second because it's not flexible enough for complex operations.
+            </p>
+            <p>
+                Any other alternatives?
+                Yes, there's this
+                <a href="https://github.com/TheThingSystem/steward">The Thing System</a>a>
+                which seems quite nice but still not exactly what I wanted.
+                There's also
+                <a href="http://ni-c.github.io/heimcontrol.js/">heimcontrol.js</a>,
+                <a href="https://github.com/denschu/home.pi">home.pi</a>,
+                <a href="https://github.com/jupe/home.js">home.js</a>, and
+                <a href="https://github.com/skerit/elric">Elric</a>.
+                On the personal assistant side there's Siri and Google Now, but I use
+                a Windows Phone. So I'm coding my own, which will tap on Microsoft's
+                built-in speech recognition and Wolfram Alpha to understand what
+                the user wants.
             </p>
         </div>
         <div class="panel">
-            <h3>How</h3>
+            <h3>How?</h3>
             <p>
-                The "brain" is a Node.js home server, coded mainly using CoffeeScript.
+                The "brain" is the Home Server, a Node.js app using CoffeeScript, Javascript, Jade,
+                Stylus, Socket.IO and some other nifty libraries.
+                It has a bunch of <strong>API modules</strong> responsible for connecting to other services
+                and devices, and a set of specialized <strong>managers</strong> to process and trigger actions
+                based on the data collected by the API modules.
             </p>
             <p>
-                Then there's the client, a Windows Phone 8 app. Yes, Windows Phone!
-                I don't like Android too much, and iOS even less.
+                Then there's the main client, a Windows Phone 8 app. Yes, Windows Phone!
+                I don't like Android too much, and iOS even less. It's written in C#
+                and connects to the home server to push and pull data depending on
+                the GPS coordinates,date, time, etc.
+                The app also makes heavy usage of speech recognition to receive
+                and give voice commands.
             </p>
         </div>
         <div class="panel">
-            <h3>Who</h3>
+            <h3>Who?</h3>
             <p>
-                Who made it? Again, Igor Ramadas. Who can use it? Anyone, including you.
+                Who made it? <a href="http://aboutigor.com">Igor Ramadas</a>.
+                Who can use it? Anyone, including you.
+            </p>
+        </div>
+        <div class="panel">
+            <h3>Where?</h3>
+            <p>
+                More info at the project page on CodePlex:
+                <a href="http://ayla.codeplex.com">ayla.codeplex.com/a>
             </p>
         </div>
     </div>
