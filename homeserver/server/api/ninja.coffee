@@ -1,7 +1,7 @@
 # NINJA BLOCKS API
 # -----------------------------------------------------------------------------
 # Module for Ninja Blocks and its connected devices.
-# More info at http://ninjablocks.com
+# More info at http://docs.ninja.is
 class Ninja extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
@@ -31,7 +31,7 @@ class Ninja extends (require "./baseApi.coffee")
             @ninjaApi = ninjablocks.app {user_access_token: settings.ninja.api.userToken}
             @getDeviceList()
         else
-            logger.warn "Ninja.start", "Ninja API user token ie not set. Module won't work."
+            @logError "Ninja.start", "Ninja API user token ie not set. Module won't work."
 
         @baseStart()
 
@@ -45,7 +45,7 @@ class Ninja extends (require "./baseApi.coffee")
     # Gets the list of registered devices with Ninja Blocks.
     getDeviceList: (callback) =>
         if not @ninjaApi?
-            logger.warn "Ninja.getDeviceList", "Ninja API not started (probably missing settings). Abort!"
+            logger.warn "Ninja.getDeviceList", "Ninja API client not started (probably missing settings). Abort!"
             return
 
         # Get all devices from Ninja Blocks.
@@ -56,10 +56,10 @@ class Ninja extends (require "./baseApi.coffee")
                 @setData "devices", result
 
                 # Set current weather and RF 433 device status.
-                @setCurrentWeather()
-                @setRf433()
+                @setCurrentWeather result
+                @setRf433 result
 
-                logger.info "Ninja.getDeviceList", "Updated, #{lodash.size result} devices."
+                logger.info "Ninja.getDeviceList", "Got #{lodash.size result} devices."
 
             # Callback set?
             callback err, result if callback?
@@ -70,8 +70,7 @@ class Ninja extends (require "./baseApi.coffee")
     # This should be called whenever new weather related data is downloaded
     # from the Ninja block. If no `devices` are passed, use the default from data.
     # Consider the data as "current" if it was taken less than 2 hours ago.
-    setCurrentWeather: =>
-        devices = @data.devices
+    setCurrentWeather: (devices) =>
         maxAge = moment().subtract("h", 2).unix()
 
         # Filter temperature and humidity devices.
@@ -92,14 +91,11 @@ class Ninja extends (require "./baseApi.coffee")
         @setData "weather", weather
 
     # Helper to set the main RF 433 device.
-    setRf433: (force) =>
-        devices = @data.devices
-
-        if not @data.rf433 or force
-            guid = lodash.findKey devices, {device_type: "rf433"}
-            if guid?
-                @data.rf433 = {guid: guid, device: devices[guid]}
-                logger.info "Ninja.setRf433", "Detected #{lodash.size devices[guid].subDevices} subdevices"
+    setRf433: (devices) =>
+        guid = lodash.findKey devices, {device_type: "rf433"}
+        if guid?
+            @rf433 = {guid: guid, device: devices[guid]}
+            logger.debug "Ninja.setRf433", "Detected #{lodash.size devices[guid].subDevices} subdevices."
 
     # RF 433 SOCKETS
     # -------------------------------------------------------------------------
@@ -108,15 +104,15 @@ class Ninja extends (require "./baseApi.coffee")
     # short name defined or explicit filter.
     actuate433: (filter) =>
         if not @ninjaApi?
-            logger.warn "Ninja.actuate433", "Ninja API not set (probably missing settings). Abort!"
+            logger.warn "Ninja.actuate433", "Ninja API client not started (probably missing settings). Abort!"
             return
 
         # Make sure RF 433 is set and working.
-        if not @data.rf433?
+        if not @rf433?
             logger.warn "Ninja.actuate433", "RF 433 device is not set. Abort!"
             return
 
-        actuators = @data.rf433.device.subDevices
+        actuators = @rf433.device.subDevices
 
         # Get correct list of subdevices based on the provided filter.
         if lodash.isString filter or lodash.isNumber filter
@@ -132,7 +128,7 @@ class Ninja extends (require "./baseApi.coffee")
 
         # Iterate and send command to subdevices.
         for s in sockets
-            @ninjaApi.device(@data.rf433.device.guid).actuate s.data
+            @ninjaApi.device(@rf433.device.guid).actuate s.data
 
     # JOBS
     # -------------------------------------------------------------------------

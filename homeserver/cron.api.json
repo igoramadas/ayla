@@ -95,16 +95,22 @@
     ],
     "wunderground.coffee": [
         {
-            "callback": "jobGetWeather",
+            "callback": "jobGetConditions",
             "description": "Get updated weather information every 10 minutes.",
             "schedule": 600,
-            "enabled": false
+            "enabled": true
+        },
+        {
+            "callback": "jobGetForecast",
+            "description": "Get updated weather forecast twice a day.",
+            "schedule": ["10:00:00", "20:00:00"],
+            "enabled": true
         },
         {
             "callback": "jobGetAstronomy",
             "description": "Get updated astronomy (sunrise, sunset, moon) every day.",
-            "schedule": ["01:00:00"],
-            "enabled": false
+            "schedule": ["02:00:00"],
+            "enabled": true
         }
     ]
 }

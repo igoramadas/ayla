@@ -137,16 +137,13 @@
             "oauthVersion": "1.0"
         }
     },
-    // Weather Underground settings. By default it will query conditions in Prenzlauer Berg, Berlin.
-    // The API clientId must be set on the private settings file.
+    // Weather Underground settings. You must set the API clientId and also defaultQuery and
+    // the stationIds array on the private settings file.
     "wunderground": {
         "api": {
             "url": "http://api.wunderground.com/api/"
         },
         "resultFields": ["weather", "temp_c", "relative_humidity", "wind_degrees", "wind_kph", "pressure_mb",
-                         "dewpoint_c", "feelslike_c", "visibility_km", "precip_1hr_metric", "icon"],
-        // Change settings below to set your desired location.
-        "defaultQuery": "Germany/Berlin",
-        "stationIds": ["IBERLIN15", "IBERLINB41"]
+                         "dewpoint_c", "feelslike_c", "visibility_km", "precip_1hr_metric", "icon"]
     }
 }

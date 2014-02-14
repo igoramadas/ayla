@@ -24,11 +24,10 @@ class Netatmo extends (require "./baseApi.coffee")
     start: =>
         @oauthInit (err, result) =>
             if err?
-                @getDevices()
+                @logError "Netatmo.start", err
             else
-                logger.warn "Netatmo.start", err
-
-        @baseStart()
+                @baseStart()
+                @getDevices()
 
     # Stop collecting weather data.
     stop: =>
@@ -36,14 +35,6 @@ class Netatmo extends (require "./baseApi.coffee")
 
     # API BASE METHODS
     # -------------------------------------------------------------------------
-
-    # Check if the returned results or parameters represent current readings,
-    # which can be "last" or any data taken  no more than 2 minutes ago.
-    isCurrent = (params) ->
-        if params["date_end"] is "last" or params["date_end"] > moment().subtract("m", 2).unix()
-            return true
-        else
-            return false
 
     # Helper to get a formatted result.
     getResultBody = (result, params) ->
@@ -72,8 +63,8 @@ class Netatmo extends (require "./baseApi.coffee")
             callback = params
             params = null
 
-        if not @oauth.client?
-            callback "OAuth client is not ready. Please check Netatmo API settings." if callback?
+        if not @isRunning [@oauth.client]
+            callback "Module not running or OAuth client not ready. Please check Netatmo API settings." if callback?
             return
 
         # Set default parameters and request URL.
@@ -90,14 +81,7 @@ class Netatmo extends (require "./baseApi.coffee")
         @oauth.get reqUrl, (err, result) =>
             result = JSON.parse result if result? and lodash.isString result
             err = JSON.parse err if err? and lodash.isString err
-
-            # Token might need to be refreshed.
-            if err?
-                msg = err.data?.error?.message or err.error?.message or err.data
-                if msg?.toString().indexOf("expired") > 0
-                    security.refreshAuthToken "netatmo"
-
-            callback err, result
+            callback err, result if callback?
 
     # Helper to get API request parameters based on the passed filter.
     # Sets default end date to now and scale to 30 minutes.
@@ -113,7 +97,7 @@ class Netatmo extends (require "./baseApi.coffee")
         if filter.deviceId?
             params["device_id"] = filter.deviceId
         else
-            params["device_id"] = @data.devices.value[0]
+            params["device_id"] = @data.devices[0].value[0]["_id"]
 
         return params
 
@@ -126,7 +110,7 @@ class Netatmo extends (require "./baseApi.coffee")
 
         @apiRequest "devicelist", params, (err, result) =>
             if err?
-                @logError "Netatmo.getDevices", filter, err
+                @logError "Netatmo.getDevices", err
             else
                 deviceData = result.body.devices
 
@@ -197,8 +181,9 @@ class Netatmo extends (require "./baseApi.coffee")
         else
             logger.info "Netatmo.jobGetAllOutdoor"
 
-        modules = lodash.filter @data.devices[0].modules, {type: "NAModule1"}
-        @getOutdoor {module_id: m["_id"]} for m in modules
+        for d in @data.devices[0].value
+            modules = lodash.filter d.modules, {type: "NAModule1"}
+            @getOutdoor {device_id: d["_id"], module_id: m["_id"]} for m in modules
 
     # Get current indoor conditions for all indoor modules.
     jobGetAllIndoor: (job) =>
@@ -207,10 +192,10 @@ class Netatmo extends (require "./baseApi.coffee")
         else
             logger.info "Netatmo.jobGetAllIndoor"
 
-        @getIndoor()
-
-        modules = lodash.filter @data.devices[0].modules, {type: "NAModule4"}
-        @getIndoor {module_id: m["_id"]} for m in modules
+        for d in @data.devices[0].value
+            @getIndoor {device_id: d["_id"]}
+            modules = lodash.filter d.modules, {type: "NAModule4"}
+            @getIndoor {device_id: d["_id"], module_id: m["_id"]} for m in modules
 
 
 # Singleton implementation.

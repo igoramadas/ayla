@@ -30,6 +30,17 @@ class BaseApi extends (require "../baseModule.coffee")
     # GENERAL METHODS
     # -------------------------------------------------------------------------
 
+    # Helper to check if module is running and with necessary settings defined.
+    isRunning: (requiredObjects) =>
+        return false if not @running
+
+        if lodash.isArray requiredObjects
+            for i in requiredObjects
+                return false if not i?
+
+        return true
+
+
     # Base helper to make HTTP / HTTPS requests.
     makeRequest: (reqUrl, params, callback) =>
         if not callback? and lodash.isFunction params

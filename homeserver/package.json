@@ -1,6 +1,6 @@
 {
     "name": "ayla",
-    "version": "0.1.7",
+    "version": "0.1.8",
     "description": "Ayla at your service.",
     "homepage": "http://ayla.codeplex.com",
     "author": "Igor Ramadas <igor@devv.com>",
@@ -21,8 +21,8 @@
         "node": "*"
     },
     "dependencies": {
-        "coffee-script": ">= 1.6.2",
-        "expresser": ">= 0.9.4",
+        "coffee-script": ">= 1.7.1",
+        "expresser": ">= 0.9.8",
         "imap": ">= 0.8.7",
         "mailparser": ">= 0.3.6",
         "mdns2": ">= 2.1.0",

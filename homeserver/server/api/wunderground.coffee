@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # Access to Weather Underground data. You must define the default location and
 # closest station IDs on the settings (recommended 2 or 3 stations).
-# More info at http://www.wunderground.com/weather/api/
+# More info at http://www.wunderground.com/weather/api
 class Wunderground extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
@@ -21,54 +21,58 @@ class Wunderground extends (require "./baseApi.coffee")
     init: =>
         @baseInit()
 
-    # Start collecting weather data.
+    # Start collecting Wunderground data.
     start: =>
-        @baseStart()
+        if not settings.wunderground?.api?.clientId?
+            @logError "Wunderground.start", "API clientId for Wunderground not found."
+        else if not settings.wunderground?.defaultQuery?
+            @logError "Wunderground.start", "The defaultQuery setting for Wunderground was not set."
+        else
+            @baseStart()
+            @getConditions()
+            @getForecast()
+            @getAstronomy()
 
-    # Stop collecting weather data.
+    # Stop collecting Wunderground data.
     stop: =>
         @baseStop()
 
     # API BASE METHODS
     # -------------------------------------------------------------------------
 
-    # Helper to make requests to Weather Underground for stations defined on the settings.
-    # The callback result will be the average of station data.
-    apiRequest: (path, options, callback) =>
-        if not settings.wunderground.api?
-            logger.warn "Wunderground.apiRequest", "Wundeground API settings are not defined. Abort!"
-            return
+    # Helper to make requests to Weather Underground. Accepts a query
+    # or an stationIds as parameter / options. The callback result will
+    # be the average of station data (if multiple station IDs).
+    apiRequest: (path, params, callback) =>
+        if lodash.isFunction params
+            callback = params
+            params = {}
 
-        if not callback? and lodash.isFunction options
-            callback = options
-            options = {}
+        if not @isRunning [settings.wunderground.api]
+            callback "Wunderground API is not set, please check the settings." if callback?
+            return
 
         tasks = []
         reqUrl = "#{settings.wunderground.api.url}#{settings.wunderground.api.clientId}/#{path}/q/"
 
-        # Set queries based on options (default or stationIds).
+        # Set queries based on params (default or stationIds).
         # If `stationIds` is set, add pws: to the URL.
-        if options.stationIds?
+        if params?.stationIds?
             reqUrl += "pws:"
-            queries = options.stationIds
+            queries = params.stationIds
+        else if params?.query?
+            queries = [params.query]
         else
             queries = [settings.wunderground.defaultQuery]
 
-        # Iterate stations and create a HTTP request for each station.
+        # Iterate queries and create a HTTP request for each.
         for q in queries
             do (q) =>
                 task = (cb) => @makeRequest reqUrl + "#{q}.json", cb
-
-                # Add task and debug log.
                 tasks.push task
 
         # Run tasks in parallel.
         async.parallelLimit tasks, settings.general.parallelTasksLimit, (err, results) =>
-            if err?
-                @logError "Wunderground.apiRequest", path, err
-            else
-                logger.debug "Wunderground.apiRequest", path, results
-
             callback err, results if callback?
 
     # Helper to get average data from different stations.
@@ -106,23 +110,49 @@ class Wunderground extends (require "./baseApi.coffee")
     # GET WEATHER DATA
     # -------------------------------------------------------------------------
 
-    # Get the current weather conditions.
-    getCurrentWeather: (callback) =>
-        logger.debug "Wunderground.getCurrentWeather"
+    # Get the current weather conditions. If not filter is specified,
+    # use default stations from settings.netatmo.stationIds.
+    getConditions: (filter, callback) =>
+        if lodash.isFunction filter
+            callback = filter
+            filter = {stationIds: settings.wunderground.stationIds}
 
-        @apiRequest "conditions", {stationIds: settings.wunderground.stationIds}, (err, results) =>
-            if not err?
+        @apiRequest "conditions", filter, (err, results) =>
+            if err?
+                @logError "Wunderground.getConditions", err
+            else
                 currentConditions = @getAverageResult results, "current_observation"
                 @setData "current", currentConditions
 
             callback err, currentConditions if callback?
 
-    # Get sunrise and sunset hours and other astronomy details for today.
-    getAstronomy: (callback) =>
-        logger.debug "Wunderground.getAstronomy"
+    # Get the weather forecast for the next 3 days. If not filter is specified,
+    # use default location from settings.netatmo.defaultQuery.
+    getForecast: (filter, callback) =>
+        if lodash.isFunction filter
+            callback = filter
+            filter = null
 
-        @apiRequest "astronomy", (err, result) =>
-            if not err?
+        @apiRequest "forecast", filter, (err, results) =>
+            if err?
+                @logError "Wunderground.getForecast", err
+            else
+                currentConditions = @getAverageResult results, "forecast"
+                @setData "current", currentConditions
+
+            callback err, currentConditions if callback?
+
+    # Get sunrise and sunset hours and other astronomy details for today. If not filter
+    # is specified, use default location from settings.netatmo.defaultQuery.
+    getAstronomy: (filter, callback) =>
+        if lodash.isFunction filter
+            callback = filter
+            filter = null
+
+        @apiRequest "astronomy", filter, (err, result) =>
+            if err?
+                @logError "Wunderground.getAstronomy", err
+            else
                 astronomy = result[0].moon_phase
                 @setData "astronomy", astronomy
 
@@ -131,12 +161,22 @@ class Wunderground extends (require "./baseApi.coffee")
     # JOBS
     # -------------------------------------------------------------------------
 
-    # Refresh weather data every few minutes.
-    jobGetWeather: =>
-        @getCurrentWeather()
+    # Refresh current weather conditions.
+    jobGetConditions: =>
+        logger.info "Netatmo.jobGetConditions"
 
-    # Refresh astronomy data once a day.
+        @getConditions()
+
+    # Refresh weather forecast.
+    jobGetForecast: =>
+        logger.info "Netatmo.jobGetWeather"
+
+        @getForecast()
+
+    # Refresh astronomy related data.
     jobGetAstronomy: =>
+        logger.info "Netatmo.jobGetAstronomy"
+
         @getAstronomy()
 
 
