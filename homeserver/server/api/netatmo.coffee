@@ -27,7 +27,6 @@ class Netatmo extends (require "./baseApi.coffee")
                 @logError "Netatmo.start", err
             else
                 @baseStart()
-                @getDevices()
 
     # Stop collecting weather data.
     stop: =>

@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # Module for Electric Imp devices. Compatible with the Hannah Dev Board
 # running the agent and device code located under the /imp folder.
-# More info at www.electricimp.com.
+# More info at http://electricimp.com
 class ElectricImp extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
@@ -10,7 +10,6 @@ class ElectricImp extends (require "./baseApi.coffee")
     logger = expresser.logger
     settings = expresser.settings
 
-    async = expresser.libs.async
     lodash = expresser.libs.lodash
     moment = expresser.libs.moment
 
@@ -23,8 +22,10 @@ class ElectricImp extends (require "./baseApi.coffee")
 
     # Start collecting Electric Imp data.
     start: =>
-        @getDeviceData()
-        @baseStart()
+        if not settings.electricimp?.devices?
+            @logError "ElectricImp.start", "No Electric Imp devices defined. Please check the settings."
+        else
+            @baseStart()
 
     # Stop collecting Electric Imp data.
     stop: =>
@@ -36,16 +37,18 @@ class ElectricImp extends (require "./baseApi.coffee")
     # Get sensors data from the specified Electric Imp device. If no `deviceIds` is set
     # then get data for all registered devices.
     getDeviceData: (deviceIds) =>
-        return @notRunning "getDeviceData" if not @running?
+        if not @isRunning [settings.electricimp.devices]
+            callback "Module not running or devices not set. Please check the Electric Imp settings." if callback?
+            return
 
         # Properly parse device ids (all devices, multiple devices if array, single device if string).
-        deviceIds = settings.electricImp.devices if not deviceIds?
+        deviceIds = settings.electricimp.devices if not deviceIds?
         deviceIds = [deviceIds] if not lodash.isArray deviceIds
 
         # For each device make a request and save resulting data.
         for id in deviceIds
             do (id) =>
-                @makeRequest settings.electricImp.agentUrl + id, (err, result) =>
+                @makeRequest settings.electricimp.agentUrl + id, (err, result) =>
                     if err?
                         @logError "ElectricImp.getDeviceData", id, err
                     else
@@ -56,11 +59,11 @@ class ElectricImp extends (require "./baseApi.coffee")
     # JOBS
     # -------------------------------------------------------------------------
 
-    # Refresh Electric Imp data every 2 minutes.
-    jobGetDeviceData: =>
+    # Refresh Electric Imp data for the specified devices (or all if no args are set).
+    jobGetDeviceData: (job) =>
         logger.info "ElectricImp.jobGetDeviceData"
 
-        @getDeviceData()
+        @getDeviceData job.args
 
 
 # Singleton implementation.

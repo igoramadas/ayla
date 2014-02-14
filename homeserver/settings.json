@@ -33,10 +33,11 @@
         "connString": "mongodb://localhost/ayla",
         "dataCacheExpireHours": 24
     },
-    // PRIVATE! Settings to connect to your Electric Imp devices.
+    // Settings to connect to your Electric Imp devices. You must set a devices
+    // array with the list of devices to be used.
     // Please note that you must use the Ayla Imp code on them,
     // both agent and device codes (available on our GIT repo under the /imp folder).
-    "electricImp": {
+    "electricimp": {
         "agentUrl": "https://agent.electricimp.com/"
     },
     // Fitbit options. Check if user is missing sleep data 2 and 5 days ago, if

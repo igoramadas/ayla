@@ -27,9 +27,6 @@ class Wunderground extends (require "./baseApi.coffee")
             @logError "Wunderground.start", "The defaultQuery setting for Wunderground was not set."
         else
             @baseStart()
-            @getConditions()
-            @getForecast()
-            @getAstronomy()
 
     # Stop collecting Wunderground data.
     stop: =>

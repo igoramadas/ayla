@@ -16,9 +16,9 @@
     "electricimp.coffee": [
         {
             "callback": "jobGetDeviceData",
-            "description": "Probe Electric Imp device sensors every 2 minutes.",
-            "schedule": 120,
-            "enabled": false
+            "description": "Probe Electric Imp device sensors every 5 minutes.",
+            "schedule": 300,
+            "enabled": true
         }
     ],
     "fitbit.coffee": [
