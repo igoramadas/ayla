@@ -13,7 +13,7 @@ class Network extends (require "./baseApi.coffee")
     dgram = require "dgram"
     http = require "http"
     lodash = expresser.libs.lodash
-    mdns = require "mdns"
+    mdns = require "mdns2"
     moment = expresser.libs.moment
     url = require "url"
     xml2js = require "xml2js"

@@ -77,6 +77,8 @@
         // Modules errors will stay logged on the module itself for up to 48 hours.
         // Used to check module's health (for example if it's throwing too many errors).
         "errorMaxAgeHours": 48,
+        // OAUth expired tokens will be saved for a week.
+        "maxAuthTokenAgeDays": 7,
         // Call the module's `stop` method automatically if the same error
         // happens 10 times in less than 48 hours.
         "stopOnErrorCount": 10
@@ -107,11 +109,6 @@
         "sslKeyFile": "ssl.key",
         "sslCertFile": "ssl.cer"
     },
-    // Security settings. OAUth tokens will be saved for up to 30 days, even if they expire.
-    // But of course only the most recent tokens are used by the system.
-    "security": {
-        "maxAuthTokenAgeDays": 30
-    },
     // Toshl settings. The API clientId, secret and oauthState must be set on the private settings file.
     "toshl": {
         "api": {
@@ -141,9 +138,10 @@
         "api": {
             "url": "http://api.wunderground.com/api/"
         },
-        "defaultQuery": "Germany/Berlin",
         "resultFields": ["weather", "temp_c", "relative_humidity", "wind_degrees", "wind_kph", "pressure_mb",
                          "dewpoint_c", "feelslike_c", "visibility_km", "precip_1hr_metric", "icon"],
+        // Change settings below to set your desired location.
+        "defaultQuery": "Germany/Berlin",
         "stationIds": ["IBERLIN15", "IBERLINB41"]
     }
 }

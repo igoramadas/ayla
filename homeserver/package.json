@@ -1,6 +1,6 @@
 {
     "name": "ayla",
-    "version": "0.1.6",
+    "version": "0.1.7",
     "description": "Ayla at your service.",
     "homepage": "http://ayla.codeplex.com",
     "author": "Igor Ramadas <igor@devv.com>",
@@ -11,6 +11,7 @@
         "ayla.codeplex.com"
     ],
     "scripts": {
+        "publish": "node publish.js",
         "start": "node index.js"
     },
     "bin": {
@@ -24,7 +25,7 @@
         "expresser": ">= 0.9.4",
         "imap": ">= 0.8.7",
         "mailparser": ">= 0.3.6",
-        "mdns": ">= 1.1.0",
+        "mdns2": ">= 2.1.0",
         "ninja-blocks": ">= 0.1.3",
         "oauth": ">= 0.9.10",
         "request": ">= 2.33.0",

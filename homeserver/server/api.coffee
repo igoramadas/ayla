@@ -39,12 +39,11 @@ class Api
                     logger.debug "Api.init", f, "Module is disabled and won't be instantiated."
                 else
                     module = require "./api/#{f}"
+                    @modules[module.moduleId] = module
 
                     # Create database TTL index and init module.
                     expires = settings.database.dataCacheExpireHours * 3600
                     database.db.collection("data-#{@moduleId}").ensureIndex {"datestamp": 1}, {expireAfterSeconds: expires}
-                    module.init()
-                    @modules[module.moduleId] = module
 
         # Load cron jobs.
         cron.load cronPath, {basePath: apiPath}

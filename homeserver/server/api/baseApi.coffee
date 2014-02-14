@@ -44,10 +44,7 @@ class BaseApi extends (require "../baseModule.coffee")
 
     # Save module data.
     setData: (key, value, options) =>
-        @data[key] = value
-
-        # Value must be a object! If not passed as object, create one with {value: value}.
-        value = {value: value} if lodash.isString value or lodash.isNumber value
+        @data[key] = {value: value, timestamp: moment().unix()}
 
         # Set default options to emit sockets and save to db.
         options = {} if not options?

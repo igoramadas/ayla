@@ -55,7 +55,7 @@ class OAuth
 
     # Remove old auth tokens from the database.
     cleanTokens: (callback) =>
-        minTimestamp = moment().unix() - (settings.security.maxAuthTokenAgeDays * 24 * 60 * 60)
+        minTimestamp = moment().unix() - (settings.modules.maxAuthTokenAgeDays * 24 * 60 * 60)
 
         database.del "oauth", {timestamp: {$lt: minTimestamp}}, (err, result) =>
             if err?

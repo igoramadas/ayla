@@ -1,5 +1,8 @@
 # WEATHER UNDERGROUND API
 # -----------------------------------------------------------------------------
+# Access to Weather Underground data. You must define the default location and
+# closest station IDs on the settings (recommended 2 or 3 stations).
+# More info at http://www.wunderground.com/weather/api/
 class Wunderground extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
@@ -20,8 +23,6 @@ class Wunderground extends (require "./baseApi.coffee")
 
     # Start collecting weather data.
     start: =>
-        @getCurrentWeather()
-        @getAstronomy()
         @baseStart()
 
     # Stop collecting weather data.

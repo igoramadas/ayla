@@ -1,7 +1,8 @@
 # NETATMO API
 # -----------------------------------------------------------------------------
-# Module to collect weather data from Netatmo devices.
-# More info at www.netatmo.com.
+# Collect weather and climate data from Netatmo devices. Supports indoor and
+# outdoor modules,  you'll need to set their device IDs on the settings.
+# More info at http://dev.netatmo.com/
 class Netatmo extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
@@ -14,17 +15,11 @@ class Netatmo extends (require "./baseApi.coffee")
     moment = expresser.libs.moment
     querystring = require "querystring"
 
-    # PROPERTIES
-    # -------------------------------------------------------------------------
-
-    # Stores the current indoor and outdoor readings.
-    currentReadings: {}
-
     # INIT
     # -------------------------------------------------------------------------
 
-    # Init the Netatmo module.
-    init: =>
+    # Netatmo constructor.
+    constructor: ->
         @baseInit()
 
     # Start collecting weather data.
