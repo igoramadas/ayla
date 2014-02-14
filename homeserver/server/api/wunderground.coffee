@@ -1,7 +1,7 @@
 # WEATHER UNDERGROUND API
 # -----------------------------------------------------------------------------
 # Access to Weather Underground data. You must define the default location on
-# the settings, using the pattern Country/CityName.
+# the settings.wunderground.defaultQuery, using the pattern Country/CityName.
 # More info at http://www.wunderground.com/weather/api
 class Wunderground extends (require "./baseApi.coffee")
 

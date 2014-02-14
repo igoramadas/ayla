@@ -79,7 +79,7 @@
     ],
     "ninja.coffee": [
         {
-            "callback": "jobGetDeviceList",
+            "callback": "jobGetDevices",
             "description": "Probe Ninja Blocks device list every 20 minutes.",
             "schedule": 1200,
             "enabled": true
