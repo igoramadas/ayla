@@ -84,6 +84,19 @@ class Camera extends (require "./baseApi.coffee")
 
             callback err, result if callback?
 
+    # Take a snapshot for every registered camera on the network.
+    takeAllSnaps: (job) =>
+        cameras = lodash.filter settings.network.devices, {type: "camera"}
+        count = lodash.size cameras
+
+        if count < 1
+            logger.info "Camera.takeAllSnaps", "No cameras registered on the network."
+        else
+
+            # Take a snap for each enabled camera.
+            for c in cameras
+                @takeSnap c unless c.enabled is false
+
     # Remove old snaps depending on the `snapsMaxAgeDays` setting.
     cleanSnaps: (olderThanDays, callback) =>
         count = 0
@@ -93,7 +106,10 @@ class Camera extends (require "./baseApi.coffee")
         fs.readdir @snapsPath, (err, files) =>
             if err?
                 @logError "Camera.cleanSnaps", olderThanDays, err
+                callback err if callback?
                 return
+
+            err = null
 
             # Iterate all camera snap files.
             for f in files
@@ -107,9 +123,12 @@ class Camera extends (require "./baseApi.coffee")
 
                     # If older than the target date, delete the file.
                     if fileDate.isBefore minDate
-                        fs.unlink @snapsPath + f, (err) =>
+                        try
+                            fs.unlinkSync @snapsPath + f
                             count++
-                            @logError "Camera.cleanSnaps", f, err if err?
+                        catch ex
+                            err = ex
+                            @logError "Camera.cleanSnaps", f, ex
 
             # Only log if count is greater than 0.
             if count > 0
@@ -117,28 +136,7 @@ class Camera extends (require "./baseApi.coffee")
             else
                 logger.info "Camera.cleanSnaps", "No old snaps were deleted."
 
-    # JOBS
-    # -------------------------------------------------------------------------
-
-    # Take a snapshot for every registered camera.
-    jobTakeSnaps: (job) =>
-        cameras = lodash.filter settings.network.devices, {type: "camera"}
-        count = lodash.size cameras
-
-        if count < 1
-            logger.info "Camera.jobTakeSnaps", "No cameras registered on the network."
-        else
-            logger.info "Camera.jobTakeSnaps", "#{count} cameras found."
-
-            # Take a snap for each enabled camera.
-            for c in cameras
-                @takeSnap c unless c.enabled is false
-
-    # Clean old snaps accordingly to `snapsMaxAgeDays` setting or job's args.
-    jobCleanSnaps: (job) =>
-        logger.info "Camera.jobCleanSnaps"
-
-        @cleanSnaps job.args
+            callback err, count if callback?
 
 
 # Singleton implementation.

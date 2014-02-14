@@ -127,15 +127,6 @@ class Ninja extends (require "./baseApi.coffee")
         for s in sockets
             @ninjaApi.device(@rf433.device.guid).actuate s.data
 
-    # JOBS
-    # -------------------------------------------------------------------------
-
-    # Refresh ninja device list.
-    jobGetDevices: (job) =>
-        logger.info "Ninja.jobGetDevices"
-
-        @getDevices()
-
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

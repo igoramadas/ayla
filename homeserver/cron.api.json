@@ -1,13 +1,13 @@
 {
     "camera.coffee": [
         {
-            "callback": "jobTakeSnaps",
+            "callback": "takeAllSnaps",
             "description": "Save a snap of enabled cameras to the data folder every 10 minutes.",
             "schedule": 600,
             "enabled": true
         },
         {
-            "callback": "jobCleanSnaps",
+            "callback": "cleanSnaps",
             "description": "Delete old camera snaps twice a day.",
             "schedule": ["06:00:00", "16:00:00"],
             "enabled": true
@@ -15,7 +15,7 @@
     ],
     "electricimp.coffee": [
         {
-            "callback": "jobGetDeviceData",
+            "callback": "getDeviceData",
             "description": "Probe Electric Imp device sensors every 5 minutes.",
             "schedule": 300,
             "enabled": true
@@ -45,19 +45,19 @@
     ],
     "netatmo.coffee": [
         {
-            "callback": "jobGetDevices",
+            "callback": "getDevices",
             "description": "Get Netatmo device list three times a day.",
             "schedule": ["08:00:00", "15:00:00", "23:00:00"],
             "enabled": true
         },
         {
-            "callback": "jobGetAllOutdoor",
+            "callback": "getAllOutdoor",
             "description": "Probe outdoor Netatmo conditions every 10 minutes.",
             "schedule": 600,
             "enabled": true
         },
         {
-            "callback": "jobGetAllIndoor",
+            "callback": "getAllIndoor",
             "description": "Probe indoor Netatmo conditions every 5 minutes.",
             "schedule": 300,
             "enabled": true
@@ -79,7 +79,7 @@
     ],
     "ninja.coffee": [
         {
-            "callback": "jobGetDevices",
+            "callback": "getDevices",
             "description": "Probe Ninja Blocks device list every 20 minutes.",
             "schedule": 1200,
             "enabled": true
@@ -95,19 +95,19 @@
     ],
     "wunderground.coffee": [
         {
-            "callback": "jobGetConditions",
+            "callback": "getConditions",
             "description": "Get updated weather information every 10 minutes.",
             "schedule": 600,
             "enabled": true
         },
         {
-            "callback": "jobGetForecast",
+            "callback": "getForecast",
             "description": "Get updated weather forecast twice a day.",
             "schedule": ["10:00:00", "20:00:00"],
             "enabled": true
         },
         {
-            "callback": "jobGetAstronomy",
+            "callback": "getAstronomy",
             "description": "Get updated astronomy (sunrise, sunset, moon) every day.",
             "schedule": ["02:00:00"],
             "enabled": true

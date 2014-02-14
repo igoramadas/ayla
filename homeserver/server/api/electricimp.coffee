@@ -56,15 +56,6 @@ class ElectricImp extends (require "./baseApi.coffee")
                         result.id = id if not result.id?
                         @setData result.id, result
 
-    # JOBS
-    # -------------------------------------------------------------------------
-
-    # Refresh Electric Imp data for the specified devices (or all if no args are set).
-    jobGetDeviceData: (job) =>
-        logger.info "ElectricImp.jobGetDeviceData"
-
-        @getDeviceData job.args
-
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

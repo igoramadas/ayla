@@ -80,6 +80,8 @@
         // Modules errors will stay logged on the module itself for up to 48 hours.
         // Used to check module's health (for example if it's throwing too many errors).
         "errorMaxAgeHours": 48,
+        // By default modules will get essential data on start.
+        "getDataOnStart": true,
         // OAUth expired tokens will be saved for a week.
         "maxAuthTokenAgeDays": 7,
         // The `notifyExpireMinutes` is used to avoid sending repeated notifications.

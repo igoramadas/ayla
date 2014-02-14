@@ -27,6 +27,11 @@ class Netatmo extends (require "./baseApi.coffee")
                 @logError "Netatmo.start", err
             else
                 @baseStart()
+                if settings.modules.getDataOnStart
+                    @getDevices (err, result) =>
+                        if not err?
+                            @getIndoor()
+                            @getOutdoor()
 
     # Stop collecting weather data.
     stop: =>
@@ -88,15 +93,11 @@ class Netatmo extends (require "./baseApi.coffee")
         filter = {} if not filter?
 
         params = {}
-        params["date_begin"] = filter.startDate if filter.startDate?
-        params["date_end"] = filter.endDate or "last"
+        params["date_begin"] = filter.startDate or filter.date_begin or null
+        params["date_end"] = filter.endDate or filter.date_end or "last"
         params["scale"] = filter.scale or "30min"
-
-        # Set default device to first device registered if none is specified.
-        if filter.deviceId?
-            params["device_id"] = filter.deviceId
-        else
-            params["device_id"] = @data.devices[0].value[0]["_id"]
+        params["module_id"] = filter.moduleId or filter.module_id or null
+        params["device_id"] = filter.deviceId or filter.device_id or @data.devices[0].value[0]["_id"]
 
         return params
 
@@ -122,16 +123,20 @@ class Netatmo extends (require "./baseApi.coffee")
 
             callback err, result if callback?
 
-    # Get outdoor readings from Netatmo. Default is to get only the most current data.
+    # Get outdoor readings from Netatmo. A moduleId must be set on the filter.
     getOutdoor: (filter, callback) =>
         if lodash.isFunction filter
             callback = filter
             filter = null
 
-        # Set outdoor parameters. If no module_id is passed, use the one defined on the settings.
+        # Set outdoor parameters.
         params = @getParams filter
-        params["module_id"] = settings.netatmo?.outdoorModuleId if not params["module_id"]?
         params["type"] = "Temperature,Humidity"
+
+        # Module ID is mandatory!
+        if not params["module_id"]?
+            callback "A valid outdoor moduleId is mandatory."
+            return
 
         # Make the request for outdoor readings.
         @apiRequest "getmeasure", params, (err, result) =>
@@ -143,6 +148,17 @@ class Netatmo extends (require "./baseApi.coffee")
                 logger.info "Netatmo.getOutdoor", filter, body
 
             callback err, result if callback?
+
+    # Get current conditions for all outdoor modules (module type NAModule1).
+    getAllOutdoor: =>
+        if not @data.devices?
+            logger.warn "Netatmo.getAllOutdoor", "No devices found, please check the Netamo API settings."
+            return
+
+        # Iterate and get data for all outdoor modules.
+        for d in @data.devices[0].value
+            modules = lodash.filter d.modules, {type: "NAModule1"}
+            @getOutdoor {device_id: d["_id"], module_id: m["_id"]} for m in modules
 
     # Get indoor readings from Netatmo. Default is to get only the most current data.
     getIndoor: (filter, callback) =>
@@ -165,33 +181,13 @@ class Netatmo extends (require "./baseApi.coffee")
 
             callback err, result if callback?
 
-    # JOBS
-    # -------------------------------------------------------------------------
-
-    # Get device and modules list.
-    jobGetDevices: (job) =>
-        logger.info "Netatmo.jobGetDevices"
-
-        @getDevices()
-
-    # Get current outdoor conditions for all outdoor modules.
-    jobGetAllOutdoor: (job) =>
+    # Get current conditions for all indoor modules (module type NAModule4).
+    getAllIndoor: =>
         if not @data.devices?
-            logger.warn "Netatmo.jobGetAllOutdoor", "No devices found, please check the Netamo API settings."
-        else
-            logger.info "Netatmo.jobGetAllOutdoor"
+            logger.warn "Netatmo.getAllIndoor", "No devices found, please check the Netamo API settings."
+            return
 
-        for d in @data.devices[0].value
-            modules = lodash.filter d.modules, {type: "NAModule1"}
-            @getOutdoor {device_id: d["_id"], module_id: m["_id"]} for m in modules
-
-    # Get current indoor conditions for all indoor modules.
-    jobGetAllIndoor: (job) =>
-        if not @data.devices?
-            logger.warn "Netatmo.jobGetAllIndoor", "No devices found, please check the Netamo API settings."
-        else
-            logger.info "Netatmo.jobGetAllIndoor"
-
+        # Iterate and get data for all indoor modules.
         for d in @data.devices[0].value
             @getIndoor {device_id: d["_id"]}
             modules = lodash.filter d.modules, {type: "NAModule4"}
