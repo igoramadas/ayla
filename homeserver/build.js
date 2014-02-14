@@ -32,6 +32,38 @@ if (filename != null) {
     fs.writeFileSync(filename, JSON.stringify(privateSettingsObj, null, 4));
 }
 
+// GENERATE SAMPLE FOR CRON.API.JSON
+
+filename = expresser.utils.getFilePath("cron.api.json");
+
+if (filename != null) {
+    cronApiJson = fs.readFileSync(filename, {encoding: "utf8"});
+    cronApiJsonObj = expresser.utils.minifyJson(cronApiJson);
+
+    var reset = function(source) {
+        var prop, value;
+
+        for (prop in source) {
+            value = source[prop];
+            if (lodash.keys(value).length > 0) {
+                reset(source[prop]);
+            } else if (prop == "description") {
+                source[prop] = "Run " + source["callback"];
+            }
+            if (source["args"]) {
+                delete source["args"];
+            } else if (source["schedule"] && lodash.isArray(source["schedule"])) {
+                source["schedule"] = 600;
+            }
+        }
+    };
+
+    reset(cronApiJsonObj);
+
+    filename = __dirname + "/cron.api.json.sample";
+    fs.writeFileSync(filename, JSON.stringify(cronApiJsonObj, null, 4));
+}
+
 // UPDATE DOCUMENTATION
 
 groc.CLI("", function(err, results) {console.log("Groc result", err, results)});

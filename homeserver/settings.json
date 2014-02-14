@@ -69,7 +69,9 @@
             "temperature": [15, 17, 22, 26]
         }
     },
-    // Modules (API and managers) settings.
+    // Modules (API and managers) settings. You'll need to enable modules individually by
+    // creating a `enable` property containing an array of modules to be enabled.
+    // For example: "enabled": ["netatmo", "network", "toshl"]
     "modules": {
         // By default the app will keep the most recent 10 results of data
         // having the exact same key (but can have different filters).

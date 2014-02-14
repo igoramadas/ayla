@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # Collect weather and climate data from Netatmo devices. Supports indoor and
 # outdoor modules, and device list is fetched via the getDevices method.
-# # More info at http://dev.netatmo.com/
+# # More info at http://dev.netatmo.com
 class Netatmo extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
@@ -20,10 +20,13 @@ class Netatmo extends (require "./baseApi.coffee")
     init: ->
         @baseInit()
 
-    # Start collecting weather data.
+    # Start collecting weather data. If OAuth is fine, get devlice list straight away.
     start: =>
         @oauthInit (err, result) =>
-            @getDevices() if not err?
+            if err?
+                @getDevices()
+            else
+                logger.warn "Netatmo.start", err
 
         @baseStart()
 
@@ -106,7 +109,7 @@ class Netatmo extends (require "./baseApi.coffee")
         params["date_end"] = filter.endDate or "last"
         params["scale"] = filter.scale or "30min"
 
-        # Set default device if none was specified.
+        # Set default device to first device registered if none is specified.
         if filter.deviceId?
             params["device_id"] = filter.deviceId
         else
@@ -181,23 +184,33 @@ class Netatmo extends (require "./baseApi.coffee")
     # JOBS
     # -------------------------------------------------------------------------
 
-    # Get device list.
+    # Get device and modules list.
     jobGetDevices: (job) =>
         logger.info "Netatmo.jobGetDevices"
 
         @getDevices()
 
-    # Get current outdoor conditions.
-    jobGetOutdoor: (job) =>
-        logger.info "Netatmo.jobGetOutdoor"
+    # Get current outdoor conditions for all outdoor modules.
+    jobGetAllOutdoor: (job) =>
+        if not @data.devices?
+            logger.warn "Netatmo.jobGetAllOutdoor", "No devices found, please check the Netamo API settings."
+        else
+            logger.info "Netatmo.jobGetAllOutdoor"
 
-        @getOutdoor()
+        modules = lodash.filter @data.devices[0].modules, {type: "NAModule1"}
+        @getOutdoor {module_id: m["_id"]} for m in modules
 
-    # Get current indoor conditions.
-    jobGetIndoor: (job) =>
-        logger.info "Netatmo.jobGetIndoor"
+    # Get current indoor conditions for all indoor modules.
+    jobGetAllIndoor: (job) =>
+        if not @data.devices?
+            logger.warn "Netatmo.jobGetAllIndoor", "No devices found, please check the Netamo API settings."
+        else
+            logger.info "Netatmo.jobGetAllIndoor"
 
         @getIndoor()
+
+        modules = lodash.filter @data.devices[0].modules, {type: "NAModule4"}
+        @getIndoor {module_id: m["_id"]} for m in modules
 
 
 # Singleton implementation.

@@ -32,11 +32,11 @@ class Api
 
         for f in files
             if f isnt "baseApi.coffee" and f.indexOf(".coffee") > 0
-                disabled = lodash.contains settings.modules.disabled, f.replace(".coffee", "")
+                enabled = lodash.contains settings.modules.enable, f.replace(".coffee", "")
 
                 # Only add if not on the disabled modules setting.
-                if disabled
-                    logger.debug "Api.init", f, "Module is disabled and won't be instantiated."
+                if not enabled
+                    logger.debug "Api.init", f, "Module is not enabled and won't be instantiated."
                 else
                     module = require "./api/#{f}"
                     module.init()

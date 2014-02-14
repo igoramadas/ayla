@@ -1,7 +1,7 @@
 # NINJA BLOCKS API
 # -----------------------------------------------------------------------------
-# Module for Ninja Blocks and connected RF 433 devices
-# More info at www.ninjablocks.com.
+# Module for Ninja Blocks and its connected devices.
+# More info at http://ninjablocks.com
 class Ninja extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
@@ -21,7 +21,7 @@ class Ninja extends (require "./baseApi.coffee")
     # INIT
     # -------------------------------------------------------------------------
 
-    # Init the Ninja module.
+    # Init the Ninja Blocks module.
     init: =>
         @baseInit()
 
@@ -29,8 +29,10 @@ class Ninja extends (require "./baseApi.coffee")
     start: =>
         if settings.ninja?.api?
             @ninjaApi = ninjablocks.app {user_access_token: settings.ninja.api.userToken}
+            @getDeviceList()
+        else
+            logger.warn "Ninja.start", "Ninja API user token ie not set. Module won't work."
 
-        @getDeviceList()
         @baseStart()
 
     # Stop collecting data from Ninja Blocks.
@@ -38,6 +40,31 @@ class Ninja extends (require "./baseApi.coffee")
         @baseStop()
 
     # GET DEVICE DATA
+    # -------------------------------------------------------------------------
+
+    # Gets the list of registered devices with Ninja Blocks.
+    getDeviceList: (callback) =>
+        if not @ninjaApi?
+            logger.warn "Ninja.getDeviceList", "Ninja API not started (probably missing settings). Abort!"
+            return
+
+        # Get all devices from Ninja Blocks.
+        @ninjaApi.devices (err, result) =>
+            if err?
+                @logError "getDeviceList", err
+            else
+                @setData "devices", result
+
+                # Set current weather and RF 433 device status.
+                @setCurrentWeather()
+                @setRf433()
+
+                logger.info "Ninja.getDeviceList", "Updated, #{lodash.size result} devices."
+
+            # Callback set?
+            callback err, result if callback?
+
+    # SET DEVICE DATA
     # -------------------------------------------------------------------------
 
     # This should be called whenever new weather related data is downloaded
@@ -73,30 +100,6 @@ class Ninja extends (require "./baseApi.coffee")
             if guid?
                 @data.rf433 = {guid: guid, device: devices[guid]}
                 logger.info "Ninja.setRf433", "Detected #{lodash.size devices[guid].subDevices} subdevices"
-
-    # Gets the list of registered devices with Ninja Blocks.
-    getDeviceList: (callback) =>
-        if not @ninjaApi?
-            logger.warn "Ninja.getDeviceList", "Ninja API not set (probably missing settings). Abort!"
-            return
-        else
-            logger.debug "Ninja.getDeviceList"
-
-        # Get all devices from Ninja Blocks.
-        @ninjaApi.devices (err, result) =>
-            if err?
-                @logError "getDeviceList", err
-            else
-                @setData "devices", result
-
-                # Set current weather and RF 433 device.
-                @setCurrentWeather()
-                @setRf433()
-
-                logger.info "Ninja.getDeviceList", "Updated, #{lodash.size result} devices."
-
-            # Callback set?
-            callback err, result if callback?
 
     # RF 433 SOCKETS
     # -------------------------------------------------------------------------
@@ -135,14 +138,9 @@ class Ninja extends (require "./baseApi.coffee")
     # -------------------------------------------------------------------------
 
     # Refresh ninja device details every hour.
-    jobGetDeviceList: =>
-        @getDeviceList()
+    jobGetDeviceList: (job) =>
+        logger.info "Ninja.jobGetDeviceList"
 
-    # PAGES
-    # -------------------------------------------------------------------------
-
-    # Get the Ninja Blocks dashboard data.
-    getDashboard: (callback) =>
         @getDeviceList()
 
 

@@ -10,27 +10,29 @@ class ApiView extends ayla.BaseView
 
     # Init the API data table.
     onReady: =>
-        for key, data of ayla.serverData
+        for key, arr of ayla.serverData
+            container = $ document.createElement "div"
+            container.attr "id", key
+
+            for data in arr
+                timestamp = $ document.createElement "label"
+                timestamp.html "Last update: " + moment(data.timestamp).format "lll"
+                details = $ document.createElement "div"
+                details.JSONView JSON.stringify(data.value)
+                contents = $ document.createElement "div"
+                contents.append timestamp
+                contents.append details
+
+                container.append contents
+
             link = $ document.createElement "a"
             link.html key
             link.attr "href", "##{key}"
-
             title = $ document.createElement "dd"
             title.append link
 
-            timestamp = $ document.createElement "label"
-            timestamp.html "Last update: " + moment(data.timestamp).format "lll"
-            details = $ document.createElement "div"
-            details.JSONView JSON.stringify(data.value)
-
-            contents = $ document.createElement "div"
-            contents.attr "id", key
-            contents.append timestamp
-            contents.append details
-
-            # Appoend to tab containers.
             @dom["tabs"].append title
-            @dom["tabs-content"].append contents
+            @dom["tabs-content"].append container
 
 
 

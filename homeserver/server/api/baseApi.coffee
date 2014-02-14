@@ -21,8 +21,11 @@ class BaseApi extends (require "../baseModule.coffee")
 
     # Helper to create an OAuth object.
     oauthInit: (callback) =>
-        @oauth = new (require "../oauth.coffee") @moduleId
-        @oauth.loadTokens callback
+        if settings[@moduleId].api
+            @oauth = new (require "../oauth.coffee") @moduleId
+            @oauth.loadTokens callback
+        else
+            callback "API settings for #{@moduleName} not found." if callback?
 
     # GENERAL METHODS
     # -------------------------------------------------------------------------

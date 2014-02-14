@@ -80,8 +80,8 @@ class BaseModule
 
         # Set data and cleanup old.
         @data[key] = [] if not @data[key]?
-        @data[key].push {value: value, filter: filter, timestamp: moment().unix()}
-        @data[key].shift() if @data[key].length > settings.modules.dataKeyCacheSize
+        @data[key].unshift {value: value, filter: filter, timestamp: moment().unix()}
+        @data[key].pop() if @data[key].length > settings.modules.dataKeyCacheSize
 
         # Save the new data to the database.
         dbData = {key: key, value: value, filter: filter, datestamp: new Date()}

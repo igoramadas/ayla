@@ -61,10 +61,7 @@
     "fitbit": {
         "api": {
             "clientId": "String",
-            "secret": "String",
-            "url": "String",
-            "oauthUrl": "String",
-            "oauthVersion": "String"
+            "secret": "String"
         }
     },
     "general": {
@@ -119,20 +116,18 @@
             "user": "String"
         }
     },
+    "modules": {
+        "enable": [
+            "String"
+        ]
+    },
     "netatmo": {
         "api": {
             "clientId": "String",
             "secret": "String",
             "password": "String",
-            "url": "String",
-            "username": "String",
-            "oauthPathAuthorize": "String",
-            "oauthPathToken": "String",
-            "oauthUrl": "String",
-            "oauthVersion": "String"
-        },
-        "deviceId": "String",
-        "outdoorModuleId": "String"
+            "username": "String"
+        }
     },
     "network": {
         "router": {
@@ -191,7 +186,8 @@
                 "ip": "String",
                 "localPort": "Number",
                 "remotePort": "Number",
-                "imagePath": "String"
+                "imagePath": "String",
+                "auth": "String"
             }
         ]
     },
@@ -201,8 +197,7 @@
     },
     "ninja": {
         "api": {
-            "userToken": "String",
-            "url": "String"
+            "userToken": "String"
         }
     },
     "shoeboxed": {
@@ -212,12 +207,7 @@
         "api": {
             "clientId": "String",
             "secret": "String",
-            "url": "String",
-            "oauthPathAuthorize": "String",
-            "oauthPathToken": "String",
-            "oauthResponseType": "String",
-            "oauthUrl": "String",
-            "oauthVersion": "String"
+            "oauthState": "String"
         }
     },
     "ubi": {
@@ -246,17 +236,13 @@
     "withings": {
         "api": {
             "clientId": "String",
-            "secret": "String",
-            "url": "String",
-            "oauthUrl": "String",
-            "oauthVersion": "String"
+            "secret": "String"
         },
         "userId": "Number"
     },
     "wunderground": {
         "api": {
-            "clientId": "String",
-            "url": "String"
+            "clientId": "String"
         }
     }
 }
