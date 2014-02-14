@@ -71,14 +71,17 @@
     },
     // Modules (API and managers) settings.
     "modules": {
-        // The `notifyExpireMinutes` is used to avoid sending repeated notifications.
-        // By default it won't resend the same notification if last was sent less than 60 minutes ago.
-        "notifyExpireMinutes": 60,
+        // By default the app will keep the most recent 10 results of data
+        // having the exact same key (but can have different filters).
+        "dataKeyCacheSize": 10,
         // Modules errors will stay logged on the module itself for up to 48 hours.
         // Used to check module's health (for example if it's throwing too many errors).
         "errorMaxAgeHours": 48,
         // OAUth expired tokens will be saved for a week.
         "maxAuthTokenAgeDays": 7,
+        // The `notifyExpireMinutes` is used to avoid sending repeated notifications.
+        // By default it won't resend the same notification if last was sent less than 60 minutes ago.
+        "notifyExpireMinutes": 60,
         // Call the module's `stop` method automatically if the same error
         // happens 10 times in less than 48 hours.
         "stopOnErrorCount": 10

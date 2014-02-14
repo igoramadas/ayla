@@ -24,50 +24,6 @@ class BaseApi extends (require "../baseModule.coffee")
         @oauth = new (require "../oauth.coffee") @moduleId
         @oauth.loadTokens callback
 
-    # DATA HANDLING
-    # -------------------------------------------------------------------------
-
-    # Load data from the database and populate the `data` property.
-    loadData: =>
-        database.get "data-#{@moduleId}", (err, results) =>
-            if err?
-                logger.error "#{@moduleName}.loadData", err
-            else
-                logger.info "#{@moduleName}.loadData", "#{results.length} objects to be loaded."
-
-            # Iterate results.
-            for r in results
-                @data[r.key] = r.data
-
-            # Trigger load event.
-            events.emit "#{@moduleId}.data.load"
-
-    # Save module data.
-    setData: (key, value, options) =>
-        @data[key] = {value: value, timestamp: moment().unix()}
-
-        # Set default options to emit sockets and save to db.
-        options = {} if not options?
-        options = lodash.defaults options, {eventsEmit: true, socketsEmit: true, saveToDatabase: true}
-
-        # Emit new data to central event dispatched?
-        if options.eventsEmit
-            events.emit "#{@moduleId}.data", key, value
-            events.emit "#{@moduleId}.data.#{key}", value
-
-        # Emit new data to clients using Sockets?
-        if options.socketsEmit
-            sockets.emit "#{@moduleId}.data", key, value
-            sockets.emit "#{@moduleId}.data.#{key}", value
-
-        # Save the new data on the database?
-        if options.saveToDatabase
-            database.set "data-#{@moduleId}", {key: key, data: value, datestamp: new Date()}, (err, result) =>
-                if err?
-                    logger.error "#{@moduleName}.setData", key, err
-                else
-                    logger.debug "#{@moduleName}.setData", key, value
-
     # GENERAL METHODS
     # -------------------------------------------------------------------------
 

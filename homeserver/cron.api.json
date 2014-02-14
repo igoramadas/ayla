@@ -45,15 +45,21 @@
     ],
     "netatmo.coffee": [
         {
+            "callback": "jobGetDevices",
+            "description": "Get Netatmo device list every morning,",
+            "schedule": ["09:00:00"],
+            "enabled": true
+        },
+        {
             "callback": "jobGetOutdoor",
-            "description": "Probe current outdoor conditions every 5 minutes.",
-            "schedule": 300,
+            "description": "Probe current outdoor conditions every 10 minutes.",
+            "schedule": 600,
             "enabled": true
         },
         {
             "callback": "jobGetIndoor",
-            "description": "Probe current indoor conditions every 3 minutes.",
-            "schedule": 180,
+            "description": "Probe current indoor conditions every 4 minutes.",
+            "schedule": 240,
             "enabled": true
         }
     ],

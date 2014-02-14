@@ -34,6 +34,7 @@ class Manager
                     logger.debug "Manager.init", f, "Module is disabled and won't be instantiated."
                 else
                     module = require "./manager/#{f}"
+                    module.init()
                     @modules[module.moduleId] = module
 
         # Proceed with callback?

@@ -5,9 +5,11 @@ class BaseModule
 
     expresser = require "expresser"
     cron = expresser.cron
+    database = expresser.database
     events = expresser.events
     logger = expresser.logger
     settings = expresser.settings
+    sockets = expresser.sockets
 
     lodash = expresser.libs.lodash
     moment = expresser.libs.moment
@@ -47,6 +49,48 @@ class BaseModule
 
         # Stop cron jobs for that module.
         cron.stop {module: "#{@moduleId}.coffee"}
+
+    # DATA HANDLING
+    # -------------------------------------------------------------------------
+
+    # Load data from the database and populate the `data` property.
+    loadData: =>
+        database.get "data-#{@moduleId}", (err, results) =>
+            if err?
+                logger.error "#{@moduleName}.loadData", err
+            else
+                logger.info "#{@moduleName}.loadData", "#{results.length} objects to be loaded."
+
+            # Iterate results.
+            for r in results
+                @data[r.key] = r.data
+
+            # Trigger load event.
+            events.emit "#{@moduleId}.data.load"
+
+    # Save module's data for the specified key. The filter is optional and
+    # if not passed it will use `default` as filter.
+    setData: (key, value, filter) =>
+        filter = "default" if not filter?
+
+        events.emit "#{@moduleId}.data", key, value, filter
+        events.emit "#{@moduleId}.data.#{key}", value, filter
+        sockets.emit "#{@moduleId}.data", key, value, filter
+        sockets.emit "#{@moduleId}.data.#{key}", value, filter
+
+        # Set data and cleanup old.
+        @data[key] = [] if not @data[key]?
+        @data[key].push {value: value, filter: filter, timestamp: moment().unix()}
+        @data[key].shift() if @data[key].length > settings.modules.dataKeyCacheSize
+
+        # Save the new data to the database.
+        dbData = {key: key, value: value, filter: filter, datestamp: new Date()}
+
+        database.set "data-#{@moduleId}", dbData, (err, result) =>
+            if err?
+                logger.error "#{@moduleName}.setData", key, err
+            else
+                logger.debug "#{@moduleName}.setData", key, value
 
     # LOGGING AND ERRORS
     # -------------------------------------------------------------------------

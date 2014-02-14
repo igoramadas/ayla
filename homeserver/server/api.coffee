@@ -39,6 +39,7 @@ class Api
                     logger.debug "Api.init", f, "Module is disabled and won't be instantiated."
                 else
                     module = require "./api/#{f}"
+                    module.init()
                     @modules[module.moduleId] = module
 
                     # Create database TTL index and init module.
