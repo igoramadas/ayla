@@ -1,5 +1,6 @@
 .idea/
 atlassian-ide-plugin.xml
+cron.api.json
 data/
 docs/
 logs/
