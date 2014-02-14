@@ -2,15 +2,15 @@
     "camera.coffee": [
         {
             "callback": "jobTakeSnaps",
-            "description": "Save a snap of enabled cameras to the data folder every 15 minutes.",
-            "schedule": 900,
-            "enabled": false
+            "description": "Save a snap of enabled cameras to the data folder every 10 minutes.",
+            "schedule": 600,
+            "enabled": true
         },
         {
             "callback": "jobCleanSnaps",
             "description": "Delete old camera snaps twice a day.",
-            "schedule": ["11:00:00", "21:00:00"],
-            "enabled": false
+            "schedule": ["06:00:00", "16:00:00"],
+            "enabled": true
         }
     ],
     "electricimp.coffee": [

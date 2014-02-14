@@ -15,10 +15,10 @@
         }
     },
     // Camera date format while saving snaps, and max age of snaps before
-    // they get deleted.
+    // they get deleted (default is 7).
     "camera": {
         "dateFormat": "YYYYMMDD-HHmmss",
-        "snapsMaxAgeDays": 10
+        "snapsMaxAgeDays": 7
     },
     // These are the default commands that can be sent via text or voice.
     // The command codes are defined on the /server/commander.coffee file.

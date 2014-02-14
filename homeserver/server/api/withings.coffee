@@ -61,7 +61,7 @@ class Withings extends (require "./baseApi.coffee")
     # Get weight data for the specified date.
     getWeight: (startTimestamp, endTimestamp, callback) =>
         if not callback?
-            throw "Withings.getWeight: parameters date and callback must be specified!"
+            throw new Error "Withings.getWeight: parameters date and callback must be specified!"
 
         # Set defaults.
         startTimestamp = moment().subtract("M", 1).unix() if not startTimestamp?

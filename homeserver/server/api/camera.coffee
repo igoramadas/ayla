@@ -2,7 +2,6 @@
 # -----------------------------------------------------------------------------
 # Module to take snaps from cameras or other picture sources. The camera devices
 # must be set on the settings.network.devices array with a type "camera".
-
 class Camera extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
@@ -20,11 +19,11 @@ class Camera extends (require "./baseApi.coffee")
     # INIT
     # -------------------------------------------------------------------------
 
-    # Init the Camera module and set snaps path.
+    # Init the Camera module.
     init: =>
         @baseInit()
 
-    # Start the camera API jobs.
+    # Start the Camera module and set snaps path..
     start: =>
         fullpath = path.join __dirname, "../../", settings.path.cameraSnaps
 
@@ -36,7 +35,7 @@ class Camera extends (require "./baseApi.coffee")
 
         @baseStart()
 
-    # Stop the camera API jobs.
+    # Stop the Camera module.
     stop: =>
         @baseStop()
 
@@ -44,25 +43,26 @@ class Camera extends (require "./baseApi.coffee")
     # -------------------------------------------------------------------------
 
     # Save a snapshop for the specified camera. If `cam` is a string, consider
-    # it being the camera host.
+    # it being the camera host or IP.
     takeSnap: (cam, callback) =>
         if not cam?
-            throw new Error "A camera must be specified."
+            throw new Error "The argument cam must be specified."
 
-        # Find camera.
+        # Find camera by host or IP in case `cam` is a string.
         if lodash.isString cam
             cam = lodash.find settings.network.devices, {type: "camera", host: cam}
+            cam = lodash.find settings.network.devices, {type: "camera", ip: cam} if not cam?
 
-        # Wrong cam?
+        # Camnot found? Stop here.
         if not cam?
-            callback "Camera #{id} does not exist."
+            callback "Camera #{id} does not exist." if callback?
             return
 
-        # Set save options.
+        # Set save options. Is URL remote or local? Construct path using
+        # local IP or remote host, port and image path.
         now = moment().format settings.camera.dateFormat
         saveTo = @snapsPath + "#{cam.host}.#{now}.jpg"
 
-        # URL remote or local? Construct path using local IP or remote host, port and image path.
         if networkApi.isHome
             downloadUrl = "#{cam.ip}:#{cam.localPort}/#{cam.imagePath}"
         else
@@ -74,25 +74,26 @@ class Camera extends (require "./baseApi.coffee")
         else
             downloadUrl = "http://#{downloadUrl}"
 
-        # Save (download) a snap from the camera.
+        # Save (download) a snap from the camera. Use the camera's host for the data key.
         downloader.download downloadUrl, saveTo, (err, result) =>
             if err?
                 @logError "Camera.takeSnap", cam.host, err
             else
-                logger.info "Camera.takeSnap", cam.host, now
                 @setData cam.host, {filename: saveTo}
+                logger.info "Camera.takeSnap", cam.host, cam.ip
 
             callback err, result if callback?
 
     # Remove old snaps depending on the `snapsMaxAgeDays` setting.
-    cleanSnaps: =>
+    cleanSnaps: (olderThanDays, callback) =>
         count = 0
+        olderThanDays = settings.camera.snapsMaxAgeDays ir not olderThanDays?
 
         # Read snaps path to iterate and check files to be deleted.
         fs.readdir @snapsPath, (err, files) =>
             if err?
-                @logError "Camera.cleanSnaps", err
-                return false
+                @logError "Camera.cleanSnaps", olderThanDays, err
+                return
 
             # Iterate all camera snap files.
             for f in files
@@ -113,12 +114,14 @@ class Camera extends (require "./baseApi.coffee")
             # Only log if count is greater than 0.
             if count > 0
                 logger.info "Camera.cleanSnaps", "Deleted #{count} snaps."
+            else
+                logger.info "Camera.cleanSnaps", "No old snaps were deleted."
 
     # JOBS
     # -------------------------------------------------------------------------
 
-    # Take camera snaps every `snapsIntervalSeconds` seconds.
-    jobTakeSnaps: =>
+    # Take a snapshot for every registered camera.
+    jobTakeSnaps: (job) =>
         cameras = lodash.filter settings.network.devices, {type: "camera"}
         count = lodash.size cameras
 
@@ -127,15 +130,15 @@ class Camera extends (require "./baseApi.coffee")
         else
             logger.info "Camera.jobTakeSnaps", "#{count} cameras found."
 
-            # Take a snap for each camera found.
+            # Take a snap for each enabled camera.
             for c in cameras
                 @takeSnap c unless c.enabled is false
 
-    # Clean old snaps twice a day.
-    jobCleanSnaps: =>
+    # Clean old snaps accordingly to `snapsMaxAgeDays` setting or job's args.
+    jobCleanSnaps: (job) =>
         logger.info "Camera.jobCleanSnaps"
 
-        @cleanSnaps()
+        @cleanSnaps job.args
 
 
 # Singleton implementation.
