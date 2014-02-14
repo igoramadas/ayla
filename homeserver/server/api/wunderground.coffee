@@ -113,27 +113,6 @@ class Wunderground extends (require "./baseApi.coffee")
 
             callback err, result if callback?
 
-    # JOBS
-    # -------------------------------------------------------------------------
-
-    # Refresh current weather conditions.
-    jobGetConditions: =>
-        logger.info "Netatmo.jobGetConditions"
-
-        @getConditions()
-
-    # Refresh weather forecast.
-    jobGetForecast: =>
-        logger.info "Netatmo.jobGetForecast"
-
-        @getForecast()
-
-    # Refresh astronomy related data.
-    jobGetAstronomy: =>
-        logger.info "Netatmo.jobGetAstronomy"
-
-        @getAstronomy()
-
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------
