@@ -119,6 +119,7 @@ class Netatmo extends (require "./baseApi.coffee")
                     d.modules = lodash.filter result.body.modules, {"main_device": d["_id"]}
 
                 @setData "devices", deviceData
+                logger.info "Netatmo.getDevices", "Got #{result.body.devices.length} devices, #{result.body.modules.length} modules."
 
             callback err, result if callback?
 

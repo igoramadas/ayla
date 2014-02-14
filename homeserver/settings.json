@@ -137,13 +137,10 @@
             "oauthVersion": "1.0"
         }
     },
-    // Weather Underground settings. You must set the API clientId and also defaultQuery and
-    // the stationIds array on the private settings file.
+    // Weather Underground settings. You must set the api.clientId and defaultQuery.
     "wunderground": {
         "api": {
             "url": "http://api.wunderground.com/api/"
-        },
-        "resultFields": ["weather", "temp_c", "relative_humidity", "wind_degrees", "wind_kph", "pressure_mb",
-                         "dewpoint_c", "feelslike_c", "visibility_km", "precip_1hr_metric", "icon"]
+        }
     }
 }
