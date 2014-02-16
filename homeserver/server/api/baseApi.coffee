@@ -40,7 +40,6 @@ class BaseApi extends (require "../baseModule.coffee")
 
         return true
 
-
     # Base helper to make HTTP / HTTPS requests.
     makeRequest: (reqUrl, params, callback) =>
         if not callback? and lodash.isFunction params

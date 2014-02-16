@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # Collect weather and climate data from Netatmo devices. Supports indoor and
 # outdoor modules, and device list is fetched via the getDevices method.
-# # More info at http://dev.netatmo.com
+# More info at http://dev.netatmo.com
 class Netatmo extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
@@ -27,11 +27,12 @@ class Netatmo extends (require "./baseApi.coffee")
                 @logError "Netatmo.start", err
             else
                 @baseStart()
-                if settings.modules.getDataOnStart
+
+                if settings.modules.getDataOnStart and result.length > 0
                     @getDevices (err, result) =>
                         if not err?
-                            @getIndoor()
-                            @getOutdoor()
+                            @getAllIndoor()
+                            @getAllOutdoor()
 
     # Stop collecting weather data.
     stop: =>
@@ -81,10 +82,9 @@ class Netatmo extends (require "./baseApi.coffee")
 
         logger.debug "Netatmo.apiRequest", reqUrl
 
-        # Make request using OAuth. Force parse err and result as JSON.
+        # Make request using OAuth.
         @oauth.get reqUrl, (err, result) =>
             result = JSON.parse result if result? and lodash.isString result
-            err = JSON.parse err if err? and lodash.isString err
             callback err, result if callback?
 
     # Helper to get API request parameters based on the passed filter.
@@ -93,10 +93,12 @@ class Netatmo extends (require "./baseApi.coffee")
         filter = {} if not filter?
 
         params = {}
-        params["date_begin"] = filter.startDate or filter.date_begin or null
+        params["date_begin"] = filter.startDate if filter.startDate?
+        params["date_begin"] = filter.date_begin if filter.date_begin?
         params["date_end"] = filter.endDate or filter.date_end or "last"
         params["scale"] = filter.scale or "30min"
-        params["module_id"] = filter.moduleId or filter.module_id or null
+        params["module_id"] = filter.moduleId if filter.moduleId?
+        params["module_id"] = filter.module_id if filter.module_id?
         params["device_id"] = filter.deviceId or filter.device_id or @data.devices[0].value[0]["_id"]
 
         return params

@@ -31,6 +31,8 @@ class Ninja extends (require "./baseApi.coffee")
         else
             @ninjaApi = ninjablocks.app {user_access_token: settings.ninja.api.userToken}
             @baseStart()
+            if settings.modules.getDataOnStart
+                @getDevices()
 
     # Stop collecting data from Ninja Blocks.
     stop: =>

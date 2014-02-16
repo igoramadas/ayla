@@ -61,6 +61,24 @@ class FitnessManager extends (require "./baseManager.coffee")
 
         logger.info "FitnessManager.onFitbitSleep", @data.sleep
 
+    fitbitMissingData: =>
+        if @data.weight?.timestamp < moment().subtract("d", settings.fitbit.missingWeightAfterDays).unix()
+            events.emit "fitbit.weight.missing", @data.weight
+
+        for d in settings.fitbit.missingSleepDays
+            do (d) =>
+                date = moment().subtract("d", d).format settings.fitbit.dateFormat
+
+                # Check if user forgot to add sleep data X days ago.
+                @getSleep date, (err, result) =>
+                    if err?
+                        @logError "Fitbit.jobCheckMissingData", "getSleep", date, err
+                        return false
+
+                    # Has sleep data? Stop here, otherwise emit missing sleep event.
+                    return if result?.sleep?.length > 0
+                    events.emit "fitbit.sleep.missing", result
+
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

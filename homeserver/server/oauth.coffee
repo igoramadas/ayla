@@ -51,7 +51,7 @@ class OAuth
                     @refresh t.user if t.expires? and moment().unix() > t.expires
 
                 if callback?
-                    callback null, true
+                    callback null, result
 
     # Remove old auth tokens from the database.
     cleanTokens: (callback) =>
