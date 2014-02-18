@@ -154,9 +154,14 @@ class OAuth
 
         # OAuth2 have only an access token, OAuth1 has a token and a secret.
         if settings[@service].api.oauthVersion is "2.0"
-            @client.get reqUrl, @data[user].accessToken, callback
+            @client.get reqUrl, @data[user].accessToken, (err, result) =>
+                if err?
+                    description = err.data?.error_description or err.data?.message or null
+                    @refresh user if description.indexOf("expired") > 0
+                callback err, result
         else
-            @client.get reqUrl, @data[user].token, @data[user].tokenSecret, callback
+            @client.get reqUrl, @data[user].token, @data[user].tokenSecret, (err, result) =>
+                callback err, result
 
     # Try getting OAuth data for a particular request / response.
     process: (req, res) =>
