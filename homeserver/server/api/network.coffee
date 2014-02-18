@@ -273,7 +273,7 @@ class Network extends (require "./baseApi.coffee")
                     clearTimeout wolTimer if wolTimer?
                 catch ex
                     err = ex
-                callback err, result if callback?
+                callback err, result if lodash.isFunction callback
 
 
         # Socket send helper.

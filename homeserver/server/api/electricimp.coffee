@@ -26,6 +26,7 @@ class ElectricImp extends (require "./baseApi.coffee")
             @logError "ElectricImp.start", "No Electric Imp devices defined. Please check the settings."
         else
             @baseStart()
+
             if settings.modules.getDataOnStart
                 @getDeviceData()
 
@@ -33,19 +34,29 @@ class ElectricImp extends (require "./baseApi.coffee")
     stop: =>
         @baseStop()
 
-    # GET DEVICE DATA
+    # DEVICE DATA
     # -------------------------------------------------------------------------
 
     # Get sensors data from the specified Electric Imp device. If no `deviceIds` is set
-    # then get data for all registered devices.
-    getDeviceData: (deviceIds) =>
+    # with options then get data for all registered devices.
+    getDeviceData: (options, callback) =>
+        if not callback? and lodash.isFunction options
+            callback = options
+            options = null
+
         if not @isRunning [settings.electricimp.devices]
             callback "Module not running or devices not set. Please check the Electric Imp settings." if callback?
             return
 
         # Properly parse device ids (all devices, multiple devices if array, single device if string).
-        deviceIds = settings.electricimp.devices if not deviceIds?
-        deviceIds = [deviceIds] if not lodash.isArray deviceIds
+        if lodash.isArray options
+            deviceIds = options
+        else if lodash.isString options
+            deviceIds = [options]
+        else if options?.deviceIds?
+            deviceIds = options.deviceIds
+        else
+            deviceIds = settings.electricimp.devices
 
         # For each device make a request and save resulting data.
         for id in deviceIds
@@ -57,6 +68,7 @@ class ElectricImp extends (require "./baseApi.coffee")
                         # If the imp code has no id, set the same as the device.
                         result.id = id if not result.id?
                         @setData result.id, result
+                        logger.info "ElectricImp.getDeviceData", id, result
 
 
 # Singleton implementation.

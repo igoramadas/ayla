@@ -1,15 +1,13 @@
 # WITHINGS API
 # -----------------------------------------------------------------------------
 # Module to get weight and air data from Withings smart scales.
-# More info at www.withings.com.
+# More info at http://www.withings.com/en/api
 class Withings extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
-    database = expresser.database
     logger = expresser.logger
     settings = expresser.settings
 
-    async = expresser.libs.async
     lodash = expresser.libs.lodash
     moment = expresser.libs.moment
 
@@ -75,7 +73,7 @@ class Withings extends (require "./baseApi.coffee")
             else
                 logger.debug "Withings.getWeight", startTimestamp, endTimestamp, result
 
-            callback err, result if callback?
+            callback err, result if lodash.isFunction callback
 
 
 # Singleton implementation.

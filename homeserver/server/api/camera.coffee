@@ -82,7 +82,7 @@ class Camera extends (require "./baseApi.coffee")
                 @setData cam.host, {filename: saveTo}
                 logger.info "Camera.takeSnap", cam.host, cam.ip
 
-            callback err, result if callback?
+            callback err, result if lodash.isFunction callback
 
     # Take a snapshot for every registered camera on the network.
     takeAllSnaps: (job) =>

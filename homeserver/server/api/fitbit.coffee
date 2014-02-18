@@ -60,9 +60,9 @@ class Fitbit extends (require "./baseApi.coffee")
         # Make request using OAuth.
         @oauth.get reqUrl, (err, result) ->
             result = JSON.parse result if lodash.isString result
-            callback err, result if callback?
+            callback err, result if lodash.isFunction callback
 
-    # GET DATA
+    # SLEEP DATA
     # -------------------------------------------------------------------------
 
     # Get sleep data for the specified filter / date, or for yesterday
@@ -83,7 +83,10 @@ class Fitbit extends (require "./baseApi.coffee")
             else
                 @setData "sleep", result, filter
 
-            callback err, result if callback?
+            callback err, result if lodash.isFunction callback
+
+    # ACTIVITIES DATA
+    # -------------------------------------------------------------------------
 
     # Get activity data (steps, calories, etc) for the specified filter / date,
     # or yesterday if no `date` is provided.
@@ -103,7 +106,10 @@ class Fitbit extends (require "./baseApi.coffee")
             else
                 @setData "activities", result, filter
 
-            callback err, result if callback?
+            callback err, result if lodash.isFunction callback
+
+    # BODY DATA
+    # -------------------------------------------------------------------------
 
     # Get weight and body fat data for the specified date range.
     # If no `startDate` and `endDate` are passed then get data for the past week.
@@ -128,8 +134,9 @@ class Fitbit extends (require "./baseApi.coffee")
                 @logError "Fitbit.getBody", filter, err
             else
                 results = lodash.merge results[0], results[1]
-                @setData "body", results
-                callback err, results if callback?
+                @setData "body", results, filter
+
+            callback err, results if callback?
 
 
 # Singleton implementation.

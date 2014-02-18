@@ -85,7 +85,7 @@ class Netatmo extends (require "./baseApi.coffee")
         # Make request using OAuth.
         @oauth.get reqUrl, (err, result) =>
             result = JSON.parse result if result? and lodash.isString result
-            callback err, result if callback?
+            callback err, result if lodash.isFunction callback
 
     # Helper to get API request parameters based on the passed filter.
     # Sets default end date to now and scale to 30 minutes.
@@ -103,7 +103,7 @@ class Netatmo extends (require "./baseApi.coffee")
 
         return params
 
-    # GET DATA
+    # DEVICES DATA
     # -------------------------------------------------------------------------
 
     # Get device and related modules from Netatmo.
@@ -123,7 +123,10 @@ class Netatmo extends (require "./baseApi.coffee")
                 @setData "devices", deviceData
                 logger.info "Netatmo.getDevices", "Got #{result.body.devices.length} devices, #{result.body.modules.length} modules."
 
-            callback err, result if callback?
+            callback err, result if lodash.isFunction callback
+
+    # OUTDOOR WEATHER DATA
+    # -------------------------------------------------------------------------
 
     # Get outdoor readings from Netatmo. A moduleId must be set on the filter.
     getOutdoor: (filter, callback) =>
@@ -149,7 +152,7 @@ class Netatmo extends (require "./baseApi.coffee")
                 @setData "outdoor", body, filter
                 logger.info "Netatmo.getOutdoor", filter, body
 
-            callback err, result if callback?
+            callback err, result if lodash.isFunction callback
 
     # Get current conditions for all outdoor modules (module type NAModule1).
     getAllOutdoor: =>
@@ -161,6 +164,9 @@ class Netatmo extends (require "./baseApi.coffee")
         for d in @data.devices[0].value
             modules = lodash.filter d.modules, {type: "NAModule1"}
             @getOutdoor {device_id: d["_id"], module_id: m["_id"]} for m in modules
+
+    # INDOOR WEATHER DATA
+    # -------------------------------------------------------------------------
 
     # Get indoor readings from Netatmo. Default is to get only the most current data.
     getIndoor: (filter, callback) =>
@@ -181,7 +187,7 @@ class Netatmo extends (require "./baseApi.coffee")
                 @setData "indoor", body, filter
                 logger.info "Netatmo.getIndoor", filter, body
 
-            callback err, result if callback?
+            callback err, result if lodash.isFunction callback
 
     # Get current conditions for all indoor modules (module type NAModule4).
     getAllIndoor: =>

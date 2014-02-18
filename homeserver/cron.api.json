@@ -87,9 +87,9 @@
     ],
     "toshl.coffee": [
         {
-            "callback": "jobGetRecentExpenses",
-            "description": "Probe Toshl to get recent expenses twice a day",
-            "schedule": ["11:00:00", "21:00:00"],
+            "callback": "getRecentExpenses",
+            "description": "Probe Toshl to get recent expenses three times a day",
+            "schedule": ["09:00:00", "16:00:00", "23:00:00"],
             "enabled": false
         }
     ],

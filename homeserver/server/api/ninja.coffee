@@ -61,7 +61,7 @@ class Ninja extends (require "./baseApi.coffee")
                 logger.info "Ninja.getDevices", "Got #{lodash.size result} devices."
 
             # Callback set?
-            callback err, result if callback?
+            callback err, result if lodash.isFunction callback
 
     # SET DEVICE DATA
     # -------------------------------------------------------------------------

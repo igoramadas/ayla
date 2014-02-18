@@ -60,7 +60,7 @@ class Wunderground extends (require "./baseApi.coffee")
             q = settings.wunderground.defaultQuery
 
         @makeRequest reqUrl + "#{q}.json", (err, result) =>
-            callback err, result if callback?
+            callback err, result if lodash.isFunction callback
 
     # GET WEATHER DATA
     # -------------------------------------------------------------------------
@@ -79,7 +79,7 @@ class Wunderground extends (require "./baseApi.coffee")
                 result = result.current_observation
                 @setData "conditions", result, filter
 
-            callback err, result if callback?
+            callback err, result if lodash.isFunction callback
 
     # Get the weather forecast for the next 3 days. If not filter is specified,
     # use default location from settings.netatmo.defaultQuery.
@@ -95,7 +95,7 @@ class Wunderground extends (require "./baseApi.coffee")
                 result = result.forecast.simpleforecast
                 @setData "forecast", result, filter
 
-            callback err, result if callback?
+            callback err, result if lodash.isFunction callback
 
     # Get sunrise and sunset hours and other astronomy details for today. If not filter
     # is specified, use default location from settings.netatmo.defaultQuery.
@@ -111,7 +111,7 @@ class Wunderground extends (require "./baseApi.coffee")
                 result = result.moon_phase
                 @setData "astronomy", result, filter
 
-            callback err, result if callback?
+            callback err, result if lodash.isFunction callback
 
 
 # Singleton implementation.
