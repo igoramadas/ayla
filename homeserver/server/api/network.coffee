@@ -65,21 +65,22 @@ class Network extends (require "./baseApi.coffee")
 
         @baseStop()
 
-    # Probe router for stats on connected LAN clients, WAN, etc.
+    # Set router implementation. Get router model, or use default
+    # (first file found under the /api/networkRouter folder).
     setRouter: =>
+        if not settings.network.router?.model?
+            logger.warn "Network.setRouter", "No specific router model was set. Will use default: dlink860l."
+            model = "dlink860l"
+        else
+            model = settings.network.router.model
 
-
-        # Get router model, or use default (first file found under the /api/networkRouter folder).
-        model = settings.network.router.model or "dlink860l"
-        routerPath = path.join __dirname, "../", "server/api/networkRouter"
-        files = fs.readdirSync routerPath
-
-        # Iterate router files and set the correct one based on the model specified above.
-        for f in files
-            if f.toLowerCase().replace(".coffee", "") is model.toLowerCase()
-                @router = require "./networkRouter/#{f}"
-                @probeRouter()
-                return
+        # Get router class and instantiate it.
+        try
+            routerClass = require "./networkRouter/#{model}.coffee"
+            @router = new routerClass
+            @probeRouter()
+        catch ex
+            @logError "Network.setRouter", model, ex
 
     # GET NETWORK STATS
     # -------------------------------------------------------------------------

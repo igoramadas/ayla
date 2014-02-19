@@ -37,9 +37,13 @@ class NetworkRouter_Dlink860L
             reqParams = {parseJson: false, isForm: true, body: body, cookie: @cookie.data}
 
             @makeRequest routerUrl + "getcfg.php", reqParams, (err, result) =>
-                if not err?
+                if err?
+                    callback {requestError: err}
+                else
                     xml2js.parseString result, {explicitArray: false}, (xmlErr, parsedJson) =>
-                        if not xmlErr?
+                        if xmlErr?
+                            callback {xmlError: xmlErr}
+                        else
                             routerObj = {timestamp: moment().unix()}
 
                             # Iterate router response to create a friendly object.
@@ -92,6 +96,7 @@ class NetworkRouter_Dlink860L
                             getRouterConfig()
             catch ex
                 logger.debug "Network.probeRouter", "Zombie error.", ex
+                callback {exception: ex}
 
         else
             # Proceed to the router config XML.
