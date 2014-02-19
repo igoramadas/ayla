@@ -213,7 +213,7 @@ class EmailManager extends (require "./baseManager.coffee")
         # Iterate rules and get related action scripts.
         for r in rules
             try
-                a = new (require "../emailActions/#{r.action}.coffee")
+                a = new (require "./#{r.action}.coffee")
                 a.action = r.action
                 actions.push a
             catch ex

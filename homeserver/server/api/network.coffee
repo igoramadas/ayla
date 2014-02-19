@@ -1,6 +1,10 @@
 # NETWORK API
 # -----------------------------------------------------------------------------
-# Module for internal network management and discovery.
+# Module for internal network management and discovery. Please note that a few
+# other API modules depend on this Network module to work, so unless you have a
+# very specific use case please leave it on the `settings.modules.enabled` list.
+# You'll also need to define a specific wrapper for your network router, by
+# default it supports the D-Link DIR-860L model.
 class Network extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
@@ -11,23 +15,21 @@ class Network extends (require "./baseApi.coffee")
 
     buffer = require "buffer"
     dgram = require "dgram"
+    fs = require "fs"
     http = require "http"
     lodash = expresser.libs.lodash
     mdns = require "mdns2"
     moment = expresser.libs.moment
+    path = require "path"
     url = require "url"
     xml2js = require "xml2js"
-    zombie = require "zombie"
 
     # PROPERTIES
     # -------------------------------------------------------------------------
 
-    # Local network discovery and headless browsers.
+    # Local network discovery and router model object.
     mdnsBrowser: null
-    zombieBrowser: null
-
-    # Holds the login cookie for the router.
-    routerCookie: {timestamp: 0}
+    router: null
 
     # Holds user status (online true, offline false) based on their mobile
     # phones connected to the same network.
@@ -35,17 +37,6 @@ class Network extends (require "./baseApi.coffee")
 
     # Is it running on the expected local network, or remotely?
     isHome: true
-
-    # Return a list of devices marked as offline (up=false).
-    offlineDevices: =>
-        result = []
-
-        # Iterate network devices.
-        for sKey, sData of @data
-            for d in sData.devices
-                result.push d if not d.up
-
-        return result
 
     # INIT
     # -------------------------------------------------------------------------
@@ -62,7 +53,7 @@ class Network extends (require "./baseApi.coffee")
         @mdnsBrowser.on "serviceUp", @onServiceUp
         @mdnsBrowser.on "serviceDown", @onServiceDown
         @mdnsBrowser.start()
-        @probeRouter()
+        @setRouter()
 
         @baseStart()
 
@@ -73,6 +64,22 @@ class Network extends (require "./baseApi.coffee")
         @mdnsBrowser.stop()
 
         @baseStop()
+
+    # Probe router for stats on connected LAN clients, WAN, etc.
+    setRouter: =>
+
+
+        # Get router model, or use default (first file found under the /api/networkRouter folder).
+        model = settings.network.router.model or "dlink860l"
+        routerPath = path.join __dirname, "../", "server/api/networkRouter"
+        files = fs.readdirSync routerPath
+
+        # Iterate router files and set the correct one based on the model specified above.
+        for f in files
+            if f.toLowerCase().replace(".coffee", "") is model.toLowerCase()
+                @router = require "./networkRouter/#{f}"
+                @probeRouter()
+                return
 
     # GET NETWORK STATS
     # -------------------------------------------------------------------------
@@ -129,81 +136,26 @@ class Network extends (require "./baseApi.coffee")
             if @data[nKey].devices?
                 @checkDevice d for d in @data[nKey].devices
 
-    # Probe router for stats on connected LAN clients, WAN, etc.
-    probeRouter: =>
+    # Probe router data.
+    probeRouter: (callback) =>
+        if not @isRunning [@router]
+            callback "Module not running or Router wrapper not started. Please check Network and router settings." if callback?
+            return
+
+        # Get correct router URL depending if running at home or not.
         if @isHome
             routerUrl = settings.network.router.localUrl
         else
             routerUrl = settings.network.router.remoteUrl
 
-        # Set POST body.
-        body = {SERVICES: "RUNTIME.DEVICE.LANPCINFO,RUNTIME.PHYINF"}
+        # Probe and set the `router` data.
+        @router.probe routerUrl, (err, result) =>
+            if err?
+                @logError "Network.probeRouter", err
+            else
+                @setData "router", result
 
-        # Create a request helper, which is gonna be called whenever the login cookie is set.
-        getRouterConfig = =>
-            logger.debug "Network.probeRouter", "getRouterConfig", @routerCookie
-            reqParams = {parseJson: false, isForm: true, body: body, cookie: @routerCookie.data}
-            
-            @makeRequest routerUrl + "getcfg.php", reqParams, (err, result) =>
-                if not err?
-                    xml2js.parseString result, {explicitArray: false}, (xmlErr, parsedJson) =>
-                        if not xmlErr?
-                            routerObj = {timestamp: moment().unix()}
-
-                            # Iterate router response to create a friendly object.
-                            # Looks complex but basically we're removing extra fields
-                            # and unecessary arrays to make a nice devices list.
-                            for m in parsedJson.postxml.module
-
-                                # Parse connected LAN devices.
-                                if m.service.toString() is "RUNTIME.DEVICE.LANPCINFO"
-                                    routerObj.lanDevices = m.runtime.lanpcinfo.entry
-
-                                # Parse connected Wifi devices.
-                                else if m.service.toString() is "RUNTIME.PHYINF"
-
-                                    # Parse wifi on 2.4 GHz.
-                                    uidWifi = settings.network.router.uidWifi24g
-                                    wifi24g = lodash.find m.runtime.phyinf, {uid: uidWifi}
-                                    routerObj.wifi24g = wifi24g.media.clients.entry
-
-                                    # Parse wifi on 2.4 GHz.
-                                    uidWifi = settings.network.router.uidWifi5g
-                                    wifi5g = lodash.find m.runtime.phyinf, {uid: uidWifi}
-                                    routerObj.wifi5g = wifi5g.media.clients.entry
-
-                            # Save router data.
-                            @setData "router", routerObj
-
-        # Check if router login cookie is still valid.
-        # Start headless browser to get login cookie otherwise.
-        if @routerCookie.timestamp < moment().subtract("s", 600).unix()
-            if not @zombieBrowser?
-                @zombieBrowser = new zombie {debug: settings.general.debug, silent: not settings.general.debug}
-
-            # Browser calls inside a try - catch to avoid weird JS / headless problems.
-            try
-                @zombieBrowser.visit routerUrl, (err, browser) =>
-                    if err?
-                        logger.debug "Network.probeRouter", "Zombie error.", err
-
-                    # Only fill form and proceed with login if password field is found.
-                    else if @zombieBrowser.document?.getElementById("loginpwd")?
-                        @zombieBrowser.fill "#loginpwd", settings.network.router.password
-                        @zombieBrowser.pressButton "#noGAC", (e, browser) =>
-                            @routerCookie.data = @zombieBrowser.cookies.toString()
-                            @routerCookie.timestamp = moment().unix()
-                            @zombieBrowser.close()
-                            logger.debug "Network.probeRouter", "Login cookie set"
-
-                            # Proceed to the router config XML after cookie is set.
-                            getRouterConfig()
-            catch ex
-                logger.debug "Network.probeRouter", "Zombie error.", ex
-
-        else
-            # Proceed to the router config XML.
-            getRouterConfig()
+            callback err, result if lodash.isFunction callback
 
     # NETWORK COMMANDS
     # -------------------------------------------------------------------------

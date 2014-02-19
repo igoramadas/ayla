@@ -14,18 +14,14 @@ class OAuth
     oauthModule = require "oauth"
     url = require "url"
 
-    # PROPERTIES
-    # -------------------------------------------------------------------------
-
-    # Holds a copy of users and tokens.
-    data: {}
-
     # INIT
     # -------------------------------------------------------------------------
 
     # Init the OAuth module and refresh auth tokens from the database.
     constructor: (@service) ->
         logger.debug "OAuth", "New for #{@service}"
+
+        @data = {}
 
     # AUTH SYNC
     # -------------------------------------------------------------------------
@@ -138,8 +134,6 @@ class OAuth
 
         return obj
 
-        return obj
-
     # Get an OAuth protected resource. If no `user` is passed it will use the default one.
     get: (reqUrl, user, callback) =>
         if not callback? and lodash.isFunction user
@@ -156,8 +150,8 @@ class OAuth
         if settings[@service].api.oauthVersion is "2.0"
             @client.get reqUrl, @data[user].accessToken, (err, result) =>
                 if err?
-                    description = err.data?.error_description or err.data?.message or null
-                    @refresh user if description.indexOf("expired") > 0
+                    description = err.data?.error_description or err.data?.error?.message or null
+                    @refresh user if description?.indexOf("expired") > 0
                 callback err, result
         else
             @client.get reqUrl, @data[user].token, @data[user].tokenSecret, (err, result) =>

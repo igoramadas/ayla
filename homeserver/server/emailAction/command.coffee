@@ -20,6 +20,6 @@ class EmailAction_Command
         commander.execute parsedMsg.subject, parsedMsg.text, callback
 
 
-# Exports (not singleton!)
+# Exports
 # -----------------------------------------------------------------------------
 module.exports = exports = EmailAction_Command

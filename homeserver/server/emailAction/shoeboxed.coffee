@@ -25,6 +25,6 @@ class EmailAction_Shoeboxed
         events.emit "emailmanager.send", msg, (err, result) => callback err, result
 
 
-# Exports (not singleton!)
+# Exports
 # -----------------------------------------------------------------------------
 module.exports = exports = EmailAction_Shoeboxed
