@@ -53,9 +53,13 @@ class Network extends (require "./baseApi.coffee")
         @mdnsBrowser.on "serviceUp", @onServiceUp
         @mdnsBrowser.on "serviceDown", @onServiceDown
         @mdnsBrowser.start()
-        @setRouter()
 
+        @setRouter()
         @baseStart()
+
+        if settings.modules.getDataOnStart
+            @probeRouter()
+            @probeDevices()
 
     # Stop monitoring the network.
     stop: =>
@@ -215,8 +219,8 @@ class Network extends (require "./baseApi.coffee")
         i = 0
 
         # Resulting variables.
-        socketErr = null
-        socketResult = null
+        err = null
+        result = null
 
         # Socket post write helper.
         postWrite = (err, result) ->
@@ -282,7 +286,10 @@ class Network extends (require "./baseApi.coffee")
         catch ex
             @logError "Network.onServiceUp", ex
 
-        @data.devices.push existingDevice if isNew
+        # New device? Add to devices list and dispatch event.
+        if isNew
+            @data.devices.push existingDevice
+            events.emit "network.device.up", existingDevice
 
     # When a service disappears from the network.
     onServiceDown: (service) =>
@@ -292,24 +299,15 @@ class Network extends (require "./baseApi.coffee")
         try
             for sKey, sData of @data
                 existingDevice = lodash.find sData.devices, (d) =>
-                    return service.addresses.indexOf d.ip >= 0 and service.port is d.localPort
+                    return lodash.contains(service.addresses, d.ip) and service.port is d.localPort
 
+                # Device found? Set it down and emit event.
                 if existingDevice?
                     existingDevice.up = false
                     existingDevice.mdns = false
+                    events.emit "network.device.down", existingDevice
         catch ex
             @logError "Network.onServiceDown", ex
-
-    # JOBS
-    # -------------------------------------------------------------------------
-
-    # Keep probing network devices every few seconds.
-    jobProbeDevices: =>
-        @probeDevices()
-
-    # Keep probing network router every few seconds.
-    jobProbeRouter: =>
-        @probeRouter()
 
 
 # Singleton implementation.

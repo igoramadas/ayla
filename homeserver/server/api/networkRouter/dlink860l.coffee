@@ -2,11 +2,12 @@
 # -----------------------------------------------------------------------------
 # Network router wrapper for D-Link DIR-860L. Implements a `probe` method
 # which is used by the Network API module to get data from the router.
-class NetworkRouter_Dlink860L
+class NetworkRouter_Dlink860L extends (require "../baseApi.coffee")
 
     expresser = require "expresser"
     events = expresser.events
     logger = expresser.logger
+    settings = expresser.settings
     utils = expresser.utils
 
     lodash = expresser.libs.lodash
@@ -81,7 +82,7 @@ class NetworkRouter_Dlink860L
             try
                 @zombieBrowser.visit routerUrl, (err, browser) =>
                     if err?
-                        logger.debug "Network.probeRouter", "Zombie error.", err
+                        @logError "NetworkRouter.probe", "Zombie error.", err
 
                     # Only fill form and proceed with login if password field is found.
                     else if @zombieBrowser.document?.getElementById("loginpwd")?
@@ -90,12 +91,12 @@ class NetworkRouter_Dlink860L
                             @cookie.data = @zombieBrowser.cookies.toString()
                             @cookie.timestamp = moment().unix()
                             @zombieBrowser.close()
-                            logger.debug "Network.probeRouter", "Login cookie set"
+                            logger.debug "NetworkRouter.probe", "Login cookie set"
 
                             # Proceed to the router config XML after cookie is set.
                             getRouterConfig()
             catch ex
-                logger.debug "Network.probeRouter", "Zombie error.", ex
+                @logError "NetworkRouter.probe", "Zombie error.", ex
                 callback {exception: ex}
 
         else

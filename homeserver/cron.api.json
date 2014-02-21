@@ -65,16 +65,16 @@
     ],
     "network.coffee": [
         {
-            "callback": "jobProbeDevices",
+            "callback": "probeDevices",
             "description": "Probe network devices and update their statuses every minute.",
             "schedule": 60,
-            "enabled": false
+            "enabled": true
         },
         {
-            "callback": "jobProbeRouter",
+            "callback": "probeRouter",
             "description": "Probe network router to check for online users every 30 seconds.",
             "schedule": 30,
-            "enabled": false
+            "enabled": true
         }
     ],
     "ninja.coffee": [

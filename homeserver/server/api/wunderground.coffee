@@ -28,6 +28,11 @@ class Wunderground extends (require "./baseApi.coffee")
         else
             @baseStart()
 
+            if settings.modules.getDataOnStart
+                @getAstronomy()
+                @getConditions()
+                @getForecast()
+
     # Stop collecting Wunderground data.
     stop: =>
         @baseStop()
