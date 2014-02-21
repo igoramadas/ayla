@@ -12,6 +12,8 @@ class LightsManager extends (require "./baseManager.coffee")
     lodash = expresser.libs.lodash
     moment = expresser.libs.moment
 
+    title: "Lights"
+
     # INIT
     # -------------------------------------------------------------------------
 

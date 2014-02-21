@@ -12,6 +12,8 @@ class WeatherManager extends (require "./baseManager.coffee")
     lodash = expresser.libs.lodash
     moment = expresser.libs.moment
 
+    title: "Weather"
+
     # COMPUTED PROPERTIES
     # -------------------------------------------------------------------------
 

@@ -1,6 +1,6 @@
 # SERVER: USER MANAGER
 # -----------------------------------------------------------------------------
-# Handles user preferences and events.
+# Handles user presence and personal actions.
 class UserManager extends (require "./baseManager.coffee")
 
     expresser = require "expresser"
@@ -13,6 +13,8 @@ class UserManager extends (require "./baseManager.coffee")
     lodash = expresser.libs.lodash
     moment = expresser.libs.moment
     wundergroundApi = require "../api/wunderground.coffee"
+
+    title: "Users"
 
     # INIT
     # -------------------------------------------------------------------------

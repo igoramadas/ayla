@@ -3,5 +3,7 @@ extends layout
 block contents
     #api
         h1= title
-        dl.tabs(data-tab)
-        div.tabs-content
+        ul
+            for m, key in apiModules
+                li
+                    a(href="/#{m.moduleId}") #{m.moduleName}

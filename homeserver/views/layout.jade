@@ -30,19 +30,10 @@ html.no-js
                         a(href="#") Menu
                 section.top-bar-section
                     ul.left
-                        li.overview
-                            a(href="/") Overview
-                        li.weather
-                            a(href="/weather") Weather
-                        li.lights
-                            a(href="/lights") Lights
-                        li.security
-                            a(href="/security") Security
-                        li.fitness
-                            a(href="/fitness") Fitness
-                        li.money
-                            a(href="/money") Money
-                        li.system
-                            a(href="/system") System
+                        for m, key in managers
+                            li(class="#{m.title.toLowerCase()}")
+                                a(href="/#{m.title.toLowerCase()}") #{m.title}
+                        li.apimodules
+                            a(href="/api") API Modules
             div#contents
                 block contents

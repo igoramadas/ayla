@@ -1,4 +1,4 @@
-# SERVER: HOME MANAGER
+# SERVER: FITNESS MANAGER
 # -----------------------------------------------------------------------------
 # Handles fitness data (sleep, weight, fat, activities etc).
 class FitnessManager extends (require "./baseManager.coffee")
@@ -11,6 +11,8 @@ class FitnessManager extends (require "./baseManager.coffee")
 
     lodash = expresser.libs.lodash
     moment = expresser.libs.moment
+
+    title: "Fitness"
 
     # INIT
     # -------------------------------------------------------------------------

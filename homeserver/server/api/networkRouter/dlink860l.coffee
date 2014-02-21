@@ -68,7 +68,7 @@ class NetworkRouter_Dlink860L
                                     wifi5g = lodash.find m.runtime.phyinf, {uid: uidWifi}
                                     routerObj.wifi5g = wifi5g.media.clients.entry
 
-
+                            # Return router data to callback.
                             callback null, routerObj
 
         # Check if router login cookie is still valid.

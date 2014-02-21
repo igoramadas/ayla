@@ -1,6 +1,6 @@
 # SERVER: EMAIL MANAGER
 # -----------------------------------------------------------------------------
-# Handles email messages to execute custom actions.
+# Handles email messages from users and the system itself.
 class EmailManager extends (require "./baseManager.coffee")
 
     expresser = require "expresser"
@@ -15,6 +15,8 @@ class EmailManager extends (require "./baseManager.coffee")
     mailparser = require("mailparser").MailParser
     moment = expresser.libs.moment
     util = require "util"
+
+    title: "Email"
 
     # PROPERTIES
     # -------------------------------------------------------------------------

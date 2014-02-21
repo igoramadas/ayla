@@ -9,20 +9,12 @@ class Routes
     settings = expresser.settings
     utils = expresser.utils
 
+    api = require "./api.coffee"
     commander = require "./commander.coffee"
     fs = require "fs"
-    fitbitApi = require "./api/fitbit.coffee"
-    fitnessManager = require "./manager/fitness.coffee"
-    hueApi = require "./api/hue.coffee"
     lodash = expresser.libs.lodash
-    netatmoApi = require "./api/netatmo.coffee"
-    networkApi = require "./api/network.coffee"
-    ninjaApi = require "./api/ninja.coffee"
+    manager = require "./manager.coffee"
     path = require "path"
-    toshlApi = require "./api/toshl.coffee"
-    weatherManager = require "./manager/weather.coffee"
-    withingsApi = require "./api/withings.coffee"
-    wundergroundApi = require "./api/wunderground.coffee"
 
     # INIT
     # -------------------------------------------------------------------------
@@ -31,36 +23,36 @@ class Routes
     init: (callback) =>
         app = expresser.app.server
 
-        # Main routes.
+        # Main route.
         app.get "/", indexPage
-        app.get "/fitness", fitnessPage
-        app.get "/lights", lightsPage
-        app.get "/system", systemPage
-        app.get "/weather", weatherPage
 
-        # API related routes.
-        app.get "/api/commander/:cmd", apiCommander
-        app.post "/api/commander/:cmd", apiCommander
-        app.get "/fitbit", fitbitPage
-        app.get "/fitbit/auth", fitbitAuth
-        app.get "/fitbit/auth/callback", fitbitAuthCallback
-        app.post "/fitbit/auth/callback", fitbitAuthCallback
-        app.get "/netatmo", netatmoPage
-        app.get "/netatmo/auth", netatmoAuth
-        app.get "/netatmo/auth/callback", netatmoAuthCallback
-        app.post "/netatmo/auth/callback", netatmoAuthCallback
-        app.get "/network", networkPage
-        app.get "/ninja", ninjaPage
+        # Manager routes.
+        for key, m of manager.modules
+            do (m) ->
+                link = m.title.toLowerCase()
+                app.get "/#{link}", (req, res) ->
+                    options = {pageTitle: m.title, data: m.data}
+                    renderPage req, res, link, options
+
+
+        # API modules routes.
+        for key, m of api.modules
+            do (m) ->
+                app.get "/#{m.moduleId}", (req, res) ->
+                    renderApiModulePage req, res, m
+
+                # Has OAuth bindings?
+                if m.oauth?
+                    oauthProcess = (req, res) -> m.oauth.process req, res
+                    app.get "/#{m.moduleId}/auth", oauthProcess
+                    app.get "/#{m.moduleId}/auth/callback", oauthProcess
+                    app.post "/#{m.moduleId}/auth/callback", oauthProcess
+
+        # API list, commander and status routes.
+        app.get "/api", apiPage
+        app.get "/commander/:cmd", commanderPage
+        app.post "/commander/:cmd", commanderPage
         app.get "/status", statusPage
-        app.get "/toshl", toshlPage
-        app.get "/toshl/auth", toshlAuth
-        app.get "/toshl/auth/callback", toshlAuthCallback
-        app.post "/toshl/auth/callback", toshlAuthCallback
-        app.get "/withings", withingsPage
-        app.get "/withings/auth", withingsAuth
-        app.get "/withings/auth/callback", withingsAuthCallback
-        app.post "/withings/auth/callback", withingsAuthCallback
-        app.get "/wunderground", wundergroundPage
 
         callback() if callback?
 
@@ -71,146 +63,32 @@ class Routes
     indexPage = (req, res) ->
         renderPage req, res, "index"
 
-    # Fitness info page.
-    fitnessPage = (req, res) ->
-        options = {pageTitle: "Fitness", data: fitnessManager.data}
-        renderPage req, res, "fitness", options
-
-    # L:ight control page.
-    lightsPage = (req, res) ->
-        options = {pageTitle: "Home lights", data: {hue: hueApi.data, ninja: ninjaApi.data}}
-        renderPage req, res, "home.lights", options
-
-    # System info page.
-    systemPage = (req, res) ->
-        renderPage req, res, "system.jobs", {pageTitle: "Scheduled jobs", jobs: cron.jobs}
-
-    # Weather info page.
-    weatherPage = (req, res) ->
-        options = {pageTitle: "Weather", data: weatherManager.data}
-        renderPage req, res, "weather", options
-
-    # API ROUTES
+    # API, COMMANDER AND STATUS ROUTES
     # -------------------------------------------------------------------------
 
+    # The API modules listing.
+    apiPage = (req, res) ->
+        renderPage req, res, "api", {title: "API Modules", apiModules: api.modules}
+
     # The commander processor.
-    apiCommander = (req, res) ->
+    commanderPage = (req, res) ->
         commander.execute req.params.cmd, req.body, (err, result) ->
             if err?
                 res.json {error: err}
             else
                 res.json result
 
-    # FITBIT ROUTES
-    # -------------------------------------------------------------------------
-
-    # Main Fitbit entrance page.
-    fitbitPage = (req, res) ->
-        renderApiPage req, res, fitbitApi
-
-    # Get Fitbit OAuth tokens.
-    fitbitAuth = (req, res) ->
-        fitbitApi.oauth.process req, res
-
-    # Callback for Fitbit OAuth.
-    fitbitAuthCallback = (req, res) ->
-        fitbitApi.oauth.process req, res
-
-    # NETATMO ROUTES
-    # -------------------------------------------------------------------------
-
-    # Main Netatmo entrance page.
-    netatmoPage = (req, res) ->
-        renderApiPage req, res, netatmoApi
-
-    # Get Netatmo OAuth tokens.
-    netatmoAuth = (req, res) ->
-        netatmoApi.oauth.process req, res
-
-    # Callback for Netatmo OAuth.
-    netatmoAuthCallback = (req, res) ->
-        netatmoApi.oauth.process req, res
-
-    # NETWORK ROUTES
-    # -------------------------------------------------------------------------
-
-    # Network overview page.
-    networkPage = (req, res) ->
-        renderPage req, res, "network", {pageTitle: "Network overview", data: networkApi.data}
-
-    # NINJA BLOCKS ROUTES
-    # -------------------------------------------------------------------------
-
-    # Main Fitbit entrance page.
-    ninjaPage = (req, res) ->
-        renderApiPage req, res, ninjaApi
-
-    # PHONE CLIENT ROUTES
-    # -------------------------------------------------------------------------
-
-    # Phone client: retrieve fitness data.
-    phoneFitness = (req, res) ->
-        console.warn 1
-
-    # Phone client: retrieve home data.
-    phoneHome = (req, res) ->
-        console.warn 1
-
-    # Phone client: retrieve weather data.
-    phoneWeather = (req, res) ->
-        console.warn 1
-
-    # STATUS ROUTES
-    # -------------------------------------------------------------------------
-
     # Main status page.
     statusPage = (req, res) ->
         res.json utils.getServerInfo()
-
-    # TOSHL ROUTES
-    # -------------------------------------------------------------------------
-
-    # Main Toshl entrance page.
-    toshlPage = (req, res) ->
-        renderApiPage req, res, toshlApi
-
-    # Get Toshl OAuth tokens.
-    toshlAuth = (req, res) ->
-        toshlApi.oauth.process req, res
-
-    # Callback for Toshl OAuth.
-    toshlAuthCallback = (req, res) ->
-        toshlApi.oauth.process req, res
-
-    # WITHINGS ROUTES
-    # -------------------------------------------------------------------------
-
-    # Main Withings entrance page.
-    withingsPage = (req, res) ->
-        renderApiPage req, res, withingsApi
-
-    # Get Withings OAuth tokens.
-    withingsAuth = (req, res) ->
-        withingsApi.oauth.process req, res
-
-    # Callback for Withings OAuth.
-    withingsAuthCallback = (req, res) ->
-        withingsApi.oauth.process req, res
-
-    # WUNDERGROUND ROUTES
-    # -------------------------------------------------------------------------
-
-    # Main Weather Underground entrance page.
-    wundergroundPage = (req, res) ->
-        renderApiPage req, res, wundergroundApi
 
     # HELPER METHODS
     # -------------------------------------------------------------------------
 
     # Helper to show an overview about the specified API module.
-    renderApiPage = (req, res, module) ->
+    renderApiModulePage = (req, res, module) ->
         options = {title: module.moduleName, data: module.data}
-        renderPage req, res, "api", options
+        renderPage req, res, "api.module", options
 
     # Helper to render pages.
     renderPage = (req, res, filename, options) ->
@@ -230,6 +108,9 @@ class Routes
         # Check if current view has an external CSS to be loaded.
         cssPath = path.resolve __dirname, "../", "assets/css/#{baseName}.styl"
         options.loadCss.push "#{baseName}.css" if fs.existsSync cssPath
+
+        # Append managers to the output.
+        options.managers = manager.modules
 
         # Force .jade extension.
         filename += ".jade" if filename.indexOf(".jade") < 0
