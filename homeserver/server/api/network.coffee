@@ -16,11 +16,10 @@ class Network extends (require "./baseApi.coffee")
     fs = require "fs"
     http = require "http"
     lodash = expresser.libs.lodash
-    mdns = require "mdns2"
+    mdns = require "mdns"
     moment = expresser.libs.moment
     path = require "path"
     url = require "url"
-    xml2js = require "xml2js"
 
     # PROPERTIES
     # -------------------------------------------------------------------------
@@ -43,7 +42,7 @@ class Network extends (require "./baseApi.coffee")
         @mdnsBrowser = mdns.createBrowser mdns.tcp("http")
         @checkIP()
 
-        @baseInit {devices: [], router: {}}
+        @baseInit {devices: []}
 
     # Start monitoring the network.
     start: =>
@@ -52,10 +51,8 @@ class Network extends (require "./baseApi.coffee")
         @mdnsBrowser.start()
 
         @baseStart()
-        @setRouter()
 
         if settings.modules.getDataOnStart
-            @probeRouter()
             @probeDevices()
 
     # Stop monitoring the network.
@@ -220,17 +217,15 @@ class Network extends (require "./baseApi.coffee")
 
     # When a new service is discovered on the network.
     onServiceUp: (service) =>
-        logger.debug "Network.onServiceUp", service
+        logger.info "Network.onServiceUp", service.name
 
         # Try parsing and identifying the new service.
         try
-            for sKey, sData of @data
-                if sData.devices?
-                    existingDevice = lodash.find sData.devices, (d) ->
-                        if service.adresses?
-                            return service.addresses.indexOf(d.ip) >= 0 and service.port is d.localPort
-                        else
-                            return false
+            existingDevice = lodash.find @data.devices, (d) ->
+                if service.adresses?
+                    return service.addresses.indexOf(d.ip) >= 0 and (service.port is d.localPort or service.port is d.remotePort)
+                else
+                    return false
 
             # Create new device or update existing?
             if not existingDevice?
@@ -250,9 +245,10 @@ class Network extends (require "./baseApi.coffee")
             @logError "Network.onServiceUp", ex
 
         # New device? Add to devices list and dispatch event.
-        if isNew
-            @data.devices.push existingDevice
-            events.emit "network.device.up", existingDevice
+        @data.devices.push existingDevice if isNew
+
+        # Save device data.
+        @setData "devices", @data.devices
 
     # When a service disappears from the network.
     onServiceDown: (service) =>
@@ -260,15 +256,14 @@ class Network extends (require "./baseApi.coffee")
 
         # Try parsing and identifying the removed service.
         try
-            for sKey, sData of @data
-                existingDevice = lodash.find sData.devices, (d) =>
-                    return lodash.contains(service.addresses, d.ip) and service.port is d.localPort
+            existingDevice = lodash.find @data.devices, (d) =>
+                return lodash.contains(service.addresses, d.ip) and (service.port is d.localPort or service.port is d.remotePort)
 
-                # Device found? Set it down and emit event.
-                if existingDevice?
-                    existingDevice.up = false
-                    existingDevice.mdns = false
-                    events.emit "network.device.down", existingDevice
+            # Device found? Set it down and emit event.
+            if existingDevice?
+                existingDevice.up = false
+                existingDevice.mdns = false
+                @setData "devices", @data.devices
         catch ex
             @logError "Network.onServiceDown", ex
 

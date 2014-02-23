@@ -16,12 +16,15 @@ class ApiView extends ayla.BaseView
             container.addClass "content"
 
             for data in arr
+                filter = $ document.createElement "label"
+                filter.html JSON.stringify data.filter
                 timestamp = $ document.createElement "label"
-                timestamp.html "Last update: " + moment(data.timestamp).format "lll"
+                timestamp.html moment.unix(data.timestamp).format "lll"
                 details = $ document.createElement "div"
                 details.JSONView JSON.stringify(data.value)
 
                 contents = $ document.createElement "div"
+                contents.append filter
                 contents.append timestamp
                 contents.append details
 
