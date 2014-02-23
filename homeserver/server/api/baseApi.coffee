@@ -70,23 +70,20 @@ class BaseApi extends (require "../baseModule.coffee")
                     if params.contentType?
                         reqOptions.headers["Content-Type"] = params.contentType
 
-            # Has cookies?
-            if params.cookie?
-                reqOptions.headers["Cookie"] = params.cookie
-
         # No custom parameters? Set default GET request.
         else
             reqOptions.method = "GET"
 
         # Make the HTTP request.
         request reqOptions, (err, resp, body) =>
-            if err?
-                callback {err: err, url: reqUrl, params: params} if callback?
-                return
-
-            # Has callback?
             if callback?
+                if err?
+                    callback {err: err, url: reqUrl, params: params}
+                    return
+
+                # Try parsing result body.
                 try
+                    respError = null
                     parseJson = not params?.parseJson? or params.parseJson
 
                     # Do not parse JSON if parseJson is false or response is not a string.

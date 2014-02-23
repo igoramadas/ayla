@@ -3,8 +3,6 @@
 # Module for internal network management and discovery. Please note that a few
 # other API modules depend on this Network module to work, so unless you have a
 # very specific use case please leave it on the `settings.modules.enabled` list.
-# You'll also need to define a specific wrapper for your network router, by
-# default it supports the D-Link DIR-860L model.
 class Network extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
@@ -27,9 +25,8 @@ class Network extends (require "./baseApi.coffee")
     # PROPERTIES
     # -------------------------------------------------------------------------
 
-    # Local network discovery and router model object.
+    # Local network discovery.
     mdnsBrowser: null
-    router: null
 
     # Holds user status (online true, offline false) based on their mobile
     # phones connected to the same network.
@@ -54,8 +51,8 @@ class Network extends (require "./baseApi.coffee")
         @mdnsBrowser.on "serviceDown", @onServiceDown
         @mdnsBrowser.start()
 
-        @setRouter()
         @baseStart()
+        @setRouter()
 
         if settings.modules.getDataOnStart
             @probeRouter()
@@ -69,33 +66,16 @@ class Network extends (require "./baseApi.coffee")
 
         @baseStop()
 
-    # Set router implementation. Get router model, or use default
-    # (first file found under the /api/networkRouter folder).
-    setRouter: =>
-        if not settings.network.router?.model?
-            logger.warn "Network.setRouter", "No specific router model was set. Will use default: dlink860l."
-            model = "dlink860l"
-        else
-            model = settings.network.router.model
-
-        # Get router class and instantiate it.
-        try
-            routerClass = require "./networkRouter/#{model}.coffee"
-            @router = new routerClass
-            @probeRouter()
-        catch ex
-            @logError "Network.setRouter", model, ex
-
     # GET NETWORK STATS
     # -------------------------------------------------------------------------
 
     # Check if Ayla server is on the home network.
     checkIP: =>
-        if not settings.network?
-            logger.warn "Network.checkIP", "Network settings are not defined. Skip!"
+        if not settings.network?.router?
+            logger.warn "Network.checkIP", "Network router settings are not defined. Skip!"
             return
         else
-            logger.debug "Network.checkIP", "Expected home IP: #{settings.network.ip}"
+            logger.debug "Network.checkIP", "Expected router IP: #{settings.network.router.ip}"
 
         # Get and process current IP.
         ips = utils.getServerIP()
@@ -133,34 +113,17 @@ class Network extends (require "./baseApi.coffee")
         req.on "error", (err) -> device.up = false
 
     # Probe the current network and check device statuses.
-    probeDevices: =>
-        for nKey, nData of settings.network
-            @data[nKey] = lodash.cloneDeep(nData) if not @data[nKey]?
+    probeDevices: (callback) =>
+        if not @isRunning [settings.network.devices]
+            errMsg = "Module is not running or no devices are set. Please check the network devices list on settings."
 
-            # Iterate network devices.
-            if @data[nKey].devices?
-                @checkDevice d for d in @data[nKey].devices
-
-    # Probe router data.
-    probeRouter: (callback) =>
-        if not @isRunning [@router]
-            callback "Module not running or Router wrapper not started. Please check Network and router settings." if callback?
+            if lodash.isArray callback
+                callback errMsg
+            else
+                logger.warn "Network.probeDevices", errMsg
             return
 
-        # Get correct router URL depending if running at home or not.
-        if @isHome
-            routerUrl = settings.network.router.localUrl
-        else
-            routerUrl = settings.network.router.remoteUrl
-
-        # Probe and set the `router` data.
-        @router.probe routerUrl, (err, result) =>
-            if err?
-                @logError "Network.probeRouter", err
-            else
-                @setData "router", result
-
-            callback err, result if lodash.isFunction callback
+        @checkDevice d for d in settings.network.devices
 
     # NETWORK COMMANDS
     # -------------------------------------------------------------------------

@@ -44,7 +44,8 @@ class Api
 
                     # Create database TTL index and init module.
                     expires = settings.database.dataCacheExpireHours * 3600
-                    database.db.collection("data-#{@moduleId}").ensureIndex {"datestamp": 1}, {expireAfterSeconds: expires}
+                    database.db.collection("data-#{@moduleId}").ensureIndex {"datestamp": 1}, {expireAfterSeconds: expires}, (err, result) =>
+                        logger.error "Api.init", "Error creating TTL index.", err if err?
 
         # Load cron jobs.
         cron.load cronPath, {basePath: apiPath}
