@@ -33,7 +33,22 @@
             "description": "Get body weight and fat data every morning.",
             "schedule": ["09:30:00"],
             "enabled": true
+        },
+        {
+            "callback": "getSleep",
+            "description": "Get sleep data for yesterday.",
+            "schedule": ["11:35:00"],
+            "enabled": true
         }
+        ,
+        {
+            "callback": "getSleep",
+            "description": "Get sleep data for 3 days ago.",
+            "schedule": ["11:40:00"],
+            "args": 3,
+            "enabled": true
+        }
+
     ],
     "hue.coffee": [
         {

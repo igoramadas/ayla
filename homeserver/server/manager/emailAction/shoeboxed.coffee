@@ -6,22 +6,25 @@ class EmailAction_Shoeboxed
     events = expresser.events
     logger = expresser.logger
 
+    description: "Forward invoices and bills to Shoeboxed."
+
     # ACTIONS
     # -------------------------------------------------------------------------
 
     # Process invoices and send automatically to Shoeboxed.
     process: (account, parsedMsg, callback) =>
+        if not settings.shoeboxed?.email?
+            logger.warn "EmailAction_Shoeboxed", "Shoeboxed email setting is not defined. Abort!"
+            return callback null, false
+
+        # Message must have attachments.
         if not parsedMsg.attachments? or parsedMsg.attachments.length < 1
             logger.warn "EmailAction_Shoeboxed", parsedMsg.attributes.id, "Message has no attachment. Abort!"
             return callback null, false
 
-        # Shoeboxed email settings must be defined.
-        if not settings.shoeboxed?.email?
-            logger.warn "EmailAction_Shoeboxed", parsedMsg.attributes.id, "Shoeboxed email setting is not defined. Abort!"
-            return callback null, false
-
         # Create message object and dispatch send event.
-        msg = {to: settings.shoeboxed.email, subject: parsedMsg.subject, attachments: parsedMsg.attachments}
+        body = "Forwarded automatically by Ayla."
+        msg = {to: settings.shoeboxed.email, subject: parsedMsg.subject, attachments: parsedMsg.attachments, body: body}
         events.emit "emailmanager.send", msg, (err, result) => callback err, result
 
 

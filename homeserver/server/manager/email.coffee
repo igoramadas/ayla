@@ -1,6 +1,6 @@
 # SERVER: EMAIL MANAGER
 # -----------------------------------------------------------------------------
-# Handles email messages from users and the system itself.
+# Handles email messages from users and from the system itself.
 class EmailManager extends (require "./baseManager.coffee")
 
     expresser = require "expresser"
@@ -41,12 +41,11 @@ class EmailManager extends (require "./baseManager.coffee")
         @defaultTo = defaultUser.email if defaultUser?.email?
         @defaultToMobile = defaultUser.emailMobile if defaultUser?.emailMobile?
 
-        @baseInit()
+        @baseInit {processedEmails: []}
 
     # Start listening to new message events from the server.
     start: =>
         events.on "emailmanager.send", @sendEmail
-        events.on "fitbit.sleep.missing", @onFitbitSleepMissing
 
         # Send email telling Ayla home server has started managing emails.
         if @defaultToMobile?
@@ -57,6 +56,7 @@ class EmailManager extends (require "./baseManager.coffee")
         # Create IMAP clients, one for each email account.
         for key, a of settings.emailAccounts
             account = lodash.cloneDeep a
+            account.id = key
             account.client = new imapModule account.imap
             @accounts[key] = account
             @openBox account
@@ -66,7 +66,6 @@ class EmailManager extends (require "./baseManager.coffee")
     # Stop listening to new messages and disconnect. Set `running` to false.
     stop: =>
         events.off "emailmanager.send", @sendEmail
-        events.off "fitbit.sleep.missing", @onFitbitSleepMissing
 
         # Close IMAP clients.
         for account of @accounts
@@ -74,7 +73,7 @@ class EmailManager extends (require "./baseManager.coffee")
                 account.client.closeBox()
                 account.client.end()
             catch ex
-                logger.debug "EmailManager.stop", "Error", ex
+                @logError "EmailManager.stop", ex
 
         @baseStop()
 
@@ -84,22 +83,25 @@ class EmailManager extends (require "./baseManager.coffee")
     # Open the IMAP email box for the specified account.
     openBox: (account) =>
         if not account?.client?
-            logger.warn "EmailManager.openBox", "The specified account has no valid IMAP client. Abort!"
+            logger.warn "EmailManager.openBox", account.id, "The specified account has no valid IMAP client. Please check the email settings."
             return
 
         # Once IMAP is ready, open the inbox and start listening to messages.
         account.client.once "ready", =>
             account.client.openBox account.inboxName, false, (err, box) =>
                 if err?
-                    logger.error "EmailManager.openBox", account.imap.user, err
+                    @logError "EmailManager.openBox", account.id, err
                     account.client.disconnect()
                 else
+                    logger.info "EmailManager.openBox", account.id, "Inbox ready!"
+
+                    # Start fetching unseen messages immediatelly.
                     @fetchNewMessages account
                     account.client.on "mail", => @fetchNewMessages account
 
         # Handle IMAP errors.
         account.client.on "error", (err) =>
-            logger.error "EmailManager.openBox.onError", account.imap.user, err
+            @logError "EmailManager.openBox.onError", account.id, err
 
         # Connect to the IMAP server.
         account.client.connect()
@@ -108,14 +110,14 @@ class EmailManager extends (require "./baseManager.coffee")
     fetchNewMessages: (account) =>
         account.client.search ["UNSEEN"], (err, results) =>
             if err?
-                logger.error "EmailManager.fetchNewMessages", account.imap.user, err
+                @logError "EmailManager.fetchNewMessages", account.id, err
             else if not results? or results.length < 1
-                logger.debug "EmailManager.fetchNewMessages", account.imap.user, "No new messages"
+                logger.debug "EmailManager.fetchNewMessages", account.id, "No new messages"
             else
-                logger.info "EmailManager.fetchNewMessages", account.imap.user, results.length
+                logger.info "EmailManager.fetchNewMessages", account.id, results.length
                 fetcher = account.client.fetch results, {size: true, struct: true, markSeen: false, bodies: ""}
                 fetcher.on "message", (msg, seqno) => @downloadMessage account, msg, seqno
-                fetcher.once "error", (err) => logger.error "EmailManager.fetchNewMessages.onError", account.imap.user, err
+                fetcher.once "error", (err) => @logError "EmailManager.fetchNewMessages.onError", account.id, err
 
     # Download the specified message and load the related Email Action.
     downloadMessage: (account, msg, seqno) =>
@@ -142,25 +144,29 @@ class EmailManager extends (require "./baseManager.coffee")
 
         # Make sure the `from` is set.
         if not hasFrom
-            logger.warn "EmailManager.processMessage", account.imap.user, "No valid 'from' address, skip message."
+            logger.warn "EmailManager.processMessage", account.id, "No valid 'from' address, skip message."
             return false
 
         # Set parsed message properties.
         parsedMsg.from = parsedMsg.from[0]
         parsedMsg.attributes = msgAttributes
-        logger.debug "EmailManager.processMessage", account.imap.user, msgAttributes.uid, parsedMsg.from.address, parsedMsg.subject
 
         # Get message actions.
         actions = @getMessageActions account, parsedMsg
 
         # Has action? Process them!
         if actions.length > 0
+            processedEmail = {message: parsedMsg, actions: {}}
+            @data.processedEmails.push processedEmail
+
             for action in actions
                 action?.process account, parsedMsg, (err, result) =>
+                    processedEmail.actions[action.id] = not err?
+
                     if err?
-                        logger.error "EmailManager.processMessage", msgAttributes.uid, action.action, err
+                        @logError "EmailManager.processMessage", parsedMsg.from.address, parsedMsg.subject, action.id, err
                     else if result isnt false
-                        logger.info "EmailManager.processMessage", msgAttributes.uid, action.action, result
+                        logger.info "EmailManager.processMessage", "From: #{parsedMsg.from.address}: #{parsedMsg.subject}", action.id
                         @archiveMessage account, parsedMsg unless action.doNotArchive
 
     # Archive a processed message for the specified account.
@@ -168,7 +174,7 @@ class EmailManager extends (require "./baseManager.coffee")
         return if parsedMsg.archiving
 
         if not account.archiveName?
-            logger.warn "EmailManager.archiveMessage", account.imap.user, "The specified account has no archive setting defined. Abort!"
+            logger.warn "EmailManager.archiveMessage", account.id, "The specified account has no archive setting defined. Abort!"
             return
 
         # Set `archibing` flag to prevent duplicate archive routines.
@@ -177,9 +183,9 @@ class EmailManager extends (require "./baseManager.coffee")
         # Move message to the archive box.
         account.client.move parsedMsg.attributes.uid, account.archiveName, (err) =>
             if err?
-                logger.error "EmailManager.archiveMessage", account.imap.user, parsedMsg.attributes.uid
-            else
-                logger.debug "EmailManager.archiveMessage", account.imap.user, parsedMsg.attributes.uid
+                @logError "EmailManager.archiveMessage", account.id, parsedMsg.from.address, parsedMsg.subject, err
+
+            @dataUpdated "processedEmails"
 
     # MESSAGE ACTIONS
     # -------------------------------------------------------------------------
@@ -216,10 +222,10 @@ class EmailManager extends (require "./baseManager.coffee")
         for r in rules
             try
                 a = new (require "./emailAction/#{r.action}.coffee")
-                a.action = r.action
+                a.id = r.action
                 actions.push a
             catch ex
-                logger.error "EmailManager.getMessageActions", r.action, ex
+                @logError "EmailManager.getMessageActions", r.action, ex
 
         # Return actions.
         return actions
@@ -234,27 +240,10 @@ class EmailManager extends (require "./baseManager.coffee")
         if not options.to?
             options.to = if options.mobile then @defaultToMobile else @defaultTo
 
+        logger.info "EmailManager.sendEmail", "From #{options.from} to #{options.to}: #{options.subject}"
+
         # Send the email using the Expresser Mailer module.
         mailer.send options, (err, result) => callback err, result if callback?
-
-    # FITBIT MESSAGES
-    # -------------------------------------------------------------------------
-
-    # Notify user of missing sleep data by email.
-    onFitbitSleepMissing: (data) =>
-        msgOptions = {to: settings.email.toDefault, subject: "Missing sleep data for #{date}", keywords: {}}
-        msgOptions.template = "fitbitMissingSleep"
-        msgOptions.keywords.date = date
-        msgOptions.keywords.dateUrl = date.replace "-", "/"
-
-        # Send the email.
-        mailer.send msgOptions, (errM, resultM) =>
-            if errM?
-                logger.error "Fitbit.jobCheckMissingData", "mailer.send", errM
-                return false
-            else
-                logger.info "Fitbit.jobCheckMissingData", "Notified of missing sleep on #{date}."
-
 
 
 # Singleton implementation.

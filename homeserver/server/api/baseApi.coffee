@@ -100,6 +100,14 @@ class BaseApi extends (require "../baseModule.coffee")
                 catch ex
                     callback {exception: ex, url: reqUrl, params: params}
 
+    # Helper to get filter from a job. Used by most of API modules to properly handle
+    # the filter argument (which can be passed directly or via the `args` property
+    # of a scheduled cron job).
+    getFilterArgs: (filterOrJob) =>
+        return null if not filterOrJob?
+        return filterOrJob.args if filterOrJob.args?
+        return filterOrJob
+
     # Helper to return a callback URL for the current API module.
     getCallbackUrl: (urlPath) =>
         baseUrl = settings.general.appUrl + @moduleId

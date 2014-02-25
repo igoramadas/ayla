@@ -27,15 +27,9 @@ class Manager
         files = fs.readdirSync managerPath
         for f in files
             if f isnt "baseManager.coffee" and f.indexOf(".coffee") > 0
-                disabled = lodash.contains settings.modules.disabled, f.replace(".coffee", "")
-
-                # Only add if not on the disabled modules setting.
-                if disabled
-                    logger.debug "Manager.init", f, "Module is disabled and won't be instantiated."
-                else
-                    module = require "./manager/#{f}"
-                    module.init()
-                    @modules[module.moduleId] = module
+                module = require "./manager/#{f}"
+                module.init()
+                @modules[module.moduleId] = module
 
         # Proceed with callback?
         callback() if callback?

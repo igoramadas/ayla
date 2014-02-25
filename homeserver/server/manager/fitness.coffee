@@ -43,43 +43,32 @@ class FitnessManager extends (require "./baseManager.coffee")
     # -------------------------------------------------------------------------
 
     # When current weight is informed by Fitbit.
-    onFitbitWeight: (data) =>
+    onFitbitWeight: (data, filter) =>
         @data.weight = {value: data.weight, bmi: data.bmi}
         @dataUpdated "weight"
 
         logger.info "FitnessManager.onFitbitWeight", @data.weight
 
     # When current fat level is informed by Fitbit.
-    onFitbitFat: (data) =>
+    onFitbitFat: (data, filter) =>
         @data.fat = {value: data.fat}
         @dataUpdated "fat"
 
         logger.info "FitnessManager.onFitbitFat", @data.fat
 
     # When current sleep data is informed by Fitbit.
-    onFitbitSleep: (data) =>
+    onFitbitSleep: (data, filter) =>
         @data.sleep = data
         @dataUpdated "sleep"
 
+        if not data?.sleep? or data.sleep.length < 1
+            msgOptions = {subject: "Missing sleep data for #{date}"}
+            msgOptions.template = "fitbitMissingSleep"
+            msgOptions.keywords = {date: filter.date.replace "-", "/"}
+
+            events.emit "emailmanager.send", msgOptions
+
         logger.info "FitnessManager.onFitbitSleep", @data.sleep
-
-    fitbitMissingData: =>
-        if @data.weight?.timestamp < moment().subtract("d", settings.fitbit.missingWeightAfterDays).unix()
-            events.emit "fitbit.weight.missing", @data.weight
-
-        for d in settings.fitbit.missingSleepDays
-            do (d) =>
-                date = moment().subtract("d", d).format settings.fitbit.dateFormat
-
-                # Check if user forgot to add sleep data X days ago.
-                @getSleep date, (err, result) =>
-                    if err?
-                        @logError "Fitbit.jobCheckMissingData", "getSleep", date, err
-                        return false
-
-                    # Has sleep data? Stop here, otherwise emit missing sleep event.
-                    return if result?.sleep?.length > 0
-                    events.emit "fitbit.sleep.missing", result
 
 
 # Singleton implementation.

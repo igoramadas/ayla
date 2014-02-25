@@ -136,13 +136,25 @@ class WeatherManager extends (require "./baseManager.coffee")
     # Helper to set current conditions for the specified room.
     setRoomWeather: (source, data) =>
         room = lodash.findKey settings.home.rooms, {weatherSource: source}
+        return if not room?
 
         roomObj = @data[room]
-        roomObj.temperature = data.temperature or null
-        roomObj.humidity = data.humidity or null
-        roomObj.co2 = data.co2 or null
 
-        # Round values.
+        # Make sure data is taken out of the array and newer than current available data.
+        if lodash.isArray data
+            for d in data
+                if d.timestamp > roomObj.timestamp
+                    lastData = d
+        else if data.timestamp > roomObj.timestamp
+            lastData = data
+
+        # Cancel here if data is not up-to-date.
+        return if not lastData?
+
+        # Update room data or set to null (otherwise it's undefined, not good for Knockout.js) and round values.
+        roomObj.temperature = lastData.temperature or null
+        roomObj.humidity = lastData.humidity or null
+        roomObj.co2 = lastData.co2 or null
         roomObj.temperature = parseFloat(roomObj.temperature).toFixed 1 if roomObj.temperature?
         roomObj.humidity = parseFloat(roomObj.humidity).toFixed 1 if roomObj.humidity?
 
@@ -155,8 +167,8 @@ class WeatherManager extends (require "./baseManager.coffee")
 
     # Helper to set current conditions for outdoors.
     setOutdoorWeather: (data) =>
-        @data.outdoor.temperature = data.temperature
-        @data.outdoor.humidity = data.humidity
+        @data.outdoor.temperature = data.temperature or null
+        @data.outdoor.humidity = data.humidity or null
 
         # Emit updated outdoor conditions to clients and log.
         @dataUpdated "outdoor"
@@ -170,9 +182,9 @@ class WeatherManager extends (require "./baseManager.coffee")
         icon = data.icon.replace(".gif", "").replace("nt_", "")
 
         @data.forecast.condition = data.weather
-        @data.forecast.temperature = data.temperature or data.temp_c
-        @data.forecast.humidity = data.humidity or data.relative_humidity
-        @data.forecast.pressure = data.pressure or data.pressure_mb
+        @data.forecast.temperature = data.temperature or data.temp_c or null
+        @data.forecast.humidity = data.humidity or data.relative_humidity or null
+        @data.forecast.pressure = data.pressure or data.pressure_mb or null
 
         # Set forecast icon.
         if "fog,hazy,cloudy,mostlycloudy".indexOf(icon) >= 0
@@ -207,23 +219,31 @@ class WeatherManager extends (require "./baseManager.coffee")
         logger.info "WeatherManager.setAstronomy", @data.astronomy
 
     # Check indoor weather conditions using Netatmo.
-    onNetatmoIndoor: (data) =>
-        @setRoomWeather "netatmo", data
+    onNetatmoIndoor: (data, filter) =>
+        if filter["module_id"]?
+            source = {"netatmo": filter["module_id"]}
+        else
+            source = "netatmo"
+
+        @setRoomWeather source, data
 
     # Check outdoor weather conditions using Netatmo.
-    onNetatmoOutdoor: (data) =>
+    onNetatmoOutdoor: (data, filter) =>
         @setOutdoorWeather data
 
     # Check indoor weather conditions using Ninja Blocks.
-    onNinjaWeather: (data) =>
+    onNinjaWeather: (data, filter) =>
         weather = {}
         weather.temperature = data.temperature[0].value if data.temperature[0]?
         weather.humidity = data.humidity[0].value if data.humidity[0]?
 
+        if weather.temperature? or weather.humidity?
+            weather.timestamp = data.temperature[0].timestamp or data.humidity[0].timestamp
+
         @setRoomWeather "ninja", weather
 
     # Check indoor weather conditions using Electric Imp.
-    onElectricImp: (data) =>
+    onElectricImp: (data, filter) =>
         @setRoomWeather "electricimp", data
 
     # Check outdoor weather conditions using Weather Underground.
@@ -244,7 +264,7 @@ class WeatherManager extends (require "./baseManager.coffee")
 
         # Set properties to be read (indoor rooms or outdoor / forecast).
         if where is "indoor"
-            arr = ["bedroom", "livingroom", "babyroom", "kitchen"]
+            arr = lodash.keys settings.home.rooms
         else
             arr = ["outdoor", "forecast"]
 
@@ -259,11 +279,11 @@ class WeatherManager extends (require "./baseManager.coffee")
 
     # Helper to return room object with weather, title etc.
     getRoomObject = (title) =>
-        return {title: title, condition: "Unknown", temperature: null, humidity: null, pressure: null, co2: null, light: null}
+        return {title: title, timestamp: 0, condition: "Unknown", temperature: null, humidity: null, pressure: null, co2: null, light: null}
 
     # Helper to return outdoor weather.
     getOutdoorObject = (title) =>
-        return {title: title, condition: "Unknown", temperature: null, humidity: null, pressure: null}
+        return {title: title, timestamp: 0, condition: "Unknown", temperature: null, humidity: null, pressure: null}
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

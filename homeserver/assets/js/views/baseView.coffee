@@ -35,6 +35,8 @@ class BaseView
         # Set default elements if list is not provided.
         list = @elements if not list?
 
+        return if not list?
+
         # Set elements cache.
         for s in list
             firstChar = s.substring 0, 1

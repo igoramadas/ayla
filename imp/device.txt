@@ -380,7 +380,7 @@ function onButtonRelease() {
 function getTemperature() {
     local register = "\x00";
     local result = i2c.read(i2c_temp, "\x00", 2);
-    local t = ((result[0] << 4) + (result[1] >> 4)) * 0.057;
+    local t = ((result[0] << 4) + (result[1] >> 4)) * 0.058;
     
     agent.send("temperature", t);
 }

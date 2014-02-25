@@ -31,6 +31,7 @@ class Ninja extends (require "./baseApi.coffee")
         else
             @ninjaApi = ninjablocks.app {user_access_token: settings.ninja.api.userToken}
             @baseStart()
+
             if settings.modules.getDataOnStart
                 @getDevices()
 
@@ -80,12 +81,12 @@ class Ninja extends (require "./baseApi.coffee")
         # Iterate all temperature devices and get recent data.
         for t in tempDevices
             if t.last_data?.timestamp > maxAge
-                weather.temperature.push {shortName: t.shortName, value: t.last_data.DA}
+                weather.temperature.push {shortName: t.shortName, value: t.last_data.D, timestamp: t.last_data.timestamp}
 
         # Iterate all humidity devices and get recent data.
         for t in humiDevices
             if t.last_data?.timestamp > maxAge
-                weather.humidity.push {shortName: t.shortName, value: t.last_data.DA}
+                weather.humidity.push {shortName: t.shortName, value: t.last_data.DA, timestamp: t.last_data.timestamp}
 
         @setData "weather", weather
         logger.info "Ninja.setCurrentWeather", weather

@@ -2,4 +2,8 @@ extends layout
 
 block contents
     #email
-        h1 Email!
+        table
+            tbody(data-bind="foreach: processedEmails")
+                tr
+                    td(data-bind="text: message.from")
+                    td(data-bind="text: message.subject")

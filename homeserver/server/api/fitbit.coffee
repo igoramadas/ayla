@@ -66,14 +66,25 @@ class Fitbit extends (require "./baseApi.coffee")
     # -------------------------------------------------------------------------
 
     # Get sleep data for the specified filter / date, or for yesterday
-    # if no `date` is provided.
+    # if no `date` is provided. If filter is a number, get date for today
+    # minus filter in days.
     getSleep: (filter, callback) =>
         if lodash.isFunction filter
             callback = filter
             filter = null
+        else
+            filter = @getFilterArgs filter
 
         # Parse date and set filter.
-        date = filter?.date or filter or moment().subtract("d", 1).format settings.fitbit.dateFormat
+        if not filter?
+            date = moment().subtract("d", 1).format settings.fitbit.dateFormat
+        else if lodash.isNumber filter
+            date = moment().subtract("d", filter).format settings.fitbit.dateFormat
+        else if filter.date?
+            date = filter?.date
+        else
+            date = filter
+
         filter = {date: date}
 
         # Request sleep data.
@@ -94,9 +105,19 @@ class Fitbit extends (require "./baseApi.coffee")
         if lodash.isFunction filter
             callback = filter
             filter = null
+        else
+            filter = @getFilterArgs filter
 
         # Parse date and set filter.
-        date = filter?.date or filter or moment().subtract("d", 1).format settings.fitbit.dateFormat
+        if not filter?
+            date = moment().subtract("d", 1).format settings.fitbit.dateFormat
+        else if not isNaN filter
+            date = moment().subtract("d", filter).format settings.fitbit.dateFormat
+        else if filter.date?
+            date = filter?.date
+        else
+            date = filter
+
         filter = {date: date}
 
         # Request activities data.
@@ -113,14 +134,23 @@ class Fitbit extends (require "./baseApi.coffee")
 
     # Get weight and body fat data for the specified date range.
     # If no `startDate` and `endDate` are passed then get data for the past week.
+    # If passed filter is a number, get body for today minus filter in days.
     getBody: (filter, callback) =>
         if lodash.isFunction filter
             callback = filter
             filter = null
 
         # Parse dates and set filter.
-        startDate = filter?.startDate or moment().subtract("w", 1).format settings.fitbit.dateFormat
-        endDate = filter?.endDate or moment().format settings.fitbit.dateFormat
+        if not filter?
+            startDate = moment().subtract("w", 1).format settings.fitbit.dateFormat
+            endDate = moment().format settings.fitbit.dateFormat
+        else if not isNaN filter
+            startDate = moment().subtract("d", filter).format settings.fitbit.dateFormat
+            endDate = moment().format settings.fitbit.dateFormat
+        else
+            startDate = filter.startDate
+            endDate = filter.endDate
+
         filter = {startDate: startDate, endDate: endDate}
 
         # There are 2 API requests, one for weight and one for fat.

@@ -1,9 +1,10 @@
-# WEATHER VIEW
+# EMAIL VIEW
 # --------------------------------------------------------------------------
-class WeatherView extends ayla.BaseView
+class EmailView extends ayla.BaseView
 
-    wrapperId: "weather"
-    socketsName: "weathermanager"
+    wrapperId: "email"
+    socketsName: "emailmanager"
+    elements: [".emails"]
 
     # MAIN METHODS
     # ----------------------------------------------------------------------
@@ -62,4 +63,4 @@ class WeatherView extends ayla.BaseView
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.currentView = new WeatherView()
+window.ayla.currentView = new EmailView()
