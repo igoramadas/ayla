@@ -25,7 +25,7 @@ class WeatherView extends ayla.BaseView
         if data.condition?
             condition = if _.isFunction data.condition then data.condition() else data.condition
             data.conditionCss = ko.computed ->
-                return condition.toLowerCase().replace(/\s/g, "-")
+                return condition.toLowerCase().replace(/\s/g, "-").replace(",", " ")
 
         return if not @data.rooms?
 
@@ -43,6 +43,8 @@ class WeatherView extends ayla.BaseView
 
             if room?
                 room = room()
+
+                # Get specific readings.
                 if room.temperature?
                     temp += parseFloat room.temperature
                     tempCount++
@@ -52,6 +54,10 @@ class WeatherView extends ayla.BaseView
                 if room.co2?
                     co2 += parseFloat room.co2
                     co2Count++
+
+        tempCount = 1 if tempCount is 0
+        humidityCount = 1 if humidityCount is 0
+        co2Count = 1 if co2Count is 0
 
         # Update averages readings and set data.
         if tempCount > 0 and humidityCount > 0

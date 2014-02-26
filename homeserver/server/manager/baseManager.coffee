@@ -47,11 +47,9 @@ class BaseManager extends (require "../baseModule.coffee")
         else
             data = @data[property]
 
-        # Set data timestamp.
-        data.timestamp = moment().unix()
-
         # Only emit if data is valid.
         if data?
+            data.timestamp = moment().unix()
             sockets.emit "#{@moduleId}.#{property}", data
             events.emit "#{@moduleId}.#{property}", data
         else

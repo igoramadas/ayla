@@ -97,7 +97,7 @@ class Wunderground extends (require "./baseApi.coffee")
             if err?
                 @logError "Wunderground.getForecast", err
             else
-                result = result.forecast.simpleforecast
+                result = result.forecast?.simpleforecast
                 @setData "forecast", result, filter
 
             callback err, result if lodash.isFunction callback

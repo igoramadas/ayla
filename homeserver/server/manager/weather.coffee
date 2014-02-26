@@ -37,9 +37,9 @@ class WeatherManager extends (require "./baseManager.coffee")
     init: =>
         astronomy = {sunrise: "7:00", sunset: "18:00"}
         outdoor = getOutdoorObject "Outdoor"
-        forecast = getOutdoorObject "Forecast"
+        conditions = getOutdoorObject "Conditions"
 
-        @baseInit {astronomy: astronomy, outdoor: outdoor, forecast: forecast, rooms: settings.home.rooms}
+        @baseInit {forecast: null, astronomy: astronomy, outdoor: outdoor, conditions: conditions, rooms: settings.home.rooms}
 
     # Start the weather manager and listen to data updates / events.
     start: =>
@@ -52,7 +52,8 @@ class WeatherManager extends (require "./baseManager.coffee")
         events.on "netatmo.data.outdoor", @onNetatmoOutdoor
         events.on "ninja.data.weather", @onNinjaWeather
         events.on "wunderground.data.astronomy", @onWundergroundAstronomy
-        events.on "wunderground.data.conditions", @onWundergroundCurrent
+        events.on "wunderground.data.conditions", @onWundergroundConditions
+        events.on "wunderground.data.forecast", @onWundergroundForecast
 
         @baseStart()
 
@@ -63,7 +64,8 @@ class WeatherManager extends (require "./baseManager.coffee")
         events.off "netatmo.data.outdoor", @onNetatmoOutdoor
         events.off "ninja.data.weather", @onNinjaWeather
         events.off "wunderground.data.astronomy", @onWundergroundAstronomy
-        events.off "wunderground.data.conditions", @onWundergroundCurrent
+        events.off "wunderground.data.conditions", @onWundergroundConditions
+        events.off "wunderground.data.forecast", @onWundergroundForecast
 
         @baseStop()
 
@@ -72,7 +74,7 @@ class WeatherManager extends (require "./baseManager.coffee")
 
     # Helper to verify if room weather is in good condition.
     checkRoomWeather: (room) =>
-        room.condition = "Good"
+        conditions = []
         notifyOptions = {}
 
         # Check temperatures.
@@ -83,15 +85,15 @@ class WeatherManager extends (require "./baseManager.coffee")
                 notifyOptions.subject = "#{room.title} too warm"
                 notifyOptions.message = "It's #{room.temperature}C right now, fans will turn on automatically."
             else if room.temperature > settings.home.idealConditions.temperature[2]
-                room.condition = "A bit warm"
+                conditions.push "A bit warm"
                 notifyOptions.subject =  "#{room.title} is warm"
                 notifyOptions.message = "It's #{room.temperature}C right now, please turn in the fans."
             else if room.temperature < settings.home.idealConditions.temperature[1]
-                room.condition = "A bit cold"
+                conditions.push "A bit cold"
                 notifyOptions.subject =  "#{room.title} is cold"
                 notifyOptions.message = "It's #{room.temperature}C right now, please turn on the heating."
             else if room.temperature < settings.home.idealConditions.temperature[0]
-                room.condition = "Too cold"
+                conditions.push "Too cold"
                 notifyOptions.critical = true
                 notifyOptions.subject =  "#{room.title} too cold"
                 notifyOptions.message = "It's #{room.temperature}C right now, heating will turn on automatically."
@@ -99,20 +101,20 @@ class WeatherManager extends (require "./baseManager.coffee")
         # Check humidity.
         if room.humidity?
             if room.humidity > settings.home.idealConditions.humidity[3]
-                room.condition = "Too humid"
+                conditions.push "Too humid"
                 notifyOptions.critical = true
                 notifyOptions.subject = "#{room.title} too humid"
                 notifyOptions.message = "It's #{room.humidity}% right now, please open the windows immediately."
             else if room.humidity > settings.home.idealConditions.humidity[2]
-                room.condition = "A bit humid"
+                conditions.push "A bit humid"
                 notifyOptions.subject =  "#{room.title} a bit humid"
                 notifyOptions.message = "It's #{room.humidity}% right now, please open the windows."
             else if room.humidity < settings.home.idealConditions.humidity[1]
-                room.condition = "A bit dry"
+                conditions.push "A bit dry"
                 notifyOptions.subject =  "#{room.title} a bit dry"
                 notifyOptions.message = "It's #{room.humidity}% right now, please turn on the air humidifier."
             else if room.humidity < settings.home.idealConditions.humidity[0]
-                room.condition = "Too dry"
+                conditions.push "Too dry"
                 notifyOptions.critical = true
                 notifyOptions.subject =  "#{room.title} too dry"
                 notifyOptions.message = "It's #{room.humidity}% right now, please turn on the shower for some steam."
@@ -120,14 +122,20 @@ class WeatherManager extends (require "./baseManager.coffee")
         # Check CO2.
         if room.co2?
             if room.co2 > settings.home.idealConditions.co2[23]
-                room.condition = "CO2 too high"
+                conditions.push "CO2 too high"
                 notifyOptions.critical = true
                 notifyOptions.subject = "#{room.title} CO2 is too high"
                 notifyOptions.message =  "With #{room.co2} ppm right now, please open the windows immediately."
             else if room.co2 > settings.home.idealConditions.co2[23]
-                room.condition = "CO2 high"
+                conditions.push "CO2 high"
                 notifyOptions.subject = "#{room.title} CO2 is high"
                 notifyOptions.message =  "With #{room.co2} ppm right now, please open the windows."
+
+        # If no conditions were added, set condition as good.
+        if conditions.length < 1
+            room.condition = "Good"
+        else
+            room.condition = conditions.join ", "
 
         # Send notification?
         if notifyOptions.subject?
@@ -135,6 +143,9 @@ class WeatherManager extends (require "./baseManager.coffee")
 
     # Helper to set current conditions for the specified room.
     setRoomWeather: (source, data) =>
+        return if not data?
+
+        # Find room linked to the specified weather source,
         room = lodash.find settings.home.rooms, {weatherSource: source}
         return if not room?
 
@@ -168,8 +179,10 @@ class WeatherManager extends (require "./baseManager.coffee")
         logger.info "WeatherManager.setRoomWeather", roomObj
 
     # Helper to set current conditions for outdoors.
+    # Make sure data is taken out of the array and newer than current available data.
     setOutdoorWeather: (data) =>
-        # Make sure data is taken out of the array and newer than current available data.
+        return if not data?
+
         if lodash.isArray data
             for d in data
                 if d.timestamp > @data.outdoor.timestamp
@@ -184,40 +197,6 @@ class WeatherManager extends (require "./baseManager.coffee")
         @dataUpdated "outdoor"
         logger.info "WeatherManager.setOutdoorWeather", @data.outdoor
 
-    # Helper to set forecast conditions for outdoors.
-    setWeatherForecast: (data) =>
-        currentHour = moment().hour()
-        sunriseHour = parseInt @data.astronomy.sunrise?.split(":")[0]
-        sunsetHour = parseInt @data.astronomy.sunset?.split(":")[0]
-        icon = data.icon.replace(".gif", "").replace("nt_", "")
-
-        @data.forecast.condition = data.weather
-        @data.forecast.temperature = data.temperature or data.temp_c or null
-        @data.forecast.humidity = data.humidity or data.relative_humidity or null
-        @data.forecast.pressure = data.pressure or data.pressure_mb or null
-
-        # Set forecast icon.
-        if "fog,hazy,cloudy,mostlycloudy".indexOf(icon) >= 0
-            @data.forecast.icon = "cloud"
-        else if "chancerain,rain,chancesleet,sleet".indexOf(icon) >= 0
-            @data.forecast.icon = "rain"
-        else if "chanceflurries,flurries,chancesnow,snow".indexOf(icon) >= 0
-            @data.forecast.icon = "snow"
-        else if "clear,sunny".indexOf(icon) >= 0
-            @data.forecast.icon = "sunny"
-        else if "mostlysunny,partlysunny,partlycloudy".indexOf(icon) >= 0
-            @data.forecast.icon = "sunny-cloudy"
-        else if "chancestorms,tstorms".indexOf(icon) >= 0
-            @data.forecast.icon = "thunder"
-
-        # Force moon icon when clear skies at night.
-        if @data.forecast.icon.indexOf("sunny") >= 0 and currentHour < sunriseHour or currentHour > sunsetHour
-            @data.forecast.icon = "moon"
-
-        # Emit updated forecast to clients and log.
-        @dataUpdated "forecast"
-        logger.info "WeatherManager.setWeatherForecast", @data.forecast
-
     # Helper to set current astronomy details, like sunrise and moon phase.
     setAstronomy: (data) =>
         @data.astronomy.sunrise = "#{data.sunrise.hour}:#{data.sunrise.minute}"
@@ -227,6 +206,64 @@ class WeatherManager extends (require "./baseManager.coffee")
         # Emit astronomy data and log.
         @dataUpdated "astronomy"
         logger.info "WeatherManager.setAstronomy", @data.astronomy
+
+    # Helper to set expected conditions for outdoors.
+    setWeatherConditions: (data) =>
+        return if not data?
+
+        currentHour = moment().hour()
+        sunriseHour = parseInt @data.astronomy.sunrise?.split(":")[0]
+        sunsetHour = parseInt @data.astronomy.sunset?.split(":")[0]
+        icon = data.icon.replace(".gif", "").replace("nt_", "")
+
+        @data.conditions.condition = data.weather
+        @data.conditions.temperature = data.temperature or data.temp_c or null
+        @data.conditions.humidity = data.humidity or data.relative_humidity or null
+        @data.conditions.pressure = data.pressure or data.pressure_mb or null
+        @data.conditions.wind = data.wind or "#{data.wind_dir} #{data.wind_kph}kph"
+
+        # Remove strings from data.
+        @data.conditions.humidity = @data.conditions.humidity.replace("%", "") if @data.conditions.humidity?
+
+        # Set conditions icon.
+        if "fog,hazy,cloudy,mostlycloudy".indexOf(icon) >= 0
+            @data.conditions.icon = "cloud"
+        else if "chancerain,rain,chancesleet,sleet".indexOf(icon) >= 0
+            @data.conditions.icon = "rain"
+        else if "chanceflurries,flurries,chancesnow,snow".indexOf(icon) >= 0
+            @data.conditions.icon = "snow"
+        else if "clear,sunny".indexOf(icon) >= 0
+            @data.conditions.icon = "sunny"
+        else if "mostlysunny,partlysunny,partlycloudy".indexOf(icon) >= 0
+            @data.conditions.icon = "sunny-cloudy"
+        else if "chancestorms,tstorms".indexOf(icon) >= 0
+            @data.conditions.icon = "thunder"
+
+        # Force moon icon when clear skies at night.
+        if @data.conditions.icon.indexOf("sunny") >= 0 and currentHour < sunriseHour or currentHour > sunsetHour
+            @data.conditions.icon = "moon"
+
+        # Emit updated conditions to clients and log.
+        @dataUpdated "conditions"
+        logger.info "WeatherManager.setWeatherConditions", @data.conditions
+
+    # Helper to set forecast details for the next days.
+    setWeatherForecast: (data) =>
+        @data.forecast =[]
+
+        for d in data.forecastday
+            a = {date: moment.unix(d.date.epoch).format("L"), conditions: d.conditions}
+            a.highTemp = d.high.celsius
+            a.lowTemp = d.low.celsius
+            a.avgWind = d.avewind.dir + " " + d.avewind.kph + "kph"
+            a.maxWind = d.maxwind.dir + " " + d.maxwind.kph + "kph"
+            a.maxHumidity = d.maxhumidity
+            a.minHumidity = d.minhumidity
+            @data.forecast.push a
+
+        # Emit forecast dat and log.
+        @dataUpdated "forecast"
+        logger.info "WeatherManager.setWeatherForecast", @data.forecast
 
     # Check indoor weather conditions using Netatmo.
     onNetatmoIndoor: (data, filter) =>
@@ -257,13 +294,17 @@ class WeatherManager extends (require "./baseManager.coffee")
     onElectricImp: (key, data, filter) =>
         @setRoomWeather {"electricimp": key}, data
 
-    # Check outdoor weather conditions using Weather Underground.
-    onWundergroundCurrent: (data) =>
-        @setWeatherForecast data
-
     # Check astronomy for today using Weather Underground.
     onWundergroundAstronomy: (data) =>
         @setAstronomy data
+
+    # Check outdoor weather conditions using Weather Underground.
+    onWundergroundConditions: (data) =>
+        @setWeatherConditions data
+
+    # Check outdoor weather forecast for next days using Weather Underground.
+    onWundergroundForecast: (data) =>
+        @setWeatherForecast data
 
     # GENERAL HELPERS
     # -------------------------------------------------------------------------
@@ -273,11 +314,11 @@ class WeatherManager extends (require "./baseManager.coffee")
         avg = 0
         count = 0
 
-        # Set properties to be read (indoor rooms or outdoor / forecast).
+        # Set properties to be read (indoor rooms or outdoor / conditions).
         if where is "indoor"
             arr = lodash.pluck settings.home.rooms, "id"
         else
-            arr = ["outdoor", "forecast"]
+            arr = ["outdoor", "conditions"]
 
         # Iterate readings.
         for r in arr

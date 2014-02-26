@@ -67,7 +67,7 @@
         "idealConditions": {
             "co2": [0, 400, 1200, 3000],
             "humidity": [25, 35, 60, 75],
-            "temperature": [15, 17, 22, 26]
+            "temperature": [16, 18, 22, 26]
         }
     },
     // Default settings for IMAP connections. Try connecting to accounts up to 3 times in a row,

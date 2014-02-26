@@ -1,11 +1,11 @@
 // WEATHER PAGE STYLES
 
 // Weather variables
-goodColor = rgba(180, 240, 190, 0.8)
-warmColor = rgba(250, 170, 160, 0.8)
-coldColor = rgba(160, 200, 250, 0.8)
-humidColor = rgba(190, 220, 250, 0.8)
-dryColor = rgba(200, 170, 170, 0.8)
+goodColor = rgb(180, 240, 190)
+warmColor = rgb(250, 170, 160)
+coldColor = rgb(40, 100, 200)
+humidColor = rgb(190, 220, 250)
+dryColor = rgb(200, 170, 170)
 
 #weather
 
@@ -33,7 +33,6 @@ dryColor = rgba(200, 170, 170, 0.8)
     div.summary
         display inline-block
         font-size 170%
-        margin 9px 0 0 20px
         span
             margin-right 12px
 
@@ -43,43 +42,18 @@ dryColor = rgba(200, 170, 170, 0.8)
         min-width 70px
 
     // Indoor rooms
-    div.room
-        div
-            clear both
-        .label
-            margin-left 10px
-            margin-top 2px
-
-        // Colour labels
-        &.good
-            border-color goodColor
-            .label
-                background-color goodColor
-        &.warm, &.too-warm
-            border-color warmColor
-            .label
-                background-color warmColor
-        &.cold, &.too-cold
-            border-color coldColor
-            .label
-                background-color coldColor
-        &.a-bit-humid, &.too-humid
-            border-color humidColor
-            .label
-                background-color humidColor
-        &.a-bit-dry, &.too-dry
-            border-color dryColor
-            .label
-                background-color dryColor
-
-        // Weather labels
-        span.label
-            margin-top 3px
-
-    // Indoor panel
-    li.inside
-        table
-            clear both
+    tr.a-bit-warm, tr.too-warm
+        .temperature
+            color warmColor
+    tr.a-bit-cold, tr.too-cold
+        .temperature
+            color coldColor
+    tr.a-bit-humid, tr.too-humid
+        .humidity
+            color humidColor
+    tr.a-bit-dry, tr.too-dry
+        .humidity
+            color dryColor
 
     // Outdoor panel
     li.outside

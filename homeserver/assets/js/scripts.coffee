@@ -7,6 +7,7 @@
 #= require lib/moment.js
 #= require lib/datatables.js
 #= require lib/placeholder.js
+#= require lib/fastclick.js
 #= require lib/foundation.js
 #= require sockets.coffee
 #= require views/baseView.coffee
