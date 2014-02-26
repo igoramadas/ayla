@@ -61,7 +61,7 @@ class BaseView
 
         # Iterate passed data and populate the view's data property.
         for key, value of ayla.serverData
-            @dataProcessor value if @dataProcessor?
+            @dataProcessor key, value if @dataProcessor?
             @data[key] = ko.observable value
 
     # Helper to listen to socket events sent by the server. If no event name is

@@ -12,7 +12,7 @@ class ApiView extends ayla.BaseView
     onReady: =>
         for key, arr of ayla.serverData
             container = $ document.createElement "div"
-            container.attr "id", key
+            container.attr "id", "data-#{key}"
             container.addClass "content"
 
             for data in arr
@@ -32,7 +32,7 @@ class ApiView extends ayla.BaseView
 
             link = $ document.createElement "a"
             link.html key
-            link.attr "href", "##{key}"
+            link.attr "href", "#data-#{key}"
             title = $ document.createElement "dd"
             title.append link
 

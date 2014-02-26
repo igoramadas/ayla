@@ -70,6 +70,12 @@
             "temperature": [15, 17, 22, 26]
         }
     },
+    // Default settings for IMAP connections. Try connecting to accounts up to 3 times in a row,
+    // with a delay of 90 seconds between retries.
+    "imap": {
+        "maxRetry": 3,
+        "retryInterval": 90000
+    },
     // Modules (API and managers) settings. You'll need to enable modules individually by
     // creating a `enable` property containing an array of modules to be enabled.
     // For example: "enabled": ["netatmo", "network", "toshl"]

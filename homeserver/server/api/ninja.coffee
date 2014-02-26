@@ -81,7 +81,7 @@ class Ninja extends (require "./baseApi.coffee")
         # Iterate all temperature devices and get recent data.
         for t in tempDevices
             if t.last_data?.timestamp > maxAge
-                weather.temperature.push {shortName: t.shortName, value: t.last_data.D, timestamp: t.last_data.timestamp}
+                weather.temperature.push {shortName: t.shortName, value: t.last_data.DA, timestamp: t.last_data.timestamp}
 
         # Iterate all humidity devices and get recent data.
         for t in humiDevices

@@ -81,17 +81,27 @@ class EmailManager extends (require "./baseManager.coffee")
     # -------------------------------------------------------------------------
 
     # Open the IMAP email box for the specified account.
-    openBox: (account) =>
+    openBox: (account, retry) =>
         if not account?.client?
             logger.warn "EmailManager.openBox", account.id, "The specified account has no valid IMAP client. Please check the email settings."
             return
+
+        # Abort if already connected.
+        return if account.client.state is "authenticated"
+
+        retry = 0 if not retry?
 
         # Once IMAP is ready, open the inbox and start listening to messages.
         account.client.once "ready", =>
             account.client.openBox account.inboxName, false, (err, box) =>
                 if err?
-                    @logError "EmailManager.openBox", account.id, err
-                    account.client.disconnect()
+                    logger.warn "EmailManager.openBox", account.id, err
+
+                    # Try connecting to the inbox again in a few seconds in case it fails.
+                    if retry < settings.imap.maxRetry
+                        lodash.delay @openBox, settings.imap.retryInterval, account, retry + 1
+                    else
+                        @logError "EmailManager.openBox", account.id, "Can't connect #{retry} times.", err
                 else
                     logger.info "EmailManager.openBox", account.id, "Inbox ready!"
 

@@ -39,31 +39,31 @@ class WeatherManager extends (require "./baseManager.coffee")
         outdoor = getOutdoorObject "Outdoor"
         forecast = getOutdoorObject "Forecast"
 
-        @baseInit {astronomy: astronomy, outdoor: outdoor, forecast: forecast}
+        @baseInit {astronomy: astronomy, outdoor: outdoor, forecast: forecast, rooms: settings.home.rooms}
 
     # Start the weather manager and listen to data updates / events.
     start: =>
-        for key, room of settings.home.rooms
-            if not @data[key]?
-                @data[key] = getRoomObject room.title
+        for room in settings.home.rooms
+            if not @data[room.id]?
+                @data[room.id] = getRoomObject room.title
 
-        events.on "electricimp.data.current", @onElectricImp
+        events.on "electricimp.data", @onElectricImp
         events.on "netatmo.data.indoor", @onNetatmoIndoor
         events.on "netatmo.data.outdoor", @onNetatmoOutdoor
         events.on "ninja.data.weather", @onNinjaWeather
         events.on "wunderground.data.astronomy", @onWundergroundAstronomy
-        events.on "wunderground.data.current", @onWundergroundCurrent
+        events.on "wunderground.data.conditions", @onWundergroundCurrent
 
         @baseStart()
 
     # Stop the weather manager.
     stop: =>
-        events.off "electricimp.data.current", @onElectricImp
+        events.off "electricimp.data", @onElectricImp
         events.off "netatmo.data.indoor", @onNetatmoIndoor
         events.off "netatmo.data.outdoor", @onNetatmoOutdoor
         events.off "ninja.data.weather", @onNinjaWeather
         events.off "wunderground.data.astronomy", @onWundergroundAstronomy
-        events.off "wunderground.data.current", @onWundergroundCurrent
+        events.off "wunderground.data.conditions", @onWundergroundCurrent
 
         @baseStop()
 
@@ -135,10 +135,10 @@ class WeatherManager extends (require "./baseManager.coffee")
 
     # Helper to set current conditions for the specified room.
     setRoomWeather: (source, data) =>
-        room = lodash.findKey settings.home.rooms, {weatherSource: source}
+        room = lodash.find settings.home.rooms, {weatherSource: source}
         return if not room?
 
-        roomObj = @data[room]
+        roomObj = @data[room.id]
 
         # Make sure data is taken out of the array and newer than current available data.
         if lodash.isArray data
@@ -153,22 +153,32 @@ class WeatherManager extends (require "./baseManager.coffee")
 
         # Update room data or set to null (otherwise it's undefined, not good for Knockout.js) and round values.
         roomObj.temperature = lastData.temperature or null
-        roomObj.humidity = lastData.humidity or null
-        roomObj.co2 = lastData.co2 or null
         roomObj.temperature = parseFloat(roomObj.temperature).toFixed 1 if roomObj.temperature?
+
+        roomObj.humidity = lastData.humidity or null
         roomObj.humidity = parseFloat(roomObj.humidity).toFixed 1 if roomObj.humidity?
+        roomObj.co2 = lastData.co2 or null
+        roomObj.light = lastData.light or lastData.lightLevel or null
 
         # Check if room conditions are ok.
         @checkRoomWeather roomObj
 
         # Emit updated room conditions to clients and log.
-        @dataUpdated room
+        @dataUpdated room.id
         logger.info "WeatherManager.setRoomWeather", roomObj
 
     # Helper to set current conditions for outdoors.
     setOutdoorWeather: (data) =>
-        @data.outdoor.temperature = data.temperature or null
-        @data.outdoor.humidity = data.humidity or null
+        # Make sure data is taken out of the array and newer than current available data.
+        if lodash.isArray data
+            for d in data
+                if d.timestamp > @data.outdoor.timestamp
+                    lastData = d
+        else if data.timestamp > @data.outdoor.timestamp
+            lastData = data
+
+        @data.outdoor.temperature = lastData.temperature or null
+        @data.outdoor.humidity = lastData.humidity or null
 
         # Emit updated outdoor conditions to clients and log.
         @dataUpdated "outdoor"
@@ -242,9 +252,10 @@ class WeatherManager extends (require "./baseManager.coffee")
 
         @setRoomWeather "ninja", weather
 
-    # Check indoor weather conditions using Electric Imp.
-    onElectricImp: (data, filter) =>
-        @setRoomWeather "electricimp", data
+    # Check indoor weather conditions using Electric Imp. We're bining to the global data event,
+    # so a key is passed here as well.
+    onElectricImp: (key, data, filter) =>
+        @setRoomWeather {"electricimp": key}, data
 
     # Check outdoor weather conditions using Weather Underground.
     onWundergroundCurrent: (data) =>
@@ -264,7 +275,7 @@ class WeatherManager extends (require "./baseManager.coffee")
 
         # Set properties to be read (indoor rooms or outdoor / forecast).
         if where is "indoor"
-            arr = lodash.keys settings.home.rooms
+            arr = lodash.pluck settings.home.rooms, "id"
         else
             arr = ["outdoor", "forecast"]
 
@@ -279,11 +290,11 @@ class WeatherManager extends (require "./baseManager.coffee")
 
     # Helper to return room object with weather, title etc.
     getRoomObject = (title) =>
-        return {title: title, timestamp: 0, condition: "Unknown", temperature: null, humidity: null, pressure: null, co2: null, light: null}
+        return {indoor: true, title: title, timestamp: 0, condition: "Unknown", temperature: null, humidity: null, pressure: null, co2: null, light: null}
 
     # Helper to return outdoor weather.
     getOutdoorObject = (title) =>
-        return {title: title, timestamp: 0, condition: "Unknown", temperature: null, humidity: null, pressure: null}
+        return {outdoor: true, title: title, timestamp: 0, condition: "Unknown", temperature: null, humidity: null, pressure: null}
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

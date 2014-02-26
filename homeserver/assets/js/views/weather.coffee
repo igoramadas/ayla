@@ -12,8 +12,13 @@ class WeatherView extends ayla.BaseView
     onReady: =>
         @dataProcessor @data
 
-    # Parse and process data coming from the server.
-    dataProcessor: (data) =>
+    # Parse and process data coming from the server. Weather data will be appended
+    # directly to the rooms object. If only one argument is passed, assume it's the data.
+    dataProcessor: (key, data) =>
+        if not data?
+            data = key
+            key = null
+
         @data.indoorAvg = ko.observable() if not @data.indoorAvg?
 
         # Incoming data has condition property? If so, set its css computed value.
@@ -21,6 +26,8 @@ class WeatherView extends ayla.BaseView
             condition = if _.isFunction data.condition then data.condition() else data.condition
             data.conditionCss = ko.computed ->
                 return condition.toLowerCase().replace(/\s/g, "-")
+
+        return if not @data.rooms?
 
         # Indoor average variables.
         temp = 0
@@ -31,8 +38,9 @@ class WeatherView extends ayla.BaseView
         co2Count = 0
 
         # Iterate rooms and update indoor average readings.
-        for i in ["livingroom", "kitchen", "bedroom", "babyroom"]
-            room = @data[i]
+        for roomInfo in @data.rooms()
+            room = @data[roomInfo.id]
+
             if room?
                 room = room()
                 if room.temperature?
@@ -51,13 +59,6 @@ class WeatherView extends ayla.BaseView
             humidity = (humidity / humidityCount).toFixed 0
             co2 = (co2 / co2Count).toFixed 0
             @data.indoorAvg {temperature: temp, humidity: humidity, co2: co2}
-
-    # LIGHT CONTROL
-    # ----------------------------------------------------------------------
-
-    # Toggle lights om or off based on its current state.
-    lightToggle: (e) =>
-        console.warn e
 
 
 # BIND VIEW TO WINDOW
