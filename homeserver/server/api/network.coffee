@@ -11,7 +11,9 @@ class Network extends (require "./baseApi.coffee")
     settings = expresser.settings
     utils = expresser.utils
 
+    async = require "async"
     buffer = require "buffer"
+    cprocess = require "child_process"
     dgram = require "dgram"
     fs = require "fs"
     http = require "http"
@@ -27,12 +29,15 @@ class Network extends (require "./baseApi.coffee")
     # Local network discovery.
     mdnsBrowser: null
 
+    # Is it running on the expected local network, or remotely?
+    isHome: true
+
+    # Server information cache.
+    serverInfo: {}
+
     # Holds user status (online true, offline false) based on their mobile
     # phones connected to the same network.
     userStatus: {}
-
-    # Is it running on the expected local network, or remotely?
-    isHome: true
 
     # INIT
     # -------------------------------------------------------------------------
@@ -46,6 +51,7 @@ class Network extends (require "./baseApi.coffee")
 
     # Start monitoring the network.
     start: =>
+        @serverInfo = utils.getServerInfo()
         @mdnsBrowser.on "serviceUp", @onServiceUp
         @mdnsBrowser.on "serviceDown", @onServiceDown
         @mdnsBrowser.start()
@@ -122,7 +128,7 @@ class Network extends (require "./baseApi.coffee")
 
         @checkDevice d for d in settings.network.devices
 
-    # NETWORK COMMANDS
+    # WAKE-ON-LAN
     # -------------------------------------------------------------------------
 
     # Helper to create a WOL magic packet.
@@ -211,6 +217,93 @@ class Network extends (require "./baseApi.coffee")
 
         # Send packets!
         sendWol()
+
+    # BLUETOOTH
+    # -------------------------------------------------------------------------
+
+    # Query bluetooth devices using hcitool scan.
+    # Only works on Linux, needs the BlueZ package.
+    bluetoothScan: (callback) =>
+        if not lodash.isFunction callback
+            callback = null
+
+        # Make sure we're running on Linux and create output string.
+        if @serverInfo.platform.indexOf("Linux") < 0
+            logger.warn "Network.bluetoothScan", "Only works on Linux, needs hcitool. Abort!"
+            return
+        else
+            output = ""
+
+        # Scan using hcitool scan.
+        try
+            hciscan = cprocess.spawn "hcitool", ["scan"]
+            hciscan.stdout.on "data", (data) -> output += data
+
+            # On close parse the output and get device mac and names out of it.
+            hciscan.on "close", =>
+                devices = []
+                lines = output.split "\n"
+
+                # First line is the "Scanning..." string.
+                lines.shift()
+
+                # Iterate devices.
+                for d in lines
+                    devices.push d.toString().replace("\t", " ").trim() if d? and d isnt ""
+
+                @setData "bluetoothScan", devices
+
+                callback null, devices if callback?
+        catch ex
+            @logError "Network.bluetoothScan", ex
+            callback ex if callback?
+
+    # Probe user's bluetooth devices by checking the `bluetooth` property of registered users.
+    # Only works on Linux, needs the BlueZ package.
+    bluetoothProbeUsers: (callback) =>
+        if not lodash.isFunction callback
+            callback = null
+
+        # Make sure we're running on Linux and create output string.
+        if @serverInfo.platform.indexOf("Linux") < 0
+            logger.warn "Network.bluetoothProbeUsers", "Only works on Linux, needs hcitool. Abort!"
+            return
+        else
+            output = ""
+            macs = []
+            tasks = []
+
+        # Iterate users and get bluetooth mach addresses.
+        for user, username of settings.users
+            macs.push {user: username, mac: user.bluetooth} if user.bluetooth?
+
+        # Iterate and create tasks for each passed mac address.
+        for d in macs
+            do (d) => tasks.push (cb) =>
+                try
+                    hciname = cprocess.spawn "hcitool", ["name", d.mac]
+                    hciname.stdout.on "data", (data) -> output += data
+
+                    # On close parse the output and get device name, and set its online property.
+                    # If name is found, add `deviceName` to the original object.
+                    hciname.on "close", =>
+                        if output? and output isnt ""
+                            d.deviceName = output.toString().trim()
+                            d.online = true
+                        else
+                            d.online = false
+                        cb null, d
+                catch ex
+                    cb ex
+
+        # Check all passed bluetooth devices.
+        async.series tasks, (err, results) =>
+            if err?
+                @logError "Network.bluetoothProbeUsers", err
+            else
+                @setData "bluetoothUsers", results
+
+            callback err, results if callback?
 
     # SERVICE DISCOVERY
     # -------------------------------------------------------------------------

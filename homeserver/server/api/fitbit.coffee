@@ -73,7 +73,7 @@ class Fitbit extends (require "./baseApi.coffee")
             callback = filter
             filter = null
         else
-            filter = @getFilterArgs filter
+            filter = @getJobArgs filter
 
         # Parse date and set filter.
         if not filter?
@@ -106,7 +106,7 @@ class Fitbit extends (require "./baseApi.coffee")
             callback = filter
             filter = null
         else
-            filter = @getFilterArgs filter
+            filter = @getJobArgs filter
 
         # Parse date and set filter.
         if not filter?

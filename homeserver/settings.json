@@ -65,9 +65,9 @@
         "autoControlLights": true,
         // The ideal conditions are arrays of values [criticallyLow, low, high, criticallyHigh].
         "idealConditions": {
-            "co2": [0, 400, 1200, 3000],
+            "co2": [0, 400, 1200, 2800],
             "humidity": [25, 35, 60, 75],
-            "temperature": [16, 18, 22, 26]
+            "temperature": [15, 17, 22, 26]
         }
     },
     // Default settings for IMAP connections. Try connecting to accounts up to 3 times in a row,
