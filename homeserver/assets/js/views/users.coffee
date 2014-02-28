@@ -1,18 +1,18 @@
-# WEATHER VIEW
+# USERS VIEW
 # --------------------------------------------------------------------------
-class WeatherView extends ayla.BaseView
+class UsersView extends ayla.BaseView
 
-    wrapperId: "weather"
-    socketsName: "weathermanager"
+    wrapperId: "users"
+    socketsName: "usermanager"
 
     # MAIN METHODS
     # ----------------------------------------------------------------------
 
-    # Init the Weather view.
+    # Init the Users view.
     onReady: =>
         @dataProcessor @data
 
-    # Parse and process data coming from the server. Weather data will be appended
+    # Parse and process data coming from the server. Users data will be appended
     # directly to the rooms object. If only one argument is passed, assume it's the data.
     dataProcessor: (key, data) =>
         if not data?
@@ -69,4 +69,4 @@ class WeatherView extends ayla.BaseView
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.currentView = new WeatherView()
+window.ayla.currentView = new UsersView()

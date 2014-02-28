@@ -19,23 +19,25 @@ class UserManager extends (require "./baseManager.coffee")
     # INIT
     # -------------------------------------------------------------------------
 
-    # Init the home manager.
+    # Init the user manager.
     init: =>
         @baseInit {users: {}}
 
-    # Start the home manager and listen to data updates / events.
+    # Start the user manager and listen to data updates / events.
     start: =>
         for username, userdata of settings.users
             if not @data.users[username]?
-                @data.users[username] = {isOnline: false}
+                @data.users[username] = {online: false}
 
         events.on "network.data.router", @onNetworkRouter
+        events.on "network.data.bluetoothUsers", @onBluetoothUsers
 
         @baseStart()
 
     # Stop the home manager.
     stop: =>
         events.off "network.data.router", @onNetworkRouter
+        events.off "network.data.bluetoothUsers", @onBluetoothUsers
 
         @baseStop()
 
@@ -47,20 +49,24 @@ class UserManager extends (require "./baseManager.coffee")
         logger.debug "UserManager.onNetworkRouter"
 
         for username, userdata of settings.users
-            isOnline = lodash.find data.wifi24g, {macaddr: userdata.mac}
-            isOnline = lodash.find data.wifi5g, {macaddr: userdata.mac} if not isOnline?
-            isOnline = isOnline?
+            online = lodash.find data.wifi24g, {macaddr: userdata.mac}
+            online = lodash.find data.wifi5g, {macaddr: userdata.mac} if not online?
+            online = online?
             userStatus = null
 
             # User status just changed? Emit event to notify other modules.
-            if isOnline and not @users[username].isOnline
-                userStatus = {user: username, isOnline: true}
-            else if not isOnline and @users[username].isOnline
-                userStatus = {user: username, isOnline: false}
+            if online and not @users[username].online
+                userStatus = {user: username, online: true}
+            else if not online and @users[username].online
+                userStatus = {user: username, online: false}
 
             # Status updated?
             @onUserStatus userStatus if userStatus?
-            @data.users[username].isOnline = isOnline
+            @data.users[username].online = online
+
+    # When user bluetooth devices are queried, check who's online (at home).
+    onBluetoothUsers: (data) =>
+        logger.debug "UserManager.onBluetoothUsers"
 
     # Update user status (online or offline) and automatically turn off lights
     # when there's no one home for a few minutes.
@@ -79,7 +85,7 @@ class UserManager extends (require "./baseManager.coffee")
         logger.debug "UserManager.switchLightsOnStatus", userStatus
 
         # If user is online, check if lights should be turned on.
-        if userStatus.isOnline
+        if userStatus.online
             if @timers["lightsoff"]?
                 clearTimeout @timers["lightsoff"]
                 delete @timers["lightsoff"]
@@ -87,7 +93,7 @@ class UserManager extends (require "./baseManager.coffee")
             # Check if anyone is already home.
             anyoneOnline = false
             for u of @data.users
-                anyoneOnline = true if u.isOnline
+                anyoneOnline = true if u.online
 
             # If first person online, get current time, sunrise and sunset hours.
             if not anyoneOnline
@@ -104,7 +110,7 @@ class UserManager extends (require "./baseManager.coffee")
         else
             everyoneOffline = true
             for u of @data.users
-                everyoneOffline = false if u.isOnline
+                everyoneOffline = false if u.online
 
             # Everyone offline? Switch lights off after 60 seconds.
             if everyoneOffline

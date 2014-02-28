@@ -11,7 +11,7 @@ class Network extends (require "./baseApi.coffee")
     settings = expresser.settings
     utils = expresser.utils
 
-    async = require "async"
+    async = expresser.libs.async
     buffer = require "buffer"
     cprocess = require "child_process"
     dgram = require "dgram"
@@ -60,6 +60,7 @@ class Network extends (require "./baseApi.coffee")
 
         if settings.modules.getDataOnStart
             @probeDevices()
+            @probeBluetoothUsers()
 
     # Stop monitoring the network.
     stop: =>
@@ -106,14 +107,6 @@ class Network extends (require "./baseApi.coffee")
 
         # Not checked yet? Set `up` to false.
         device.up = false if not device.up?
-
-        # Try connecting and set device as online.
-        req = http.get {host: device.ip, port: device.localPort}, (response) ->
-            response.addListener "data", (data) -> response.isValid = true
-            response.addListener "end", -> device.up = true if response.isValid
-
-        # On request error, set device as offline.
-        req.on "error", (err) -> device.up = false
 
     # Probe the current network and check device statuses.
     probeDevices: (callback) =>
@@ -223,13 +216,13 @@ class Network extends (require "./baseApi.coffee")
 
     # Query bluetooth devices using hcitool scan.
     # Only works on Linux, needs the BlueZ package.
-    bluetoothScan: (callback) =>
+    probeBluetooth: (callback) =>
         if not lodash.isFunction callback
             callback = null
 
         # Make sure we're running on Linux and create output string.
         if @serverInfo.platform.indexOf("Linux") < 0
-            logger.warn "Network.bluetoothScan", "Only works on Linux, needs hcitool. Abort!"
+            logger.warn "Network.probeBluetooth", "Only works on Linux, needs hcitool. Abort!"
             return
         else
             output = ""
@@ -251,22 +244,22 @@ class Network extends (require "./baseApi.coffee")
                 for d in lines
                     devices.push d.toString().replace("\t", " ").trim() if d? and d isnt ""
 
-                @setData "bluetoothScan", devices
+                @setData "bluetooth", devices
 
                 callback null, devices if callback?
         catch ex
-            @logError "Network.bluetoothScan", ex
+            @logError "Network.probeBluetooth", ex
             callback ex if callback?
 
     # Probe user's bluetooth devices by checking the `bluetooth` property of registered users.
     # Only works on Linux, needs the BlueZ package.
-    bluetoothProbeUsers: (callback) =>
+    probeBluetoothUsers: (callback) =>
         if not lodash.isFunction callback
             callback = null
 
         # Make sure we're running on Linux and create output string.
         if @serverInfo.platform.indexOf("Linux") < 0
-            logger.warn "Network.bluetoothProbeUsers", "Only works on Linux, needs hcitool. Abort!"
+            logger.warn "Network.probeBluetoothUsers", "Only works on Linux, needs hcitool. Abort!"
             return
         else
             output = ""
@@ -299,7 +292,7 @@ class Network extends (require "./baseApi.coffee")
         # Check all passed bluetooth devices.
         async.series tasks, (err, results) =>
             if err?
-                @logError "Network.bluetoothProbeUsers", err
+                @logError "Network.probeBluetoothUsers", err
             else
                 @setData "bluetoothUsers", results
 
@@ -310,20 +303,23 @@ class Network extends (require "./baseApi.coffee")
 
     # When a new service is discovered on the network.
     onServiceUp: (service) =>
-        logger.info "Network.onServiceUp", service.name
+        logger.debug "Network.onServiceUp", service.name
 
         # Try parsing and identifying the new service.
         try
             existingDevice = lodash.find @data.devices, (d) ->
-                if service.adresses?
-                    return service.addresses.indexOf(d.ip) >= 0 and (service.port is d.localPort or service.port is d.remotePort)
-                else
+                if not service.adresses?
                     return false
+                if lodash.indexOf(service.addresses, d.ip) < 0
+                    return false
+                if service.port isnt d.localPort and service.port isnt d.remotePort
+                    return false
+                return true
 
             # Create new device or update existing?
             if not existingDevice?
                 logger.info "Network.onServiceUp", "New", service.name, service.addresses, service.port
-                existingDevice = {id: service.name}
+                existingDevice = {description: service.name}
                 isNew = true
             else
                 logger.info "Network.onServiceUp", "Existing", service.name, service.addresses, service.port
@@ -339,9 +335,6 @@ class Network extends (require "./baseApi.coffee")
 
         # New device? Add to devices list and dispatch event.
         @data.devices.push existingDevice if isNew
-
-        # Save device data.
-        @setData "devices", @data.devices
 
     # When a service disappears from the network.
     onServiceDown: (service) =>

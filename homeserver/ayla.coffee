@@ -1,6 +1,9 @@
 # AYLA
 # -----------------------------------------------------------------------------
 
+# Note on exit.
+process.on "exit", (code) -> console.warn "Ayla process exit", code
+
 # Require Expresser.
 expresser = require "expresser"
 database = expresser.database

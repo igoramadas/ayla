@@ -32,9 +32,9 @@ block contents
                 div
                     h2 Outside
                     div.summary
-                        span.condition(data-bind="text: conditions().condition")
                         span.temperature(data-bind="text: outdoor().temperature ? outdoor().temperature + '°C' : '-'")
                         span.humidity(data-bind="text: outdoor().humidity ? outdoor().humidity + '%' : '-'")
+                        span.condition(data-bind="text: conditions().condition")
 
                     table
                         thead

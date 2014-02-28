@@ -84,6 +84,12 @@
             "description": "Probe network devices and update their statuses every minute.",
             "schedule": 60,
             "enabled": true
+        },
+        {
+            "callback": "probeBluetoothUsers",
+            "description": "Probe user bluetooth devices every minute.",
+            "schedule": 60,
+            "enabled": true
         }
     ],
     "ninja.coffee": [
