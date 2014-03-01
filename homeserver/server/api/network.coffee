@@ -308,8 +308,6 @@ class Network extends (require "./baseApi.coffee")
         # Try parsing and identifying the new service.
         try
             existingDevice = lodash.find @data.devices, (d) ->
-                if not service.adresses?
-                    return false
                 if lodash.indexOf(service.addresses, d.ip) < 0
                     return false
                 if service.port isnt d.localPort and service.port isnt d.remotePort
@@ -342,14 +340,17 @@ class Network extends (require "./baseApi.coffee")
 
         # Try parsing and identifying the removed service.
         try
-            existingDevice = lodash.find @data.devices, (d) =>
-                return lodash.contains(service.addresses, d.ip) and (service.port is d.localPort or service.port is d.remotePort)
+            existingDevice = lodash.find @data.devices, (d) ->
+                if lodash.indexOf(service.addresses, d.ip) < 0
+                    return false
+                if service.port isnt d.localPort and service.port isnt d.remotePort
+                    return false
+                return true
 
             # Device found? Set it down and emit event.
             if existingDevice?
                 existingDevice.up = false
                 existingDevice.mdns = false
-                @setData "devices", @data.devices
         catch ex
             @logError "Network.onServiceDown", ex
 

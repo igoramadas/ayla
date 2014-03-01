@@ -94,14 +94,8 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Entities\Room.cs" />
-    <Compile Include="Entities\Light.cs" />
-    <Compile Include="Entities\Weather.cs" />
     <Compile Include="HomeLightsPage.xaml.cs">
       <DependentUpon>HomeLightsPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="HomeWeatherPage.xaml.cs">
-      <DependentUpon>HomeWeatherPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Lib\BasePage.cs" />
     <Compile Include="Lib\DataManager.cs" />
@@ -116,6 +110,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>AppResources.resx</DependentUpon>
     </Compile>
+    <Compile Include="WeatherPage.xaml.cs">
+      <DependentUpon>WeatherPage.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -126,11 +123,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="HomeWeatherPage.xaml">
+    <Page Include="MainPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainPage.xaml">
+    <Page Include="WeatherPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -148,6 +145,7 @@
     <Content Include="Assets\ApplicationIcon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Tiles\Fitness.png" />
     <Content Include="Assets\Tiles\FlipCycleTileLarge.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -165,6 +163,12 @@
     </Content>
     <Content Include="Assets\Tiles\Lights.png" />
     <Content Include="Assets\Cortana.jpg" />
+    <Content Include="Assets\Tiles\Money.png" />
+    <Content Include="Assets\Tiles\Weather-Cloudy.png" />
+    <Content Include="Assets\Tiles\Weather-CloudySunny.png" />
+    <Content Include="Assets\Tiles\Weather-Rain.png" />
+    <Content Include="Assets\Tiles\Weather-Snow.png" />
+    <Content Include="Assets\Tiles\Weather-Sunny.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Add.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Cancel.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Check.png" />

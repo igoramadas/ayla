@@ -22,9 +22,23 @@
             <TextBlock x:Name="PageName" Text="Home" Style="{StaticResource PageName}"/>
         </StackPanel>
 
-        <StackPanel x:Name="ContentPanel" Grid.Row="1" Style="{StaticResource ContentPanel}">
-            <toolkit:HubTile x:Name="HubLights" Source="/Assets/Tiles/Lights.png" Tap="HubLights_OnTap" />
-        </StackPanel>
+        <ScrollViewer Grid.Row="1" MaxWidth="480">
+            <Grid x:Name="ContentGrid" Style="{StaticResource ContentGrid}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                
+                <toolkit:HubTile Grid.Column="0" Grid.Row="0" x:Name="HubWeather" Source="/Assets/Tiles/Weather-CloudySunny.png" />
+                <toolkit:HubTile Grid.Column="0" Grid.Row="1" x:Name="HubLights" Source="/Assets/Tiles/Lights.png" Tap="HubLights_OnTap" />
+                <toolkit:HubTile Grid.Column="1" Grid.Row="0" x:Name="HubFitness" Source="/Assets/Tiles/Fitness.png" Tap="HubLights_OnTap" />
+                <toolkit:HubTile Grid.Column="1" Grid.Row="1" x:Name="HubMoney" Source="/Assets/Tiles/Money.png" Tap="HubLights_OnTap" />
+            </Grid>
+        </ScrollViewer>
 	</Grid>
 
 </aylaPhone:BasePage>

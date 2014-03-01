@@ -73,31 +73,35 @@ class BaseModule
     setData: (key, value, filter) =>
         filter = "default" if not filter?
 
-        events.emit "#{@moduleId}.data", key, value, filter
-        events.emit "#{@moduleId}.data.#{key}", value, filter
-        sockets.emit "#{@moduleId}.data", key, value, filter
-        sockets.emit "#{@moduleId}.data.#{key}", value, filter
+        try
+            # Emit events to other modules and clients.
+            events.emit "#{@moduleId}.data", key, value, filter
+            events.emit "#{@moduleId}.data.#{key}", value, filter
+            sockets.emit "#{@moduleId}.data", key, value, filter
+            sockets.emit "#{@moduleId}.data.#{key}", value, filter
 
-        # Set data and cleanup old.
-        @data[key] = [] if not @data[key]?
-        @data[key].unshift {value: value, filter: filter, timestamp: moment().unix()}
-        @data[key].pop() if @data[key].length > settings.modules.dataKeyCacheSize
+            # Set data and cleanup old.
+            @data[key] = [] if not @data[key]?
+            @data[key].unshift {value: value, filter: filter, timestamp: moment().unix()}
+            @data[key].pop() if @data[key].length > settings.modules.dataKeyCacheSize
 
-        # Save the new data to the database.
-        dbData = {key: key, value: value, filter: filter, datestamp: new Date()}
+            # Save the new data to the database.
+            dbData = {key: key, value: value, filter: filter, datestamp: new Date()}
 
-        database.set "data-#{@moduleId}", dbData, (err, result) =>
-            if err?
-                logger.error "#{@moduleName}.setData", key, err
-            else
-                logger.debug "#{@moduleName}.setData", key, value
+            database.set "data-#{@moduleId}", dbData, (err, result) =>
+                if err?
+                    logger.error "#{@moduleName}.setData", key, err
+                else
+                    logger.debug "#{@moduleName}.setData", key, value
+        catch ex
+            @logError "#{@moduleName}.setData", key, ex
 
     # LOGGING AND ERRORS
     # -------------------------------------------------------------------------
 
     # Log when a module is called when not running (mainly because of missing settings).
     logNotRunning: (methodName) =>
-        logger.warn "#{moduleName}.notRunning", methodName
+        logger.warn "#{@moduleName}.notRunning", methodName
         return false
 
     # Logs module errors.

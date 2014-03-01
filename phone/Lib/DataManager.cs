@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using AylaPhone.Entities;
+using Newtonsoft.Json.Linq;
 
 namespace AylaPhone
 {
@@ -8,7 +8,7 @@ namespace AylaPhone
     {
         #region Properties
 
-        public static List<Light> Lights { get; set; }
+        public static JObject Lights { get; set; }
 
         #endregion
     }

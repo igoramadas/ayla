@@ -10,9 +10,9 @@ using Microsoft.Phone.Shell;
 
 namespace AylaPhone
 {
-    public partial class HomeWeatherPage : PhoneApplicationPage
+    public partial class WeatherPage : PhoneApplicationPage
     {
-        public HomeWeatherPage()
+        public WeatherPage()
         {
             InitializeComponent();
         }

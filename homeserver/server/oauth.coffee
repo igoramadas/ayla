@@ -52,12 +52,15 @@ class OAuth
     # Remove old auth tokens from the database.
     cleanTokens: (callback) =>
         minTimestamp = moment().unix() - (settings.modules.maxAuthTokenAgeDays * 24 * 60 * 60)
+        filter = {"service": @service, "active": false, "timestamp": {$lt: minTimestamp}}
 
-        database.del "oauth", {timestamp: {$lt: minTimestamp}}, (err, result) =>
+        # Delete old unactive tokens.
+        database.del "oauth", filter, (err, result) =>
             if err?
                 logger.error "OAuth.cleanTokens", "Timestamp #{minTimestamp}", err
             else
-                logger.debug "OAuth.cleanTokens", "Timestamp #{minTimestamp}", "OK"
+                logger.info "OAuth.cleanTokens", "Deleted older than #{minTimestamp}."
+
             if callback?
                 callback err, result
 
@@ -96,8 +99,12 @@ class OAuth
                     logger.error "OAuth.saveToken", @service, data, err
                 else
                     logger.debug "OAuth.saveToken", @service, data, "OK"
+
                 if callback?
                     callback err, result
+
+                # Delete old tokens.
+                @cleanTokens()
 
     # PROCESSING AND REQUESTING
     # -------------------------------------------------------------------------

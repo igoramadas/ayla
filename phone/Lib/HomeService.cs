@@ -5,6 +5,7 @@ using System.ServiceModel;
 using System.Threading.Tasks;
 using AylaPhone.Entities;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace AylaPhone
 {
@@ -17,7 +18,7 @@ namespace AylaPhone
         #region Base Implementation
 
         // Base method to get and post data to the home server.
-        private static Task<String> MakeRequest(WebClient web, String path, String data = "")
+        private static Task<String> MakeRequest(WebClient web, String path, JObject data = null)
         {
             var tcs = new TaskCompletionSource<String>();
             web.Headers["Content-Type"] = "application/json";
@@ -29,13 +30,13 @@ namespace AylaPhone
                 else tcs.TrySetResult(e.Result);
             };
 
-            if (data != "")
+            if (data != null && data.HasValues)
             {
                 web.DownloadStringAsync(new Uri(Settings.HomeUrl + path));
             }
             else
             {
-                web.UploadStringAsync(new Uri(Settings.HomeUrl + path), "POST", data);
+                web.UploadStringAsync(new Uri(Settings.HomeUrl + path), "POST", JsonConvert.SerializeObject(data));
             }
             
             return tcs.Task;
@@ -46,14 +47,36 @@ namespace AylaPhone
         #region Lights
 
         // Get list of lights from the home server.
-        public async static Task<List<Light>> GetLights()
+        public async static Task<JObject> GetLights()
         {
             var web = new WebClient();
             var task = await MakeRequest(web, "lights");
 
-            return JsonConvert.DeserializeObject<List<Light>>(task);
+            return JsonConvert.DeserializeObject<JObject>(task);
         }
 
+        // Set the state of the specified light.
+        public async static Task<JObject> SetLightState(String lightId)
+        {
+            var web = new WebClient();
+            var task = await MakeRequest(web, "lights/state");
+
+            return JsonConvert.DeserializeObject<JObject>(task);
+        }
+
+        #endregion
+
+        #region Weather
+
+        // Get current weahter info for indoors and outdoors.
+        public async static Task<JObject> GetWeather()
+        {
+            var web = new WebClient();
+            var task = await MakeRequest(web, "weather");
+
+            return JsonConvert.DeserializeObject<JObject>(task);
+        }
+        
         #endregion
     }
 }
