@@ -3,6 +3,7 @@
 
 # Note on exit.
 process.on "exit", (code) -> console.warn "Ayla process exit", code
+process.env.AVAHI_COMPAT_NOWARN = 1
 
 # Require Expresser.
 expresser = require "expresser"

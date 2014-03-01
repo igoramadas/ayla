@@ -52,9 +52,12 @@ class Network extends (require "./baseApi.coffee")
     # Start monitoring the network.
     start: =>
         @serverInfo = utils.getServerInfo()
-        @mdnsBrowser.on "serviceUp", @onServiceUp
-        @mdnsBrowser.on "serviceDown", @onServiceDown
-        @mdnsBrowser.start()
+        @serverInfo.platform = @serverInfo.platform.toLowerCase()
+
+        if settings.network.autoDiscovery
+            @mdnsBrowser.on "serviceUp", @onServiceUp
+            @mdnsBrowser.on "serviceDown", @onServiceDown
+            @mdnsBrowser.start()
 
         @baseStart()
 
@@ -64,9 +67,10 @@ class Network extends (require "./baseApi.coffee")
 
     # Stop monitoring the network.
     stop: =>
-        @mdnsBrowser.off "serviceUp", @onServiceUp
-        @mdnsBrowser.off "serviceDown", @onServiceDown
-        @mdnsBrowser.stop()
+        if settings.network.autoDiscovery
+            @mdnsBrowser.off "serviceUp", @onServiceUp
+            @mdnsBrowser.off "serviceDown", @onServiceDown
+            @mdnsBrowser.stop()
 
         @baseStop()
 
@@ -221,7 +225,7 @@ class Network extends (require "./baseApi.coffee")
             callback = null
 
         # Make sure we're running on Linux and create output string.
-        if @serverInfo.platform.indexOf("Linux") < 0
+        if @serverInfo.platform.indexOf("linux") < 0
             logger.warn "Network.probeBluetooth", "Only works on Linux, needs hcitool. Abort!"
             return
         else
