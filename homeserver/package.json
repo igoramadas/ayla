@@ -33,6 +33,7 @@
     "devDependencies": {
         "chai": "*",
         "groc": "*",
+        "memwatch": "*",
         "mocha": "*"
     },
     "repository": {
