@@ -3,6 +3,7 @@
 # Module for internal network management and discovery. Please note that a few
 # other API modules depend on this Network module to work, so unless you have a
 # very specific use case please leave it on the `settings.modules.enabled` list.
+# Bluetooth methods require BlueZ package on Linux and Bluetooth Command Line Tools on Windows.
 class Network extends (require "./baseApi.coffee")
 
     expresser = require "expresser"
@@ -63,6 +64,7 @@ class Network extends (require "./baseApi.coffee")
 
         if settings.modules.getDataOnStart
             @probeDevices()
+            @probeBluetooth()
             @probeBluetoothUsers()
 
     # Stop monitoring the network.
@@ -218,80 +220,81 @@ class Network extends (require "./baseApi.coffee")
     # BLUETOOTH
     # -------------------------------------------------------------------------
 
-    # Query bluetooth devices using hcitool scan.
-    # Only works on Linux, needs the BlueZ package.
+    # Query bluetooth and returns all discoverable devices.
     probeBluetooth: (callback) =>
         if not lodash.isFunction callback
             callback = null
 
-        # Make sure we're running on Linux and create output string.
-        if @serverInfo.platform.indexOf("linux") < 0
-            logger.warn "Network.probeBluetooth", "Only works on Linux, needs hcitool. Abort!"
-            return
-        else
-            output = ""
-
-        # Scan using hcitool scan.
+        # Scan and parse results from command line.
+        # Use btdiscovery on Windows, hcitool on Linux.
         try
-            hciscan = cprocess.spawn "hcitool", ["scan"]
-            hciscan.stdout.on "data", (data) -> output += data
+            if @serverInfo.platform.indexOf("linux") < 0
+                cmd = "btdiscovery"
+            else
+                cmd = "hcitool scan"
 
             # On close parse the output and get device mac and names out of it.
-            hciscan.on "close", =>
-                devices = []
-                lines = output.split "\n"
+            scan = cprocess.exec cmd, (err, stdout, stderr) =>
+                if err?
+                    @logError "Network.probeBluetooth", err
+                else if stderr
+                    @logError "Network.probeBluetooth", stderr
+                else
+                    devices = []
+                    lines = stdout.split "\n"
 
-                # First line is the "Scanning..." string.
-                lines.shift()
+                    # First line is the "Scanning..." string.
+                    lines.shift()
 
-                # Iterate devices.
-                for d in lines
-                    devices.push d.toString().replace("\t", " ").trim() if d? and d isnt ""
+                    # Iterate devices.
+                    for d in lines
+                        devices.push d.replace("\t", " ").trim() if d? and d isnt ""
 
-                @setData "bluetooth", devices
+                    @setData "bluetooth", devices
 
-                callback null, devices if callback?
+                    callback null, devices if callback?
         catch ex
             @logError "Network.probeBluetooth", ex
             callback ex if callback?
 
     # Probe user's bluetooth devices by checking the `bluetooth` property of registered users.
-    # Only works on Linux, needs the BlueZ package.
     probeBluetoothUsers: (callback) =>
         if not lodash.isFunction callback
             callback = null
 
-        # Make sure we're running on Linux and create output string.
-        if @serverInfo.platform.indexOf("Linux") < 0
-            logger.warn "Network.probeBluetoothUsers", "Only works on Linux, needs hcitool. Abort!"
-            return
-        else
-            output = ""
-            macs = []
-            tasks = []
+        macs = []
+        tasks = []
 
         # Iterate users and get bluetooth mach addresses.
-        for user, username of settings.users
+        for username, user of settings.users
             macs.push {user: username, mac: user.bluetooth} if user.bluetooth?
 
         # Iterate and create tasks for each passed mac address.
         for d in macs
-            do (d) => tasks.push (cb) =>
-                try
-                    hciname = cprocess.spawn "hcitool", ["name", d.mac]
-                    hciname.stdout.on "data", (data) -> output += data
-
-                    # On close parse the output and get device name, and set its online property.
-                    # If name is found, add `deviceName` to the original object.
-                    hciname.on "close", =>
-                        if output? and output isnt ""
-                            d.deviceName = output.toString().trim()
-                            d.online = true
+            do (d) =>
+                tasks.push (cb) =>
+                    try
+                        if @serverInfo.platform.indexOf("linux") < 0
+                            cmd = "btdiscovery -b#{d.mac} -d%n%"
                         else
-                            d.online = false
-                        cb null, d
-                catch ex
-                    cb ex
+                            cmd = "hcitool name #{d.mac}"
+
+                        # On close parse the output and get device name, and set its online property.
+                        # If name is found, add `deviceName` to the original object.
+                        scan = cprocess.exec cmd, (err, stdout, stderr) =>
+                            if err?
+                                @logError "Network.probeBluetoothUsers", err
+                            else if stderr
+                                @logError "Network.probeBluetoothUsers", stderr
+                            else if stdout? and stdout isnt ""
+                                d.deviceName = stdout.trim()
+                                logger.info "Network.probeBluetoothUsers", d.user, d.deviceName, "online!" if not d.online
+                                d.online = true
+                            else
+                                d.online = false
+                            cb null, d
+                    catch ex
+                        cb ex
 
         # Check all passed bluetooth devices.
         async.series tasks, (err, results) =>

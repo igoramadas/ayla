@@ -249,7 +249,7 @@ class WeatherManager extends (require "./baseManager.coffee")
 
     # Helper to set forecast details for the next days.
     setWeatherForecast: (data) =>
-        @data.forecast =[]
+        @data.forecast = []
 
         for d in data.forecastday
             a = {date: moment.unix(d.date.epoch).format("L"), conditions: d.conditions}

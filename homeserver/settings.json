@@ -82,8 +82,8 @@
     // creating a `enable` property containing an array of modules to be enabled.
     // For example: "enabled": ["netatmo", "network", "toshl"]
     "modules": {
-        // By default the app will keep the most recent 10 results of data
-        // having the exact same key (but can have different filters).
+        // By default the app will keep the most recent 10 results of module
+        // data having the same key (each key inside the .data property of API modules).
         "dataKeyCacheSize": 10,
         // Modules errors will stay logged on the module itself for up to 48 hours.
         // Used to check module's health (for example if it's throwing too many errors).
