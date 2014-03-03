@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.ServiceModel;
 using System.Threading.Tasks;
-using AylaPhone.Entities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
