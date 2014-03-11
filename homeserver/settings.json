@@ -85,7 +85,7 @@
         // By default the app will keep the most recent 10 results of module
         // data having the same key (each key inside the .data property of API modules).
         "dataKeyCacheSize": 10,
-        // Modules errors will stay logged on the module itself for up to 48 hours.
+        // Modules errors will stay logged on the module itself fogoor up to 48 hours.
         // Used to check module's health (for example if it's throwing too many errors).
         "errorMaxAgeHours": 48,
         // By default modules will get essential data on start.

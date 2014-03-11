@@ -288,7 +288,6 @@ class Network extends (require "./baseApi.coffee")
                                 @logError "Network.probeBluetoothUsers", stderr
                             else if stdout? and stdout isnt ""
                                 d.deviceName = stdout.trim()
-                                logger.info "Network.probeBluetoothUsers", d.user, d.deviceName, "online!" if not d.online
                                 d.online = true
                             else
                                 d.online = false

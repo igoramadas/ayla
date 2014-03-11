@@ -21,6 +21,7 @@ class BaseModule
     baseInit: (initialData) =>
         @moduleName = @__proto__.constructor.name.toString()
         @moduleId = @moduleName.toLowerCase()
+        @initTimestamp = moment().unix()
 
         # Create initial data or an empty object if none was passed.
         initialData = {} if not initialData?
@@ -33,7 +34,7 @@ class BaseModule
         @running = false
 
         # Log and start.
-        logger.debug "#{@moduleName}.init"
+        logger.debug "#{@moduleName}.baseInit"
         @start()
 
     # Called when the module starts.
@@ -46,6 +47,7 @@ class BaseModule
     # Called when the module stops.
     baseStop: =>
         @running = false
+        logger.debug "#{@moduleName}.baseStop"
 
         # Stop cron jobs for that module.
         cron.stop {module: "#{@moduleId}.coffee"}
@@ -86,6 +88,8 @@ class BaseModule
             @data[key].pop() if @data[key].length > settings.modules.dataKeyCacheSize
 
             # Save the new data to the database.
+            # TODO! Disabled, needs investigation for a stack overflow exit error.
+            return
             dbData = {key: key, value: value, filter: filter, datestamp: new Date()}
 
             database.set "data-#{@moduleId}", dbData, (err, result) =>
@@ -94,6 +98,8 @@ class BaseModule
                 else
                     logger.debug "#{@moduleName}.setData", key, value
         catch ex
+            console.warn 11111
+            console.warn ex
             @logError "#{@moduleName}.setData", key, ex
 
     # LOGGING AND ERRORS
@@ -114,12 +120,12 @@ class BaseModule
         @errors[id].push {timestamp: moment().unix(), data: args}
         count = @errors[id].length
 
+        logger.error.apply logger, args
+
         # Too many consecutive errors? Stop the module.
         if count is settings.general.stopOnErrorCount
             logger.critical id, "Too many consecutive errors (#{count}) logged.", "Module will now stop."
             @stop()
-
-        logger.error.apply logger, args
 
     # Helper to clear old errors.
     clearErrors: =>

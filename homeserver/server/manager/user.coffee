@@ -66,8 +66,13 @@ class UserManager extends (require "./baseManager.coffee")
             @data.users[d.user].online = d.online
 
     # Update user status (online or offline) and automatically turn off lights
-    # when there's no one home for a few minutes.
+    # when there's no one home for a few minutes. Please note that nothing will
+    # happen in case the module has started less than 2 minutes ago.
     onUserStatus: (userStatus) =>
+        if moment().subtract("m", 2).unix() < @initTimestamp
+            logger.info "UserManager.onUserStatus", userStatus, "Do nothing! Module has just started."
+            return
+
         logger.info "UserManager.onUserStatus", userStatus
 
         # Auto control house lights?
