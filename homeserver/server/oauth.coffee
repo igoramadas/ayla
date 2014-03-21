@@ -163,7 +163,7 @@ class OAuth
 
     # Try getting OAuth data for a particular request / response.
     process: (req, res) =>
-        user = req.session.user or @defaultUser
+        user = req.user or @defaultUser
 
         # Make sure OAuth client is set.
         if not @client?

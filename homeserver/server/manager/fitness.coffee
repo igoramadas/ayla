@@ -25,39 +25,35 @@ class FitnessManager extends (require "./baseManager.coffee")
 
     # Start the fitness manager and listen to data updates / events.
     start: =>
-        events.on "fitbit.data.weight", @onFitbitWeight
-        events.on "fitbit.data.fat", @onFitbitFat
-        events.on "fitbit.data.sleep", @onFitbitSleep
+        events.on "withings.data.weight", @onWithingsWeight
 
         @baseStart()
 
     # Stop the fitness manager.
     stop: =>
-        events.off "fitbit.data.weight", @onFitbitWeight
-        events.off "fitbit.data.fat", @onFitbitFat
-        events.off "fitbit.data.sleep", @onFitbitSleep
+        events.off "withings.data.weight", @onWithingsWeight
 
         @baseStop()
 
     # BODY ANALYSIS
     # -------------------------------------------------------------------------
 
-    # When current weight is informed by Fitbit.
-    onFitbitWeight: (data, filter) =>
+    # When current weight is informed by Withings.
+    onWithingsWeight: (data, filter) =>
         @data.weight = {value: data.weight, bmi: data.bmi}
         @dataUpdated "weight"
 
-        logger.info "FitnessManager.onFitbitWeight", @data.weight
+        logger.info "FitnessManager.onWithingsWeight", @data.weight
 
-    # When current fat level is informed by Fitbit.
-    onFitbitFat: (data, filter) =>
+    # When current fat level is informed by Withings.
+    onWithingsFat: (data, filter) =>
         @data.fat = {value: data.fat}
         @dataUpdated "fat"
 
-        logger.info "FitnessManager.onFitbitFat", @data.fat
+        logger.info "FitnessManager.onWithingsFat", @data.fat
 
-    # When current sleep data is informed by Fitbit.
-    onFitbitSleep: (data, filter) =>
+    # When current sleep data is informed by Withings.
+    onWithingsSleep: (data, filter) =>
         @data.sleep = data
         @dataUpdated "sleep"
 
@@ -68,7 +64,7 @@ class FitnessManager extends (require "./baseManager.coffee")
 
             events.emit "emailmanager.send", msgOptions
 
-        logger.info "FitnessManager.onFitbitSleep", @data.sleep
+        logger.info "FitnessManager.onWithingsSleep", @data.sleep
 
 
 # Singleton implementation.

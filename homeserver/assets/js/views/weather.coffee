@@ -24,8 +24,7 @@ class WeatherView extends ayla.BaseView
         # Incoming data has condition property? If so, set its css computed value.
         if data.condition?
             condition = if _.isFunction data.condition then data.condition() else data.condition
-            data.conditionCss = ko.computed ->
-                return condition.toLowerCase().replace(/\s/g, "-").replace(",", " ")
+            data.conditionCss = ko.computed -> return condition.toLowerCase().replace(/\s/g, "-").replace(",", " ")
 
         return if not @data.rooms?
 

@@ -259,6 +259,15 @@ class WeatherManager extends (require "./baseManager.coffee")
             a.maxWind = d.maxwind.dir + " " + d.maxwind.kph + "kph"
             a.maxHumidity = d.maxhumidity
             a.minHumidity = d.minhumidity
+
+            # Set the friendly date string.
+            if a.date is moment().format("L")
+                a.dateString = "Today"
+            else if a.date is moment().add("d", 1).format("L")
+                a.dateString = "Tomorrow"
+            else
+                a.dateString = a.date
+
             @data.forecast.push a
 
         # Emit forecast dat and log.

@@ -19,11 +19,9 @@ api = require "./server/api.coffee"
 manager = require "./server/manager.coffee"
 routes = require "./server/routes.coffee"
 
-# Init security, api and manager after database has been validated.
-database.onConnectionValidated = -> api.init -> manager.init -> routes.init()
-
-# Init Expresser and routes.
+# Init Expresser and main modules.
 expresser.init()
+api.init -> manager.init -> routes.init()
 
 # Automatically update settings when settings.json gets updated.
 settings.watch true, -> logger.info "Settings.watch", "Reloaded from disk!"

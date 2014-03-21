@@ -10,7 +10,6 @@
     // to have a ssl.key and ssl.cer files.
     "app": {
         "port": 8443,
-        "sessionEnabled": false,
         "ssl": {
             "enabled": true,
             "redirectorPort": 8080

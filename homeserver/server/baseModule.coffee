@@ -88,8 +88,6 @@ class BaseModule
             @data[key].pop() if @data[key].length > settings.modules.dataKeyCacheSize
 
             # Save the new data to the database.
-            # TODO! Disabled, needs investigation for a stack overflow exit error.
-            return
             dbData = {key: key, value: value, filter: filter, datestamp: new Date()}
 
             database.set "data-#{@moduleId}", dbData, (err, result) =>

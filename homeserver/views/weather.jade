@@ -51,7 +51,7 @@ block contents
                                 td.wind(data-bind="text: wind ? wind : '-'")
                             // ko foreach: forecast
                             tr
-                                td.date(data-bind="text: date")
+                                td.date(data-bind="text: dateString")
                                 td.min(data-bind="text: lowTemp + ' to ' + highTemp + '°C'")
                                 td.humidity(data-bind="text: minHumidity + ' to ' + maxHumidity + '%'")
                                 td.wind(data-bind="text: avgWind")
