@@ -1,6 +1,6 @@
 # WITHINGS API
 # -----------------------------------------------------------------------------
-# Module to get weight and air data from Withings smart scales.
+# Module to get weight, body fat and air quality data from Withings smart scales.
 # More info at http://www.withings.com/en/api
 class Withings extends (require "./baseApi.coffee")
 
@@ -20,7 +20,14 @@ class Withings extends (require "./baseApi.coffee")
 
     # Start collecting fitness and health data from Withings.
     start: =>
-        @baseStart()
+        @oauthInit (err, result) =>
+            if err?
+                @logError "Withings.start", err
+            else
+                @baseStart()
+
+                if settings.modules.getDataOnStart and result.length > 0
+                    @getWeight()
 
     # Stop collecting fitness and health data from Withings.
     stop: =>
@@ -34,44 +41,49 @@ class Withings extends (require "./baseApi.coffee")
         security.processAuthToken "withings", req, res
 
     # Make a request to the Withings API.
-    makeRequest: (path, action, params, callback) =>
-        if not callback? and lodash.isFunction params
+    apiRequest: (path, action, params, callback) =>
+        if lodash.isFunction params
             callback = params
             params = null
 
-        # Get data from the security module and set request URL.
-        authCache = security.authCache["withings"]
-        reqUrl = settings.withings.api.url + path
+        if not @isRunning [@oauth.client]
+            callback "Module not running or OAuth client not ready. Please check Withings API settings." if callback?
+            return
 
-        # Set post parameters.
+        # Set request URL and parameters.
+        reqUrl = settings.withings.api.url + path
         params = {} if not params?
         params.action = action
-        params.userid = authCache.data.userId
+        params.userid = @oauth.data.userId
 
-        logger.debug "Withings.makeRequest", reqUrl, authCache.data.token, authCache.data.tokenSecret
+        logger.debug "Withings.apiRequest", reqUrl
 
         # Make request using OAuth.
-        authCache.oauth.post reqUrl, authCache.data.token, authCache.data.tokenSecret, params, callback
+        @oauth.client.post reqUrl, @oauth.data.token, @oauth.data.tokenSecret, params, (err, result) =>
+            callback err, result
 
     # GET DATA
     # -------------------------------------------------------------------------
 
     # Get weight data for the specified date.
-    getWeight: (startTimestamp, endTimestamp, callback) =>
-        if not callback?
-            throw new Error "Withings.getWeight: parameters date and callback must be specified!"
+    getWeight: (filter, callback) =>
+        if lodash.isFunction filter
+            callback = filter
+            filter = null
+        else
+            filter = @getJobArgs filter
 
-        # Set defaults.
-        startTimestamp = moment().subtract("M", 1).unix() if not startTimestamp?
-        endTimestamp = moment().unix() if not endTimestamp?
+        # Properly parse the filter.
+        filter = {} if not filter?
+        filter.startdate = moment().subtract("M", 1).unix() if not filter.startdate?
+        filter.enddate = moment().unix() if not filter.enddate?
 
-        params = {startdate: startTimestamp, enddate: endTimestamp}
-
-        @makeRequest "measure", "getmeas", params, (err, result, resp) =>
+        @apiRequest "measure", "getmeas", filter, (err, result, resp) =>
             if err?
-                logger.error "Withings.getWeight", startTimestamp, endTimestamp, err
+                logger.error "Withings.getWeight", filter, err
             else
-                logger.debug "Withings.getWeight", startTimestamp, endTimestamp, result
+                @setData "weight", result, filter
+                logger.info "Withings.getWeight", filter, result
 
             callback err, result if lodash.isFunction callback
 

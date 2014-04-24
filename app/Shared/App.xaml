@@ -8,12 +8,12 @@
             <Setter Property="Margin" Value="12,17,0,28" />
         </Style>
         <Style TargetType="TextBlock" x:Key="TopTitle">
-            <Setter Property="FontSize" Value="13" />
-            <Setter Property="Margin" Value="9,-7,0,0" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="Margin" Value="0,12,0,0" />
         </Style>
         <Style TargetType="TextBlock" x:Key="PageName">
             <Setter Property="FontSize" Value="20" />
-            <Setter Property="Margin" Value="9,-7,0,0" />
+            <Setter Property="Margin" Value="0,12,0,0" />
         </Style>
         <Style TargetType="StackPanel" x:Key="ContentPanel">
             <Setter Property="Margin" Value="12,0,12,0" />

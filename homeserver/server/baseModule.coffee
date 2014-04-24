@@ -86,6 +86,16 @@ class BaseModule
             @data[key] = [] if not @data[key]?
             @data[key].unshift {value: value, filter: filter, timestamp: moment().unix()}
             @data[key].pop() if @data[key].length > settings.modules.dataKeyCacheSize
+
+            # Save the new data to the database.
+            dbData = {key: key, value: value, filter: filter, datestamp: new Date()}
+
+            database.insert "data-#{@moduleId}", dbData, (err, result) =>
+                if err?
+                    logger.error "#{@moduleName}.setData", key, err
+                else
+                    logger.debug "#{@moduleName}.setData", key, value
+
         catch ex
             @logError "#{@moduleName}.setData", key, ex
 

@@ -55,7 +55,7 @@ class OAuth
         filter = {"active": false, "timestamp": {$lt: minTimestamp}}
 
         # Delete old unactive tokens.
-        database.del "oauth", filter, (err, result) =>
+        database.delete "oauth", filter, (err, result) =>
             if err?
                 logger.error "OAuth.cleanTokens", "Timestamp #{minTimestamp}", err
             else
@@ -87,14 +87,14 @@ class OAuth
         @data[data.user] = data
 
         # Update oauth collection and set related tokens `active` to false.
-        database.set "oauth", {active: false}, {patch: true, upsert: false, filter: {service: @service}}, (err, result) =>
+        database.update "oauth", {active: false}, {patch: true, upsert: false, filter: {service: @service}}, (err, result) =>
             if err?
                 logger.error "OAuth.saveToken", @service, "Set active=false", err
             else
                 logger.debug "OAuth.saveToken", @service, "Set active=false", "OK"
 
             # Save to database.
-            database.set "oauth", data, (err, result) =>
+            database.insert "oauth", data, (err, result) =>
                 if err?
                     logger.error "OAuth.saveToken", @service, data, err
                 else

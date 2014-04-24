@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest" xmlns:m3="http://schemas.microsoft.com/appx/2014/manifest" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
-  <Identity Name="b00d6d0f-06c3-4808-b623-36c1433ed703" Publisher="CN=Igor" Version="1.0.0.0" />
-  <mp:PhoneIdentity PhoneProductId="b00d6d0f-06c3-4808-b623-36c1433ed703" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="Ayla" Publisher="CN=Igor" Version="1.0.0.0" />
+  <mp:PhoneIdentity PhoneProductId="5d9a4a5b-6082-4eab-9814-4790483d68d4" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Ayla.App.WindowsPhone</DisplayName>
-    <PublisherDisplayName>Igor</PublisherDisplayName>
+    <PublisherDisplayName>Igor Ramadas</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Prerequisites>
@@ -16,10 +16,11 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Ayla.App.WindowsPhone.App">
-      <m3:VisualElements DisplayName="Ayla App" Square150x150Logo="Assets\Logo.png" Square44x44Logo="Assets\SmallLogo.png" Description="Ayla Windows Phone app." ForegroundText="light" BackgroundColor="transparent" ToastCapable="true">
-        <m3:DefaultTile Wide310x150Logo="Assets\WideLogo.png" Square71x71Logo="Assets\Square71x71Logo.png">
+      <m3:VisualElements DisplayName="Ayla" Square150x150Logo="Assets\Logo.png" Square44x44Logo="Assets\SmallLogo.png" Description="Ayla at your service." ForegroundText="light" BackgroundColor="transparent" ToastCapable="true">
+        <m3:DefaultTile Wide310x150Logo="Assets\WideLogo.png" Square71x71Logo="Assets\Square71x71Logo.png" ShortName="Ayla" DefaultSize="wide310x150Logo">
+          <m3:TileUpdate Recurrence="halfHour" UriTemplate="https://home.ayla.pw/api/livetile" />
         </m3:DefaultTile>
-        <m3:SplashScreen Image="Assets\SplashScreen.png" />
+        <m3:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="transparent" />
         <m3:ApplicationView MinWidth="width320" />
         <!--Used in XAML Designer. DO NOT REMOVE-->
         <m3:InitialRotationPreference>
@@ -29,6 +30,16 @@
       <ApplicationContentUriRules>
         <Rule Match="https://*.ayla.pw" Type="include" />
       </ApplicationContentUriRules>
+      <Extensions>
+        <Extension Category="windows.backgroundTasks" EntryPoint="Ayla.App.PortableRuntime.BgTask">
+          <BackgroundTasks>
+            <Task Type="systemEvent" />
+            <Task Type="timer" />
+            <Task Type="pushNotification" />
+            <m2:Task Type="location" />
+          </BackgroundTasks>
+        </Extension>
+      </Extensions>
     </Application>
   </Applications>
   <Capabilities>

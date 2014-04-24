@@ -7,6 +7,5 @@ using System.Resources;
 [assembly: AssemblyProduct("Ayla App")]
 [assembly: AssemblyCopyright("Copyright © Devv 2014")]
 [assembly: AssemblyVersion("0.1.*")]
-[assembly: AssemblyFileVersion("0.1.*")]
 [assembly: ComVisible(false)]
 [assembly: NeutralResourcesLanguageAttribute("en-GB")]
