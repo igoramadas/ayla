@@ -53,6 +53,15 @@ class Hue extends (require "./baseApi.coffee")
 
         # Get device info from settings.
         device = lodash.find settings.network.devices, {type: "hue"}
+        
+        # No device found? Abort!
+        if not @isRunning [device]
+            errMsg = "Hue bridge was not found on network device list. Please check settings.network.devices."
+            if lodash.isFunction callback
+                callback errMsg
+            else
+                logger.warn "Hue.apiRequest", errMsg
+            return
 
         # Get correct URL depending on home or remote location.
         if networkApi.isHome

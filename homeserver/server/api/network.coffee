@@ -100,11 +100,11 @@ class Network extends (require "./baseApi.coffee")
         logger.info "Network.checkIP", ips, "isHome = #{@isHome}"
 
     # Check if the specified device / server / URL is up.
+    # Abort if device is invalid or was found using mdns.
     checkDevice: (device) =>
+        return if not device? or device.mdns
+        
         logger.debug "Network.checkDevice", device
-
-        # Abort if device was found using mdns.
-        return if device.mdns
 
         # Are addresses set?
         if not device.addresses?
@@ -115,11 +115,13 @@ class Network extends (require "./baseApi.coffee")
         device.up = false if not device.up?
 
     # Probe the current network and check device statuses.
-    probeDevices: (callback) =>
+    probeDevices: (callback) =>            
+        logger.debug "Network.probeDevices", device
+        
         if not @isRunning [settings.network.devices]
             errMsg = "Module is not running or no devices are set. Please check the network devices list on settings."
 
-            if lodash.isArray callback
+            if lodash.isFunction callback
                 callback errMsg
             else
                 logger.warn "Network.probeDevices", errMsg
