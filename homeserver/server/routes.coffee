@@ -130,11 +130,11 @@ class Routes
         message = JSON.stringify message
         res.statusCode = 500
         res.send "Error: #{method} - #{message}"
-        expresser.logger.error "HTTP Error", method, message
+        logger.error "HTTP Error", method, message
 
     # Log the request to the console if `debug` is true.
     logRequest = (method, params) ->
-        if expresser.settings.general.debug
+        if settings.general.debug
             if params?
                 console.log "Request", method, params
             else

@@ -42,10 +42,14 @@ class WeatherManager extends (require "./baseManager.coffee")
         @baseInit {forecast: null, astronomy: astronomy, outdoor: outdoor, conditions: conditions, rooms: settings.home.rooms}
 
     # Start the weather manager and listen to data updates / events.
+    # Indoor weather data depends on rooms being set on the settings.
     start: =>
-        for room in settings.home.rooms
-            if not @data[room.id]?
-                @data[room.id] = getRoomObject room.title
+        if not settings.home?.rooms?
+            logger.warn "WeatherManager.start", "No rooms were defined on the settings. Indoor weather won't be monitored."
+        else        
+            for room in settings.home.rooms
+                if not @data[room.id]?
+                    @data[room.id] = getRoomObject room.title
 
         events.on "electricimp.data", @onElectricImp
         events.on "netatmo.data.indoor", @onNetatmoIndoor

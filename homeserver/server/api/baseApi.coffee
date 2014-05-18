@@ -33,10 +33,12 @@ class BaseApi extends (require "../baseModule.coffee")
     # Helper to check if module is running and with necessary settings defined.
     isRunning: (requiredObjects) =>
         return false if not @running
-
+        
         if lodash.isArray requiredObjects
             for i in requiredObjects
-                return false if not i?
+                if not i?
+                    logger.debug "#{@moduleName}.isRunning", "One of the requiredObjects is not set.", i
+                    return false
 
         return true
 
