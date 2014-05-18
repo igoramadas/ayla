@@ -33,6 +33,8 @@ class Routes
                 app.get "/#{link}", (req, res) ->
                     options = {pageTitle: m.title, data: m.data}
                     renderPage req, res, link, options
+                app.get "/#{link}/data", (req, res) ->
+                    renderJson req, res, m.data
 
 
         # API modules routes.
@@ -48,7 +50,7 @@ class Routes
                     app.get "/#{m.moduleId}/auth/callback", oauthProcess
                     app.post "/#{m.moduleId}/auth/callback", oauthProcess
 
-        # API list, commander and status routes.
+        # API page, commander and status routes.
         app.get "/api", apiPage
         app.get "/commander/:cmd", commanderPage
         app.post "/commander/:cmd", commanderPage
@@ -74,13 +76,13 @@ class Routes
     commanderPage = (req, res) ->
         commander.execute req.params.cmd, req.body, (err, result) ->
             if err?
-                res.json {error: err}
+                renderJson req, res, {error: err}
             else
-                res.json result
+                renderJson req, res, result
 
     # Main status page.
     statusPage = (req, res) ->
-        res.json utils.getServerInfo()
+        renderJson req, res, utils.getServerInfo()
 
     # HELPER METHODS
     # -------------------------------------------------------------------------
@@ -117,6 +119,10 @@ class Routes
 
         # Render page.
         res.render filename, options
+
+    # Render response as JSON data.
+    renderJson = (req, res, data) ->
+        res.json data
 
     # When the server can't return a valid result,
     # send an error response with status code 500.
