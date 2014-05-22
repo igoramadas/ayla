@@ -81,6 +81,8 @@ class Withings extends (require "./baseApi.coffee")
         @apiRequest "measure", "getmeas", filter, (err, result, resp) =>
             if err?
                 logger.error "Withings.getWeight", filter, err
+            else if result?.status > 0
+                logger.error "Withings.getWeight", "Invalid response!", result.status, filter
             else
                 @setData "weight", result, filter
                 logger.info "Withings.getWeight", filter, result

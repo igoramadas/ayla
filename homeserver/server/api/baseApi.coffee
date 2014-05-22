@@ -106,7 +106,7 @@ class BaseApi extends (require "../baseModule.coffee")
     # the filter argument (which can be passed directly or via the `args` property
     # of a scheduled cron job).
     getJobArgs: (argsOrJob) =>
-        return null if not argsOrJob?
+        return null if not argsOrJob? or (argsOrJob.callback? and argsOrJob.module?)
         return argsOrJob.args if argsOrJob.args?
         return argsOrJob
 

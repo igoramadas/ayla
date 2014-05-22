@@ -24,9 +24,11 @@ class Hue extends (require "./baseApi.coffee")
 
     # Start the module and refresh the Hue hub data.
     start: =>
-        @refreshHub()
         @baseStart()
 
+        if settings.modules.getDataOnStart
+            @refreshHub()
+        
     # Stop the module and cancel the Hue hub refresh jobs.
     stop: =>
         @baseStop()
@@ -53,7 +55,7 @@ class Hue extends (require "./baseApi.coffee")
 
         # Get device info from settings.
         device = lodash.find settings.network.devices, {type: "hue"}
-        
+
         # No device found? Abort!
         if not @isRunning [device]
             errMsg = "Hue bridge was not found on network device list. Please check settings.network.devices."

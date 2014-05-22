@@ -116,7 +116,7 @@ class Network extends (require "./baseApi.coffee")
 
     # Probe the current network and check device statuses.
     probeDevices: (callback) =>            
-        logger.debug "Network.probeDevices", device
+        logger.debug "Network.probeDevices"
         
         if not @isRunning [settings.network.devices]
             errMsg = "Module is not running or no devices are set. Please check the network devices list on settings."
