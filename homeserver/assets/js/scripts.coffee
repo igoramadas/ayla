@@ -5,7 +5,6 @@
 #= require lib/lodash.js
 #= require lib/knockout.js
 #= require lib/moment.js
-#= require lib/datatables.js
 #= require lib/placeholder.js
 #= require lib/fastclick.js
 #= require lib/foundation.js
