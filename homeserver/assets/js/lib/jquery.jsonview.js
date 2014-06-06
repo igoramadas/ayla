@@ -1,178 +1,250 @@
-(function($) {
-
-  var opts;
-
-  // JSONFormatter json->HTML prototype straight from Firefox JSONView
-  // For reference: http://code.google.com/p/jsonview
-  function JSONFormatter() {
-    // No magic required.
-  }
-
-  JSONFormatter.prototype = {
-    htmlEncode: function (t) {
-      return t != null ? t.toString().replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;") : '';
-    },
-
-    decorateWithSpan: function (value, className) {
-      return '<span class="' + className + '">' + this.htmlEncode(value) + '</span>';
-    },
-
-    // Convert a basic JSON datatype (number, string, boolean, null, object, array) into an HTML fragment.
-    valueToHTML: function(value) {
-      var valueType = typeof value;
-
-      var output = "";
-      if (value == null) {
-        output += this.decorateWithSpan('null', 'null');
+(function(jQuery) {
+  var $, Collapser, JSONFormatter, JSONView;
+  JSONFormatter = (function() {
+    function JSONFormatter(options) {
+      if (options == null) {
+        options = {};
       }
-      else if (value && value.constructor == Array) {
-        output += this.arrayToHTML(value);
-      }
-      else if (valueType == 'object') {
-        output += this.objectToHTML(value);
-      }
-      else if (valueType == 'number') {
-        output += this.decorateWithSpan(value, 'num');
-      }
-      else if (valueType == 'string') {
-        if (/^(http|https):\/\/[^\s]+$/.test(value)) {
-          output += '<a href="' + value + '">' + this.htmlEncode(value) + '</a>';
-        } else {
-          output += this.decorateWithSpan('"' + value + '"', 'string');
-        }
-      }
-      else if (valueType == 'boolean') {
-        output += this.decorateWithSpan(value, 'bool');
-      }
-
-      return output;
-    },
-
-    // Convert an array into an HTML fragment
-    arrayToHTML: function(json) {
-      var output = '[<ul class="array collapsible">';
-      var hasContents = false;
-      for ( var prop in json ) {
-        hasContents = true;
-        output += '<li>';
-        output += this.valueToHTML(json[prop]);
-        output += '</li>';
-      }
-      output += '</ul>]';
-
-      if ( ! hasContents ) {
-        output = "[ ]";
-      }
-
-      return output;
-    },
-
-    // Convert a JSON object to an HTML fragment
-    objectToHTML: function(json) {
-      var output = '{<ul class="obj collapsible">';
-      var hasContents = false;
-      for ( var prop in json ) {
-        hasContents = true;
-        output += '<li>';
-        output += '<span class="prop">' + this.htmlEncode(prop) + '</span>: ';
-        output += this.valueToHTML(json[prop]);
-        output += '</li>';
-      }
-      output += '</ul>}';
-
-      if ( ! hasContents ) {
-        output = "{ }";
-      }
-
-      return output;
-    },
-
-    // Convert a whole JSON object into a formatted HTML document.
-    jsonToHTML: function(json) {
-      var output = '';
-      output += '<div class="jsonview">';
-      output += this.valueToHTML(json);
-      output += '</div>';
-      return output;
-    },
-
-    // Produce an error document for when parsing fails.
-    errorPage: function(error, data, uri) {
-      // var output = '<div id="error">' + this.stringbundle.GetStringFromName('errorParsing') + '</div>';
-      // output += '<h1>' + this.stringbundle.GetStringFromName('docContents') + ':</h1>';
-      var output = '<div id="error">Error parsing JSON: '+error.message+'</div>';
-      output += '<h1>'+error.stack+':</h1>';
-      output += '<div class="jsonview">' + this.htmlEncode(data) + '</div>';
-      return this.toHTML(output, uri + ' - Error');
-    }
-  };
-
-  $.fn.JSONView = function(jsonObj, options) {
-
-    var defaultOptions = {
-      collapsed: false
+      this.options = options;
     }
 
-    options = options || {};
-
-    var opts = $.extend(defaultOptions, options);
-
-    function collapse(collapser) {
-      var target = collapser.parentNode.getElementsByClassName('collapsible');
-
-      if ( ! target.length ) {
-        return;
-      }
-
-      target = target[0];
-
-      if ( target.style.display == 'none' ) {
-        var ellipsis = target.parentNode.getElementsByClassName('ellipsis')[0];
-        target.parentNode.removeChild(ellipsis);
-        target.style.display = '';
-        collapser.innerHTML = '-';
+    JSONFormatter.prototype.htmlEncode = function(html) {
+      if (html !== null) {
+        return html.toString().replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
       } else {
-        target.style.display = 'none';
-
-        var ellipsis = document.createElement('span');
-        ellipsis.className = 'ellipsis';
-        ellipsis.innerHTML = ' &hellip; ';
-        target.parentNode.insertBefore(ellipsis, target);
-        collapser.innerHTML = '+';
+        return '';
       }
-    }
+    };
 
-    function addCollapser(item) {
-      // This mainly filters out the root object (which shouldn't be collapsible)
-      if ( item.nodeName != 'LI' ) {
+    JSONFormatter.prototype.jsString = function(s) {
+      s = JSON.stringify(s).slice(1, -1);
+      return this.htmlEncode(s);
+    };
+
+    JSONFormatter.prototype.decorateWithSpan = function(value, className) {
+      return "<span class=\"" + className + "\">" + (this.htmlEncode(value)) + "</span>";
+    };
+
+    JSONFormatter.prototype.valueToHTML = function(value, level) {
+      var valueType;
+      if (level == null) {
+        level = 0;
+      }
+      valueType = Object.prototype.toString.call(value).match(/\s(.+)]/)[1].toLowerCase();
+      return this["" + valueType + "ToHTML"].call(this, value, level);
+    };
+
+    JSONFormatter.prototype.nullToHTML = function(value) {
+      return this.decorateWithSpan('null', 'null');
+    };
+
+    JSONFormatter.prototype.numberToHTML = function(value) {
+      return this.decorateWithSpan(value, 'num');
+    };
+
+    JSONFormatter.prototype.stringToHTML = function(value) {
+      var multilineClass, newLinePattern;
+      if (/^(http|https|file):\/\/[^\s]+$/i.test(value)) {
+        return "<a href=\"" + (this.htmlEncode(value)) + "\"><span class=\"q\">\"</span>" + (this.jsString(value)) + "<span class=\"q\">\"</span></a>";
+      } else {
+        multilineClass = '';
+        value = this.jsString(value);
+        if (this.options.nl2br) {
+          newLinePattern = /([^>\\r\\n]?)(\\r\\n|\\n\\r|\\r|\\n)/g;
+          if (newLinePattern.test(value)) {
+            multilineClass = ' multiline';
+            value = (value + '').replace(newLinePattern, '$1' + '<br />');
+          }
+        }
+        return "<span class=\"string" + multilineClass + "\">\"" + value + "\"</span>";
+      }
+    };
+
+    JSONFormatter.prototype.booleanToHTML = function(value) {
+      return this.decorateWithSpan(value, 'bool');
+    };
+
+    JSONFormatter.prototype.arrayToHTML = function(array, level) {
+      var collapsible, hasContents, index, numProps, output, value, _i, _len;
+      if (level == null) {
+        level = 0;
+      }
+      hasContents = false;
+      output = '';
+      numProps = array.length;
+      for (index = _i = 0, _len = array.length; _i < _len; index = ++_i) {
+        value = array[index];
+        hasContents = true;
+        output += '<li>' + this.valueToHTML(value, level + 1);
+        if (numProps > 1) {
+          output += ',';
+        }
+        output += '</li>';
+        numProps--;
+      }
+      if (hasContents) {
+        collapsible = level === 0 ? '' : ' collapsible';
+        return "[<ul class=\"array level" + level + collapsible + "\">" + output + "</ul>]";
+      } else {
+        return '[ ]';
+      }
+    };
+
+    JSONFormatter.prototype.objectToHTML = function(object, level) {
+      var collapsible, hasContents, numProps, output, prop, value;
+      if (level == null) {
+        level = 0;
+      }
+      hasContents = false;
+      output = '';
+      numProps = 0;
+      for (prop in object) {
+        numProps++;
+      }
+      for (prop in object) {
+        value = object[prop];
+        hasContents = true;
+        output += "<li><span class=\"prop\"><span class=\"q\">\"</span>" + (this.jsString(prop)) + "<span class=\"q\">\"</span></span>: " + (this.valueToHTML(value, level + 1));
+        if (numProps > 1) {
+          output += ',';
+        }
+        output += '</li>';
+        numProps--;
+      }
+      if (hasContents) {
+        collapsible = level === 0 ? '' : ' collapsible';
+        return "{<ul class=\"obj level" + level + collapsible + "\">" + output + "</ul>}";
+      } else {
+        return '{ }';
+      }
+    };
+
+    JSONFormatter.prototype.jsonToHTML = function(json) {
+      return "<div class=\"jsonview\">" + (this.valueToHTML(json)) + "</div>";
+    };
+
+    return JSONFormatter;
+
+  })();
+  (typeof module !== "undefined" && module !== null) && (module.exports = JSONFormatter);
+  Collapser = {
+    bindEvent: function(item, collapsed) {
+      var collapser;
+      collapser = document.createElement('div');
+      collapser.className = 'collapser';
+      collapser.innerHTML = collapsed ? '+' : '-';
+      collapser.addEventListener('click', (function(_this) {
+        return function(event) {
+          return _this.toggle(event.target);
+        };
+      })(this));
+      item.insertBefore(collapser, item.firstChild);
+      if (collapsed) {
+        return this.collapse(collapser);
+      }
+    },
+    expand: function(collapser) {
+      var ellipsis, target;
+      target = this.collapseTarget(collapser);
+      ellipsis = target.parentNode.getElementsByClassName('ellipsis')[0];
+      target.parentNode.removeChild(ellipsis);
+      target.style.display = '';
+      return collapser.innerHTML = '-';
+    },
+    collapse: function(collapser) {
+      var ellipsis, target;
+      target = this.collapseTarget(collapser);
+      target.style.display = 'none';
+      ellipsis = document.createElement('span');
+      ellipsis.className = 'ellipsis';
+      ellipsis.innerHTML = ' &hellip; ';
+      target.parentNode.insertBefore(ellipsis, target);
+      return collapser.innerHTML = '+';
+    },
+    toggle: function(collapser) {
+      var target;
+      target = this.collapseTarget(collapser);
+      if (target.style.display === 'none') {
+        return this.expand(collapser);
+      } else {
+        return this.collapse(collapser);
+      }
+    },
+    collapseTarget: function(collapser) {
+      var target, targets;
+      targets = collapser.parentNode.getElementsByClassName('collapsible');
+      if (!targets.length) {
         return;
       }
-
-      var collapser = document.createElement('div');
-      collapser.className = 'collapser';
-      collapser.innerHTML = opts.collapsed ? '+' : '-';
-      collapser.addEventListener('click', function(event) {
-        collapse(event.target);
-      }, false);
-      item.insertBefore(collapser, item.firstChild);
-      if (opts.collapsed) {
-        collapse(collapser);
-      }
-    }
-
-    var jsonFormatter = new JSONFormatter;
-    // Covert, and catch exceptions on failure
-    if( Object.prototype.toString.call(jsonObj) !== '[object Object]' ) {
-      jsonObj = JSON.parse(jsonObj);
-    }
-    var outputDoc = jsonFormatter.jsonToHTML(jsonObj);
-
-    $(this).html(outputDoc);
-
-    var items = $(this)[0].getElementsByClassName('collapsible');
-    for( var i = 0; i < items.length; i++) {
-      addCollapser(items[i].parentNode);
+      return target = targets[0];
     }
   };
-
+  $ = jQuery;
+  JSONView = {
+    collapse: function(el) {
+      if (el.innerHTML === '-') {
+        return Collapser.collapse(el);
+      }
+    },
+    expand: function(el) {
+      if (el.innerHTML === '+') {
+        return Collapser.expand(el);
+      }
+    },
+    toggle: function(el) {
+      return Collapser.toggle(el);
+    }
+  };
+  return $.fn.JSONView = function() {
+    var args, defaultOptions, formatter, json, method, options, outputDoc;
+    args = arguments;
+    if (JSONView[args[0]] != null) {
+      method = args[0];
+      return this.each(function() {
+        var $this, level;
+        $this = $(this);
+        if (args[1] != null) {
+          level = args[1];
+          return $this.find(".jsonview .collapsible.level" + level).siblings('.collapser').each(function() {
+            return JSONView[method](this);
+          });
+        } else {
+          return $this.find('.jsonview > ul > li > .collapsible').siblings('.collapser').each(function() {
+            return JSONView[method](this);
+          });
+        }
+      });
+    } else {
+      json = args[0];
+      options = args[1] || {};
+      defaultOptions = {
+        collapsed: false,
+        nl2br: false
+      };
+      options = $.extend(defaultOptions, options);
+      formatter = new JSONFormatter({
+        nl2br: options.nl2br
+      });
+      if (Object.prototype.toString.call(json) === '[object String]') {
+        json = JSON.parse(json);
+      }
+      outputDoc = formatter.jsonToHTML(json);
+      return this.each(function() {
+        var $this, item, items, _i, _len, _results;
+        $this = $(this);
+        $this.html(outputDoc);
+        items = $this[0].getElementsByClassName('collapsible');
+        _results = [];
+        for (_i = 0, _len = items.length; _i < _len; _i++) {
+          item = items[_i];
+          if (item.parentNode.nodeName === 'LI') {
+            _results.push(Collapser.bindEvent(item.parentNode, options.collapsed));
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
+      });
+    }
+  };
 })(jQuery);
