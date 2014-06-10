@@ -46,7 +46,7 @@ class Withings extends (require "./baseApi.coffee")
             callback = params
             params = null
 
-        if not @isRunning [@oauth]
+        if not @isRunning [@oauth, @oauth.client]
             callback "Module not running or OAuth client not ready. Please check Withings API settings." if callback?
             return
 
