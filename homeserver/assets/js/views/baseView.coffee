@@ -54,13 +54,11 @@ class BaseView
 
     # Set active navigation and header properties.
     setHeader: =>
-        currentPath = location.pathname.substring 1
+        $(document).foundation()
 
+        currentPath = location.pathname.substring 1
         if currentPath isnt "/" and currentPath isnt ""
             $("nav").find(".#{currentPath}").addClass "active"
-
-        # Activate foundation.js.
-        $(document).foundation()
 
     # Create a KO compatible object based on the original `serverData` property.
     setData: =>
