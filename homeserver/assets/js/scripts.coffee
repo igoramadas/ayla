@@ -17,7 +17,9 @@ window.logger = -> console.log.apply console, arguments
 # Start the app when document is ready and apply knockout bindings.
 onReady = ->
         ayla.sockets.init() if ayla.sockets?
-        ayla.currentView.init() if ayla.currentView?
+
+        ayla.currentView = new BaseView() if not ayla.currentView?
+        ayla.currentView.init()
 
 # Hey ho let's go!
 $(document).ready onReady

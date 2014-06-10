@@ -113,6 +113,7 @@ class BaseModule
         args = lodash.toArray arguments
 
         # Append to the errors log.
+        @errors = {} if not errors?
         @errors[id] = [] if not @errors[id]?
         @errors[id].push {timestamp: moment().unix(), data: args}
         count = @errors[id].length
