@@ -108,7 +108,7 @@ class Ninja extends (require "./baseApi.coffee")
         if not @isRunning [@ninjaApi]
             callback "Ninja API client not running. Please check Ninja API settings." if callback?
             return
-        else if not @rf433?
+        else if not @rf433?.device?
             callback "Ninja.actuate433", "RF 433 device not found." if callback?
             return
 

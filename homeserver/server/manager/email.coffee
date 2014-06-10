@@ -41,6 +41,9 @@ class EmailManager extends (require "./baseManager.coffee")
         @defaultTo = defaultUser.email if defaultUser?.email?
         @defaultToMobile = defaultUser.emailMobile if defaultUser?.emailMobile?
 
+        # Set default mobile email to same as email if none was specified!
+        @defaultToMobile = @defaultTo if not @defaultToMobile?
+
         @baseInit {processedEmails: []}
 
     # Start listening to new message events from the server.

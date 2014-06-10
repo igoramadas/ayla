@@ -103,7 +103,7 @@ class Network extends (require "./baseApi.coffee")
     # Abort if device is invalid or was found using mdns.
     checkDevice: (device) =>
         return if not device? or device.mdns
-        
+
         logger.debug "Network.checkDevice", device
 
         # Are addresses set?
@@ -115,9 +115,9 @@ class Network extends (require "./baseApi.coffee")
         device.up = false if not device.up?
 
     # Probe the current network and check device statuses.
-    probeDevices: (callback) =>            
-        logger.debug "Network.probeDevices", device
-        
+    probeDevices: (callback) =>
+        logger.debug "Network.probeDevices"
+
         if not @isRunning [settings.network.devices]
             errMsg = "Module is not running or no devices are set. Please check the network devices list on settings."
 
@@ -136,7 +136,7 @@ class Network extends (require "./baseApi.coffee")
     wolMagicPacket = (mac) ->
         nmacs = 16
         mbytes = 6
-        buf = new buffer.Buffer mbytes        
+        buf = new buffer.Buffer mbytes
 
         # Parse and rewrite mac address.
         if mac.length is 2 * mbytes + (mbytes - 1)
