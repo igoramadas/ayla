@@ -52,7 +52,8 @@ class Withings extends (require "./baseApi.coffee")
             return
 
         # Set request URL and parameters.
-        reqUrl = settings.withings.api.url + path + "?action=#{action}&userid=#{@oauth.data[@oauth.defaultUser].userId}"
+        userid = @oauth.data[@oauth.defaultUser].userId
+        reqUrl = settings.withings.api.url + path + "?action=#{action}&userid=#{userid}"
         reqUrl = reqUrl + "&" + querystring.stringify params if params?
 
         # Make request using OAuth.
