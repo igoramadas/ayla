@@ -230,7 +230,7 @@ class Network extends (require "./baseApi.coffee")
         if not lodash.isFunction callback
             callback = null
 
-        if not @serverInfo.platform?
+        if @serverInfo.platform.indexOf("darwin") >= 0
             @logError "Network.probeBluetooth", platformErrorMsg
             callback platformErrorMsg if callback?
             return
@@ -275,7 +275,7 @@ class Network extends (require "./baseApi.coffee")
         if not lodash.isFunction callback
             callback = null
 
-        if not @serverInfo.platform?
+        if @serverInfo.platform.indexOf("darwin") >= 0
             @logError "Network.probeBluetoothUsers", platformErrorMsg
             callback platformErrorMsg if callback?
             return

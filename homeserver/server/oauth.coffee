@@ -75,10 +75,12 @@ class OAuth
         now = moment().unix()
         data = lodash.defaults params, {service: @service, active: true, timestamp: now}
 
-        # Add extra parameters, if any.
+        # Add extra parameters like timestamp and user ID.
         data.timestamp = params.oauth_timestamp if params.oauth_timestamp?
         data.userId = params.encoded_user_id if params.encoded_user_id?
         data.userId = params.userid if params.userid?
+        data.userId = params.userId if params.userId?
+        delete data.userid
 
         # Make sure user is associated, or assume default user.
         data.user = @defaultUser if not data.user? or data.user is ""
@@ -174,7 +176,7 @@ class OAuth
         qs = url.parse(req.url, true).query if req?
 
         # Helper function to get the request token using OAUth 1.x.
-        getRequestToken1 = (err, oauth_token, oauth_token_secret, oauth_authorize_url, additionalParameters) =>
+        getRequestToken1 = (err, oauth_token, oauth_token_secret, additionalParameters) =>
             if err?
                 logger.error "OAuth.process", "getRequestToken1", @service, err
                 return

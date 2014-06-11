@@ -32,7 +32,8 @@
     // Connect to local MongoDB and delete cached API data after 24 hours by default.
     "database": {
         "connString": "mongodb://localhost/ayla",
-        "dataCacheExpireHours": 24
+        "dataCacheExpireHours": 24,
+        "normalizeId": false
     },
     // Settings to connect to your Electric Imp devices. You must set a devices
     // array with the list of devices to be used.
