@@ -10,6 +10,7 @@ class Withings extends (require "./baseApi.coffee")
 
     lodash = expresser.libs.lodash
     moment = expresser.libs.moment
+    querystring = require "querystring"
 
     # INIT
     # -------------------------------------------------------------------------
@@ -25,6 +26,7 @@ class Withings extends (require "./baseApi.coffee")
                 @logError "Withings.start", err
             else
                 @baseStart()
+                @oauth.client.setClientOptions {requestTokenHttpMethod: "GET", accessTokenHttpMethod: "GET"}
 
                 if settings.modules.getDataOnStart and result.length > 0
                     @getWeight()
@@ -46,20 +48,21 @@ class Withings extends (require "./baseApi.coffee")
             callback = params
             params = null
 
-        if not @isRunning [@oauth.client]
+        if not @isRunning [@oauth, @oauth.client]
             callback "Module not running or OAuth client not ready. Please check Withings API settings." if callback?
             return
 
         # Set request URL and parameters.
-        reqUrl = settings.withings.api.url + path
-        params = {} if not params?
-        params.action = action
-        params.userid = @oauth.data.userId
-
-        logger.debug "Withings.apiRequest", reqUrl
+        userid = @oauth.data[@oauth.defaultUser].userId
+        reqUrl = settings.withings.api.url + path + "?action=#{action}&userid=#{userid}"
+        reqUrl = reqUrl + "&" + querystring.stringify params if params?
 
         # Make request using OAuth.
-        @oauth.client.post reqUrl, @oauth.data.token, @oauth.data.tokenSecret, params, (err, result) =>
+        @oauth.client.post reqUrl, @oauth.data.token, @oauth.data.tokenSecret, (err, result) =>
+            if result?
+                result = JSON.parse(result) if not lodash.isObject result
+                err = result if result?.status > 0
+
             callback err, result
 
     # GET DATA

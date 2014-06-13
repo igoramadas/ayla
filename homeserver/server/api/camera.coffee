@@ -128,7 +128,7 @@ class Camera extends (require "./baseApi.coffee")
                             count++
                         catch ex
                             err = ex
-                            @logError "Camera.cleanSnaps", f, ex
+                            @logError "Camera.cleanSnaps", f, ex.message, ex.stack
 
             # Only log if count is greater than 0.
             if count > 0

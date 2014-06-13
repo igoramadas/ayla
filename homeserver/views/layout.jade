@@ -1,9 +1,14 @@
 doctype html
-html.no-js
+html.no-js(lang="en")
     head
         title Ayla
-        meta(name="apple-mobile-web-app-capable", content="yes")
+        meta(charset="utf-8")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
+
+        != css("styles")
+        != css("foundation")
+        for c in loadCss
+            != css(c)
 
         script(src="/socket.io/socket.io.js")
         script window.ayla = {};
@@ -11,10 +16,6 @@ html.no-js
         != js("scripts")
         for j in loadJs
             != js(j)
-
-        != css("styles")
-        for c in loadCss
-            != css(c)
 
         if data
             script.
@@ -33,7 +34,7 @@ html.no-js
                         for m, key in managers
                             li(class="#{m.title.toLowerCase()}")
                                 a(href="/#{m.title.toLowerCase()}") #{m.title}
-                        li.apimodules
+                        li.api
                             a(href="/api") API Modules
             div#contents
                 block contents

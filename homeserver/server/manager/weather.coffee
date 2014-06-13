@@ -20,13 +20,13 @@ class WeatherManager extends (require "./baseManager.coffee")
     # Computed weather stats.
     weatherAvgData: =>
         indoor = {}
-        indoor.temperature = getWeatherAverage "indoor", "temperature"
-        indoor.humidity = getWeatherAverage "indoor", "temperature"
-        indoor.co2 = getWeatherAverage "indoor", "temperature"
+        indoor.temperature = @getWeatherAverage "indoor", "temperature"
+        indoor.humidity = @getWeatherAverage "indoor", "temperature"
+        indoor.co2 = @getWeatherAverage "indoor", "temperature"
 
         outdoor = {}
-        outdoor.temperature = getWeatherAverage "outdoor", "temperature"
-        outdoor.humidity = getWeatherAverage "outdoor", "humidity"
+        outdoor.temperature = @getWeatherAverage "outdoor", "temperature"
+        outdoor.humidity = @getWeatherAverage "outdoor", "humidity"
 
         return {indoor: indoor, outdoor: outdoor}
 
@@ -46,7 +46,7 @@ class WeatherManager extends (require "./baseManager.coffee")
     start: =>
         if not settings.home?.rooms?
             logger.warn "WeatherManager.start", "No rooms were defined on the settings. Indoor weather won't be monitored."
-        else        
+        else
             for room in settings.home.rooms
                 if not @data[room.id]?
                     @data[room.id] = getRoomObject room.title
@@ -150,10 +150,13 @@ class WeatherManager extends (require "./baseManager.coffee")
         return if not data?
 
         # Find room linked to the specified weather source,
-        room = lodash.find settings.home.rooms, {weatherSource: source}
-        return if not room?
+        roomObj = lodash.find @data.rooms, {weatherSource: source}
+        return if not roomObj?
 
-        roomObj = @data[room.id]
+        # No room found? Abort here.
+        if not roomObj?
+            logger.warn "WeatherManager.setRoomWeather", source, room, "Room not properly set, check settings.home.rooms and make sure they have an ID set."
+            return
 
         # Make sure data is taken out of the array and newer than current available data.
         if lodash.isArray data
@@ -162,6 +165,8 @@ class WeatherManager extends (require "./baseManager.coffee")
                     lastData = d
         else if data.timestamp > roomObj.timestamp
             lastData = data
+
+        lastData = data if not lastData?
 
         # Cancel here if data is not up-to-date.
         return if not lastData?
@@ -179,7 +184,7 @@ class WeatherManager extends (require "./baseManager.coffee")
         @checkRoomWeather roomObj
 
         # Emit updated room conditions to clients and log.
-        @dataUpdated room.id
+        @dataUpdated roomObj.id
         logger.info "WeatherManager.setRoomWeather", roomObj
 
     # Helper to set current conditions for outdoors.
@@ -194,12 +199,17 @@ class WeatherManager extends (require "./baseManager.coffee")
         else if data.timestamp > @data.outdoor.timestamp
             lastData = data
 
-        @data.outdoor.temperature = lastData.temperature or null
-        @data.outdoor.humidity = lastData.humidity or null
+        lastData = data if not lastData?
+        outdoor = @data.outdoor
+
+        outdoor.temperature = lastData.temperature or lastData.temp_c or null
+        outdoor.temperature = parseFloat(outdoor.temperature).toFixed 1 if outdoor.temperature?
+        outdoor.humidity = lastData.humidity or lastData.relative_humidity or null
+        outdoor.humidity = parseFloat(outdoor.humidity).toFixed 1 if outdoor.humidity?
 
         # Emit updated outdoor conditions to clients and log.
         @dataUpdated "outdoor"
-        logger.info "WeatherManager.setOutdoorWeather", @data.outdoor
+        logger.info "WeatherManager.setOutdoorWeather", outdoor
 
     # Helper to set current astronomy details, like sunrise and moon phase.
     setAstronomy: (data) =>
@@ -215,11 +225,6 @@ class WeatherManager extends (require "./baseManager.coffee")
     setWeatherConditions: (data) =>
         return if not data?
 
-        currentHour = moment().hour()
-        sunriseHour = parseInt @data.astronomy.sunrise?.split(":")[0]
-        sunsetHour = parseInt @data.astronomy.sunset?.split(":")[0]
-        icon = data.icon.replace(".gif", "").replace("nt_", "")
-
         @data.conditions.condition = data.weather
         @data.conditions.temperature = data.temperature or data.temp_c or null
         @data.conditions.humidity = data.humidity or data.relative_humidity or null
@@ -230,22 +235,7 @@ class WeatherManager extends (require "./baseManager.coffee")
         @data.conditions.humidity = @data.conditions.humidity.replace("%", "") if @data.conditions.humidity?
 
         # Set conditions icon.
-        if "fog,hazy,cloudy,mostlycloudy".indexOf(icon) >= 0
-            @data.conditions.icon = "cloud"
-        else if "chancerain,rain,chancesleet,sleet".indexOf(icon) >= 0
-            @data.conditions.icon = "rain"
-        else if "chanceflurries,flurries,chancesnow,snow".indexOf(icon) >= 0
-            @data.conditions.icon = "snow"
-        else if "clear,sunny".indexOf(icon) >= 0
-            @data.conditions.icon = "sunny"
-        else if "mostlysunny,partlysunny,partlycloudy".indexOf(icon) >= 0
-            @data.conditions.icon = "sunny-cloudy"
-        else if "chancestorms,tstorms".indexOf(icon) >= 0
-            @data.conditions.icon = "thunder"
-
-        # Force moon icon when clear skies at night.
-        if @data.conditions.icon.indexOf("sunny") >= 0 and currentHour < sunriseHour or currentHour > sunsetHour
-            @data.conditions.icon = "moon"
+        @data.conditions.icon = @getWeatherIcon data.icon
 
         # Emit updated conditions to clients and log.
         @dataUpdated "conditions"
@@ -263,6 +253,7 @@ class WeatherManager extends (require "./baseManager.coffee")
             a.maxWind = d.maxwind.dir + " " + d.maxwind.kph + "kph"
             a.maxHumidity = d.maxhumidity
             a.minHumidity = d.minhumidity
+            a.icon = @getWeatherIcon d.icon
 
             # Set the friendly date string.
             if a.date is moment().format("L")
@@ -323,7 +314,7 @@ class WeatherManager extends (require "./baseManager.coffee")
     # -------------------------------------------------------------------------
 
     # Helper to get weather average readings.
-    getWeatherAverage = (where, prop) =>
+    getWeatherAverage: (where, prop) =>
         avg = 0
         count = 0
 
@@ -342,6 +333,33 @@ class WeatherManager extends (require "./baseManager.coffee")
         # Return average reading for the specified property.
         return avg / count
 
+    # Helper to get correct weather icon. Default is sunny / cloudy.
+    getWeatherIcon: (icon) =>
+        result = "sunny-cloudy"
+
+        currentHour = moment().hour()
+        sunriseHour = parseInt @data.astronomy.sunrise?.split(":")[0]
+        sunsetHour = parseInt @data.astronomy.sunset?.split(":")[0]
+
+        icon = icon.replace(".gif", "").replace("nt_", "")
+
+        if "fog,hazy,cloudy,mostlycloudy".indexOf(icon) >= 0
+            result = "cloud"
+        else if "chancerain,rain,chancesleet,sleet".indexOf(icon) >= 0
+            result = "rain"
+        else if "chanceflurries,flurries,chancesnow,snow".indexOf(icon) >= 0
+            result = "snow"
+        else if "clear,sunny".indexOf(icon) >= 0
+            result = "sunny"
+        else if "chancestorms,tstorms".indexOf(icon) >= 0
+            result = "thunder"
+
+        # Force moon icon when clear skies at night.
+        if icon.indexOf("sunny") >= 0 and currentHour < sunriseHour or currentHour > sunsetHour
+            result = "moon"
+
+        return result
+
     # Helper to return room object with weather, title etc.
     getRoomObject = (title) =>
         return {indoor: true, title: title, timestamp: 0, condition: "Unknown", temperature: null, humidity: null, pressure: null, co2: null, light: null}
@@ -349,6 +367,7 @@ class WeatherManager extends (require "./baseManager.coffee")
     # Helper to return outdoor weather.
     getOutdoorObject = (title) =>
         return {outdoor: true, title: title, timestamp: 0, condition: "Unknown", temperature: null, humidity: null, pressure: null}
+
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

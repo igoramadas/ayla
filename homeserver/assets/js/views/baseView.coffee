@@ -30,7 +30,11 @@ class BaseView
     setElements: (list) =>
         if not @dom?
             @dom = {}
-            @dom.wrapper = $ "#" + @wrapperId
+
+            if @wrapperId
+                @dom.wrapper = $ "#" + @wrapperId
+            else
+                @dom.wrapper = $ "#contents"
 
         # Set default elements if list is not provided.
         list = @elements if not list?
@@ -50,9 +54,11 @@ class BaseView
 
     # Set active navigation and header properties.
     setHeader: =>
-        currentPath = location.pathname.substring 1
-        $("nav").find(".#{currentPath}").addClass "active"
         $(document).foundation()
+
+        currentPath = location.pathname.substring 1
+        if currentPath isnt "/" and currentPath isnt ""
+            $("nav").find(".#{currentPath}").addClass "active"
 
     # Create a KO compatible object based on the original `serverData` property.
     setData: =>

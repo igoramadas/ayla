@@ -86,8 +86,29 @@ class BaseModule
             @data[key] = [] if not @data[key]?
             @data[key].unshift {value: value, filter: filter, timestamp: moment().unix()}
             @data[key].pop() if @data[key].length > settings.modules.dataKeyCacheSize
+
+            # Save the new data to the database.
+            dbData = {key: key, value: value, filter: filter, datestamp: new Date()}
+
+            # Remove unnecessary data before saving to the DB.
+            cleanData = (source) ->
+                for prop, value of source
+                    if lodash.isFunction value
+                        delete source[prop]
+                    else if value?.constructor is Object
+                        cleanData value
+
+            cleanData dbData.value
+
+            # Save clean data to the MongoDB database.
+            database.insert "data-#{@moduleId}", dbData, (err, result) =>
+                if err?
+                    @logError "#{@moduleName}.setData", key, err
+                else
+                    logger.debug "#{@moduleName}.setData", key, value
+
         catch ex
-            @logError "#{@moduleName}.setData", key, ex
+            @logError "#{@moduleName}.setData", key, ex.message, ex.stack
 
     # LOGGING AND ERRORS
     # -------------------------------------------------------------------------

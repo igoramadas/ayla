@@ -1,7 +1,7 @@
 # SOCKETS
 # --------------------------------------------------------------------------
 class Sockets
-    
+
     conn = null
 
     # STARTING AND STOPPING
@@ -11,7 +11,7 @@ class Sockets
     init: ->
         if not conn?
             url = window.location
-            conn = io.connect "https://#{url.hostname}:#{url.port}"
+            conn = io.connect "#{url.protocol}//#{url.hostname}:#{url.port}"
 
     # Stop listening to all socket messages from the server. Please note that this
     # will NOT kill the socket connection.

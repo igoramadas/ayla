@@ -36,8 +36,9 @@ class Commander
                             # First try parsing options as json.
                             try
                                 options = JSON.parse options
+
                             # Can't parse JSON? Try as multipart form data then.
-                            catch ex
+                            catch ex1
                                 parsedOptions = {}
                                 arr = options.split ","
 
@@ -50,7 +51,7 @@ class Commander
                         # Execute!
                         eval (this[key] options, callback)
                     catch ex
-                        logger.error "Commander.execute", cmd, options, ex
+                        logger.error "Commander.execute", cmd, options, ex.message, ex.stack
                         callback {err: ex, command: cmd, options: options} if callback?
 
     # HOME GENERAL

@@ -76,6 +76,8 @@ class Wunderground extends (require "./baseApi.coffee")
         if lodash.isFunction filter
             callback = filter
             filter = null
+        else
+            filter = @getJobArgs filter
 
         @apiRequest "conditions", filter, (err, result) =>
             if err?
@@ -92,6 +94,8 @@ class Wunderground extends (require "./baseApi.coffee")
         if lodash.isFunction filter
             callback = filter
             filter = null
+        else
+            filter = @getJobArgs filter
 
         @apiRequest "forecast", filter, (err, result) =>
             if err?
@@ -108,6 +112,8 @@ class Wunderground extends (require "./baseApi.coffee")
         if lodash.isFunction filter
             callback = filter
             filter = null
+        else
+            filter = @getJobArgs filter
 
         @apiRequest "astronomy", filter, (err, result) =>
             if err?

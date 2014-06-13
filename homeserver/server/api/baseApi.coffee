@@ -33,7 +33,7 @@ class BaseApi extends (require "../baseModule.coffee")
     # Helper to check if module is running and with necessary settings defined.
     isRunning: (requiredObjects) =>
         return false if not @running
-        
+
         if lodash.isArray requiredObjects
             for i in requiredObjects
                 if not i?
@@ -106,7 +106,7 @@ class BaseApi extends (require "../baseModule.coffee")
     # the filter argument (which can be passed directly or via the `args` property
     # of a scheduled cron job).
     getJobArgs: (argsOrJob) =>
-        return null if not argsOrJob? or (argsOrJob.callback? and argsOrJob.module?)
+        return null if not argsOrJob?
         return argsOrJob.args if argsOrJob.args?
         return argsOrJob
 
