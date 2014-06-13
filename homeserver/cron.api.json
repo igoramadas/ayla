@@ -87,8 +87,8 @@
     ],
     "withings.coffee": [
         {
-            "callback": "getWeight",
-            "description": "Get user weight readings for the last month.",
+            "callback": "getBodyMeasures",
+            "description": "Get body measures for the last month.",
             "schedule": 60,
             "enabled": true
         }

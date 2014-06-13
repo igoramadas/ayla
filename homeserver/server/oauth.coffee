@@ -29,8 +29,6 @@ class OAuth
     # Get most recent auth tokens from the database and update the `oauth` DB collection.
     # Callback (err, result) is optional.
     loadTokens: (callback) =>
-        @defaultUser = lodash.findKey settings.users, {isDefault: true}
-
         database.get "oauth", {"service": @service, "active": true}, (err, result) =>
             if err?
                 logger.critical "OAuth.loadTokens", err
@@ -41,10 +39,10 @@ class OAuth
                 # Iterate results to create OAuth clients for all users.
                 for t in result
                     @client = getClient @service
-                    @data[t.user] = t
+                    @data = t
 
                     # Needs refresh?
-                    @refresh t.user if t.expires? and moment().unix() > t.expires
+                    @refresh() if t.expires? and moment().unix() > t.expires
 
                 if callback?
                     callback null, result
@@ -64,8 +62,7 @@ class OAuth
             if callback?
                 callback err, result
 
-    # Save the specified auth token to the database. Please note that tokens must be associated with a specific user.
-    # If no uyser is set, use the default user (flagged with isDefault=true on the settings file).
+    # Save the specified auth token to the database.
     saveToken: (params, callback) =>
         if not callback? and lodash.isFunction params
             callback = params
@@ -73,20 +70,14 @@ class OAuth
 
         # Get current time and set data.
         now = moment().unix()
-        data = lodash.defaults params, {service: @service, active: true, timestamp: now}
+        @data = lodash.defaults params, {service: @service, active: true, timestamp: now}
 
         # Add extra parameters like timestamp and user ID.
-        data.timestamp = params.oauth_timestamp if params.oauth_timestamp?
-        data.userId = params.encoded_user_id if params.encoded_user_id?
-        data.userId = params.userid if params.userid?
-        data.userId = params.userId if params.userId?
-        delete data.userid
-
-        # Make sure user is associated, or assume default user.
-        data.user = @defaultUser if not data.user? or data.user is ""
-
-        # Set local oauth cache.
-        @data[data.user] = data
+        @data.timestamp = params.oauth_timestamp if params.oauth_timestamp?
+        @data.userId = params.encoded_user_id if params.encoded_user_id?
+        @data.userId = params.userid if params.userid?
+        @data.userId = params.userId if params.userId?
+        delete @data.userid
 
         # Update oauth collection and set related tokens `active` to false.
         database.update "oauth", {active: false}, {patch: true, upsert: false, filter: {service: @service}}, (err, result) =>
@@ -96,11 +87,11 @@ class OAuth
                 logger.debug "OAuth.saveToken", @service, "Set active=false", "OK"
 
             # Save to database.
-            database.insert "oauth", data, (err, result) =>
+            database.insert "oauth", @data, (err, result) =>
                 if err?
-                    logger.error "OAuth.saveToken", @service, data, err
+                    logger.error "OAuth.saveToken", @service, @data, err
                 else
-                    logger.debug "OAuth.saveToken", @service, data, "OK"
+                    logger.debug "OAuth.saveToken", @service, @data, "OK"
 
                 if callback?
                     callback err, result
@@ -140,37 +131,28 @@ class OAuth
 
         return obj
 
-    # Get an OAuth protected resource. If no `user` is passed it will use the default one.
-    get: (reqUrl, user, callback) =>
-        if not callback? and lodash.isFunction user
-            callback = user
-            user = null
-
-        user = @defaultUser if not user?
-
-        if not @data[user]?
-            callback "No oauth data for #{user}. Please authorize first on #{@service} for that user."
+    # Get an OAuth protected resource.
+    get: (reqUrl, callback) =>
+        if not @data?
+            callback "No oauth data found. Please authorize first on #{@service}."
             return
 
         # OAuth2 have only an access token, OAuth1 has a token and a secret.
         if settings[@service].api.oauthVersion is "2.0"
-            @client.get reqUrl, @data[user].accessToken, (err, result) =>
+            @client.get reqUrl, @data.accessToken, (err, result) =>
                 if err?
                     description = err.data?.error_description or err.data?.error?.message or null
-                    @refresh user if description?.indexOf("expired") > 0
+                    @refresh() if description?.indexOf("expired") > 0
                 callback err, result
         else
-            @client.get reqUrl, @data[user].token, @data[user].tokenSecret, (err, result) =>
+            @client.get reqUrl, @data.token, @data.tokenSecret, (err, result) =>
                 callback err, result
 
     # Try getting OAuth data for a particular request / response.
     process: (req, res) =>
-        user = req.user or @defaultUser
-
-        # Make sure OAuth client is set.
         if not @client?
             @client = getClient @service
-            @data[user] = {}
+            @data = {}
 
         # Check if request has token on querystring.
         qs = url.parse(req.url, true).query if req?
@@ -184,7 +166,7 @@ class OAuth
             logger.info "OAuth.process", "getRequestToken1", @service, oauth_token
 
             # Set token secret cache and redirect to authorization URL.
-            @data[user].tokenSecret = oauth_token_secret
+            @data.tokenSecret = oauth_token_secret
             res?.redirect "#{settings[@service].api.oauthUrl}authorize?oauth_token=#{oauth_token}"
 
         # Helper function to get the access token using OAUth 1.x.
@@ -196,7 +178,7 @@ class OAuth
             logger.info "OAuth.process", "getAccessToken1", @service, oauth_token
 
             # Save oauth details to DB and redirect user to service page.
-            oauthData = lodash.defaults {user: user, token: oauth_token, tokenSecret: oauth_token_secret}, additionalParameters
+            oauthData = lodash.defaults {token: oauth_token, tokenSecret: oauth_token_secret}, additionalParameters
             @saveToken oauthData
             res?.redirect "/#{@service}"
 
@@ -210,10 +192,10 @@ class OAuth
 
             # Schedule token to be refreshed automatically with 10% of the expiry time left.
             expires = results?.expires_in or results?.expires or 43200
-            lodash.delay @refresh, expires * 900, user
+            lodash.delay @refresh, expires * 900
 
             # Save oauth details to DB and redirect user to service page.
-            oauthData = {user: user, accessToken: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add("s", expires).unix()}
+            oauthData = {accessToken: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add("s", expires).unix()}
             @saveToken oauthData
             res?.redirect "/#{@service}"
 
@@ -242,12 +224,12 @@ class OAuth
 
         # Getting an OAuth1 access token?
         else if qs?.oauth_token?
-            @client.getOAuthAccessToken qs.oauth_token, @data[user].tokenSecret, qs.oauth_verifier, getAccessToken1
+            @client.getOAuthAccessToken qs.oauth_token, @data.tokenSecret, qs.oauth_verifier, getAccessToken1
         else
             @client.getOAuthRequestToken {}, getRequestToken1
 
     # Helper to refresh an OAuth2 token.
-    refresh: (user) =>
+    refresh: =>
         if not @client?
             logger.warn "OAuth.refresh", @service, "OAuth client not ready. Abort refresh!"
             return
@@ -257,7 +239,7 @@ class OAuth
 
         # Get oauth object and refresh token and set grant type to refresh_token.
         @refreshing = true
-        refreshToken = @data[user].refreshToken
+        refreshToken = @data.refreshToken
         opts = {"grant_type": "refresh_token"}
 
         # Proceed and get OAuth2 tokens.
@@ -271,14 +253,14 @@ class OAuth
             logger.info "OAuth.refresh", @service, oauth_access_token
 
             # Schedule token to be refreshed with 10% of time left.
-            expires = results?.expires_in or results?.expires or @data[user].expires or 43200
-            lodash.delay @refresh, expires * 900, user
+            expires = results?.expires_in or results?.expires or @data.expires or 43200
+            lodash.delay @refresh, expires * 900
 
             # If no refresh token is returned, keep the last one.
-            oauth_refresh_token = @data[user].refreshToken if not oauth_refresh_token? or oauth_refresh_token is ""
+            oauth_refresh_token = @data.refreshToken if not oauth_refresh_token? or oauth_refresh_token is ""
 
             # Save oauth details to DB and redirect user to service page.
-            oauthData = {user: user, accessToken: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add("s", expires).unix()}
+            oauthData = {accessToken: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add("s", expires).unix()}
             @saveToken oauthData
 
 

@@ -25,32 +25,35 @@ class FitnessManager extends (require "./baseManager.coffee")
 
     # Start the fitness manager and listen to data updates / events.
     start: =>
-        events.on "withings.data.weight", @onWithingsWeight
+        events.on "withings.data.bodymeasures", @onWithingsBody
 
         @baseStart()
 
     # Stop the fitness manager.
     stop: =>
-        events.off "withings.data.weight", @onWithingsWeight
+        events.off "withings.data.bodymeasures", @onWithingsBody
 
         @baseStop()
 
     # BODY ANALYSIS
     # -------------------------------------------------------------------------
 
-    # When current weight is informed by Withings.
-    onWithingsWeight: (data, filter) =>
-        @data.weight = {value: data.weight, bmi: data.bmi}
-        @dataUpdated "weight"
+    # When current body data is informed by Withings.
+    onWithingsBody: (data, filter) =>
+        @data.bodymeasures = {timestamp: 0} if not @data.bodymeasures?
 
-        logger.info "FitnessManager.onWithingsWeight", @data.weight
+        sorted = lodash.sortBy data.body.measuregrps, "date"
+        newest = sorted.pop()
 
-    # When current fat level is informed by Withings.
-    onWithingsFat: (data, filter) =>
-        @data.fat = {value: data.fat}
-        @dataUpdated "fat"
+        if newest.date > @data.bodymeasures.timestamp
+            weight = lodash.filter newest.measures, {type: 1}
+            fat = lodash.filter newest.measures, {type: 6}
+            @data.bodymeasures.weight = weight[0].value / 1000 if weight.length > 0
+            @data.bodymeasures.fat = fat[0].value / 1000 if fat.length > 0
 
-        logger.info "FitnessManager.onWithingsFat", @data.fat
+        @dataUpdated "bodymeasures"
+
+        logger.info "FitnessManager.onWithingsBody", @data.bodymeasures
 
     # When current sleep data is informed by Withings.
     onWithingsSleep: (data, filter) =>

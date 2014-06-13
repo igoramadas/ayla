@@ -29,7 +29,7 @@ class Withings extends (require "./baseApi.coffee")
                 @oauth.client.setClientOptions {requestTokenHttpMethod: "GET", accessTokenHttpMethod: "GET"}
 
                 if settings.modules.getDataOnStart and result.length > 0
-                    @getWeight()
+                    @getBodyMeasures()
 
     # Stop collecting fitness and health data from Withings.
     stop: =>
@@ -53,12 +53,22 @@ class Withings extends (require "./baseApi.coffee")
             return
 
         # Set request URL and parameters.
-        userid = @oauth.data[@oauth.defaultUser].userId
+        userid = @oauth.data.userId
         reqUrl = settings.withings.api.url + path + "?action=#{action}&userid=#{userid}"
         reqUrl = reqUrl + "&" + querystring.stringify params if params?
 
+        # Withings expect OAuth parameters to be passed via querystring so we need to hack around here.
+        oauthParams = @oauth.client._prepareParameters @oauth.data.token, @oauth.data.tokenSecret, "GET", reqUrl
+
+        # Process and add OAuth params to the URL.
+        for p in oauthParams
+            if p[0] is "oauth_signature"
+                p[1] = encodeURIComponent p[1]
+            if p[0].substring(0, 5) is "oauth"
+                reqUrl += "&" + p[0] + "=" + p[1]
+
         # Make request using OAuth.
-        @oauth.client.get reqUrl, @oauth.data.token, @oauth.data.tokenSecret, (err, result) =>
+        @makeRequest reqUrl, (err, result) =>
             if result?
                 result = JSON.parse(result) if not lodash.isObject result
                 err = result if result?.status > 0
@@ -68,8 +78,8 @@ class Withings extends (require "./baseApi.coffee")
     # GET DATA
     # -------------------------------------------------------------------------
 
-    # Get weight data for the specified date.
-    getWeight: (filter, callback) =>
+    # Get body measures for the specified date.
+    getBodyMeasures: (filter, callback) =>
         if lodash.isFunction filter
             callback = filter
             filter = null
@@ -83,12 +93,12 @@ class Withings extends (require "./baseApi.coffee")
 
         @apiRequest "measure", "getmeas", filter, (err, result, resp) =>
             if err?
-                logger.error "Withings.getWeight", filter, err
+                logger.error "Withings.getBodyMeasures", filter, err
             else if result?.status > 0
-                logger.error "Withings.getWeight", "Invalid response!", result.status, filter
+                logger.error "Withings.getBodyMeasures", "Invalid response!", result.status, filter
             else
-                @setData "weight", result, filter
-                logger.info "Withings.getWeight", filter, result
+                @setData "bodymeasures", result, filter
+                logger.info "Withings.getBodyMeasures", filter, result
 
             callback err, result if lodash.isFunction callback
 
