@@ -214,7 +214,7 @@ class EmailManager extends (require "./baseManager.coffee")
 
             arr = if lodash.isArray(rule.from) then rule.from else [rule.from]
             for a in arr
-                return true if parsedMsg.address.from.indexOf(a) >= 0
+                return true if parsedMsg.from.address.indexOf(a) >= 0
             return false
 
         # Get matching `subject` rules.

@@ -100,15 +100,20 @@ class BaseApi extends (require "../baseModule.coffee")
 
                     callback respError, body
                 catch ex
-                    callback {exception: ex, url: reqUrl, params: params}
+                    callback {exception: ex, body: body, url: reqUrl, params: params}
 
     # Helper to get filter from a job. Used by most of API modules to properly handle
     # the filter argument (which can be passed directly or via the `args` property
-    # of a scheduled cron job).
+    # of a scheduled cron job). If has id and timer, assume it's a job so return null.
     getJobArgs: (argsOrJob) =>
         return null if not argsOrJob?
-        return argsOrJob.args if argsOrJob.args?
-        return argsOrJob
+
+        if argsOrJob.args?
+            return argsOrJob.args
+        else if argsOrJob.id? and argsOrJob.callback?
+            return null
+        else
+            return argsOrJob
 
     # Helper to return a callback URL for the current API module.
     getCallbackUrl: (urlPath) =>
