@@ -135,8 +135,8 @@ class OAuth
                 headers)
 
         # Use authorization header instead of passing token via querystrings?
-        if settings[service].api.oauthUseHeader
-            obj.useAuthorizationHeaderforGET true
+        if settings[service].api.oauthUseHeader?
+            obj.useAuthorizationHeaderforGET settings[service].api.oauthUseHeader
 
         return obj
 

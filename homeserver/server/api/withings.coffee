@@ -58,7 +58,7 @@ class Withings extends (require "./baseApi.coffee")
         reqUrl = reqUrl + "&" + querystring.stringify params if params?
 
         # Make request using OAuth.
-        @oauth.client.get reqUrl, @oauth.data.token, @oauth.data.tokenSecret, (err, result) =>
+        @oauth.client.post reqUrl, @oauth.data.token, @oauth.data.tokenSecret, (err, result) =>
             if result?
                 result = JSON.parse(result) if not lodash.isObject result
                 err = result if result?.status > 0

@@ -95,7 +95,7 @@ class BaseModule
                 for prop, value of source
                     if lodash.isFunction value
                         delete source[prop]
-                    if value?.constructor is Object
+                    else if value?.constructor is Object
                         cleanData value
 
             cleanData dbData.value
@@ -103,12 +103,12 @@ class BaseModule
             # Save clean data to the MongoDB database.
             database.insert "data-#{@moduleId}", dbData, (err, result) =>
                 if err?
-                    logger.error "#{@moduleName}.setData", key, err
+                    @logError "#{@moduleName}.setData", key, err
                 else
                     logger.debug "#{@moduleName}.setData", key, value
 
         catch ex
-            @logError "#{@moduleName}.setData", key, ex
+            @logError "#{@moduleName}.setData", key, ex.message, ex.stack
 
     # LOGGING AND ERRORS
     # -------------------------------------------------------------------------
@@ -143,7 +143,7 @@ class BaseModule
         # Iterate errors by ID, then internal data, and remove everything which is too old.
         for key, value of @errors
             for d in value
-                if d.timestamp < maxAge
+                if d?.timestamp < maxAge
                     lodash.remove value, d
             if value.length < 1
                 delete @errors[key]

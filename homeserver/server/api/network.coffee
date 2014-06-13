@@ -264,7 +264,7 @@ class Network extends (require "./baseApi.coffee")
 
                     callback null, devices if callback?
         catch ex
-            @logError "Network.probeBluetooth", ex
+            @logError "Network.probeBluetooth", ex.message, ex.stack
             callback ex if callback?
 
     # Probe user's bluetooth devices by checking the `bluetooth` property of registered users.
@@ -354,7 +354,7 @@ class Network extends (require "./baseApi.coffee")
             existingDevice.up = true
             existingDevice.mdns = true
         catch ex
-            @logError "Network.onServiceUp", ex
+            @logError "Network.onServiceUp", ex.message, ex.stack
 
         # New device? Add to devices list and dispatch event.
         @data.devices.push existingDevice if isNew
@@ -377,7 +377,7 @@ class Network extends (require "./baseApi.coffee")
                 existingDevice.up = false
                 existingDevice.mdns = false
         catch ex
-            @logError "Network.onServiceDown", ex
+            @logError "Network.onServiceDown", ex.message, ex.stack
 
 
 # Singleton implementation.
