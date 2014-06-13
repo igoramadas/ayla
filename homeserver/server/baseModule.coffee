@@ -90,6 +90,17 @@ class BaseModule
             # Save the new data to the database.
             dbData = {key: key, value: value, filter: filter, datestamp: new Date()}
 
+            # Remove unnecessary data before saving to the DB.
+            cleanData = (source) ->
+                for prop, value of source
+                    if lodash.isFunction value
+                        delete source[prop]
+                    if value?.constructor is Object
+                        cleanData value
+
+            cleanData dbData.value
+
+            # Save clean data to the MongoDB database.
             database.insert "data-#{@moduleId}", dbData, (err, result) =>
                 if err?
                     logger.error "#{@moduleName}.setData", key, err
