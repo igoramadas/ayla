@@ -4,10 +4,10 @@ block contents
     #weather
         script#room-template(type="text/html")
 
-        ul.maingrid.large-block-grid-3
+        ul.maingrid.large-block-grid-2
 
             li.inside
-                div
+                div(data-bind="css: conditions().icon")
                     h2 Inside
                     div.summary(data-bind="with: indoorAvg")
                         span.temperature(data-bind="text: temperature + '°C'")
@@ -34,28 +34,27 @@ block contents
                     div.summary
                         span.temperature(data-bind="text: outdoor().temperature ? outdoor().temperature + '°C' : '-'")
                         span.humidity(data-bind="text: outdoor().humidity ? outdoor().humidity + '%' : '-'")
-                        span.condition(data-bind="text: conditions().condition")
 
                     table
                         thead
                             tr
                                 th.title Date
+                                th.icon Weather
                                 th.temperature Temp
                                 th.humidity Humidity
                                 th.wind Wind
                         tbody
                             tr(data-bind="with: conditions")
                                 td.date Now
+                                td.icon(data-bind="css: icon")
                                 td.temperature(data-bind="text: temperature ? temperature + '°C' : '-'")
                                 td.humidity(data-bind="text: humidity ? humidity + '%' : '-'")
                                 td.wind(data-bind="text: wind ? wind : '-'")
                             // ko foreach: forecast
                             tr
                                 td.date(data-bind="text: dateString")
+                                td.icon(data-bind="css: icon")
                                 td.min(data-bind="text: lowTemp + ' to ' + highTemp + '°C'")
                                 td.humidity(data-bind="text: minHumidity + ' to ' + maxHumidity + '%'")
                                 td.wind(data-bind="text: avgWind")
                             // /ko
-
-            li.icon
-                div(data-bind="css: conditions().icon")
