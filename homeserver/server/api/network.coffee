@@ -103,7 +103,7 @@ class Network extends (require "./baseApi.coffee")
     # Abort if device is invalid or was found using mdns.
     checkDevice: (device) =>
         return if not device? or device.mdns
-        
+
         logger.debug "Network.checkDevice", device
 
         # Are addresses set?
@@ -115,9 +115,9 @@ class Network extends (require "./baseApi.coffee")
         device.up = false if not device.up?
 
     # Probe the current network and check device statuses.
-    probeDevices: (callback) =>            
+    probeDevices: (callback) =>
         logger.debug "Network.probeDevices"
-        
+
         if not @isRunning [settings.network.devices]
             errMsg = "Module is not running or no devices are set. Please check the network devices list on settings."
 
@@ -136,7 +136,7 @@ class Network extends (require "./baseApi.coffee")
     wolMagicPacket = (mac) ->
         nmacs = 16
         mbytes = 6
-        buf = new buffer.Buffer mbytes        
+        buf = new buffer.Buffer mbytes
 
         # Parse and rewrite mac address.
         if mac.length is 2 * mbytes + (mbytes - 1)
@@ -224,8 +224,16 @@ class Network extends (require "./baseApi.coffee")
 
     # Query bluetooth and returns all discoverable devices.
     probeBluetooth: (callback) =>
+        platformErrorMsg = "Platform not supported, bluetooth probing works only on Ubuntu and Windows."
+
+        # Sometimes callback might not be a function (calling from cron jobs for example).
         if not lodash.isFunction callback
             callback = null
+
+        if @serverInfo.platform.indexOf("darwin") >= 0
+            @logError "Network.probeBluetooth", platformErrorMsg
+            callback platformErrorMsg if callback?
+            return
 
         # Scan and parse results from command line.
         # Use btdiscovery on Windows, hcitool on Linux.
@@ -248,7 +256,7 @@ class Network extends (require "./baseApi.coffee")
                     # First line is the "Scanning..." string.
                     lines.shift()
 
-                    # Iterate devices.
+                    # Iterate and trim device details.
                     for d in lines
                         devices.push d.replace("\t", " ").trim() if d? and d isnt ""
 
@@ -261,8 +269,16 @@ class Network extends (require "./baseApi.coffee")
 
     # Probe user's bluetooth devices by checking the `bluetooth` property of registered users.
     probeBluetoothUsers: (callback) =>
+        platformErrorMsg = "Platform not supported, bluetooth probing works only on Ubuntu and Windows."
+
+        # Sometimes callback might not be a function (calling from cron jobs for example).
         if not lodash.isFunction callback
             callback = null
+
+        if @serverInfo.platform.indexOf("darwin") >= 0
+            @logError "Network.probeBluetoothUsers", platformErrorMsg
+            callback platformErrorMsg if callback?
+            return
 
         macs = []
         tasks = []
@@ -298,13 +314,14 @@ class Network extends (require "./baseApi.coffee")
                         cb ex
 
         # Check all passed bluetooth devices.
-        async.series tasks, (err, results) =>
-            if err?
-                @logError "Network.probeBluetoothUsers", err
-            else
-                @setData "bluetoothUsers", results
+        if tasks.length > 0
+            async.series tasks, (err, results) =>
+                if err?
+                    @logError "Network.probeBluetoothUsers", err
+                else
+                    @setData "bluetoothUsers", results
 
-            callback err, results if callback?
+                callback err, results if callback?
 
     # SERVICE DISCOVERY
     # -------------------------------------------------------------------------
