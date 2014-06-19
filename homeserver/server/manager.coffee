@@ -32,34 +32,61 @@ class Manager
                 module.init()
                 @modules[module.moduleId] = module
 
-        # Start the rules engine.
-        @startRules()
+        # Start the rules engine, but only if enabled on settings.
+        @startRules() if settings.rules.enabled
 
         # Proceed with callback?
         callback() if callback?
 
-    # RULE ENGINE
+    # RULES ENGINE
     # -------------------------------------------------------------------------
 
-    # Start the rules engine.
+    # Start the rules engine by parsing the rules.json file.
     startRules: =>
         @rules = require "../rules.json"
 
-        setInterval @processRules, 5000
+        if not @rules
+            logger.warn "Manager.startRules", "File rules.json not found or invalid."
 
-    # Process all custom rules by the user.
+        setInterval @processRules, settings.rules.interval
+
+    # Process all custom rules. This runs every minute by default.
     processRules: =>
-        lodash.each @rules, (rule) =>
+        for rule in @rules
             m = @modules[rule.manager + "manager"]
 
             # Check if module is valid and enabled.
             if not m?
                 logger.warn "Manager.processRules", "Module is disable, abort processing current rule.", rule
-                return
+            else
+                d = jsonPath m.data, rule.data
 
-            d = jsonPath m.data, rule.data
-            console.warn d
+                # Evaluate rule only if data is present.
+                if d?
+                    active = false
 
+                    if rule.condition is ">" and d > rule.value
+                        active = true
+                    else if rule.condition is "<" and d < rule.value
+                        active = true
+                    else if rule.condition is "=" and d is rule.value
+                        active = true
+                    else if rule.condition is "!=" and d isnt rule.value
+                        active = true
+
+                    # Is rule active? Trigger its actions!
+                    if active
+                        for actionKey, actionParams of rule.action
+                            @ruleAction_Command rule, d, actionParams if actionKey is "command"
+                            @ruleAction_Email rule, d, actionParams if actionKey is "email"
+
+    # Execute a predefined command using the Commander.
+    ruleAction_Command: (rule, data, params) =>
+        logger.info "Manager.ruleAction_Command", rule, data, params
+
+    # Send email.
+    ruleAction_Email: (rule, data, params) =>
+        logger.info "Manager.ruleAction_Email", rule, data, params
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------
