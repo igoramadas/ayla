@@ -150,7 +150,7 @@ class WeatherManager extends (require "./basemanager.coffee")
         return if not data?
 
         # Find room linked to the specified weather source,
-        roomObj = lodash.find @data.rooms, {weatherSource: source}
+        roomObj = lodash.find @data, {weatherSource: source}
         return if not roomObj?
 
         # No room found? Abort here.
@@ -163,6 +163,8 @@ class WeatherManager extends (require "./basemanager.coffee")
             for d in data
                 if d.timestamp > roomObj.timestamp
                     lastData = d
+
+            lastData = data[0] if not lastData?
         else if data.timestamp > roomObj.timestamp
             lastData = data
 
@@ -172,13 +174,16 @@ class WeatherManager extends (require "./basemanager.coffee")
         return if not lastData?
 
         # Update room data or set to null (otherwise it's undefined, not good for Knockout.js) and round values.
-        roomObj.temperature = lastData.temperature or null
+        roomObj.temperature = lastData.temperature or lastData.temperature?[0]?.value or null
         roomObj.temperature = parseFloat(roomObj.temperature).toFixed 1 if roomObj.temperature?
 
-        roomObj.humidity = lastData.humidity or null
+        roomObj.humidity = lastData.humidity or lastData.humidity?[0]?.value  or null
         roomObj.humidity = parseFloat(roomObj.humidity).toFixed 1 if roomObj.humidity?
         roomObj.co2 = lastData.co2 or null
         roomObj.light = lastData.light or lastData.lightLevel or null
+
+        # Set room data.
+        @data[roomObj.id] = roomObj
 
         # Check if room conditions are ok.
         @checkRoomWeather roomObj
@@ -291,7 +296,7 @@ class WeatherManager extends (require "./basemanager.coffee")
         if weather.temperature? or weather.humidity?
             weather.timestamp = data.temperature[0].timestamp or data.humidity[0].timestamp
 
-        @setRoomWeather "ninja", weather
+        @setRoomWeather {"ninja": ""}, weather
 
     # Check indoor weather conditions using Electric Imp. We're bining to the global data event,
     # so a key is passed here as well.

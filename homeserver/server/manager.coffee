@@ -43,12 +43,15 @@ class Manager
 
     # Start the rules engine by parsing the rules.json file.
     startRules: =>
-        @rules = require "../rules.json"
+        if not fs.existsSync "../rules.json"
+            logger.warn "Manager.startRules", "File rules.json was not found."
+            return
 
-        if not @rules
-            logger.warn "Manager.startRules", "File rules.json not found or invalid."
-
-        setInterval @processRules, settings.rules.interval
+        try
+            @rules = require "../rules.json"
+            setInterval @processRules, settings.rules.interval
+        catch ex
+            logger.warn "Manager.startRules", "Error loading rules.json.", ex
 
     # Process all custom rules. This runs every minute by default.
     processRules: =>
