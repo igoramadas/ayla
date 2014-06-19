@@ -3,7 +3,7 @@
 # Access to Weather Underground data. You must define the default location on
 # the settings.wunderground.defaultQuery, using the pattern Country/CityName.
 # More info at http://www.wunderground.com/weather/api
-class Wunderground extends (require "./baseApi.coffee")
+class Wunderground extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
     logger = expresser.logger

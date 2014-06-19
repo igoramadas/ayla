@@ -3,7 +3,7 @@
 # Collect weather and climate data from Netatmo devices. Supports indoor and
 # outdoor modules, and device list is fetched via the getDevices method.
 # More info at http://dev.netatmo.com
-class Netatmo extends (require "./baseApi.coffee")
+class Netatmo extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
     logger = expresser.logger

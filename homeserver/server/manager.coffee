@@ -9,7 +9,7 @@ class Manager
     settings = expresser.settings
 
     fs = require "fs"
-    jsonPath = require "./jsonPath.coffee"
+    jsonPath = require "./jsonpath.coffee"
     lodash = expresser.libs.lodash
     path = require "path"
 
@@ -27,7 +27,7 @@ class Manager
         # Init modules.
         files = fs.readdirSync managerPath
         for f in files
-            if f isnt "baseManager.coffee" and f.indexOf(".coffee") > 0
+            if f isnt "basemanager.coffee" and f.indexOf(".coffee") > 0
                 module = require "./manager/#{f}"
                 module.init()
                 @modules[module.moduleId] = module

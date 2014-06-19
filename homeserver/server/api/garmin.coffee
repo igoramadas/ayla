@@ -1,7 +1,7 @@
 # GARMIN API
 # -----------------------------------------------------------------------------
 # Module to collect data from Garmin.
-class Garmin extends (require "./baseApi.coffee")
+class Garmin extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
     events = expresser.events

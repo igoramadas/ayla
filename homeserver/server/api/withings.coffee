@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # Module to get weight, body fat and air quality data from Withings smart scales.
 # More info at http://www.withings.com/en/api
-class Withings extends (require "./baseApi.coffee")
+class Withings extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
     logger = expresser.logger

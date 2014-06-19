@@ -1,7 +1,7 @@
 # SERVER: USER MANAGER
 # -----------------------------------------------------------------------------
 # Handles user presence and personal actions.
-class UserManager extends (require "./baseManager.coffee")
+class UserManager extends (require "./basemanager.coffee")
 
     expresser = require "expresser"
     events = expresser.events

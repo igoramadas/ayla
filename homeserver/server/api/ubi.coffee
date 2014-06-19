@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # Module to collect data from Ubi sensors and send Ubi commands.
 # More info at www.theubi.com.
-class Ubi extends (require "./baseApi.coffee")
+class Ubi extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
     events = expresser.events

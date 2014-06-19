@@ -4,7 +4,7 @@
 # other API modules depend on this Network module to work, so unless you have a
 # very specific use case please leave it on the `settings.modules.enabled` list.
 # Bluetooth methods require BlueZ package on Linux and Bluetooth Command Line Tools on Windows.
-class Network extends (require "./baseApi.coffee")
+class Network extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
     events = expresser.events

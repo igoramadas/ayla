@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # Module for activities, sleep and body data using Fitbit trackers.
 # More info at http://dev.fitbit.com
-class Fitbit extends (require "./baseApi.coffee")
+class Fitbit extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
     database= expresser.database

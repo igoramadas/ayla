@@ -1,7 +1,7 @@
 # SERVER: LIGHTS MANAGER
 # -----------------------------------------------------------------------------
 # Handles home lights (Philips Hue and RF sockets).
-class LightsManager extends (require "./baseManager.coffee")
+class LightsManager extends (require "./basemanager.coffee")
 
     expresser = require "expresser"
     events = expresser.events

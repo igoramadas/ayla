@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # Module for Ninja Blocks and its connected devices.
 # More info at http://docs.ninja.is
-class Ninja extends (require "./baseApi.coffee")
+class Ninja extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
     events = expresser.events
