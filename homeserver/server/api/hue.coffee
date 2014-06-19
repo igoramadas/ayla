@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # Module to identify and control Hue bridges and lamps.
 # More info at http://developers.meethue.com
-class Hue extends (require "./baseApi.coffee")
+class Hue extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
     events = expresser.events
@@ -28,7 +28,7 @@ class Hue extends (require "./baseApi.coffee")
 
         if settings.modules.getDataOnStart
             @refreshHub()
-        
+
     # Stop the module and cancel the Hue hub refresh jobs.
     stop: =>
         @baseStop()

@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # Module to read and add finance data to Toshl.
 # More info at https://developer.toshl.com
-class Toshl extends (require "./baseApi.coffee")
+class Toshl extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
     logger = expresser.logger

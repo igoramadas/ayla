@@ -1,7 +1,7 @@
 # BASE API
 # -----------------------------------------------------------------------------
 # All API modules (files under /api) inherit from this BaseApi.
-class BaseApi extends (require "../baseModule.coffee")
+class BaseApi extends (require "../basemodule.coffee")
 
     expresser = require "expresser"
     database = expresser.database

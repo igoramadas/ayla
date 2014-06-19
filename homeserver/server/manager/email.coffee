@@ -1,7 +1,7 @@
 # SERVER: EMAIL MANAGER
 # -----------------------------------------------------------------------------
 # Handles email messages from users and from the system itself.
-class EmailManager extends (require "./baseManager.coffee")
+class EmailManager extends (require "./basemanager.coffee")
 
     expresser = require "expresser"
     events = expresser.events
@@ -234,7 +234,7 @@ class EmailManager extends (require "./baseManager.coffee")
         # Iterate rules and get related action scripts.
         for r in rules
             try
-                a = new (require "./emailAction/#{r.action}.coffee")
+                a = new (require "./emailaction/#{r.action}.coffee")
                 a.id = r.action
                 actions.push a
             catch ex

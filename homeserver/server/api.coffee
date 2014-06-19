@@ -31,7 +31,7 @@ class Api
         files = fs.readdirSync apiPath
 
         for f in files
-            if f isnt "baseApi.coffee" and f.indexOf(".coffee") > 0
+            if f isnt "baseapi.coffee" and f.indexOf(".coffee") > 0
                 enabled = lodash.contains settings.modules.enable, f.replace(".coffee", "")
 
                 # Only add if not on the disabled modules setting.

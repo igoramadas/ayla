@@ -1,7 +1,7 @@
 # BASE MANAGER
 # -----------------------------------------------------------------------------
 # All managers (files under /manager) inherit from this BaseManager.
-class BaseManager extends (require "../baseModule.coffee")
+class BaseManager extends (require "../basemodule.coffee")
 
     expresser = require "expresser"
     events = expresser.events

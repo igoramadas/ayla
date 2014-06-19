@@ -3,7 +3,7 @@
 # Module for Electric Imp devices. Compatible with the Hannah Dev Board
 # running the agent and device code located under the /imp folder.
 # More info at http://electricimp.com
-class ElectricImp extends (require "./baseApi.coffee")
+class ElectricImp extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
     events = expresser.events

@@ -1,7 +1,7 @@
 # SERVER: HOME MANAGER
 # -----------------------------------------------------------------------------
 # Handles home weather and climate conditions.
-class WeatherManager extends (require "./baseManager.coffee")
+class WeatherManager extends (require "./basemanager.coffee")
 
     expresser = require "expresser"
     events = expresser.events
