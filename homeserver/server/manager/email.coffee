@@ -234,7 +234,7 @@ class EmailManager extends (require "./basemanager.coffee")
         # Iterate rules and get related action scripts.
         for r in rules
             try
-                a = new (require "./emailAction/#{r.action}.coffee")
+                a = new (require "./emailaction/#{r.action}.coffee")
                 a.id = r.action
                 actions.push a
             catch ex
