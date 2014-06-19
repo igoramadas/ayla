@@ -9,6 +9,7 @@ class Manager
     settings = expresser.settings
 
     fs = require "fs"
+    jsonPath = require "./jsonPath.coffee"
     lodash = expresser.libs.lodash
     path = require "path"
 
@@ -31,8 +32,33 @@ class Manager
                 module.init()
                 @modules[module.moduleId] = module
 
+        # Start the rules engine.
+        @startRules()
+
         # Proceed with callback?
         callback() if callback?
+
+    # RULE ENGINE
+    # -------------------------------------------------------------------------
+
+    # Start the rules engine.
+    startRules: =>
+        @rules = require "../rules.json"
+
+        setInterval @processRules, 5000
+
+    # Process all custom rules by the user.
+    processRules: =>
+        lodash.each @rules, (rule) =>
+            m = @modules[rule.manager + "manager"]
+
+            # Check if module is valid and enabled.
+            if not m?
+                logger.warn "Manager.processRules", "Module is disable, abort processing current rule.", rule
+                return
+
+            d = jsonPath m.data, rule.data
+            console.warn d
 
 
 # Singleton implementation.
