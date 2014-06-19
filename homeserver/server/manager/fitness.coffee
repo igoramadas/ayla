@@ -45,29 +45,15 @@ class FitnessManager extends (require "./baseManager.coffee")
         sorted = lodash.sortBy data.body.measuregrps, "date"
         newest = sorted.pop()
 
+        # Check if data has more recent readings for body measures.
         if newest.date > @data.bodymeasures.timestamp
             weight = lodash.filter newest.measures, {type: 1}
             fat = lodash.filter newest.measures, {type: 6}
             @data.bodymeasures.weight = weight[0].value / 1000 if weight.length > 0
             @data.bodymeasures.fat = fat[0].value / 1000 if fat.length > 0
-
-        @dataUpdated "bodymeasures"
+            @dataUpdated "bodymeasures"
 
         logger.info "FitnessManager.onWithingsBody", @data.bodymeasures
-
-    # When current sleep data is informed by Withings.
-    onWithingsSleep: (data, filter) =>
-        @data.sleep = data
-        @dataUpdated "sleep"
-
-        if not data?.sleep? or data.sleep.length < 1
-            msgOptions = {subject: "Missing sleep data for #{date}"}
-            msgOptions.template = "fitbitMissingSleep"
-            msgOptions.keywords = {date: filter.date.replace "-", "/"}
-
-            events.emit "emailmanager.send", msgOptions
-
-        logger.info "FitnessManager.onWithingsSleep", @data.sleep
 
 
 # Singleton implementation.
