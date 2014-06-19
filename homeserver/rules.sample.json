@@ -1,0 +1,11 @@
+[
+    {
+        "manager": "weather",
+        "data": "rooms.*.temperature",
+        "condition": ">",
+        "evalue": "settings.home.idealConditions.temperature[3]",
+        "action": {
+            "email": "Temperature {value} in {data} is too high!"
+        }
+    }
+]
