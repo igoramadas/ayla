@@ -90,6 +90,8 @@ class BaseView
     # Updates data sent by the server. A property can be passed so it will
     # update data for that particular property, otherwise assume it's the full data object.
     onData: (data, property) =>
+        console.warn data, property
+
         if property?
             @dataProcessor data if @dataProcessor?
             @data[property] data

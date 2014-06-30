@@ -8,7 +8,7 @@
 #= require lib/fastclick.js
 #= require lib/foundation.js
 #= require sockets.coffee
-#= require views/baseView.coffee
+#= require views/baseview.coffee
 
 # Bind helper to log to console.
 window.logger = -> console.log.apply console, arguments

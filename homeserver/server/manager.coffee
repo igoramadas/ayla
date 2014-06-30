@@ -43,7 +43,7 @@ class Manager
 
     # Start the rules engine by parsing the rules.json file.
     startRules: =>
-        if not fs.existsSync "../rules.json"
+        if not fs.existsSync path.resolve __dirname, "../rules.json"
             logger.warn "Manager.startRules", "File rules.json was not found."
             return
 

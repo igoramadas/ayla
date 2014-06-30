@@ -90,7 +90,7 @@ class Routes
     # Helper to show an overview about the specified API module.
     renderApiModulePage = (req, res, module) ->
         options = {title: module.moduleName, data: module.data}
-        renderPage req, res, "apiModule", options
+        renderPage req, res, "apimodule", options
 
     # Helper to render pages.
     renderPage = (req, res, filename, options) ->
