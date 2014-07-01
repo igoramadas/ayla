@@ -49,7 +49,7 @@ class WeatherManager extends (require "./basemanager.coffee")
         else
             for room in settings.home.rooms
                 if not @data[room.id]?
-                    @data[room.id] = getRoomObject room.title
+                    @data[room.id] = getRoomObject room.title, room.weatherSource
 
         events.on "electricimp.data", @onElectricImp
         events.on "netatmo.data.indoor", @onNetatmoIndoor
@@ -279,7 +279,7 @@ class WeatherManager extends (require "./basemanager.coffee")
         if filter["module_id"]?
             source = {"netatmo": filter["module_id"]}
         else
-            source = "netatmo"
+            source = {"netatmo": ""}
 
         @setRoomWeather source, data
 
@@ -366,8 +366,8 @@ class WeatherManager extends (require "./basemanager.coffee")
         return result
 
     # Helper to return room object with weather, title etc.
-    getRoomObject = (title) =>
-        return {indoor: true, title: title, timestamp: 0, condition: "Unknown", temperature: null, humidity: null, pressure: null, co2: null, light: null}
+    getRoomObject = (title, source) =>
+        return {indoor: true, title: title, weatherSource: source, timestamp: 0, condition: "Unknown", temperature: null, humidity: null, pressure: null, co2: null, light: null}
 
     # Helper to return outdoor weather.
     getOutdoorObject = (title) =>
