@@ -33,9 +33,7 @@ class BaseModule
         @notifications = {}
         @running = false
 
-        # Log and start.
         logger.debug "#{@moduleName}.baseInit"
-        @start()
 
     # Called when the module starts.
     baseStart: =>

@@ -42,11 +42,12 @@ class Api
                     module.init()
                     @modules[module.moduleId] = module
 
-                    # Create database TTL index and init module.
+                    # Create database TTL index.
                     expires = settings.database.dataCacheExpireHours * 3600
                     database.db.collection("data-#{module.moduleId}").ensureIndex {"datestamp": 1}, {expireAfterSeconds: expires}, (err) -> console.error err if err?
 
-        # Load cron jobs.
+        # Start all API modules and load cron jobs.
+        m.start() for k, m of @modules
         cron.load cronPath, {basePath: apiPath}
 
         # Proceed with callback?

@@ -32,7 +32,8 @@ class Manager
                 module.init()
                 @modules[module.moduleId] = module
 
-        # Start the rules engine, but only if enabled on settings.
+        # Start all managers and the rules engine.
+        m.start() for k, m of @modules
         @startRules() if settings.rules.enabled
 
         # Proceed with callback?
