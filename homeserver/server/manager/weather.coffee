@@ -39,7 +39,7 @@ class WeatherManager extends (require "./basemanager.coffee")
         outdoor = getOutdoorObject "Outdoor"
         conditions = getOutdoorObject "Conditions"
 
-        @baseInit {forecast: null, astronomy: astronomy, outdoor: outdoor, conditions: conditions, rooms: settings.home.rooms}
+        @baseInit {forecast: [], astronomy: astronomy, outdoor: outdoor, conditions: conditions, rooms: settings.home.rooms}
 
     # Start the weather manager and listen to data updates / events.
     # Indoor weather data depends on rooms being set on the settings.
@@ -51,10 +51,11 @@ class WeatherManager extends (require "./basemanager.coffee")
                 if not @data[room.id]?
                     @data[room.id] = getRoomObject room.title, room.weatherSource
 
-        events.on "electricimp.data", @onElectricImp
-        events.on "netatmo.data.indoor", @onNetatmoIndoor
+            events.on "electricimp.data", @onElectricImp
+            events.on "netatmo.data.indoor", @onNetatmoIndoor
+            events.on "ninja.data.weather", @onNinjaWeather
+
         events.on "netatmo.data.outdoor", @onNetatmoOutdoor
-        events.on "ninja.data.weather", @onNinjaWeather
         events.on "wunderground.data.astronomy", @onWundergroundAstronomy
         events.on "wunderground.data.conditions", @onWundergroundConditions
         events.on "wunderground.data.forecast", @onWundergroundForecast
