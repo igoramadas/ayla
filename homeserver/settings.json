@@ -69,7 +69,7 @@
         "idealConditions": {
             "co2": [0, 400, 1200, 2800],
             "humidity": [25, 35, 55, 65],
-            "temperature": [15, 17, 23, 26]
+            "temperature": [15, 18, 24, 27]
         }
     },
     // Default settings for IMAP connections. Try connecting to accounts up to 3 times in a row,
@@ -131,12 +131,6 @@
         // You'll need to get your own certificates if you want to use HTTPS!
         "sslKeyFile": "ssl.key",
         "sslCertFile": "ssl.cer"
-    },
-    // Rules engine settings. See the rules.sample.json for an example.
-    // Default is to process rules every minute.
-    "rules": {
-        "enabled": true,
-        "interval": 60000
     },
     // Toshl settings. The API clientId, secret and oauthState must be set on the private settings file.
     "toshl": {
