@@ -23,6 +23,8 @@ class Camera extends (require "./baseapi.coffee")
     init: =>
         @baseInit()
 
+        @routes.push {method: "get", render: "image", data: ""}
+
     # Start the Camera module and set snaps path..
     start: =>
         fullpath = path.join __dirname, "../../", settings.path.cameraSnaps
@@ -38,6 +40,11 @@ class Camera extends (require "./baseapi.coffee")
     # Stop the Camera module.
     stop: =>
         @baseStop()
+
+    # ROUTES
+    # -------------------------------------------------------------------------
+    getRouteData: (req) =>
+        console.warn "NOT READY!"
 
     # SNAPS
     # -------------------------------------------------------------------------

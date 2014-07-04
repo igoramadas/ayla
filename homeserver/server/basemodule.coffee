@@ -31,6 +31,7 @@ class BaseModule
         @errors = {}
         @timers = {}
         @notifications = {}
+        @routes = []
         @running = false
 
         logger.debug "#{@moduleName}.baseInit"

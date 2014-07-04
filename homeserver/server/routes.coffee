@@ -30,25 +30,31 @@ class Routes
         for key, m of manager.modules
             do (m) ->
                 link = m.title.toLowerCase()
-                app.get "/#{link}", (req, res) ->
-                    options = {pageTitle: m.title, data: m.data}
-                    renderPage req, res, link, options
-                app.get "/#{link}/data", (req, res) ->
-                    renderJson req, res, m.data
 
+                # Set default manager routes (/managerId and /managerId/data).
+                app.get "/#{link}", (req, res) -> renderPage req, res, link, {pageTitle: m.title, data: m.data}
+                app.get "/#{link}/data", (req, res) -> renderJson req, res, m.data
+
+                # Bind manager specific routes.
+                bindModuleRoutes m
 
         # API modules routes.
         for key, m of api.modules
             do (m) ->
-                app.get "/#{m.moduleId}", (req, res) ->
-                    renderApiModulePage req, res, m
+                link = m.moduleId
 
-                # Has OAuth bindings?
+                # Set default module route (/apiModuleId).
+                app.get "/#{link}", (req, res) -> renderApiModulePage req, res, m
+
+                # Has OAuth bindings? If so, set OAuth routes.
                 if m.oauth?
                     oauthProcess = (req, res) -> m.oauth.process req, res
                     app.get "/#{m.moduleId}/auth", oauthProcess
                     app.get "/#{m.moduleId}/auth/callback", oauthProcess
                     app.post "/#{m.moduleId}/auth/callback", oauthProcess
+
+                # Bind API module specific routes.
+                bindModuleRoutes m
 
         # API page, commander and status routes.
         app.get "/api", apiPage
@@ -57,6 +63,24 @@ class Routes
         app.get "/status", statusPage
 
         callback() if callback?
+
+    # Helper to bind module routes.
+    bindModuleRoutes = (m) ->
+        return if m.routes.length < 1
+
+        for route in m.routes
+            method = route.method.toLowerCase()
+
+            # Get or post? Available render types are page, json and image.
+            app[method] "/#{m.moduleId}/#{route.path}", (req, res) ->
+                if route.render is "page"
+                    renderFn = renderPage
+                else if route.render is "json"
+                    renderFn = renderJson
+                else if route.render is "image"
+                    renderFn = renderImage
+
+                renderFn req, res, m.getRouteData req
 
     # MAIN ROUTES
     # -------------------------------------------------------------------------
