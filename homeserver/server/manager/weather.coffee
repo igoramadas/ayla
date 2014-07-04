@@ -149,8 +149,11 @@ class WeatherManager extends (require "./basemanager.coffee")
     setRoomWeather: (source, data) =>
         return if not data?
 
-        # Find room linked to the specified weather source,
-        roomObj = lodash.find @data, {weatherSource: source}
+        # Find room linked to the specified weather source.
+        try
+            roomObj = lodash.find @data, {weatherSource: source}
+        catch ex
+            logger.error "WeatherManager.setRoomWeather", source, data, ex.message
         return if not roomObj?
 
         # No room found? Abort here.

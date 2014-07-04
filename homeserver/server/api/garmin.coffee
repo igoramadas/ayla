@@ -1,4 +1,5 @@
 # GARMIN API
+# NOT READY YET!!!
 # -----------------------------------------------------------------------------
 # Module to collect data from Garmin.
 class Garmin extends (require "./baseapi.coffee")

@@ -1,4 +1,5 @@
 # SOUNDCLOUD API
+# NOT READY YET!!!
 # -----------------------------------------------------------------------------
 # Module to connect to tracks and profiles on SoundCloud.
 # More info at www.soundcloud.com.
