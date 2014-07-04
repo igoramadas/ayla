@@ -13,9 +13,7 @@ co2Color = rgb(160, 80, 200)
     ul.maingrid > li > div
         min-height 500px
 
-    // Outside weather icon
-    div.icon, td.icon
-        background-size contain !important
+    // Weather icon
     div.cloud, td.cloud
         background url("../images/weather-cloud.png") no-repeat top right
     div.moon, td.moon
@@ -30,13 +28,26 @@ co2Color = rgb(160, 80, 200)
         background url("../images/weather-sunny-cloudy.png") no-repeat top right
     div.thunder, td.thunder
         background url("../images/weather-thunder.png") no-repeat top right
+    div.icon
+        background-size contain
+    td.icon
+        background-size 26px 26px
+        background-position center center
 
     // Weather sub headers
     div.summary
         display inline-block
         font-size 180%
         span
-            margin-right 16px
+            margin-right 20px
+
+        // Summary icon
+        div.icon
+            clear none
+            display inline-block
+            margin-bottom -4px
+            height 30px
+            width 30px
 
     // Weather legends
     span.legend
@@ -60,11 +71,11 @@ co2Color = rgb(160, 80, 200)
         .co2
             color co2Color
 
+    // Outside table
+    li.outside
+        th.icon
+            width 28px
+
     // Bold text for extreme conditions
     .too-warm .temperature, .too-cold .temperature, .too-humid .humidity, .too-dry .humidity, .co2-too-high .co2
         font-weight bold !important
-
-    // Outdoor panel
-    li.outside
-        h5
-            clear both

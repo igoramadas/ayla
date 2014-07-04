@@ -4,10 +4,10 @@ block contents
     #weather
         script#room-template(type="text/html")
 
-        ul.maingrid.large-block-grid-2
+        ul.maingrid.large-block-grid-3
 
             li.inside
-                div(data-bind="css: conditions().icon")
+                div
                     h2 Inside
                     div.summary(data-bind="with: indoorAvg")
                         span.temperature(data-bind="text: temperature + '°C'")
@@ -34,12 +34,13 @@ block contents
                     div.summary
                         span.temperature(data-bind="text: outdoor().temperature ? outdoor().temperature + '°C' : '-'")
                         span.humidity(data-bind="text: outdoor().humidity ? outdoor().humidity + '%' : '-'")
+                        div.icon(data-bind="css: conditions().icon")
 
                     table
                         thead
                             tr
                                 th.title Date
-                                th.icon Weather
+                                th.icon
                                 th.temperature Temp
                                 th.humidity Humidity
                                 th.wind Wind
@@ -54,7 +55,13 @@ block contents
                             tr
                                 td.date(data-bind="text: dateString")
                                 td.icon(data-bind="css: icon")
-                                td.min(data-bind="text: lowTemp + ' to ' + highTemp + '°C'")
-                                td.humidity(data-bind="text: minHumidity + ' to ' + maxHumidity + '%'")
+                                td.min(data-bind="text: lowTemp + '/' + highTemp + '°C'")
+                                td.humidity(data-bind="text: minHumidity + ' - ' + maxHumidity + '%'")
                                 td.wind(data-bind="text: avgWind")
                             // /ko
+
+            li.picture
+                div
+                    h2 Camera
+                    div.camera
+                        img(src="/camera/latest")
