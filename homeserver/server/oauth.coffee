@@ -192,6 +192,7 @@ class OAuth
 
             # Schedule token to be refreshed automatically with 10% of the expiry time left.
             expires = results?.expires_in or results?.expires or 43200
+            expires = 3600 if expires < 3600
             lodash.delay @refresh, expires * 900
 
             # Save oauth details to DB and redirect user to service page.
@@ -213,6 +214,9 @@ class OAuth
 
             if settings[@service].api.oauthState?
                 opts["state"] = settings[@service].api.oauthState
+
+            if settings[@service].api.oauthPassRedirect
+                opts["redirect_uri"] = settings.general.appUrl + @service
 
             # Get authorization code from querystring.
             qCode = qs?.code
