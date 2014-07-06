@@ -33,7 +33,7 @@ class Garmin extends (require "./baseapi.coffee")
 
     # Gets the list of registered devices with Garmin.
     getDeviceData: (callback) =>
-        console.warn 1
+        console.warn "NOT IMPLEMENTED!"
 
 
 # Singleton implementation.

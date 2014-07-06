@@ -41,6 +41,11 @@ class LightsManager extends (require "./basemanager.coffee")
     onHueHub: (data) =>
         @data.hue = []
 
+        # This will hold a list of all lights that have groups associated
+        # and lights with no groups go to otherLights.
+        lightsWithGroups = []
+        otherLights = []
+
         # Iterate groups.
         for groupId, group of data.groups
             groupData = {id: groupId, room: group.name, lights: []}
@@ -52,6 +57,14 @@ class LightsManager extends (require "./basemanager.coffee")
                 hex = utils.hslToHex lightData.state.xy[0], lightData.state.xy[1], lightData.state.bri
                 state = {on: lightData.state.on, color: hex}
                 groupData.lights.push {id: lightId, name: lightData.name, state: state}
+                lightsWithGroups.push lightId.toString()
+
+        # Add lights with no groups to the "General" group.
+        for lightId, light of data.lights
+            if not lodash.contains lightsWithGroups, lightId.toString()
+                otherLights.push light
+
+        @data.hue.push {id: "other", room: "Other", lights: otherLights}
 
         # Emit updated lights and save log.
         @dataUpdated "hue"

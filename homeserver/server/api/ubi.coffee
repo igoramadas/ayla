@@ -62,11 +62,7 @@ class Ubi extends (require "./baseapi.coffee")
 
         # Make request using OAuth.
         @makeRequest reqUrl, (err, result) =>
-            console.warn err, result
-
-            if result?
-                result = JSON.parse(result) if not lodash.isObject result
-                err = result if result?.status > 0
+            console.warn "NOT IMPLEMENTED"
 
             callback err, result
 

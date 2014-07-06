@@ -34,7 +34,7 @@ class SoundCloud extends (require "./baseapi.coffee")
 
     # Gets the list of the user's favorite tracks from SoundCloud.
     getFavorites: (callback) =>
-        console.warn 1
+        console.warn "NOT IMPLEMENTED"
 
 
 # Singleton implementation.

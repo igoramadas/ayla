@@ -2,11 +2,25 @@ extends layout
 
 block contents
     #lights
-        div.lights
-            ul.small-block-grid-3(data-bind="foreach: hue")
-                li
-                    h5(data-bind="text: room")
-                    div.clearfix(data-bind="foreach: lights")
-                        span(data-bind="text: name")
-                        div.state(data-bind="with: state")
-                            button.button.secondary.tiny.right(data-bind="text: on ? 'ON' : 'OFF', style: {background: on ? color : ''}")
+        ul.maingrid.large-block-grid-3
+
+            li.hue
+                div
+                    h2 Hue lights
+                    div(data-bind="foreach: hue")
+                        h5(data-bind="text: room")
+                        div(data-bind="foreach: lights")
+                            div.clearfix
+                                span(data-bind="text: name")
+                                <!-- ko with: state -->
+                                button.button.tiny.right(data-bind="text: on ? 'ON' : 'OFF', css: on ? 'success' : 'alert'")
+                                <!-- /ko -->
+
+            li.ninja
+                div
+                    h2 Ninja lights
+
+
+            li.all
+                div
+                    h2 All
