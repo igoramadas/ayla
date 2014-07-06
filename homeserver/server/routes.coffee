@@ -68,6 +68,8 @@ class Routes
     bindModuleRoutes = (m) ->
         return if m.routes.length < 1
 
+        app = expresser.app.server
+
         for route in m.routes
             method = route.method.toLowerCase()
 
@@ -80,7 +82,7 @@ class Routes
                 else if route.render is "image"
                     renderFn = renderImage
 
-                renderFn req, res, m.getRouteData req
+                renderFn req, res, route.callback(req), route.options
 
     # MAIN ROUTES
     # -------------------------------------------------------------------------
@@ -147,6 +149,18 @@ class Routes
     # Render response as JSON data.
     renderJson = (req, res, data) ->
         res.json data
+
+    # Render response as image.
+    renderImage = (req, res, filename, options) ->
+        mimetype = options?.mimetype
+
+        if not mimetype?
+            extname = path.extname(filename).toLowerCase().replace(".","")
+            extname = "jpeg" if extname is "jpg"
+            mimetype = "image/#{extname}"
+
+        res.contentType mimetype
+        res.sendfile filename
 
     # When the server can't return a valid result,
     # send an error response with status code 500.

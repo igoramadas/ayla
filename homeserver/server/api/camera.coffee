@@ -16,14 +16,16 @@ class Camera extends (require "./baseapi.coffee")
     networkApi = require "./network.coffee"
     path = require "path"
 
+    nocamPath = __dirname + "../../public/images/nocam.jpg"
+
     # INIT
     # -------------------------------------------------------------------------
 
-    # Init the Camera module.
+    # Init the Camera module and set custom routes.
     init: =>
         @baseInit()
-
-        @routes.push {method: "get", render: "image", data: ""}
+        @routes.push {method: "get", path: ":host/last.jpg", render: "image", callback: @routeLastImage}
+        @routes.push {method: "get", path: "random.jpg", render: "image", callback: @routeRandomImage}
 
     # Start the Camera module and set snaps path..
     start: =>
@@ -35,7 +37,11 @@ class Camera extends (require "./baseapi.coffee")
             else
                 @snapsPath = settings.path.cameraSnaps
 
-        @baseStart()
+            @baseStart()
+
+            # Take snaps on start?
+            if settings.modules.getDataOnStart
+                @takeAllSnaps()
 
     # Stop the Camera module.
     stop: =>
@@ -43,8 +49,26 @@ class Camera extends (require "./baseapi.coffee")
 
     # ROUTES
     # -------------------------------------------------------------------------
-    getRouteData: (req) =>
-        console.warn "NOT READY!"
+
+    # Route for /random.jpg, which returns the latest image from a random camera.
+    routeRandomImage: (req) =>
+        cams = lodash.filter settings.network.devices, {type: "camera"}
+
+        if cams.length < 1
+            return nocamPath
+        else
+            cam = cams[Math.floor(Math.random() * cams.length)]
+            return @data[cam.host][0].value.filename
+
+    # Route for /camera_host/last.jpg to return its latest image.
+    # If camera is not found or has no images, return the default nocam.jpg.
+    routeLastImage: (req) =>
+        cam = @data[req.params.host]
+
+        if not cam? or cam.length < 0
+            return nocamPath
+        else
+            return cam[0].value.filename
 
     # SNAPS
     # -------------------------------------------------------------------------
@@ -86,8 +110,9 @@ class Camera extends (require "./baseapi.coffee")
             if err?
                 @logError "Camera.takeSnap", cam.host, err
             else
-                @setData cam.host, {filename: saveTo}
-                logger.info "Camera.takeSnap", cam.host, cam.ip
+                cam.filename = saveTo
+                logger.info "Camera.takeSnap", cam.host, cam.filename
+                @setData cam.host, cam
 
             callback err, result if lodash.isFunction callback
 
@@ -99,6 +124,7 @@ class Camera extends (require "./baseapi.coffee")
         if count < 1
             logger.info "Camera.takeAllSnaps", "No cameras registered on the network."
         else
+            logger.info "Camera.takeAllSnaps", "Snaps from #{count} camera(s)."
 
             # Take a snap for each enabled camera.
             for c in cameras
