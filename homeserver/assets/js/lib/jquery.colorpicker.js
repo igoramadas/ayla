@@ -19,8 +19,8 @@ $.fn.colorpicker = function (conf) {
     ];
 
     var config = $.extend({
-        id: "jquery-colorpicker",  // id of colorpicker container
-        title: "Pick a colour",    // Default dialogue title
+        id: "jquery-colorpicker",
+        title: "Pick a colour",
         openTxt: "Open colour picker"
     }, conf);
 
@@ -37,62 +37,55 @@ $.fn.colorpicker = function (conf) {
     var colorpicker = $("#" + config.id);
 
     if (!colorpicker.length) {
-        colorpicker = $('<div id="' + config.id + '"></div>').appendTo(document.body).hide();
+        var colorpicker = $(document.createElement("div"));
+        colorpicker.attr("id", config.id);
+        colorpicker.appendTo(document.body).hide();
 
         // Remove the colorpicker if you click outside it (on body)
-        $(document.body).click(function(event) {
+        $(document.body).on("click", function(event) {
             if (!($(event.target).is('#' + config.id) || $(event.target).parents('#' + config.id).length)) {
                 colorpicker.hide();
             }
         });
     }
 
-    // For every select passed to the plug-in
+    // For every select passed to the plugin...
     return this.each(function () {
         var select = $(this);
         var val = select.val() || "#FF0000";
-        var input = $('<input type="text" class="colorpicker" value="' + val + '" />').insertAfter(select);
+        var input = $(document.createElement("input"));
+        var colors = [];
         var loc = "";
 
-        // No options? Create default colours.
+        // Append input to document.
+        input.attr("type", "text").addClass("colorpicker").val(val).insertAfter(select);
+
+        // No options? Use default colours.
         if ($("option", select).length < 1) {
-            for (var c = 0; c < defaultColors.length; c++) {
-                select.append('<option value="' + defaultColors[c] + '">' + defaultColors[c] + '</option>');
-            }
+            colors = defaultColors;
+        } else {
+            $("option", select).each(function () {
+                colors.push(option.val());
+            });
         }
 
-        // Build a list of colours based on the colours in the select
-        $("option", select).each(function () {
-            var option	= $(this);
-            var hex		= option.val();
-            var title	= option.text();
+        // Iterate colors to create list options.
+        for (var c = 0; c < colors.length; c++) {
+            loc += '<li><a rel="' + colors[c] + '" style="background: #' + colors[c] + '">' + colors[c] + '</a></li>';
+        }
 
-            loc += '<li><a title="'
-                + title
-                + '" rel="'
-                + hex
-                + '" style="background: #'
-                + hex
-                + '; colour: '
-                + hexInvert(hex)
-                + ';">'
-                + title
-                + '</a></li>';
-        });
-
-        // Remove select
+        // Remove select.
         select.remove();
 
         // If user wants to, change the input's BG to reflect the newly selected colour
-        input.bind("change", function(e) {
+        input.on("change", function(e) {
             input.css({background: "#" + input.val()});
         });
 
         input.change();
 
         // When you click the icon
-        input.bind("click", function(e) {
-            // Show the colorpicker next to the icon and fill it with the colours in the select that used to be there
+        input.on("click", function(e) {
             var pos	= input.offset();
             var heading	= config.title ? '<h2>' + config.title + '</h2>' : '';
 
@@ -106,7 +99,7 @@ $.fn.colorpicker = function (conf) {
             console.warn(pos);
 
             // When you click a colour in the colorpicker
-            $('a', colorpicker).unbind("click");
+            $('a', colorpicker).off("click");
             $('a', colorpicker).click(function () {
                 // The hex is stored in the link's rel-attribute
                 var hex = $(this).attr('rel');
