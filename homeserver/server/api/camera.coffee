@@ -58,7 +58,11 @@ class Camera extends (require "./baseapi.coffee")
             return nocamPath
         else
             cam = cams[Math.floor(Math.random() * cams.length)]
-            return @data[cam.host][0].value.filename
+
+            if not @data[cam.host]?
+                return nocamPath
+            else
+                return @data[cam.host][0].value.filename
 
     # Route for /camera_host/last.jpg to return its latest image.
     # If camera is not found or has no images, return the default nocam.jpg.

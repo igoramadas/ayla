@@ -1,5 +1,7 @@
 #= require lib/modernizr.js
 #= require lib/jquery.js
+#= require lib/jquery.colorpicker.js
+#= require lib/jquery.cookie.js
 #= require lib/jquery.jsonview.js
 #= require lib/lodash.js
 #= require lib/knockout.js

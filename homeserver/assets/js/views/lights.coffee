@@ -3,14 +3,15 @@
 class LightsView extends ayla.BaseView
 
     wrapperId: "lights"
-    elements: ["table", "td.state"]
+    elements: ["button.state", "select.colorpicker"]
 
     # MAIN METHODS
     # ----------------------------------------------------------------------
 
     # Init the System Jobs view.
     onReady: =>
-        @dom["td.state"].click @lightToggle
+        @dom["button.state"].click @lightToggle
+        @dom["select.colorpicker"].colorpicker()
 
     # LIGHT CONTROL
     # ----------------------------------------------------------------------

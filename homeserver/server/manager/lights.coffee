@@ -68,11 +68,12 @@ class LightsManager extends (require "./basemanager.coffee")
 
         @data.hue.push {id: "other", room: "Other", lights: otherLights}
 
-        # Emit updated lights and save log.
+        # Emit updated hue lights and save log.
         @dataUpdated "hue"
         logger.info "LightsManager.onHueHub", @data.hue
 
-    # Update list of light devices from Ninja Blocks.
+    # Update list of light actuators from Ninja Blocks, by getting all RF433 devices
+    # that have "light" on their name.
     onNinjaDevices: (data) =>
         @data.ninja = []
 
@@ -80,6 +81,7 @@ class LightsManager extends (require "./basemanager.coffee")
             if device.shortName.toLowerCase().indexOf("light") >= 0
                 @data.ninja.push {id: id, name: device.shortName, code: device.data}
 
+        # Emit updated ninja lights and save log.
         @dataUpdated "ninja"
         logger.info "LightsManager.onNinjaDevices", @data.ninja
 
