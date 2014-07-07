@@ -50,7 +50,8 @@ $.fn.colorpicker = function (conf) {
     // For every select passed to the plug-in
     return this.each(function () {
         var select = $(this);
-        var input = $('<input type="text" class="colorpicker" name="' + select.attr('name') + '" value="' + select.val() + '" />').insertAfter(select);
+        var val = select.val() || "#FF0000";
+        var input = $('<input type="text" class="colorpicker" value="' + val + '" />').insertAfter(select);
         var loc = "";
 
         // No options? Create default colours.
@@ -83,14 +84,14 @@ $.fn.colorpicker = function (conf) {
         select.remove();
 
         // If user wants to, change the input's BG to reflect the newly selected colour
-        input.change(function () {
-            input.css({background: '#' + input.val(), color: '#' + hexInvert(input.val())});
+        input.bind("change", function(e) {
+            input.css({background: "#" + input.val()});
         });
 
         input.change();
 
         // When you click the icon
-        input.click(function () {
+        input.bind("click", function(e) {
             // Show the colorpicker next to the icon and fill it with the colours in the select that used to be there
             var pos	= input.offset();
             var heading	= config.title ? '<h2>' + config.title + '</h2>' : '';
@@ -100,6 +101,9 @@ $.fn.colorpicker = function (conf) {
                 left: pos.left + 'px',
                 top: pos.top + 'px'
             }).show();
+
+            console.warn(colorpicker);
+            console.warn(pos);
 
             // When you click a colour in the colorpicker
             $('a', colorpicker).unbind("click");
@@ -120,8 +124,6 @@ $.fn.colorpicker = function (conf) {
 
                 return false;
             });
-
-            return false;
         });
     });
 };
