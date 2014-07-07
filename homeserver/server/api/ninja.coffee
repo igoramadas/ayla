@@ -96,7 +96,7 @@ class Ninja extends (require "./baseapi.coffee")
         guid = lodash.findKey devices, {device_type: "rf433"}
 
         if guid?
-            @rf433 = {guid: guid, device: devices[guid]}
+            @setData "rf433", {guid: guid, device: devices[guid]}
             logger.debug "Ninja.setRf433", "Detected #{lodash.size devices[guid].subDevices} subdevices."
 
     # RF 433 SOCKETS
@@ -108,11 +108,11 @@ class Ninja extends (require "./baseapi.coffee")
         if not @isRunning [@ninjaApi]
             callback "Ninja API client not running. Please check Ninja API settings." if callback?
             return
-        else if not @rf433?.device?
+        else if not @data.rf433?.device?
             callback "Ninja.actuate433", "RF 433 device not found." if callback?
             return
 
-        subdevices = @rf433.device.subDevices
+        subdevices = @data.rf433.device.subDevices
 
         # Get correct list of subdevices based on the provided filter.
         if lodash.isString filter or lodash.isNumber filter
@@ -128,7 +128,7 @@ class Ninja extends (require "./baseapi.coffee")
 
         # Iterate and send command to subdevices.
         for s in sockets
-            @ninjaApi.device(@rf433.device.guid).actuate s.data
+            @ninjaApi.device(@data.rf433.device.guid).actuate s.data
 
 
 # Singleton implementation.

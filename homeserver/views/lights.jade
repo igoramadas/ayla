@@ -8,8 +8,7 @@ block contents
                 div
                     h2 Hue lights
                     div(data-bind="foreach: hue")
-                        h5(data-bind="text: room")
-                        div(data-bind="foreach: lights")
+                        div.lightlist(data-bind="foreach: lights")
                             div.clearfix
                                 span(data-bind="text: name")
                                 <!-- ko with: state -->
@@ -19,7 +18,10 @@ block contents
             li.ninja
                 div
                     h2 Ninja lights
-
+                    div.lightlist(data-bind="foreach: ninja")
+                        div.clearfix
+                            span(data-bind="text: name")
+                            button.button.tiny.right Actuate
 
             li.all
                 div

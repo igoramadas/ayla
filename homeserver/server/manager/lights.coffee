@@ -25,12 +25,14 @@ class LightsManager extends (require "./basemanager.coffee")
     # Start the lights manager and listen to data updates / events.
     start: =>
         events.on "hue.data.hub", @onHueHub
+        events.on "ninja.data.rf433", @onNinjaDevices
 
         @baseStart()
 
     # Stop the lights manager.
     stop: =>
         events.off "hue.data.hub", @onHueHub
+        events.off "ninja.data.rf433", @onNinjaDevices
 
         @baseStop()
 
@@ -70,6 +72,16 @@ class LightsManager extends (require "./basemanager.coffee")
         @dataUpdated "hue"
         logger.info "LightsManager.onHueHub", @data.hue
 
+    # Update list of light devices from Ninja Blocks.
+    onNinjaDevices: (data) =>
+        @data.ninja = []
+
+        for id, device of data.device.subDevices
+            if device.shortName.toLowerCase().indexOf("light") >= 0
+                @data.ninja.push {id: id, name: device.shortName, code: device.data}
+
+        @dataUpdated "ninja"
+        logger.info "LightsManager.onNinjaDevices", @data.ninja
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------
