@@ -3,7 +3,7 @@
 class LightsView extends ayla.BaseView
 
     wrapperId: "lights"
-    elements: ["button.state", "select.colorpicker"]
+    elements: ["button.state", "select.colourpicker"]
 
     # MAIN METHODS
     # ----------------------------------------------------------------------

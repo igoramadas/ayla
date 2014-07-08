@@ -2,10 +2,10 @@
 #= require lib/jquery.js
 #= require lib/jquery.cookie.js
 #= require lib/jquery.jsonview.js
-#= require lib/jquery.colorpicker.js
+#= require lib/jquery.colourpicker.js
 #= require lib/lodash.js
 #= require lib/knockout.js
-#= require lib/ko.colorpicker.js
+#= require lib/ko.colourpicker.js
 #= require lib/moment.js
 #= require lib/placeholder.js
 #= require lib/fastclick.js

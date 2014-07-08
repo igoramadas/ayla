@@ -1,7 +1,7 @@
 $.fn.colorPicker = function (conf) {
 
-    // Default colors to be used in case no data is specified.
-    var defaultColors = [
+    // Default colours to be used in case no data is specified.
+    var defaultColours = [
         "#FFFFFF", "#FFFFAA", "#FFFF55", "#FFFF00",
         "#FFAAFF", "#FFAAAA", "#FFAA55", "#FFAA00",
         "#FF55FF", "#FF55AA", "#FF5555", "#FF5500",
@@ -22,13 +22,15 @@ $.fn.colorPicker = function (conf) {
 
     // Default configuration.
     var config = $.extend({
-        id: "jquery-colorpicker",
+        id: "jquery-colourpicker",
         title: "Choose a colour...",
-        colors: defaultColors
+        colours: defaultColours
     }, conf);
 
     // Helper to get text color (black or white).
     var hexInvert = function (hex) {
+        hex = hex.replace("#", "");
+
         var r = hex.substr(0, 2);
         var g = hex.substr(2, 2);
         var b = hex.substr(4, 2);
@@ -49,7 +51,7 @@ $.fn.colorPicker = function (conf) {
         docBody.on("click", function(e) {
             var target = $(e.target);
             if (!(target.is("#" + config.id) || target.parents("#" + config.id).length)) {
-                if (!target.hassClass("colorpicker")) {
+                if (!target.hasClass("colourpicker")) {
                     colorPicker.hide();
                 }
             }
@@ -59,26 +61,26 @@ $.fn.colorPicker = function (conf) {
     // For every select passed to the plugin...
     return this.each(function () {
         var source = $(this);
-        var dataColors = source.data("colors");
-        var colors = config.colors;
+        var dataColours = source.data("colours");
+        var colours = config.colours;
         var list = "";
 
         // If source is already set up then stop there.
-        if (source.hasClass("colorpicker")) {
+        if (source.hasClass("colourpicker")) {
             return;
         }
 
         // Set field properties and class.
-        source.attr("type", "text").addClass("colorpicker");
+        source.attr("type", "text").addClass("colourpicker");
 
-        // Get colors from data field in case there's one.
-        if (dataColors && dataColors.length > 0) {
-            colors = dataColors;
+        // Get colours from data field in case there's one.
+        if (dataColours && dataColours.length > 0) {
+            colours = dataColours;
         }
 
-        // Iterate colors to create list options.
-        for (var c = 0; c < colors.length; c++) {
-            list += '<li><a rel="' + colors[c] + '" style="background: ' + colors[c] + '">' + colors[c] + '</a></li>';
+        // Iterate colours to create list options.
+        for (var c = 0; c < colours.length; c++) {
+            list += '<li><a rel="' + colours[c] + '" style="background: ' + colours[c] + '">' + colours[c] + '</a></li>';
         }
 
         // When you click the field, show the color picker.
@@ -87,7 +89,7 @@ $.fn.colorPicker = function (conf) {
             colorPicker.empty();
 
             colorPicker.html("<ul>" + list + "</ul>").css({
-                left: pos.left + "px",
+                left: (pos.left + source.outerWidth()) + "px",
                 top: pos.top + "px"
             }).show();
 
@@ -97,7 +99,7 @@ $.fn.colorPicker = function (conf) {
             $("a", colorPicker).on("click", function () {
                 var hex = $(this).attr("rel");
                 source.val(hex);
-                source.css({background: "#" + hex, color: "#" + hexInvert(hex)});
+                source.css({background: hex, color: hexInvert(hex)});
                 source.change();
 
                 return false;
@@ -107,7 +109,7 @@ $.fn.colorPicker = function (conf) {
         // Reflect changes on the field to match its background color.
         source.on("change", function() {
             var hex = source.val();
-            source.css({background: "#" + hex, color: hexInvert(hex)});
+            source.css({background: hex, color: hexInvert(hex)});
         });
 
         source.change();
