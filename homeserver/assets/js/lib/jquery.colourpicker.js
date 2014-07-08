@@ -101,6 +101,7 @@ $.fn.colorPicker = function (conf) {
                 source.val(hex);
                 source.css({background: hex, color: hexInvert(hex)});
                 source.change();
+                colorPicker.hide();
 
                 return false;
             });

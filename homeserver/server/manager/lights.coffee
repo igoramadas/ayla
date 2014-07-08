@@ -66,7 +66,7 @@ class LightsManager extends (require "./basemanager.coffee")
             light.state.hex = utils.hslToHex light.state.hue, light.state.bri, light.state.sat
 
             if not lodash.contains lightsWithGroups, lightId.toString()
-                otherLights.push light
+                otherLights.push {id: lightId, name: lightData.name, state: state}
 
         @data.hue.push {id: "other", room: "Other", lights: otherLights}
 

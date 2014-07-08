@@ -10,14 +10,14 @@ class LightsView extends ayla.BaseView
 
     # Init the System Jobs view.
     onReady: =>
-        @dom["button.state"].click @lightToggle
 
     # LIGHT CONTROL
     # ----------------------------------------------------------------------
 
     # Toggle lights om or off based on its current state.
-    lightToggle: (e) =>
-        console.warn e
+    hueLightToggle: (light, e) =>
+        onOrOff = light.state.on ? false : true
+        ayla.sockets.emit "hue.setLightState", {lightId: light.id}, {on: onOrOff}
 
 
 # BIND VIEW TO WINDOW

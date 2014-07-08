@@ -4,6 +4,13 @@ block contents
     #lights
         ul.maingrid.large-block-grid-3
 
+            li.all
+                div
+                    h2 All
+                    div.all
+                        button.success All ON
+                        button.alert All OFF
+
             li.hue
                 div
                     h2 Hue lights
@@ -12,7 +19,7 @@ block contents
                             div.clearfix
                                 span(data-bind="text: name")
                                 <!-- ko with: state -->
-                                button.button.tiny.right(data-bind="text: on ? 'ON' : 'OFF', css: on ? 'success' : 'alert'")
+                                button.button.tiny.right(data-bind="text: on ? 'ON' : 'OFF', css: on ? 'success' : 'alert', click: ayla.currentView.hueLightToggle")
                                 input.right(data-bind="value: hex, colorPicker: true")
                                 <!-- /ko -->
 
@@ -23,7 +30,3 @@ block contents
                         div.clearfix
                             span(data-bind="text: name")
                             button.button.tiny.right Actuate
-
-            li.all
-                div
-                    h2 All
