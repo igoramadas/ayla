@@ -12,7 +12,7 @@ block contents
                             div.clearfix
                                 span(data-bind="text: name")
                                 <!-- ko with: state -->
-                                select.colorpicker
+                                input(data-bind="value: hex, colorPicker: true")
                                 button.button.tiny.right(data-bind="text: on ? 'ON' : 'OFF', css: on ? 'success' : 'alert'")
                                 <!-- /ko -->
 

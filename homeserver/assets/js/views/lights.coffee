@@ -11,7 +11,6 @@ class LightsView extends ayla.BaseView
     # Init the System Jobs view.
     onReady: =>
         @dom["button.state"].click @lightToggle
-        @dom["select.colorpicker"].colorpicker()
 
     # LIGHT CONTROL
     # ----------------------------------------------------------------------

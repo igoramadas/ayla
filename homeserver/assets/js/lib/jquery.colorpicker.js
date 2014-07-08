@@ -1,4 +1,6 @@
-$.fn.colorpicker = function (conf) {
+$.fn.colorPicker = function (conf) {
+
+    // Default colors to be used in case no data is specified.
     var defaultColors = [
         "#FFFFFF", "#FFFFAA", "#FFFF55", "#FFFF00",
         "#FFAAFF", "#FFAAAA", "#FFAA55", "#FFAA00",
@@ -18,105 +20,96 @@ $.fn.colorpicker = function (conf) {
         "#0000FF", "#0000AA", "#000055"
     ];
 
+    // Default configuration.
     var config = $.extend({
         id: "jquery-colorpicker",
-        title: "Pick a colour",
-        openTxt: "Open colour picker"
+        title: "Choose a colour...",
+        colors: defaultColors
     }, conf);
 
-    // Helper to invert a hex color.
+    // Helper to get text color (black or white).
     var hexInvert = function (hex) {
         var r = hex.substr(0, 2);
         var g = hex.substr(2, 2);
         var b = hex.substr(4, 2);
 
-        return 0.212671 * r + 0.715160 * g + 0.072169 * b < 0.5 ? "FFFFFF" : "000000"
+        return 0.212671 * r + 0.715160 * g + 0.072169 * b < 0.5 ? "#FFFFFF" : "#000000"
     };
 
-    // Add the colorpicker dialogue if not added
-    var colorpicker = $("#" + config.id);
+    var docBody = $(document.body);
+    var colorPicker = $("#" + config.id);
 
-    if (!colorpicker.length) {
-        var colorpicker = $(document.createElement("div"));
-        colorpicker.attr("id", config.id);
-        colorpicker.appendTo(document.body).hide();
+    // Add the colorPicker dialogue, if not added yet.
+    if (!colorPicker.length) {
+        colorPicker = $(document.createElement("div"));
+        colorPicker.attr("id", config.id);
+        colorPicker.appendTo(document.body).hide();
 
-        // Remove the colorpicker if you click outside it (on body)
-        $(document.body).on("click", function(event) {
-            if (!($(event.target).is('#' + config.id) || $(event.target).parents('#' + config.id).length)) {
-                colorpicker.hide();
+        // Remove the colorPicker if you click outside.
+        docBody.on("click", function(e) {
+            var target = $(e.target);
+            if (!(target.is("#" + config.id) || target.parents("#" + config.id).length)) {
+                if (!target.hassClass("colorpicker")) {
+                    colorPicker.hide();
+                }
             }
         });
     }
 
     // For every select passed to the plugin...
     return this.each(function () {
-        var select = $(this);
-        var val = select.val() || "#FF0000";
-        var input = $(document.createElement("input"));
-        var colors = [];
-        var loc = "";
+        var source = $(this);
+        var dataColors = source.data("colors");
+        var colors = config.colors;
+        var list = "";
 
-        // Append input to document.
-        input.attr("type", "text").addClass("colorpicker").val(val).insertAfter(select);
+        // If source is already set up then stop there.
+        if (source.hasClass("colorpicker")) {
+            return;
+        }
 
-        // No options? Use default colours.
-        if ($("option", select).length < 1) {
-            colors = defaultColors;
-        } else {
-            $("option", select).each(function () {
-                colors.push(option.val());
-            });
+        // Set field properties and class.
+        source.attr("type", "text").addClass("colorpicker");
+
+        // Get colors from data field in case there's one.
+        if (dataColors && dataColors.length > 0) {
+            colors = dataColors;
         }
 
         // Iterate colors to create list options.
         for (var c = 0; c < colors.length; c++) {
-            loc += '<li><a rel="' + colors[c] + '" style="background: #' + colors[c] + '">' + colors[c] + '</a></li>';
+            list += '<li><a rel="' + colors[c] + '" style="background: ' + colors[c] + '">' + colors[c] + '</a></li>';
         }
 
-        // Remove select.
-        select.remove();
+        // When you click the field, show the color picker.
+        source.on("click", function() {
+            var pos	= source.offset();
+            colorPicker.empty();
 
-        // If user wants to, change the input's BG to reflect the newly selected colour
-        input.on("change", function(e) {
-            input.css({background: "#" + input.val()});
-        });
-
-        input.change();
-
-        // When you click the icon
-        input.on("click", function(e) {
-            var pos	= input.offset();
-            var heading	= config.title ? '<h2>' + config.title + '</h2>' : '';
-
-            colorpicker.html(heading + '<ul>' + loc + '</ul>').css({
-                position: 'absolute',
-                left: pos.left + 'px',
-                top: pos.top + 'px'
+            colorPicker.html("<ul>" + list + "</ul>").css({
+                left: pos.left + "px",
+                top: pos.top + "px"
             }).show();
 
-            console.warn(colorpicker);
-            console.warn(pos);
+            // When you click a colour in the color picker...
+            $("a", colorPicker).off("click");
 
-            // When you click a colour in the colorpicker
-            $('a', colorpicker).off("click");
-            $('a', colorpicker).click(function () {
-                // The hex is stored in the link's rel-attribute
-                var hex = $(this).attr('rel');
-
-                input.val(hex);
-
-                // If user wants to, change the input's BG to reflect the newly selected colour
-                input.css({background: '#' + hex, color: '#' + hexInvert(hex)});
-
-                // Trigger change-event on input
-                input.change();
-
-                // Hide the colorpicker and return false
-                colorpicker.hide();
+            $("a", colorPicker).on("click", function () {
+                var hex = $(this).attr("rel");
+                source.val(hex);
+                source.css({background: "#" + hex, color: "#" + hexInvert(hex)});
+                source.change();
 
                 return false;
             });
         });
+
+        // Reflect changes on the field to match its background color.
+        source.on("change", function() {
+            var hex = source.val();
+            source.css({background: "#" + hex, color: hexInvert(hex)});
+        });
+
+        source.change();
     });
 };

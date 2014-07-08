@@ -61,8 +61,10 @@ class LightsManager extends (require "./basemanager.coffee")
                 groupData.lights.push {id: lightId, name: lightData.name, state: state}
                 lightsWithGroups.push lightId.toString()
 
-        # Add lights with no groups to the "General" group.
+        # Process light HEX colours and add lights with no groups to the "Other" group.
         for lightId, light of data.lights
+            light.state.hex = utils.hslToHex light.state.hue, light.state.bri, light.state.sat
+
             if not lodash.contains lightsWithGroups, lightId.toString()
                 otherLights.push light
 
