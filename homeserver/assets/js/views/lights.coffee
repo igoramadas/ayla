@@ -15,9 +15,12 @@ class LightsView extends ayla.BaseView
     # ----------------------------------------------------------------------
 
     # Toggle lights om or off based on its current state.
-    hueLightToggle: (light, e) =>
-        onOrOff = light.state.on ? false : true
-        ayla.sockets.emit "hue.setLightState", {lightId: light.id}, {on: onOrOff}
+    hueLightToggle: (state, e) =>
+        parentDiv = $ e.target.parentNode
+        lightId = parentDiv.data "lightid"
+        onOrOff = state.on ? false : true
+
+        ayla.sockets.emit "lightsmanager.hue.toggle", {lightId: lightId, on: onOrOff}
 
 
 # BIND VIEW TO WINDOW

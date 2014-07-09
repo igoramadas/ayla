@@ -27,6 +27,8 @@ class LightsManager extends (require "./basemanager.coffee")
         events.on "hue.data.hub", @onHueHub
         events.on "ninja.data.rf433", @onNinjaDevices
 
+        sockets.listenTo "lightsmanager.hue.toggle", @onClientHueToggle
+
         @baseStart()
 
     # Stop the lights manager.
@@ -34,9 +36,11 @@ class LightsManager extends (require "./basemanager.coffee")
         events.off "hue.data.hub", @onHueHub
         events.off "ninja.data.rf433", @onNinjaDevices
 
+        sockets.stopListening "lightsmanager.hue.toggle", @onClientHueToggle
+
         @baseStop()
 
-    # LIGHTS
+    # HUE
     # -------------------------------------------------------------------------
 
     getLightData = (lightId, light) ->
@@ -73,6 +77,16 @@ class LightsManager extends (require "./basemanager.coffee")
         # Emit updated hue lights and save log.
         @dataUpdated "hue"
         logger.info "LightsManager.onHueHub", @data.hue
+
+    # When a toggle ON/OFF is received from the client.
+    onClientHueToggle: (light) =>
+        logger.info "LightsManager.onClientHueToggle", light
+
+        events.emit "hue.setlightstate", {lightId: light.lightId}, {on: light.on}
+
+
+    # NINJA
+    # -------------------------------------------------------------------------
 
     # Update list of light actuators from Ninja Blocks, by getting all RF433 devices
     # that have "light" on their name.

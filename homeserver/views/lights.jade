@@ -16,7 +16,7 @@ block contents
                     h2 Hue lights
                     div(data-bind="foreach: hue")
                         div.lightlist(data-bind="foreach: lights")
-                            div.clearfix
+                            div.clearfix(data-bind="attr: {'data-lightid': id}")
                                 span(data-bind="text: name")
                                 <!-- ko with: state -->
                                 button.button.tiny.right(data-bind="text: on ? 'ON' : 'OFF', css: on ? 'success' : 'alert', click: ayla.currentView.hueLightToggle")

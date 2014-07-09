@@ -26,12 +26,16 @@ class Hue extends (require "./baseapi.coffee")
     start: =>
         @baseStart()
 
+        events.on "hue.setlightstate", @setLightState
+
         if settings.modules.getDataOnStart
             @refreshHub()
 
     # Stop the module and cancel the Hue hub refresh jobs.
     stop: =>
         @baseStop()
+
+        events.off "hue.setlightstate", @setLightState
 
     # API BASE METHODS
     # -------------------------------------------------------------------------
@@ -127,7 +131,7 @@ class Hue extends (require "./baseapi.coffee")
                 arr = [filter.lightId]
 
             # Make the light state change request for all specified ids.
-            for i of arr
+            for i in arr
                 do (i) => tasks.push (cb) => @apiRequest "lights/#{i}/state", params, cb
 
         # Check if id is a single group or an array of groups (if any).
