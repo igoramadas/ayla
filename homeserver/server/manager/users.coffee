@@ -1,7 +1,7 @@
 # SERVER: USER MANAGER
 # -----------------------------------------------------------------------------
 # Handles user presence and personal actions.
-class UserManager extends (require "./basemanager.coffee")
+class UsersManager extends (require "./basemanager.coffee")
 
     expresser = require "expresser"
     events = expresser.events
@@ -46,7 +46,7 @@ class UserManager extends (require "./basemanager.coffee")
 
     # When network router info is updated, check for online and offline users.
     onNetworkRouter: (data) =>
-        logger.debug "UserManager.onNetworkRouter"
+        logger.debug "UsersManager.onNetworkRouter"
 
         for username, userdata of settings.users
             online = lodash.find data.wifi24g, {macaddr: userdata.mac}
@@ -59,7 +59,7 @@ class UserManager extends (require "./basemanager.coffee")
 
     # When user bluetooth devices are queried, check who's online (at home).
     onBluetoothUsers: (data) =>
-        logger.debug "UserManager.onBluetoothUsers"
+        logger.debug "UsersManager.onBluetoothUsers"
 
         for d in data
             @onUserStatus {user: d.user, online: d.online} if d.online isnt @data.users[d.user].online
@@ -70,10 +70,10 @@ class UserManager extends (require "./basemanager.coffee")
     # happen in case the module has started less than 2 minutes ago.
     onUserStatus: (userStatus) =>
         if moment().subtract("m", 2).unix() < @initTimestamp
-            logger.info "UserManager.onUserStatus", userStatus, "Do nothing! Module has just started."
+            logger.info "UsersManager.onUserStatus", userStatus, "Do nothing! Module has just started."
             return
 
-        logger.info "UserManager.onUserStatus", userStatus
+        logger.info "UsersManager.onUserStatus", userStatus
 
         # Auto control house lights?
         @switchLightsOnStatus userStatus if settings.home.autoControlLights
@@ -83,7 +83,7 @@ class UserManager extends (require "./basemanager.coffee")
 
     # Switch house lights based on user status.
     switchLightsOnStatus: (userStatus) =>
-        logger.debug "UserManager.switchLightsOnStatus", userStatus
+        logger.debug "UsersManager.switchLightsOnStatus", userStatus
 
         # If user is online, check if lights should be turned on.
         if userStatus.online
@@ -104,7 +104,7 @@ class UserManager extends (require "./basemanager.coffee")
 
                 # Is it dark now? Turn lights on!
                 if currentHour < sunrise or currentHour > sunset
-                    logger.info "UserManager.onUserStatus", "Auto turned lights ON, #{userStatus.user} arrived."
+                    logger.info "UsersManager.onUserStatus", "Auto turned lights ON, #{userStatus.user} arrived."
                     hueApi.switchAllLights true
 
         # Otherwise proceed wich checking if everyone's offline.
@@ -115,14 +115,14 @@ class UserManager extends (require "./basemanager.coffee")
 
             # Everyone offline? Switch lights off after 60 seconds.
             if everyoneOffline
-                logger.info "UserManager.onUserStatus", "Everyone is offline, auto turn lights OFF soon."
+                logger.info "UsersManager.onUserStatus", "Everyone is offline, auto turn lights OFF soon."
                 @timers["lightsoff"] = lodash.delay hueApi.switchAllLights, 30000, false
 
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------
-UserManager.getInstance = ->
-    @instance = new UserManager() if not @instance?
+UsersManager.getInstance = ->
+    @instance = new UsersManager() if not @instance?
     return @instance
 
-module.exports = exports = UserManager.getInstance()
+module.exports = exports = UsersManager.getInstance()

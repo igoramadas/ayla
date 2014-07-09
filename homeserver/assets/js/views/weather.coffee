@@ -3,7 +3,6 @@
 class WeatherView extends ayla.BaseView
 
     wrapperId: "weather"
-    socketsName: "weathermanager"
 
     # MAIN METHODS
     # ----------------------------------------------------------------------

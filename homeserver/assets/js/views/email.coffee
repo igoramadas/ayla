@@ -3,7 +3,6 @@
 class EmailView extends ayla.BaseView
 
     wrapperId: "email"
-    socketsName: "emailmanager"
     elements: [".emails"]
 
     # MAIN METHODS

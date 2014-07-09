@@ -3,7 +3,6 @@
 class FitnessView extends ayla.BaseView
 
     wrapperId: "fitness"
-    socketsName: "fitnessmanager"
     elements: [".weight", ".fat", ".sleep"]
 
     # MAIN METHODS

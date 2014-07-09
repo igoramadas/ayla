@@ -3,7 +3,6 @@
 class UsersView extends ayla.BaseView
 
     wrapperId: "users"
-    socketsName: "usermanager"
 
     # MAIN METHODS
     # ----------------------------------------------------------------------
