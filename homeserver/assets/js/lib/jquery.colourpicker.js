@@ -1,4 +1,4 @@
-$.fn.colorPicker = function (conf) {
+$.fn.colourPicker = function (conf) {
 
     // Default colours to be used in case no data is specified.
     var defaultColours = [
@@ -17,7 +17,7 @@ $.fn.colorPicker = function (conf) {
         "#00FFFF", "#00FFAA", "#00FF55", "#00FF00",
         "#00AAFF", "#00AAAA", "#00AA55", "#00AA00",
         "#0055FF", "#0055AA", "#005555", "#005500",
-        "#0000FF", "#0000AA", "#000055"
+        "#0000FF", "#0000AA", "#000055", "#000000"
     ];
 
     // Default configuration.
@@ -39,20 +39,20 @@ $.fn.colorPicker = function (conf) {
     };
 
     var docBody = $(document.body);
-    var colorPicker = $("#" + config.id);
+    var colourPicker = $("#" + config.id);
 
-    // Add the colorPicker dialogue, if not added yet.
-    if (!colorPicker.length) {
-        colorPicker = $(document.createElement("div"));
-        colorPicker.attr("id", config.id);
-        colorPicker.appendTo(document.body).hide();
+    // Add the colourPicker dialogue, if not added yet.
+    if (!colourPicker.length) {
+        colourPicker = $(document.createElement("div"));
+        colourPicker.attr("id", config.id);
+        colourPicker.appendTo(document.body).hide();
 
-        // Remove the colorPicker if you click outside.
+        // Remove the colourPicker if you click outside.
         docBody.on("click", function(e) {
             var target = $(e.target);
             if (!(target.is("#" + config.id) || target.parents("#" + config.id).length)) {
                 if (!target.hasClass("colourpicker")) {
-                    colorPicker.hide();
+                    colourPicker.hide();
                 }
             }
         });
@@ -63,7 +63,6 @@ $.fn.colorPicker = function (conf) {
         var source = $(this);
         var dataColours = source.data("colours");
         var colours = config.colours;
-        var list = "";
 
         // If source is already set up then stop there.
         if (source.hasClass("colourpicker")) {
@@ -78,30 +77,46 @@ $.fn.colorPicker = function (conf) {
             colours = dataColours;
         }
 
-        // Iterate colours to create list options.
-        for (var c = 0; c < colours.length; c++) {
-            list += '<li><a rel="' + colours[c] + '" style="background: ' + colours[c] + '">' + colours[c] + '</a></li>';
-        }
-
         // When you click the field, show the color picker.
         source.on("click", function() {
+            var val = source.val();
             var pos	= source.offset();
-            colorPicker.empty();
+            var ul = $(document.createElement("ul"));
+            var li, a;
 
-            colorPicker.html("<ul>" + list + "</ul>").css({
+            // Clear colour picker box.
+            colourPicker.empty();
+
+            // Iterate colours to create list options.
+            for (var c = 0; c < colours.length; c++) {
+                li = $(document.createElement("li"));
+                a = $(document.createElement("a"));
+                a.attr("rel", colours[c]).css("background", colours[c]).html(colours[c]);
+
+                if (val == colours[c]) {
+                    a.addClass("selected");
+                }
+
+                li.append(a);
+                ul.append(li);
+            }
+
+            // Append colours to HTML.
+            colourPicker.append(ul).css({
                 left: (pos.left + source.outerWidth()) + "px",
                 top: pos.top + "px"
             }).show();
 
-            // When you click a colour in the color picker...
-            $("a", colorPicker).off("click");
+            // Unbind previous click events.
+            $("a", colourPicker).off("click");
 
-            $("a", colorPicker).on("click", function () {
+            // When you click a colour in the color picker...
+            $("a", colourPicker).on("click", function () {
                 var hex = $(this).attr("rel");
                 source.val(hex);
                 source.css({background: hex, color: hexInvert(hex)});
                 source.change();
-                colorPicker.hide();
+                colourPicker.hide();
 
                 return false;
             });
