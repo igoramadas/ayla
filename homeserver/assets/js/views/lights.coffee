@@ -22,6 +22,12 @@ class LightsView extends ayla.BaseView
 
         ayla.sockets.emit "lightsmanager.hue.toggle", {lightId: lightId, on: onOrOff}
 
+    # Toggle Ninja lights (these are actually power sockets).
+    ninjaLightToggle: (light, e) =>
+        lightId = light.id
+
+        ayla.sockets.emit "lightsmanager.ninja.toggle", {lightId: lightId}
+
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------

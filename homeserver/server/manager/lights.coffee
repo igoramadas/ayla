@@ -28,6 +28,7 @@ class LightsManager extends (require "./basemanager.coffee")
         events.on "ninja.data.rf433", @onNinjaDevices
 
         sockets.listenTo "lightsmanager.hue.toggle", @onClientHueToggle
+        sockets.listenTo "lightsmanager.ninja.toggle", @onClientHNinjaToggle
 
         @baseStart()
 
@@ -37,6 +38,7 @@ class LightsManager extends (require "./basemanager.coffee")
         events.off "ninja.data.rf433", @onNinjaDevices
 
         sockets.stopListening "lightsmanager.hue.toggle", @onClientHueToggle
+        sockets.stopListening "lightsmanager.ninja.toggle", @onClientHNinjaToggle
 
         @baseStop()
 
@@ -84,7 +86,6 @@ class LightsManager extends (require "./basemanager.coffee")
 
         events.emit "hue.setlightstate", {lightId: light.lightId}, {on: light.on}
 
-
     # NINJA
     # -------------------------------------------------------------------------
 
@@ -100,6 +101,12 @@ class LightsManager extends (require "./basemanager.coffee")
         # Emit updated ninja lights and save log.
         @dataUpdated "ninja"
         logger.info "LightsManager.onNinjaDevices", @data.ninja
+
+    # When a toggle ON/OFF is received from the client for a Ninja power socket.
+    onClientNinjaToggle: (light) =>
+        logger.info "LightsManager.onClientNinjaToggle", light
+
+        events.emit "ninja.actuate433", {id: light.lightId}
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------
