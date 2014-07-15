@@ -179,7 +179,6 @@ class Hue extends (require "./baseapi.coffee")
 
         @refreshHub()
 
-
 # Singleton implementation.
 # -----------------------------------------------------------------------------
 Hue.getInstance = ->

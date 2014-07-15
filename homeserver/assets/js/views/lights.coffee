@@ -28,7 +28,6 @@ class LightsView extends ayla.BaseView
 
         ayla.sockets.emit "lightsmanager.ninja.toggle", {lightId: lightId}
 
-
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
 window.ayla.currentView = new LightsView()

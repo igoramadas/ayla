@@ -55,7 +55,6 @@ class BaseManager extends (require "../basemodule.coffee")
         else
             logger.debug "#{@moduleName}.emitData", property, "Data is null or not defined. Do not emit."
 
-
 # Exports API Base Module.
 # -----------------------------------------------------------------------------
 module.exports = exports = BaseManager
