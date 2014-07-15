@@ -45,7 +45,8 @@ class LightsManager extends (require "./basemanager.coffee")
     # HUE
     # -------------------------------------------------------------------------
 
-    getLightData = (lightId, light) ->
+    # Helper to return a Hue light object.
+    createHueLight = (lightId, light) ->
         hex = utils.hslToHex light.state.xy[0], light.state.xy[1], light.state.bri
         state = {on: light.state.on, color: hex}
         return {id: lightId, name: light.name, state: state}
@@ -66,13 +67,13 @@ class LightsManager extends (require "./basemanager.coffee")
 
             # Iterate group lights.
             for lightId in group.lights
-                groupData.lights.push getLightData lightId, data.lights[lightId]
+                groupData.lights.push createHueLight lightId, data.lights[lightId]
                 lightsWithGroups.push lightId.toString()
 
         # Add lights with no groups to the "Other" group.
         for lightId, light of data.lights
             if not lodash.contains lightsWithGroups, lightId.toString()
-                otherLights.push getLightData lightId, light
+                otherLights.push createHueLight lightId, light
 
         @data.hue.push {id: "other", room: "Other", lights: otherLights}
 
