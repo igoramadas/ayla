@@ -29,6 +29,7 @@ class LightsManager extends (require "./basemanager.coffee")
         events.on "ninja.data.rf433", @onNinjaDevices
 
         sockets.listenTo "lightsmanager.hue.toggle", @onClientHueToggle
+        sockets.listenTo "lightsmanager.ninja.toggle", @onClientHNinjaToggle
 
         @baseStart()
 
@@ -39,12 +40,19 @@ class LightsManager extends (require "./basemanager.coffee")
         events.off "ninja.data.rf433", @onNinjaDevices
 
         sockets.stopListening "lightsmanager.hue.toggle", @onClientHueToggle
+        sockets.stopListening "lightsmanager.ninja.toggle", @onClientHNinjaToggle
 
         @baseStop()
 
     # HUE
     # -------------------------------------------------------------------------
 
+    # Helper to return a Hue light object.
+    createHueLight = (lightId, light) ->
+        hex = utils.hslToHex light.state.xy[0], light.state.xy[1], light.state.bri
+        state = {on: light.state.on, color: hex}
+        return {id: lightId, name: light.name, state: state}
+        
     # Helper to get the HEX colour from Hue lights.
     xyBriToHex = (x, y, bri) ->
         z = 1.0 - x - y
@@ -76,6 +84,11 @@ class LightsManager extends (require "./basemanager.coffee")
     # Update hue lights and groups.
     onHueHub: (data) =>
         @data.hue = {lights: [], groups: []}
+
+        # This will hold a list of all lights that have groups associated
+        # and lights with no groups go to otherLights.
+        lightsWithGroups = []
+        otherLights = []
 
         # Iterate groups.
         for groupId, group of data.groups
@@ -111,6 +124,7 @@ class LightsManager extends (require "./basemanager.coffee")
     # When a toggle ON/OFF is received from the client.
     onClientHueToggle: (light) =>
         logger.info "LightsManager.onClientHueToggle", light
+
         events.emit "hue.setlightstate", {lightId: light.lightId}, {on: light.on}
 
     # NINJA

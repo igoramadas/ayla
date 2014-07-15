@@ -30,4 +30,4 @@ block contents
                     div.lightlist(data-bind="foreach: ninja")
                         div.clearfix
                             span(data-bind="text: name")
-                            button.button.tiny.right Actuate
+                            button.button.tiny.right(data-bind="click: ayla.currentView.ninjaLightToggle") Actuate
