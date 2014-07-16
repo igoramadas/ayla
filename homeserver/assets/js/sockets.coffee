@@ -33,7 +33,6 @@ class Sockets
     emit: (event, data) ->
         conn.emit event, data
 
-
 # BIND SOCKETS TO WINDOW.
 # --------------------------------------------------------------------------
 window.ayla.sockets = new Sockets()

@@ -134,7 +134,6 @@ class Ninja extends (require "./baseapi.coffee")
         for s in sockets
             @ninjaApi.device(@data.rf433.device.guid).actuate s.data
 
-
 # Singleton implementation.
 # -----------------------------------------------------------------------------
 Ninja.getInstance = ->
