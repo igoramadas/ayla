@@ -1,7 +1,7 @@
 # NETATMO API
 # -----------------------------------------------------------------------------
 # Collect weather and climate data from Netatmo devices. Supports indoor and
-# outdoor modules, and device list is fetched via the getDevices method.
+# outdoor modules, rain gauge, and device list is fetched via the getDevices method.
 # More info at http://dev.netatmo.com
 class Netatmo extends (require "./baseapi.coffee")
 
@@ -48,16 +48,16 @@ class Netatmo extends (require "./baseapi.coffee")
 
         # Iterate result body and create the formatted object.
         for key, value of result.body
-            f = {timestamp: key}
+            body = {timestamp: key}
             i = 0
 
             # Iterate each type to set formatted value.
             for t in types
-                f[t.toLowerCase()] = value[i]
+                body[t.toLowerCase()] = value[i] if value[i]?
                 i++
 
             # Push to the final array.
-            arr.push f
+            arr.push body
 
         # Return formatted array.
         return arr
@@ -136,7 +136,7 @@ class Netatmo extends (require "./baseapi.coffee")
 
         # Set outdoor parameters.
         params = @getParams filter
-        params["type"] = "Temperature,Humidity"
+        params["type"] = "Temperature,Humidity,Rain"
 
         # Module ID is mandatory!
         if not params["module_id"]?
@@ -154,15 +154,17 @@ class Netatmo extends (require "./baseapi.coffee")
 
             callback err, result if lodash.isFunction callback
 
-    # Get current conditions for all outdoor modules (module type NAModule1).
+    # Get current conditions for all outdoor modules (module type NAModule1 and NAModule3 for rain gauge).
     getAllOutdoor: =>
         if not @data.devices?
             logger.warn "Netatmo.getAllOutdoor", "No devices found, please check the Netamo API settings."
             return
 
-        # Iterate and get data for all outdoor modules.
+        # Iterate and get data for all outdoor and rain gauge modules.
         for d in @data.devices[0].value
             modules = lodash.filter d.modules, {type: "NAModule1"}
+            @getOutdoor {device_id: d["_id"], module_id: m["_id"]} for m in modules
+            modules = lodash.filter d.modules, {type: "NAModule3"}
             @getOutdoor {device_id: d["_id"], module_id: m["_id"]} for m in modules
 
     # INDOOR WEATHER DATA
@@ -200,7 +202,6 @@ class Netatmo extends (require "./baseapi.coffee")
             @getIndoor {device_id: d["_id"]}
             modules = lodash.filter d.modules, {type: "NAModule4"}
             @getIndoor {device_id: d["_id"], module_id: m["_id"]} for m in modules
-
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------
