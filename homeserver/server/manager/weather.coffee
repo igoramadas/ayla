@@ -27,6 +27,7 @@ class WeatherManager extends (require "./basemanager.coffee")
         outdoor = {}
         outdoor.temperature = @getWeatherAverage "outdoor", "temperature"
         outdoor.humidity = @getWeatherAverage "outdoor", "humidity"
+        outdoor.rain = @getWeatherAverage "outdoor", "rain"
 
         return {indoor: indoor, outdoor: outdoor}
 
@@ -215,6 +216,8 @@ class WeatherManager extends (require "./basemanager.coffee")
         outdoor.temperature = parseFloat(outdoor.temperature).toFixed 1 if outdoor.temperature?
         outdoor.humidity = lastData.humidity or lastData.relative_humidity or null
         outdoor.humidity = parseFloat(outdoor.humidity).toFixed 1 if outdoor.humidity?
+        outdoor.rain = lastData.rain or 0
+        outdoor.rain = parseFloat(outdoor.rain).toFixed 1
 
         # Emit updated outdoor conditions to clients and log.
         @dataUpdated "outdoor"
