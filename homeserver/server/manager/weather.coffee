@@ -203,7 +203,7 @@ class WeatherManager extends (require "./basemanager.coffee")
         outdoor.humidity = lastData.humidity or lastData.relative_humidity or outdoor.humidity
         outdoor.humidity = parseFloat(outdoor.humidity).toFixed 1 if outdoor.humidity?
         outdoor.rain = lastData.rain or outdoor.rain
-        outdoor.rain = parseFloat(outdoor.rain).toFixed 1
+        outdoor.rain = parseFloat(outdoor.rain).toFixed 1 if outdoor.rain?
 
         # Emit updated outdoor conditions to clients and log.
         @dataUpdated "outdoor"
@@ -367,7 +367,6 @@ class WeatherManager extends (require "./basemanager.coffee")
     # Helper to return outdoor weather.
     getOutdoorObject = (title) =>
         return {outdoor: true, title: title, timestamp: 0, condition: "Unknown", temperature: null, humidity: null, pressure: null}
-
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

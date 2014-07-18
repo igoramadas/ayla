@@ -49,8 +49,8 @@ class UsersManager extends (require "./basemanager.coffee")
         logger.debug "UsersManager.onNetworkRouter"
 
         for username, userdata of settings.users
-            online = lodash.find data.wifi24g, {macaddr: userdata.mac}
-            online = lodash.find data.wifi5g, {macaddr: userdata.mac} if not online?
+            online = lodash.find data.wifi24g, {macaddr: userdata.computerMac}
+            online = lodash.find data.wifi5g, {macaddr: userdata.computerMac} if not online?
             online = online?
 
             # Status updated?

@@ -2,4 +2,23 @@ extends layout
 
 block contents
     #users
-        h1 Users
+        ul.maingrid.large-block-grid-2
+
+            li.userlist
+                div
+                    h2 Users
+                    table
+                        thead
+                            tr
+                                th.name Name
+                                th.email Email
+                                th.online Home now?
+                        tbody(data-bind="foreach: users")
+                            tr.room(data-bind="css: $root[id]().conditionCss, with: $root[id]")
+                                td.title(data-bind="text: name")
+                                td.email(data-bind="text: email")
+                                td.online(data-bind="text: online")
+
+            li
+                div
+                    h2 Info

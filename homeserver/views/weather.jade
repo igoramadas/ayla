@@ -2,8 +2,6 @@ extends layout
 
 block contents
     #weather
-        script#room-template(type="text/html")
-
         ul.maingrid.large-block-grid-3
 
             li.inside
@@ -34,6 +32,7 @@ block contents
                     div.summary
                         span.temperature(data-bind="text: outdoor().temperature ? outdoor().temperature + '°C' : '-'")
                         span.humidity(data-bind="text: outdoor().humidity ? outdoor().humidity + '%' : '-'")
+                        span.rain(data-bind="text: outdoor().rain ? outdoor().rain + 'mm' : '0mm'")
                         div.icon(data-bind="css: conditions().icon")
 
                     table
