@@ -49,8 +49,7 @@ class WeatherManager extends (require "./basemanager.coffee")
             logger.warn "WeatherManager.start", "No rooms were defined on the settings. Indoor weather won't be monitored."
         else
             for room in settings.home.rooms
-                if not @data[room.id]?
-                    @data[room.id] = getRoomObject room.title, room.weatherSource
+                @data[room.id] = getRoomObject room if not @data[room.id]?
 
             events.on "electricimp.data", @onElectricImp
             events.on "netatmo.data.indoor", @onNetatmoIndoor
@@ -159,23 +158,13 @@ class WeatherManager extends (require "./basemanager.coffee")
         return if not roomObj?
 
         # No room found? Abort here.
-        if not roomObj?
-            logger.warn "WeatherManager.setRoomWeather", source, room, "Room not properly set, check settings.home.rooms and make sure they have an ID set."
+        if not roomObj?.id?
+            logger.warn "WeatherManager.setRoomWeather", source, "Room not properly set, check settings.home.rooms and make sure they have an ID set."
             return
 
         # Make sure data is taken out of the array and newer than current available data.
-        if lodash.isArray data
-            for d in data
-                if d.timestamp > roomObj.timestamp
-                    lastData = d
-
-            lastData = data[0] if not lastData?
-        else if data.timestamp > roomObj.timestamp
-            lastData = data
-
-        lastData = data if not lastData?
-
-        # Cancel here if data is not up-to-date.
+        # Stop here if data is not up-to-date.
+        lastData = @compareGetLastData data, roomObj
         return if not lastData?
 
         # Update room data or set to null (otherwise it's undefined, not good for Knockout.js) and round values.
@@ -202,21 +191,18 @@ class WeatherManager extends (require "./basemanager.coffee")
     setOutdoorWeather: (data) =>
         return if not data?
 
-        if lodash.isArray data
-            for d in data
-                if d.timestamp > @data.outdoor.timestamp
-                    lastData = d
-        else if data.timestamp > @data.outdoor.timestamp
-            lastData = data
+        # Make sure data is taken out of the array and newer than current available data.
+        # Stop here if data is not up-to-date.
+        lastData = @compareGetLastData data, @data.outdoor
+        return if not lastData?
 
-        lastData = data if not lastData?
+        # Updated outdoor data.
         outdoor = @data.outdoor
-
-        outdoor.temperature = lastData.temperature or lastData.temp_c or null
+        outdoor.temperature = lastData.temperature or lastData.temp_c or outdoor.temperature
         outdoor.temperature = parseFloat(outdoor.temperature).toFixed 1 if outdoor.temperature?
-        outdoor.humidity = lastData.humidity or lastData.relative_humidity or null
+        outdoor.humidity = lastData.humidity or lastData.relative_humidity or outdoor.humidity
         outdoor.humidity = parseFloat(outdoor.humidity).toFixed 1 if outdoor.humidity?
-        outdoor.rain = lastData.rain or 0
+        outdoor.rain = lastData.rain or outdoor.rain
         outdoor.rain = parseFloat(outdoor.rain).toFixed 1
 
         # Emit updated outdoor conditions to clients and log.
@@ -373,8 +359,10 @@ class WeatherManager extends (require "./basemanager.coffee")
         return result
 
     # Helper to return room object with weather, title etc.
-    getRoomObject = (title, source) =>
-        return {indoor: true, title: title, weatherSource: source, timestamp: 0, condition: "Unknown", temperature: null, humidity: null, pressure: null, co2: null, light: null}
+    getRoomObject = (room) =>
+        obj = lodash.clone room
+        obj = lodash.assign obj, {timestamp: 0, condition: "Unknown", temperature: null, humidity: null, pressure: null, co2: null, light: null}
+        return obj
 
     # Helper to return outdoor weather.
     getOutdoorObject = (title) =>

@@ -124,7 +124,6 @@ class Wunderground extends (require "./baseapi.coffee")
 
             callback err, result if lodash.isFunction callback
 
-
 # Singleton implementation.
 # -----------------------------------------------------------------------------
 Wunderground.getInstance = ->
