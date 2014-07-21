@@ -64,13 +64,16 @@
     },
     // Home settings.
     "home": {
+        // Auto control lights based on user's presence?
         "autoControlLights": true,
         // The ideal conditions are arrays of values [criticallyLow, low, high, criticallyHigh].
         "idealConditions": {
             "co2": [0, 400, 1200, 2800],
             "humidity": [25, 35, 55, 65],
             "temperature": [15, 18, 24, 27]
-        }
+        },
+        // Default timeout to turn off ventilator if it has been turned on automatically, in minutes.
+        "ventilatorTimeout": 60
     },
     // Default settings for IMAP connections. Try connecting to accounts up to 3 times in a row,
     // with a delay of 90 seconds between retries.

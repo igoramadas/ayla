@@ -87,7 +87,7 @@ class Commander
             cResult.push result
 
         # Turn on TV coloured light. Will actuate RF having "TV" and "On" on the short name.
-        tvLightFilter = (d) -> return d.shortName.indexOf("TV") >= 0 and d.shortName.indexOf("On") >= 0
+        tvLightFilter = (d) -> return d.shortName.indexOf("On") >= 0 and d.shortName.indexOf("TV") >= 0
         ninjaApi.actuate433 tvLightFilter, (err, result) =>
             cError.push err if err?
             cResult.push result

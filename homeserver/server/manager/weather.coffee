@@ -89,6 +89,7 @@ class WeatherManager extends (require "./basemanager.coffee")
                 notifyOptions.critical = true
                 notifyOptions.subject = "#{room.title} too warm"
                 notifyOptions.message = "It's #{room.temperature}C right now, fans will turn on automatically."
+                @switchVentilator room.ventilatorSource, true, settings.home.ventilatorTimeout if room.ventilatorSource?
             else if room.temperature > settings.home.idealConditions.temperature[2]
                 conditions.push "A bit warm"
                 notifyOptions.subject =  "#{room.title} is warm"
@@ -101,7 +102,7 @@ class WeatherManager extends (require "./basemanager.coffee")
                 conditions.push "Too cold"
                 notifyOptions.critical = true
                 notifyOptions.subject =  "#{room.title} too cold"
-                notifyOptions.message = "It's #{room.temperature}C right now, heating will turn on automatically."
+                notifyOptions.message = "It's #{room.temperature}C right now, please turn on the heating ASAP."
 
         # Check humidity.
         if room.humidity?
@@ -308,7 +309,29 @@ class WeatherManager extends (require "./basemanager.coffee")
     onWundergroundForecast: (data) =>
         @setWeatherForecast data
 
-    # GENERAL HELPERS
+    # WEATHER MAINTENANCE
+    # -------------------------------------------------------------------------
+
+    # Turn the specified ventilator ON or OFF. Supports ninja blocks, using the
+    # format {ninja: {on: "433_ID_ON", off: "433_ID_OFF"}}
+    switchVentilator: (source, onOrOff, timeoutMinutes) =>
+        return if not source?.ninja?
+
+        logger.info "WeatherManager.switchVentilator", source, onOrOff, timeoutMinutes
+
+        # Actuate correct Ninja device depending if on or off.
+        if onOrOff
+            ninja.actuate433 {id: source.ninja.on}
+        else
+            ninja.actuate433 {id: source.ninja.off}
+
+        # Turn off automatically after timeout, if specified.
+        # Convert timeout to milliseconds.
+        if timeoutMinutes? and timeoutMinutes > 0 and onOrOff
+            timeoutMinutes = timeoutMinutes * 60000
+            lodash.delay ninja.actuate433, timeout, {id: source.ninja.off}
+
+    # GENERAL GET HELPERS
     # -------------------------------------------------------------------------
 
     # Helper to get weather average readings.
