@@ -56,7 +56,7 @@
     },
     // Home settings.
     "home": {
-        // Auto control lights based on user's presence?
+        // Auto control lights based on environment and user presence?
         "autoControlLights": true,
         // The ideal conditions are arrays of values [criticallyLow, low, high, criticallyHigh].
         "idealConditions": {
