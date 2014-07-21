@@ -100,6 +100,12 @@ class Ubi extends (require "./baseapi.coffee")
 
             callback err, result if lodash.isFunction callback
 
+    # SEND DATA
+    # ------------------------------------------------------------------------
+
+    # Passes a phrase to be spoken by the Ubi.
+    speak: (filter, callback) =>
+        logger.debug "Ubi.speak", filter
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

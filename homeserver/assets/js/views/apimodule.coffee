@@ -17,9 +17,9 @@ class ApiView extends ayla.BaseView
 
             for data in arr
                 filter = $ document.createElement "label"
-                filter.html JSON.stringify data.filter
+                filter.addClass("filter label").html JSON.stringify data.filter
                 timestamp = $ document.createElement "label"
-                timestamp.html moment.unix(data.timestamp).format "lll"
+                timestamp.addClass("timestamp label secondary").html moment.unix(data.timestamp).format "lll"
                 details = $ document.createElement "div"
                 details.JSONView JSON.stringify(data.value)
 

@@ -27,6 +27,7 @@ class WeatherManager extends (require "./basemanager.coffee")
         outdoor = {}
         outdoor.temperature = @getWeatherAverage "outdoor", "temperature"
         outdoor.humidity = @getWeatherAverage "outdoor", "humidity"
+        outdoor.rain = @getWeatherAverage "outdoor", "rain"
 
         return {indoor: indoor, outdoor: outdoor}
 
@@ -48,8 +49,7 @@ class WeatherManager extends (require "./basemanager.coffee")
             logger.warn "WeatherManager.start", "No rooms were defined on the settings. Indoor weather won't be monitored."
         else
             for room in settings.home.rooms
-                if not @data[room.id]?
-                    @data[room.id] = getRoomObject room.title, room.weatherSource
+                @data[room.id] = getRoomObject room if not @data[room.id]?
 
             events.on "electricimp.data", @onElectricImp
             events.on "netatmo.data.indoor", @onNetatmoIndoor
@@ -88,11 +88,12 @@ class WeatherManager extends (require "./basemanager.coffee")
                 room.condition = "Too warm"
                 notifyOptions.critical = true
                 notifyOptions.subject = "#{room.title} too warm"
-                notifyOptions.message = "It's #{room.temperature}C right now, fans will turn on automatically."
+                notifyOptions.message = "It's #{room.temperature}C right now, ventilator will turn on automatically."
+                @switchVentilator room.ventilatorSource, true, settings.home.ventilatorTimeout
             else if room.temperature > settings.home.idealConditions.temperature[2]
                 conditions.push "A bit warm"
                 notifyOptions.subject =  "#{room.title} is warm"
-                notifyOptions.message = "It's #{room.temperature}C right now, please turn in the fans."
+                notifyOptions.message = "It's #{room.temperature}C right now, please turn on the ventilator."
             else if room.temperature < settings.home.idealConditions.temperature[1]
                 conditions.push "A bit cold"
                 notifyOptions.subject =  "#{room.title} is cold"
@@ -101,7 +102,7 @@ class WeatherManager extends (require "./basemanager.coffee")
                 conditions.push "Too cold"
                 notifyOptions.critical = true
                 notifyOptions.subject =  "#{room.title} too cold"
-                notifyOptions.message = "It's #{room.temperature}C right now, heating will turn on automatically."
+                notifyOptions.message = "It's #{room.temperature}C right now, please turn on the heating ASAP."
 
         # Check humidity.
         if room.humidity?
@@ -109,7 +110,8 @@ class WeatherManager extends (require "./basemanager.coffee")
                 conditions.push "Too humid"
                 notifyOptions.critical = true
                 notifyOptions.subject = "#{room.title} too humid"
-                notifyOptions.message = "It's #{room.humidity}% right now, please open the windows immediately."
+                notifyOptions.message = "It's #{room.humidity}% right now, ventilator will turn on automatically."
+                @switchVentilator room.ventilatorSource, true, settings.home.ventilatorTimeout
             else if room.humidity > settings.home.idealConditions.humidity[2]
                 conditions.push "A bit humid"
                 notifyOptions.subject =  "#{room.title} a bit humid"
@@ -117,7 +119,7 @@ class WeatherManager extends (require "./basemanager.coffee")
             else if room.humidity < settings.home.idealConditions.humidity[1]
                 conditions.push "A bit dry"
                 notifyOptions.subject =  "#{room.title} a bit dry"
-                notifyOptions.message = "It's #{room.humidity}% right now, please turn on the air humidifier."
+                notifyOptions.message = "It's #{room.humidity}% right now, please use the boiler to humidify the air."
             else if room.humidity < settings.home.idealConditions.humidity[0]
                 conditions.push "Too dry"
                 notifyOptions.critical = true
@@ -126,12 +128,12 @@ class WeatherManager extends (require "./basemanager.coffee")
 
         # Check CO2.
         if room.co2?
-            if room.co2 > settings.home.idealConditions.co2[23]
+            if room.co2 > settings.home.idealConditions.co2[3]
                 conditions.push "CO2 too high"
                 notifyOptions.critical = true
                 notifyOptions.subject = "#{room.title} CO2 is too high"
                 notifyOptions.message =  "With #{room.co2} ppm right now, please open the windows immediately."
-            else if room.co2 > settings.home.idealConditions.co2[23]
+            else if room.co2 > settings.home.idealConditions.co2[2]
                 conditions.push "CO2 high"
                 notifyOptions.subject = "#{room.title} CO2 is high"
                 notifyOptions.message =  "With #{room.co2} ppm right now, please open the windows."
@@ -158,23 +160,13 @@ class WeatherManager extends (require "./basemanager.coffee")
         return if not roomObj?
 
         # No room found? Abort here.
-        if not roomObj?
-            logger.warn "WeatherManager.setRoomWeather", source, room, "Room not properly set, check settings.home.rooms and make sure they have an ID set."
+        if not roomObj?.id?
+            logger.warn "WeatherManager.setRoomWeather", source, "Room not properly set, check settings.home.rooms and make sure they have an ID set."
             return
 
         # Make sure data is taken out of the array and newer than current available data.
-        if lodash.isArray data
-            for d in data
-                if d.timestamp > roomObj.timestamp
-                    lastData = d
-
-            lastData = data[0] if not lastData?
-        else if data.timestamp > roomObj.timestamp
-            lastData = data
-
-        lastData = data if not lastData?
-
-        # Cancel here if data is not up-to-date.
+        # Stop here if data is not up-to-date.
+        lastData = @compareGetLastData data, roomObj
         return if not lastData?
 
         # Update room data or set to null (otherwise it's undefined, not good for Knockout.js) and round values.
@@ -201,20 +193,19 @@ class WeatherManager extends (require "./basemanager.coffee")
     setOutdoorWeather: (data) =>
         return if not data?
 
-        if lodash.isArray data
-            for d in data
-                if d.timestamp > @data.outdoor.timestamp
-                    lastData = d
-        else if data.timestamp > @data.outdoor.timestamp
-            lastData = data
+        # Make sure data is taken out of the array and newer than current available data.
+        # Stop here if data is not up-to-date.
+        lastData = @compareGetLastData data, @data.outdoor
+        return if not lastData?
 
-        lastData = data if not lastData?
+        # Updated outdoor data.
         outdoor = @data.outdoor
-
-        outdoor.temperature = lastData.temperature or lastData.temp_c or null
+        outdoor.temperature = lastData.temperature or lastData.temp_c or outdoor.temperature
         outdoor.temperature = parseFloat(outdoor.temperature).toFixed 1 if outdoor.temperature?
-        outdoor.humidity = lastData.humidity or lastData.relative_humidity or null
+        outdoor.humidity = lastData.humidity or lastData.relative_humidity or outdoor.humidity
         outdoor.humidity = parseFloat(outdoor.humidity).toFixed 1 if outdoor.humidity?
+        outdoor.rain = lastData.rain or outdoor.rain
+        outdoor.rain = parseFloat(outdoor.rain).toFixed 1 if outdoor.rain?
 
         # Emit updated outdoor conditions to clients and log.
         @dataUpdated "outdoor"
@@ -319,7 +310,29 @@ class WeatherManager extends (require "./basemanager.coffee")
     onWundergroundForecast: (data) =>
         @setWeatherForecast data
 
-    # GENERAL HELPERS
+    # WEATHER MAINTENANCE
+    # -------------------------------------------------------------------------
+
+    # Turn the specified ventilator ON or OFF. Supports ninja blocks, using the
+    # format {ninja: {on: "433_ID_ON", off: "433_ID_OFF"}}
+    switchVentilator: (source, onOrOff, timeoutMinutes) =>
+        return if not source?.ninja?
+
+        logger.info "WeatherManager.switchVentilator", source, onOrOff, timeoutMinutes
+
+        # Actuate correct Ninja device depending if on or off.
+        if onOrOff
+            ninja.actuate433 {id: source.ninja.on}
+        else
+            ninja.actuate433 {id: source.ninja.off}
+
+        # Turn off automatically after timeout, if specified.
+        # Convert timeout to milliseconds.
+        if timeoutMinutes? and timeoutMinutes > 0 and onOrOff
+            timeoutMinutes = timeoutMinutes * 60000
+            lodash.delay ninja.actuate433, timeout, {id: source.ninja.off}
+
+    # GENERAL GET HELPERS
     # -------------------------------------------------------------------------
 
     # Helper to get weather average readings.
@@ -370,13 +383,14 @@ class WeatherManager extends (require "./basemanager.coffee")
         return result
 
     # Helper to return room object with weather, title etc.
-    getRoomObject = (title, source) =>
-        return {indoor: true, title: title, weatherSource: source, timestamp: 0, condition: "Unknown", temperature: null, humidity: null, pressure: null, co2: null, light: null}
+    getRoomObject = (room) =>
+        obj = lodash.clone room
+        obj = lodash.assign obj, {timestamp: 0, condition: "Unknown", temperature: null, humidity: null, pressure: null, co2: null, light: null}
+        return obj
 
     # Helper to return outdoor weather.
     getOutdoorObject = (title) =>
         return {outdoor: true, title: title, timestamp: 0, condition: "Unknown", temperature: null, humidity: null, pressure: null}
-
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

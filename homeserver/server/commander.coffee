@@ -1,6 +1,8 @@
 # SERVER: COMMANDER
 # -----------------------------------------------------------------------------
 # Handles commands to the server (sent by email, SMS, twitter etc).
+# The commands and phrases are defined on the commands.json file
+# located on the root folder.
 class Commander
 
     expresser = require "expresser"
@@ -13,6 +15,18 @@ class Commander
     lodash = expresser.libs.lodash
     networkApi = require "./api/network.coffee"
     ninjaApi = require "./api/ninja.coffee"
+
+    commands: null
+
+    # INIT
+    # -------------------------------------------------------------------------
+
+    # Init the commander.
+    init: =>
+        try
+            @commands = require "../commands.json"
+        catch ex
+            logger.error "Commander.init", ex.message, ex.stack
 
     # PARSE AND EXECUTE
     # -------------------------------------------------------------------------
@@ -27,7 +41,7 @@ class Commander
             return @[cmd] options, callback
 
         # Otherwise iterate all command triggers till it finds a matching one.
-        for key, value of settings.commands
+        for key, value of @commands
             for c in value
                 if cmd.indexOf(c) >= 0
                     try
@@ -87,7 +101,7 @@ class Commander
             cResult.push result
 
         # Turn on TV coloured light. Will actuate RF having "TV" and "On" on the short name.
-        tvLightFilter = (d) -> return d.shortName.indexOf("TV") >= 0 and d.shortName.indexOf("On") >= 0
+        tvLightFilter = (d) -> return d.shortName.indexOf("On") >= 0 and d.shortName.indexOf("TV") >= 0
         ninjaApi.actuate433 tvLightFilter, (err, result) =>
             cError.push err if err?
             cResult.push result

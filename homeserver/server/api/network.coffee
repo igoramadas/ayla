@@ -285,7 +285,7 @@ class Network extends (require "./baseapi.coffee")
 
         # Iterate users and get bluetooth mach addresses.
         for username, user of settings.users
-            macs.push {user: username, mac: user.bluetooth} if user.bluetooth?
+            macs.push {user: username, mac: user.bluetoothMac} if user.bluetoothMac?
 
         # Iterate and create tasks for each passed mac address.
         for d in macs

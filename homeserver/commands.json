@@ -1,0 +1,18 @@
+{
+    "movieMode": [
+        "movie mode",
+        "movie time",
+        "start movie",
+        "watch movie"
+    ],
+    "turnLightsOff": [
+        "turn lights off",
+        "all lights off",
+        "darkness please"
+    ],
+    "turnLightsOn": [
+        "turn lights on",
+        "all lights on",
+        "there be light"
+    ]
+}

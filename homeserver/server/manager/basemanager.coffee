@@ -12,6 +12,26 @@ class BaseManager extends (require "../basemodule.coffee")
     lodash = expresser.libs.lodash
     moment = expresser.libs.moment
 
+    # HELPERS
+    # -------------------------------------------------------------------------
+
+    # Make sure the data received contains updated information by checking its timestamp.
+    compareGetLastData: (newData, currentData) =>
+        lastData = {timestamp: 0}
+
+        if lodash.isArray newData
+            for d in newData
+                if d.timestamp >= currentData.timestamp and d.timestamp >= lastData.timestamp
+                    lastData = d
+        else if newData.timestamp >= currentData.timestamp
+            lastData = newData
+
+        # Return null if no current data was found.
+        if lastData.timestamp < 1
+            return null
+        else
+            return lastData
+
     # NOTIFICATIONS
     # -------------------------------------------------------------------------
 

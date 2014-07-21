@@ -52,7 +52,7 @@ class LightsManager extends (require "./basemanager.coffee")
         hex = utils.hslToHex light.state.xy[0], light.state.xy[1], light.state.bri
         state = {on: light.state.on, color: hex}
         return {id: lightId, name: light.name, state: state}
-        
+
     # Helper to get the HEX colour from Hue lights.
     xyBriToHex = (x, y, bri) ->
         z = 1.0 - x - y
@@ -85,11 +85,6 @@ class LightsManager extends (require "./basemanager.coffee")
     onHueHub: (data) =>
         @data.hue = {lights: [], groups: []}
 
-        # This will hold a list of all lights that have groups associated
-        # and lights with no groups go to otherLights.
-        lightsWithGroups = []
-        otherLights = []
-
         # Iterate groups.
         for groupId, group of data.groups
             groupData = {id: groupId, room: group.name, lights: group.lights}
@@ -107,6 +102,8 @@ class LightsManager extends (require "./basemanager.coffee")
 
     # When Hue light state changes, propagate to clients.
     onHueLightState: (filter, state) =>
+        logger.debug "LightsManager.onClientHueToggle", filter, state
+
         if filter.lightId?
             if lodash.isArray filter.lightId
                 arr = filter.lightId
@@ -123,7 +120,7 @@ class LightsManager extends (require "./basemanager.coffee")
 
     # When a toggle ON/OFF is received from the client.
     onClientHueToggle: (light) =>
-        logger.info "LightsManager.onClientHueToggle", light
+        logger.debug "LightsManager.onClientHueToggle", light
 
         events.emit "hue.setlightstate", {lightId: light.lightId}, {on: light.on}
 
@@ -133,6 +130,8 @@ class LightsManager extends (require "./basemanager.coffee")
     # Update list of light actuators from Ninja Blocks, by getting all RF433 devices
     # that have "light" on their name.
     onNinjaDevices: (data) =>
+        logger.debug "LightsManager.onNinjaDevices", data
+
         @data.ninja = []
 
         for id, device of data.device.subDevices
