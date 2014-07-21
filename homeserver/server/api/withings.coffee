@@ -26,7 +26,7 @@ class Withings extends (require "./baseapi.coffee")
                 @logError "Withings.start", err
             else
                 @baseStart()
-                @oauth.client.setClientOptions {requestTokenHttpMethod: "GET", accessTokenHttpMethod: "GET"}
+                @oauth.client?.setClientOptions {requestTokenHttpMethod: "GET", accessTokenHttpMethod: "GET"}
 
                 if settings.modules.getDataOnStart and result.length > 0
                     @getBodyMeasures()

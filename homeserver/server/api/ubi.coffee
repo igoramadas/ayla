@@ -12,6 +12,7 @@ class Ubi extends (require "./baseapi.coffee")
     async = expresser.libs.async
     lodash = expresser.libs.lodash
     moment = expresser.libs.moment
+    querystring = require "querystring"
 
     # INIT
     # -------------------------------------------------------------------------
@@ -30,6 +31,7 @@ class Ubi extends (require "./baseapi.coffee")
 
                 if settings.modules.getDataOnStart and result.length > 0
                     @getDevices()
+                    @getSensorData {id: "9d9f8a852bf079e"}
 
     # Stop collecting data from The Ubi.
     stop: =>
@@ -56,14 +58,15 @@ class Ubi extends (require "./baseapi.coffee")
             return
 
         # Set request URL and parameters.
+        params = {} if not params?
+        params.access_token = @oauth.data.accessToken
         reqUrl = settings.ubi.api.url + path
         reqUrl = reqUrl + "/#{action}" if action?
-        reqUrl = reqUrl + "?" + querystring.stringify params if params?
+        reqUrl = reqUrl + "?" + querystring.stringify params
 
         # Make request using OAuth.
-        @makeRequest reqUrl, (err, result) =>
-            console.warn "NOT IMPLEMENTED"
-
+        console.warn reqUrl
+        @makeRequest reqUrl, {parseJson: true}, (err, result) =>
             callback err, result
 
     # GET DATA
@@ -75,8 +78,8 @@ class Ubi extends (require "./baseapi.coffee")
             if err?
                 @logError "Ubi.getDevices", err
             else
-                @setData "devices", result.data
-                logger.info "Ubi.getDevices", result.data
+                @setData "devices", result.result.data
+                logger.info "Ubi.getDevices", result.result.data
 
             callback err, result if lodash.isFunction callback
 
@@ -89,13 +92,14 @@ class Ubi extends (require "./baseapi.coffee")
             filter = @getJobArgs filter
 
         # Properly parse the filter.
-        filter = {} if not filter?
+        deviceId = filter.id
 
-        @apiRequest deviceId, "sense", (err, result, resp) =>
+        @apiRequest deviceId, "sense", {sensor_type: "temperature"}, (err, result) =>
+            console.warn result
             if err?
                 logger.error "Ubi.getSensorData", filter, err
             else
-                @setData "sensors", result, filter
+                @setData deviceId, result, filter
                 logger.info "Ubi.getSensorData", filter, result
 
             callback err, result if lodash.isFunction callback

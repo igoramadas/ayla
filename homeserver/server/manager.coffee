@@ -9,7 +9,7 @@ class Manager
     logger = expresser.logger
     settings = expresser.settings
 
-    commander = require "commander"
+    commander = require "./commander.coffee"
     fs = require "fs"
     jsonPath = require "./jsonpath.coffee"
     lodash = expresser.libs.lodash
@@ -42,7 +42,6 @@ class Manager
 
         # Proceed with callback?
         callback() if callback?
-
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

@@ -36,14 +36,22 @@ class OAuth
             else
                 logger.debug "OAuth.loadTokens", result
 
+                @client = getClient @service
+
                 # Iterate results to create OAuth clients for all users.
                 for t in result
-                    @client = getClient @service
                     @data = t
 
                     # Needs refresh?
                     @refresh() if t.expires? and moment().unix() > t.expires
 
+                # If no tokes are found, check if it was specified on the settings.
+                if result.length < 1 and settings[@service].api.accessToken?
+                    @data.accessToken = settings[@service].api.accessToken
+                    @data.refreshToken = settings[@service].api.refreshToken
+                    result =[{accessToken: settings[@service].api.accessToken}]
+
+                # Pass data back to caller.
                 if callback?
                     callback null, result
 
