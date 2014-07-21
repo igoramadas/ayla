@@ -39,8 +39,6 @@ class ApiView extends ayla.BaseView
             @dom["tabs"].append title
             @dom["tabs-content"].append container
 
-
-
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
 window.ayla.currentView = new ApiView()
