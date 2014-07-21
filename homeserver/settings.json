@@ -21,14 +21,6 @@
         "dateFormat": "YYYYMMDD-HHmmss",
         "snapsMaxAgeDays": 7
     },
-    // These are the default commands that can be sent via text or voice.
-    // The command codes are defined on the /server/commander.coffee file.
-    "commands": {
-        "notifyNetworkDevicesDown": ["which servers are down", "are servers down"],
-        "movieMode": ["movie mode", "movie time", "start movie"],
-        "turnLightsOff": ["turn lights off", "all lights off"],
-        "turnLightsOn": ["turn lights on", "all lights on"]
-    },
     // Connect to local MongoDB and delete cached API data after 24 hours by default.
     "database": {
         "connString": "mongodb://localhost/ayla",
@@ -70,7 +62,7 @@
         "idealConditions": {
             "co2": [0, 400, 1200, 2800],
             "humidity": [25, 35, 55, 65],
-            "temperature": [15, 18, 24, 27]
+            "temperature": [16, 18, 24, 26]
         },
         // Default timeout to turn off ventilator if it has been turned on automatically, in minutes.
         "ventilatorTimeout": 60

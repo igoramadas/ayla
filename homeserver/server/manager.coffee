@@ -9,6 +9,7 @@ class Manager
     logger = expresser.logger
     settings = expresser.settings
 
+    commander = require "commander"
     fs = require "fs"
     jsonPath = require "./jsonpath.coffee"
     lodash = expresser.libs.lodash
@@ -24,6 +25,9 @@ class Manager
     init: (callback) =>
         rootPath = path.join __dirname, "../"
         managerPath = rootPath + "server/manager/"
+
+        # Init the commander.
+        commander.init()
 
         # Init modules.
         files = fs.readdirSync managerPath

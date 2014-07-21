@@ -88,12 +88,12 @@ class WeatherManager extends (require "./basemanager.coffee")
                 room.condition = "Too warm"
                 notifyOptions.critical = true
                 notifyOptions.subject = "#{room.title} too warm"
-                notifyOptions.message = "It's #{room.temperature}C right now, fans will turn on automatically."
-                @switchVentilator room.ventilatorSource, true, settings.home.ventilatorTimeout if room.ventilatorSource?
+                notifyOptions.message = "It's #{room.temperature}C right now, ventilator will turn on automatically."
+                @switchVentilator room.ventilatorSource, true, settings.home.ventilatorTimeout
             else if room.temperature > settings.home.idealConditions.temperature[2]
                 conditions.push "A bit warm"
                 notifyOptions.subject =  "#{room.title} is warm"
-                notifyOptions.message = "It's #{room.temperature}C right now, please turn in the fans."
+                notifyOptions.message = "It's #{room.temperature}C right now, please turn on the ventilator."
             else if room.temperature < settings.home.idealConditions.temperature[1]
                 conditions.push "A bit cold"
                 notifyOptions.subject =  "#{room.title} is cold"
@@ -110,7 +110,8 @@ class WeatherManager extends (require "./basemanager.coffee")
                 conditions.push "Too humid"
                 notifyOptions.critical = true
                 notifyOptions.subject = "#{room.title} too humid"
-                notifyOptions.message = "It's #{room.humidity}% right now, please open the windows immediately."
+                notifyOptions.message = "It's #{room.humidity}% right now, ventilator will turn on automatically."
+                @switchVentilator room.ventilatorSource, true, settings.home.ventilatorTimeout
             else if room.humidity > settings.home.idealConditions.humidity[2]
                 conditions.push "A bit humid"
                 notifyOptions.subject =  "#{room.title} a bit humid"
@@ -118,7 +119,7 @@ class WeatherManager extends (require "./basemanager.coffee")
             else if room.humidity < settings.home.idealConditions.humidity[1]
                 conditions.push "A bit dry"
                 notifyOptions.subject =  "#{room.title} a bit dry"
-                notifyOptions.message = "It's #{room.humidity}% right now, please turn on the air humidifier."
+                notifyOptions.message = "It's #{room.humidity}% right now, please use the boiler to humidify the air."
             else if room.humidity < settings.home.idealConditions.humidity[0]
                 conditions.push "Too dry"
                 notifyOptions.critical = true
@@ -127,12 +128,12 @@ class WeatherManager extends (require "./basemanager.coffee")
 
         # Check CO2.
         if room.co2?
-            if room.co2 > settings.home.idealConditions.co2[23]
+            if room.co2 > settings.home.idealConditions.co2[3]
                 conditions.push "CO2 too high"
                 notifyOptions.critical = true
                 notifyOptions.subject = "#{room.title} CO2 is too high"
                 notifyOptions.message =  "With #{room.co2} ppm right now, please open the windows immediately."
-            else if room.co2 > settings.home.idealConditions.co2[23]
+            else if room.co2 > settings.home.idealConditions.co2[2]
                 conditions.push "CO2 high"
                 notifyOptions.subject = "#{room.title} CO2 is high"
                 notifyOptions.message =  "With #{room.co2} ppm right now, please open the windows."
