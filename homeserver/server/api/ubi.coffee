@@ -91,18 +91,26 @@ class Ubi extends (require "./baseapi.coffee")
         else
             filter = @getJobArgs filter
 
-        # Properly parse the filter.
-        deviceId = filter.id
+        # If device ID was passed then use it, otherwise get for all devices.
+        if filter.id?
+            deviceIds = [id]
+        else
+            deviceIds = lodash.pluck @data.devices, "id"
 
-        @apiRequest deviceId, "sense", {sensor_type: "temperature"}, (err, result) =>
-            console.warn result
-            if err?
-                logger.error "Ubi.getSensorData", filter, err
-            else
-                @setData deviceId, result, filter
-                logger.info "Ubi.getSensorData", filter, result
+        # Get sensor data for all or specified device.
+        for id in deviceIds
+            (id) =>
+                params = {sensor_type: "temperature"}
 
-            callback err, result if lodash.isFunction callback
+                # Get data for the current device.
+                @apiRequest deviceId, "sense", params, (err, result) =>
+                    if err?
+                        logger.error "Ubi.getSensorData", filter, err
+                    else
+                        @setData deviceId, result, filter
+                        logger.info "Ubi.getSensorData", filter, result
+
+                    callback err, result if lodash.isFunction callback
 
     # SEND DATA
     # ------------------------------------------------------------------------

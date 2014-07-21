@@ -168,7 +168,6 @@ class Fitbit extends (require "./baseapi.coffee")
 
             callback err, results if callback?
 
-
 # Singleton implementation.
 # -----------------------------------------------------------------------------
 Fitbit.getInstance = ->

@@ -102,7 +102,6 @@ class Withings extends (require "./baseapi.coffee")
 
             callback err, result if lodash.isFunction callback
 
-
 # Singleton implementation.
 # -----------------------------------------------------------------------------
 Withings.getInstance = ->

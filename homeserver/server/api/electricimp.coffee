@@ -70,7 +70,6 @@ class ElectricImp extends (require "./baseapi.coffee")
                         @setData result.id, result
                         logger.info "ElectricImp.getDeviceData", id, result
 
-
 # Singleton implementation.
 # -----------------------------------------------------------------------------
 ElectricImp.getInstance = ->

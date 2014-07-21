@@ -1,9 +1,9 @@
-# SOUNDCLOUD API
+# STRAVA API
 # NOT READY YET!!!
 # -----------------------------------------------------------------------------
-# Module to connect to tracks and profiles on SoundCloud.
-# More info at www.soundcloud.com.
-class SoundCloud extends (require "./baseapi.coffee")
+# Module to connect to Strava.
+# More info at www.strava.com.
+class Strava extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
     events = expresser.events
@@ -17,30 +17,29 @@ class SoundCloud extends (require "./baseapi.coffee")
     # INIT
     # -------------------------------------------------------------------------
 
-    # Init the SoundCloud module.
+    # Init the Strava module.
     init: =>
         @baseInit()
 
-    # Start collecting data from SoundCloud.
+    # Start collecting data from Strava.
     start: =>
         @baseStart()
 
-    # Stop collecting data from SoundCloud.
+    # Stop collecting data from Strava.
     stop: =>
         @baseStop()
 
     # GET DEVICE DATA
     # ------------------------------------------------------------------------
 
-    # Gets the list of the user's favorite tracks from SoundCloud.
-    getFavorites: (callback) =>
+    # Gets the list of the user's favorite tracks from Strava.
+    getProfile: (callback) =>
         console.warn "NOT IMPLEMENTED"
-
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------
-SoundCloud.getInstance = ->
-    @instance = new SoundCloud() if not @instance?
+Strava.getInstance = ->
+    @instance = new Strava() if not @instance?
     return @instance
 
-module.exports = exports = SoundCloud.getInstance()
+module.exports = exports = Strava.getInstance()
