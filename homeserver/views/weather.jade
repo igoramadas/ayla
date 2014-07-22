@@ -49,13 +49,13 @@ block contents
                                 td.icon(data-bind="css: icon")
                                 td.temperature(data-bind="text: temperature ? temperature + '°C' : '-'")
                                 td.humidity(data-bind="text: humidity ? humidity + '%' : '-'")
-                                td.wind(data-bind="text: wind ? wind : '-'")
+                                td.wind(data-bind="text: windSpeed > 0 ? wind : '0kph'")
                             // ko foreach: forecast
                             tr
                                 td.date(data-bind="text: dateString")
                                 td.icon(data-bind="css: icon")
-                                td.min(data-bind="text: lowTemp + '/' + highTemp + '°C'")
-                                td.humidity(data-bind="text: minHumidity + ' - ' + maxHumidity + '%'")
+                                td.min(data-bind="text: highTemp + ' / ' + lowTemp + '°C'")
+                                td.humidity(data-bind="text: avgHumidity + '%'")
                                 td.wind(data-bind="text: avgWind")
                             // /ko
 

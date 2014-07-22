@@ -231,6 +231,7 @@ class WeatherManager extends (require "./basemanager.coffee")
         @data.conditions.humidity = data.value.humidity or data.value.relative_humidity or null
         @data.conditions.pressure = data.value.pressure or data.value.pressure_mb or null
         @data.conditions.wind = data.value.wind or "#{data.value.wind_dir} #{data.value.wind_kph}kph"
+        @data.conditions.windSpeed = data.value.wind_kph or 0
 
         # Remove strings from data.
         @data.conditions.humidity = @data.conditions.humidity.replace("%", "") if @data.conditions.humidity?
@@ -252,6 +253,7 @@ class WeatherManager extends (require "./basemanager.coffee")
             a.lowTemp = d.low.celsius
             a.avgWind = d.avewind.dir + " " + d.avewind.kph + "kph"
             a.maxWind = d.maxwind.dir + " " + d.maxwind.kph + "kph"
+            a.avgHumidity = d.avehumidity
             a.maxHumidity = d.maxhumidity
             a.minHumidity = d.minhumidity
             a.icon = @getWeatherIcon d.icon
@@ -303,7 +305,7 @@ class WeatherManager extends (require "./basemanager.coffee")
 
     # Check sensor data from Ubi.
     onUbiSensors: (data, filter) =>
-        @setRoomWeather {"ubi": data.device_id}, data
+        @setRoomWeather {"ubi": data.value.device_id}, data
 
     # Check astronomy for today using Weather Underground.
     onWundergroundAstronomy: (data) =>
