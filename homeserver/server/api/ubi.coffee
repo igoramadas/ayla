@@ -21,7 +21,7 @@ class Ubi extends (require "./baseapi.coffee")
     init: =>
         @baseInit()
 
-    # Start collecting data from The Ubi.
+    # Start collecting data from the Ubi.
     start: =>
         @oauthInit (err, result) =>
             if err?
@@ -30,17 +30,16 @@ class Ubi extends (require "./baseapi.coffee")
                 @baseStart()
 
                 if settings.modules.getDataOnStart and result.length > 0
-                    @getDevices()
-                    @getSensorData {id: "9d9f8a852bf079e"}
+                    @getDevices => @getSensorData()
 
-    # Stop collecting data from The Ubi.
+    # Stop collecting data from the Ubi.
     stop: =>
         @baseStop()
 
     # API BASE METHODS
     # -------------------------------------------------------------------------
 
-    # Authentication helper for The Ubi.
+    # Authentication helper for the Ubi.
     auth: (req, res) =>
         security.processAuthToken "ubi", req, res
 
@@ -92,18 +91,15 @@ class Ubi extends (require "./baseapi.coffee")
             filter = @getJobArgs filter
 
         # If device ID was passed then use it, otherwise get for all devices.
-        if filter.id?
-            deviceIds = [id]
+        if filter?.id?
+            deviceIds = [filter.id]
         else
             deviceIds = lodash.pluck @data.devices, "id"
 
         # Get sensor data for all or specified device.
         for id in deviceIds
             (id) =>
-                params = {sensor_type: "temperature"}
-
-                # Get data for the current device.
-                @apiRequest deviceId, "sense", params, (err, result) =>
+                @apiRequest id, "sense", params, (err, result) =>
                     if err?
                         logger.error "Ubi.getSensorData", filter, err
                     else
@@ -117,7 +113,32 @@ class Ubi extends (require "./baseapi.coffee")
 
     # Passes a phrase to be spoken by the Ubi.
     speak: (filter, callback) =>
-        logger.debug "Ubi.speak", filter
+        filter = @getJobArgs filter
+
+        # The phrase is mandatory.
+        if not filter.phrase? or filter.phrase is ""
+            errorMsg = "The filter.phrase is missing or empty, phrase parameter is mandatory."
+            logger.warn "Ubi.speak", filter, errorMsg
+            callback errorMsg, null if lodash.isFunction callback
+            return
+
+        # If device ID was passed then use it, otherwise get for all devices.
+        if filter?.id?
+            deviceIds = [filter.id]
+        else
+            deviceIds = lodash.pluck @data.devices, "id"
+
+        # Get sensor data for all or specified device.
+        for id in deviceIds
+            (id) =>
+                @apiRequest id, "speak", {phrase: filter.phrase}, (err, result) =>
+                    if err?
+                        logger.error "Ubi.speak", filter, err
+                    else
+                        @setData "phrases", result, filter
+                        logger.info "Ubi.speak", filter, result
+
+                    callback err, result if lodash.isFunction callback
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------
