@@ -101,7 +101,7 @@ class Ninja extends (require "./baseapi.coffee")
 
         if guid?
             @setData "rf433", {guid: guid, device: devices[guid]}
-            logger.debug "Ninja.setRf433", "Detected #{lodash.size devices[guid].subDevices} subdevices."
+            logger.debug "Ninja.setRf433", "Detected #{lodash.size devices[guid].subDevices} RF433 devices."
 
     # RF 433 SOCKETS
     # -------------------------------------------------------------------------
@@ -116,16 +116,16 @@ class Ninja extends (require "./baseapi.coffee")
             callback "Ninja.actuate433", "RF 433 device not found." if callback?
             return
 
-        subdevices = @data.rf433.device.subDevices
+        subDevices = @data.rf433.device.subDevices
 
         # Get correct list of subdevices based on the provided filter.
         if lodash.isString filter or lodash.isNumber filter
-            if subdevices[filter]?
-                sockets = [subdevices[filter]]
+            if subDevices[filter]?
+                sockets = [subDevices[filter]]
             else
-                sockets = lodash.filter subdevices, {shortName: filter}
+                sockets = lodash.filter subDevices, {shortName: filter}
         else
-            sockets = lodash.filter subdevices, filter
+            sockets = lodash.filter subDevices, filter
 
         socketNames = lodash.pluck sockets, "shortName"
         logger.info "Ninja.actuate433", socketNames
