@@ -134,7 +134,7 @@ class LightsManager extends (require "./basemanager.coffee")
 
         @data.ninja = []
 
-        for id, device of data.device.subDevices
+        for id, device of data.value.device.subDevices
             if device.shortName.toLowerCase().indexOf("light") >= 0
                 @data.ninja.push {id: id, name: device.shortName, code: device.data}
 

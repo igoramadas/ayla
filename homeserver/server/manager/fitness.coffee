@@ -42,7 +42,7 @@ class FitnessManager extends (require "./basemanager.coffee")
     onWithingsBody: (data, filter) =>
         @data.bodymeasures = {timestamp: 0} if not @data.bodymeasures?
 
-        sorted = lodash.sortBy data.body.measuregrps, "date"
+        sorted = lodash.sortBy data.value.body.measuregrps, "date"
         newest = sorted.pop()
 
         # Check if data has more recent readings for body measures.

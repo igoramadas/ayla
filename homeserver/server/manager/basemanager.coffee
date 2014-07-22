@@ -18,16 +18,19 @@ class BaseManager extends (require "../basemodule.coffee")
     # Make sure the data received contains updated information by checking its timestamp.
     compareGetLastData: (newData, currentData) =>
         lastData = {timestamp: 0}
+        dataFound = false
 
-        if lodash.isArray newData
-            for d in newData
+        if lodash.isArray newData.value
+            for d in newData.value
                 if d.timestamp >= currentData.timestamp and d.timestamp >= lastData.timestamp
                     lastData = d
+                    dataFound = true
         else if newData.timestamp >= currentData.timestamp
-            lastData = newData
+            lastData = newData.value
+            dataFound = true
 
         # Return null if no current data was found.
-        if lastData.timestamp < 1
+        if not dataFound
             return null
         else
             return lastData

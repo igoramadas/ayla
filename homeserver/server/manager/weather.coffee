@@ -51,11 +51,11 @@ class WeatherManager extends (require "./basemanager.coffee")
             for room in settings.home.rooms
                 @data[room.id] = getRoomObject room if not @data[room.id]?
 
-            events.on "electricimp.data", @onElectricImp
-            events.on "netatmo.data.indoor", @onNetatmoIndoor
-            events.on "ninja.data.weather", @onNinjaWeather
-
+        events.on "electricimp.data", @onElectricImp
+        events.on "netatmo.data.indoor", @onNetatmoIndoor
+        events.on "ninja.data.weather", @onNinjaWeather
         events.on "netatmo.data.outdoor", @onNetatmoOutdoor
+        events.on "ubi.data.sensors", @onUbiSensors
         events.on "wunderground.data.astronomy", @onWundergroundAstronomy
         events.on "wunderground.data.conditions", @onWundergroundConditions
         events.on "wunderground.data.forecast", @onWundergroundForecast
@@ -68,6 +68,7 @@ class WeatherManager extends (require "./basemanager.coffee")
         events.off "netatmo.data.indoor", @onNetatmoIndoor
         events.off "netatmo.data.outdoor", @onNetatmoOutdoor
         events.off "ninja.data.weather", @onNinjaWeather
+        events.off "ubi.data.sensors", @onUbiSensors
         events.off "wunderground.data.astronomy", @onWundergroundAstronomy
         events.off "wunderground.data.conditions", @onWundergroundConditions
         events.off "wunderground.data.forecast", @onWundergroundForecast
@@ -85,7 +86,7 @@ class WeatherManager extends (require "./basemanager.coffee")
         # Check temperatures.
         if room.temperature?
             if room.temperature > settings.home.idealConditions.temperature[3]
-                room.condition = "Too warm"
+                conditions.push "Too warm"
                 notifyOptions.critical = true
                 notifyOptions.subject = "#{room.title} too warm"
                 notifyOptions.message = "It's #{room.temperature}C right now, ventilator will turn on automatically."
@@ -213,9 +214,9 @@ class WeatherManager extends (require "./basemanager.coffee")
 
     # Helper to set current astronomy details, like sunrise and moon phase.
     setAstronomy: (data) =>
-        @data.astronomy.sunrise = "#{data.sunrise.hour}:#{data.sunrise.minute}"
-        @data.astronomy.sunset = "#{data.sunset.hour}:#{data.sunset.minute}"
-        @data.astronomy.moon = data.phaseofMoon
+        @data.astronomy.sunrise = "#{data.value.sunrise.hour}:#{data.value.sunrise.minute}"
+        @data.astronomy.sunset = "#{data.value.sunset.hour}:#{data.value.sunset.minute}"
+        @data.astronomy.moon = data.value.phaseofMoon
 
         # Emit astronomy data and log.
         @dataUpdated "astronomy"
@@ -225,17 +226,17 @@ class WeatherManager extends (require "./basemanager.coffee")
     setWeatherConditions: (data) =>
         return if not data?
 
-        @data.conditions.condition = data.weather
-        @data.conditions.temperature = data.temperature or data.temp_c or null
-        @data.conditions.humidity = data.humidity or data.relative_humidity or null
-        @data.conditions.pressure = data.pressure or data.pressure_mb or null
-        @data.conditions.wind = data.wind or "#{data.wind_dir} #{data.wind_kph}kph"
+        @data.conditions.condition = data.value.weather
+        @data.conditions.temperature = data.value.temperature or data.value.temp_c or null
+        @data.conditions.humidity = data.value.humidity or data.value.relative_humidity or null
+        @data.conditions.pressure = data.value.pressure or data.value.pressure_mb or null
+        @data.conditions.wind = data.value.wind or "#{data.value.wind_dir} #{data.value.wind_kph}kph"
 
         # Remove strings from data.
         @data.conditions.humidity = @data.conditions.humidity.replace("%", "") if @data.conditions.humidity?
 
         # Set conditions icon.
-        @data.conditions.icon = @getWeatherIcon data.icon
+        @data.conditions.icon = @getWeatherIcon data.value.icon
 
         # Emit updated conditions to clients and log.
         @dataUpdated "conditions"
@@ -245,7 +246,7 @@ class WeatherManager extends (require "./basemanager.coffee")
     setWeatherForecast: (data) =>
         @data.forecast = []
 
-        for d in data.forecastday
+        for d in data.value.forecastday
             a = {date: moment.unix(d.date.epoch).format("L"), conditions: d.conditions}
             a.highTemp = d.high.celsius
             a.lowTemp = d.low.celsius
@@ -285,18 +286,24 @@ class WeatherManager extends (require "./basemanager.coffee")
     # Check indoor weather conditions using Ninja Blocks.
     onNinjaWeather: (data, filter) =>
         weather = {}
-        weather.temperature = data.temperature[0].value if data.temperature[0]?
-        weather.humidity = data.humidity[0].value if data.humidity[0]?
+        weather.temperature = data.value.temperature[0].value if data.value.temperature[0]?
+        weather.humidity = data.value.humidity[0].value if data.value.humidity[0]?
 
         if weather.temperature? or weather.humidity?
-            weather.timestamp = data.temperature[0].timestamp or data.humidity[0].timestamp
+            weather.timestamp = data.value.temperature[0].timestamp or data.value.humidity[0].timestamp
 
-        @setRoomWeather {"ninja": ""}, weather
+        # Update original data and set room weather.
+        data.value = weather
+        @setRoomWeather {"ninja": ""}, data
 
-    # Check indoor weather conditions using Electric Imp. We're bining to the global data event,
+    # Check indoor weather conditions using Electric Imp. We're binding to the global data event,
     # so a key is passed here as well.
     onElectricImp: (key, data, filter) =>
         @setRoomWeather {"electricimp": key}, data
+
+    # Check sensor data from Ubi.
+    onUbiSensors: (data, filter) =>
+        @setRoomWeather {"ubi": data.device_id}, data
 
     # Check astronomy for today using Weather Underground.
     onWundergroundAstronomy: (data) =>

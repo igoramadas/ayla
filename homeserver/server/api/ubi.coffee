@@ -14,6 +14,8 @@ class Ubi extends (require "./baseapi.coffee")
     moment = expresser.libs.moment
     querystring = require "querystring"
 
+    sensorTypes = ["temperature", "humidity", "airpressure", "light", "soundlevel"]
+
     # INIT
     # -------------------------------------------------------------------------
 
@@ -30,7 +32,7 @@ class Ubi extends (require "./baseapi.coffee")
                 @baseStart()
 
                 if settings.modules.getDataOnStart and result.length > 0
-                    @getDevices => @getSensorData()
+                    @getDevices (err, result) => @getSensorData() if not err?
 
     # Stop collecting data from the Ubi.
     stop: =>
@@ -65,7 +67,6 @@ class Ubi extends (require "./baseapi.coffee")
         reqUrl = reqUrl + "?" + querystring.stringify params
 
         # Make request using OAuth.
-        console.warn reqUrl
         @makeRequest reqUrl, {parseJson: true}, (err, result) =>
             callback err, result
 
@@ -95,22 +96,46 @@ class Ubi extends (require "./baseapi.coffee")
         if filter?.id?
             deviceIds = [filter.id]
         else
-            deviceIds = lodash.pluck @data.devices, "id"
+            deviceIds = lodash.pluck @data.devices[0].value, "id"
 
-        # Get sensor data for all or specified device.
+        tasks = []
+
+        # Get sensor data for all or specified device(s).
         for id in deviceIds
-            (id) =>
-                @apiRequest id, "sense", params, (err, result) =>
-                    if err?
-                        logger.error "Ubi.getSensorData", filter, err
-                    else
-                        @setData deviceId, result, filter
-                        logger.info "Ubi.getSensorData", filter, result
+            do (id) =>
 
-                    callback err, result if lodash.isFunction callback
+                # Each sensor must be fetched manually for now.
+                for sType in sensorTypes
+                    do (sType) =>
+                        tasks.push (cb) =>
+                            @apiRequest id, "sense", {sensor_type: sType}, (err, result) =>
 
-    # SEND DATA
-    # ------------------------------------------------------------------------
+                                # Add sensor type to result, if valid.
+                                if result?
+                                    result.device_id = id
+                                    result.sensor_type = sType
+                                cb err, result
+
+        # Sensor data will be fetched in parallel.
+        async.parallelLimit tasks, settings.general.parallelTasksLimit, (err, results) =>
+            if err?
+                logger.error "Ubi.getSensorData", filter, err
+            else
+                deviceData = {device_id: results[0]?.device_id}
+                filter = {device_id: results[0]?.device_id} if not filter?
+
+                # Merge result data.
+                for r in results
+                    deviceData[r.sensor_type] = r.result.data
+
+                # Save merged data.
+                @setData "sensors", deviceData, filter
+                logger.info "Ubi.getSensorData", filter, results
+
+            callback err, deviceData if lodash.isFunction callback
+
+    # SET AND SEND DEVICE DATA
+    # -------------------------------------------------------------------------
 
     # Passes a phrase to be spoken by the Ubi.
     speak: (filter, callback) =>
