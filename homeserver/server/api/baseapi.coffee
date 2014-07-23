@@ -115,13 +115,6 @@ class BaseApi extends (require "../basemodule.coffee")
         else
             return argsOrJob
 
-    # Helper to return a callback URL for the current API module.
-    getCallbackUrl: (urlPath) =>
-        baseUrl = settings.general.appUrl + @moduleId
-        atoken = settings.accessTokens[@moduleId]
-        return baseUrl  + "/" + urlPath + "?atoken=" + atoken
-
-
 # Exports API Base Module.
 # -----------------------------------------------------------------------------
 module.exports = exports = BaseApi

@@ -11,11 +11,9 @@ class Commander
     logger = expresser.logger
     settings = expresser.settings
 
-    hueApi = require "./api/hue.coffee"
     lodash = expresser.libs.lodash
-    networkApi = require "./api/network.coffee"
-    ninjaApi = require "./api/ninja.coffee"
 
+    # The commands list is loaded on init, from file commands.json.
     commands: null
 
     # INIT
@@ -85,24 +83,24 @@ class Commander
         if not tarantino?
             logger.warn "Commander.movieMode", "Media server (Tarantino) settings are not defined. Do not send WOL."
         else
-            networkApi.wol tarantino.mac, tarantino.ip, (err, result) =>
+            events.emit "network.wol", tarantino.mac, tarantino.ip, (err, result) =>
                 cError.push err if err?
                 cResult.push result
 
         # Turn off all Hue lights.
-        hueApi.switchAllLights false, (err, result) =>
+        events.emit "hue.switchgrouplights", false, (err, result) =>
             cError.push err if err?
             cResult.push result
 
         # Turn off all RF sockets (execute all commands with short name having "Off").
         lightsFilter = (d) -> return d.shortName.indexOf("Off") >= 0 and d.shortName.indexOf("TV") < 0
-        ninjaApi.actuate433 lightsFilter, (err, result) =>
+        events.emit "ninja.actuate433", lightsFilter, (err, result) =>
             cError.push err if err?
             cResult.push result
 
         # Turn on TV coloured light. Will actuate RF having "TV" and "On" on the short name.
         tvLightFilter = (d) -> return d.shortName.indexOf("On") >= 0 and d.shortName.indexOf("TV") >= 0
-        ninjaApi.actuate433 tvLightFilter, (err, result) =>
+        events.emit "ninja.actuate433", tvLightFilter, (err, result) =>
             cError.push err if err?
             cResult.push result
 
@@ -118,14 +116,14 @@ class Commander
     turnLightsOff: (options, callback) =>
         logger.info "Commander.turnLightsOff", options
 
-        hueApi.switchAllLights false, (err, result) =>
+        events.emit "hue.switchgrouplights", false, (err, result) =>
             callback err, result if callback?
 
     # Turn the specified house lights on.
     turnLightsOn: (options, callback) =>
         logger.info "Commander.turnLightsOn", options
 
-        hueApi.switchAllLights true, (err, result) =>
+        events.emit "hue.switchgrouplights", true, (err, result) =>
             callback err, result if callback?
 
 

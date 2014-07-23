@@ -26,6 +26,7 @@ class Hue extends (require "./baseapi.coffee")
     start: =>
         @baseStart()
 
+        events.on "hue.switchgrouplights", @switchGroupLights
         events.on "hue.setlightstate", @setLightState
 
         if settings.modules.getDataOnStart
@@ -35,6 +36,7 @@ class Hue extends (require "./baseapi.coffee")
     stop: =>
         @baseStop()
 
+        events.off "hue.switchgrouplights", @switchGroupLights
         events.off "hue.setlightstate", @setLightState
 
     # API BASE METHODS
@@ -155,14 +157,18 @@ class Hue extends (require "./baseapi.coffee")
 
             callback err, results if callback?
 
-    # Turn all lights on (true) or off (false).
-    switchAllLights: (turnOn, callback) =>
-        logger.debug "Hue.switchAllLights", turnOn
-        @setLightState {groupId: 0}, {on: turnOn}, callback
-
-    # Turn group lights on (true) or off (false).
+    # Turn group lights on (true) or off (false). If no ID is passed or ID is 0, switch all lights.
     switchGroupLights: (id, turnOn, callback) =>
         logger.debug "Hue.switchGroupLights", turnOn
+
+        if not turnOn?
+            turnOn = id
+        else if lodash.isFunction turnOn
+            callback = turnOn
+
+        if not id? or lodash.isBoolean id
+            id = 0
+
         @setLightState {groupId: id}, {on: turnOn}, callback
 
     # Turn the specified light on (true) or off (false).

@@ -52,6 +52,8 @@ class Network extends (require "./baseapi.coffee")
 
     # Start monitoring the network.
     start: =>
+        events.on "network.wol", @wol
+
         @serverInfo = utils.getServerInfo()
         @serverInfo.platform = @serverInfo.platform.toLowerCase()
 
@@ -69,6 +71,8 @@ class Network extends (require "./baseapi.coffee")
 
     # Stop monitoring the network.
     stop: =>
+        events.off "network.wol", @wol
+
         if settings.network.autoDiscovery
             @mdnsBrowser.off "serviceUp", @onServiceUp
             @mdnsBrowser.off "serviceDown", @onServiceDown

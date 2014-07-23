@@ -109,10 +109,20 @@ class OAuth
 
     # Helper to the an OAuth client for a particular service.
     getClient = (service) ->
-        callbackUrl = settings.general.appUrl + service + "/auth/callback"
         headers = {"Accept": "*/*", "Connection": "close", "User-Agent": "Ayla OAuth Client"}
         version = settings[service].api.oauthVersion
 
+        # Callback URL is set to localhost in case debug is true.
+        if not settings.general.debug
+            callbackUrl = settings.general.appUrl
+        else if settings.app.ssl.enabled
+            callbackUrl = "https://localhost:#{settings.app.port}/"
+        else
+            callbackUrl = "http://localhost:#{settings.app.port}/"
+
+        callbackUrl += service + "/auth/callback"
+
+        # Create OAuth 2.0 or 1.0 client depending on parameters.
         if version is "2.0"
             obj = new oauthModule.OAuth2(
                 settings[service].api.clientId,

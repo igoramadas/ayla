@@ -1,4 +1,4 @@
-# SERVER: USER MANAGER
+# SERVER: USERS MANAGER
 # -----------------------------------------------------------------------------
 # Handles user presence and personal actions.
 class UsersManager extends (require "./basemanager.coffee")
@@ -9,7 +9,6 @@ class UsersManager extends (require "./basemanager.coffee")
     mailer = expresser.mailer
     settings = expresser.settings
 
-    hueApi = require "../api/hue.coffee"
     lodash = expresser.libs.lodash
     moment = expresser.libs.moment
     weatherManager = require "./weather.coffee"
@@ -105,7 +104,7 @@ class UsersManager extends (require "./basemanager.coffee")
                 # Is it dark now? Turn lights on!
                 if currentHour < sunrise or currentHour > sunset
                     logger.info "UsersManager.onUserStatus", "Auto turned lights ON, #{userStatus.user} arrived."
-                    hueApi.switchAllLights true
+                    events.emit "hue.switchgrouplights", true
 
         # Otherwise proceed wich checking if everyone's offline.
         else
@@ -113,11 +112,10 @@ class UsersManager extends (require "./basemanager.coffee")
             for u of @data.users
                 everyoneOffline = false if u.online
 
-            # Everyone offline? Switch lights off after 60 seconds.
+            # Everyone offline? Switch lights off after a few minutes.
             if everyoneOffline
                 logger.info "UsersManager.onUserStatus", "Everyone is offline, auto turn lights OFF soon."
-                @timers["lightsoff"] = lodash.delay hueApi.switchAllLights, 30000, false
-
+                @timers["lightsoff"] = lodash.delay events.emit, lightsTimeout * 60000, "hue.switchgrouplights", false
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------
