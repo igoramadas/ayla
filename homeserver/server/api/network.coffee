@@ -52,6 +52,8 @@ class Network extends (require "./baseapi.coffee")
 
     # Start monitoring the network.
     start: =>
+        events.on "network.probebluetooth", @probeBluetooth
+        events.on "network.probebluetoothusers", @probeBluetoothUsers
         events.on "network.wol", @wol
 
         @serverInfo = utils.getServerInfo()
@@ -71,6 +73,8 @@ class Network extends (require "./baseapi.coffee")
 
     # Stop monitoring the network.
     stop: =>
+        events.off "network.probebluetooth", @probeBluetooth
+        events.off "network.probebluetoothusers", @probeBluetoothUsers
         events.off "network.wol", @wol
 
         if settings.network.autoDiscovery

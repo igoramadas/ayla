@@ -12,9 +12,9 @@ block contents
                             tr
                                 th.name Name
                                 th.email Email
-                                th.online Home now?
+                                th.online Home
                         tbody(data-bind="foreach: users")
-                            tr.room(data-bind="css: $root[id]().conditionCss, with: $root[id]")
+                            tr.user(data-bind="with: $root[username]")
                                 td.title(data-bind="text: name")
                                 td.email(data-bind="text: email")
                                 td.online(data-bind="text: online")

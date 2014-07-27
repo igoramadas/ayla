@@ -20,13 +20,19 @@ class UsersManager extends (require "./basemanager.coffee")
 
     # Init the user manager.
     init: =>
-        @baseInit {users: {}}
+        @baseInit {users: []}
 
     # Start the user manager and listen to data updates / events.
     start: =>
+        @data.users = []
+
         for username, userdata of settings.users
-            if not @data.users[username]?
-                @data.users[username] = {online: false}
+            @data.users.push userdata
+
+            if not @data[username]?
+                @data[username] = userdata
+                @data[username].username = username
+                @data[username].online = false
 
         events.on "network.data.router", @onNetworkRouter
         events.on "network.data.bluetoothUsers", @onBluetoothUsers
@@ -53,16 +59,16 @@ class UsersManager extends (require "./basemanager.coffee")
             online = online?
 
             # Status updated?
-            @onUserStatus {user: username, online: online} if online isnt @data.users[d.user].online
-            @data.users[username].online = online
+            @onUserStatus {user: username, online: online} if online isnt @data[d.user].online
+            @data[username].online = online
 
     # When user bluetooth devices are queried, check who's online (at home).
     onBluetoothUsers: (data) =>
         logger.debug "UsersManager.onBluetoothUsers"
 
         for d in data
-            @onUserStatus {user: d.user, online: d.online} if d.online isnt @data.users[d.user].online
-            @data.users[d.user].online = d.online
+            @onUserStatus {user: d.user, online: d.online} if d.online isnt @data[d.user].online
+            @data[d.user].online = d.online
 
     # Update user status (online or offline) and automatically turn off lights
     # when there's no one home for a few minutes. Please note that nothing will
@@ -92,7 +98,7 @@ class UsersManager extends (require "./basemanager.coffee")
 
             # Check if anyone is already home.
             anyoneOnline = false
-            for u of @data.users
+            for u of @data
                 anyoneOnline = true if u.online
 
             # If first person online, get current time, sunrise and sunset hours.
@@ -109,7 +115,7 @@ class UsersManager extends (require "./basemanager.coffee")
         # Otherwise proceed wich checking if everyone's offline.
         else
             everyoneOffline = true
-            for u of @data.users
+            for u of @data
                 everyoneOffline = false if u.online
 
             # Everyone offline? Switch lights off after a few minutes.
