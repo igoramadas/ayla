@@ -66,7 +66,7 @@ class UsersManager extends (require "./basemanager.coffee")
     onBluetoothUsers: (data) =>
         logger.debug "UsersManager.onBluetoothUsers"
 
-        for d in data
+        for d in data.value
             @onUserStatus {user: d.user, online: d.online} if d.online isnt @data[d.user].online
             @data[d.user].online = d.online
 

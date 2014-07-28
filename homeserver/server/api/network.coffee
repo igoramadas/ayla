@@ -263,6 +263,7 @@ class Network extends (require "./baseapi.coffee")
 
                     # First line is the "Scanning..." string.
                     lines.shift()
+                    logger.info "Network.probeBluetooth", lines
 
                     # Iterate and trim device details.
                     for d in lines
@@ -312,11 +313,14 @@ class Network extends (require "./baseapi.coffee")
                                 @logError "Network.probeBluetoothUsers", err
                             else if stderr
                                 @logError "Network.probeBluetoothUsers", stderr
-                            else if stdout? and stdout isnt ""
-                                d.deviceName = stdout.trim()
-                                d.online = true
                             else
-                                d.online = false
+                                if stdout? and stdout isnt ""
+                                    d.deviceName = stdout.trim()
+                                    d.online = true
+                                else
+                                    d.online = false
+                                logger.info "Network.probeBluetoothUsers", d
+
                             cb null, d
                     catch ex
                         cb ex
