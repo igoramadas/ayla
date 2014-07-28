@@ -22,7 +22,7 @@ namespace Ayla.App
 
         private void Page_OnLoaded(object sender, RoutedEventArgs e)
         {
-            Forecastio.GetCurrent();
+            WeatherService.GetCurrent();
         }
     }
 }
