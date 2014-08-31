@@ -146,12 +146,12 @@
     // Ubi settings. API clientId and secret must be set on the private settings file.
     "ubi": {
         "api": {
-            "url": "http://api.theubi.com/v2/ubi/",
+            "url": "http://portal.theubi.com/v2/ubi/",
             "oauthPathAuthorize": "oauth/authorize",
             "oauthPathToken": "oauth/token",
             "oauthPassRedirect": true,
             "oauthResponseType": "code",
-            "oauthUrl": "http://api.theubi.com/",
+            "oauthUrl": "http://portal.theubi.com/",
             "oauthVersion": "2.0"
         }
     },

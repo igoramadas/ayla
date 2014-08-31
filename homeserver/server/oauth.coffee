@@ -214,7 +214,7 @@ class OAuth
             lodash.delay @refresh, expires * 900
 
             # Save oauth details to DB and redirect user to service page.
-            oauthData = {accessToken: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add("s", expires).unix()}
+            oauthData = {accessToken: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add(expires, "s").unix()}
             @saveToken oauthData
             res?.redirect "/#{@service}"
 
@@ -282,7 +282,7 @@ class OAuth
             oauth_refresh_token = @data.refreshToken if not oauth_refresh_token? or oauth_refresh_token is ""
 
             # Save oauth details to DB and redirect user to service page.
-            oauthData = {accessToken: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add("s", expires).unix()}
+            oauthData = {accessToken: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add(expires, "s").unix()}
             @saveToken oauthData
 
 

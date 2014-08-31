@@ -261,7 +261,7 @@ class WeatherManager extends (require "./basemanager.coffee")
             # Set the friendly date string.
             if a.date is moment().format("L")
                 a.dateString = "Today"
-            else if a.date is moment().add("d", 1).format("L")
+            else if a.date is moment().add(1, "d").format("L")
                 a.dateString = "Tomorrow"
             else
                 a.dateString = a.date

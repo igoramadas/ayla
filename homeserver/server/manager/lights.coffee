@@ -86,12 +86,12 @@ class LightsManager extends (require "./basemanager.coffee")
         @data.hue = {lights: [], groups: []}
 
         # Iterate groups.
-        for groupId, group of data.groups
+        for groupId, group of data.value.groups
             groupData = {id: groupId, room: group.name, lights: group.lights}
             @data.hue.groups.push groupData
 
         # Iterate lights.
-        for lightId, light of data.lights
+        for lightId, light of data.value.lights
             light.state.hex = xyBriToHex light.state.xy[0], light.state.xy[1], light.state.bri
             lightData = {id: lightId, name: light.name, state: light.state}
             @data.hue.lights.push lightData
