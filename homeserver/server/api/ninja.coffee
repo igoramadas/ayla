@@ -75,7 +75,7 @@ class Ninja extends (require "./baseapi.coffee")
     # from the Ninja block. Consider the data as "current" if it was taken
     # less than 2 hours ago.
     setCurrentWeather: (devices) =>
-        maxAge = moment().subtract("h", 2).unix()
+        maxAge = moment().subtract(2, "h").unix()
 
         # Filter temperature and humidity devices.
         tempDevices = lodash.filter devices, {device_type: "temperature"}

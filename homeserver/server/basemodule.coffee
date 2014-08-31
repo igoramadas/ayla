@@ -136,7 +136,7 @@ class BaseModule
 
     # Helper to clear old errors.
     clearErrors: =>
-        maxAge = moment().subtract("h", settings.general.errorMaxAgeHours).unix()
+        maxAge = moment().subtract(settings.general.errorMaxAgeHours, "h").unix()
 
         # Iterate errors by ID, then internal data, and remove everything which is too old.
         for key, value of @errors

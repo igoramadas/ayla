@@ -40,7 +40,7 @@ class BaseManager extends (require "../basemodule.coffee")
 
     # Used to send alerts and general notifications to users.
     notify: (options, callback) =>
-        expiryDate = moment().subtract("m", settings.modules.notifyExpireMinutes).unix()
+        expiryDate = moment().subtract(settings.modules.notifyExpireMinutes, "m").unix()
 
         # Check if same notification was sent recently. If so, abort here.
         if @notifications[options.subject]?.timestamp > expiryDate

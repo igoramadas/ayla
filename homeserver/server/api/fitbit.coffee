@@ -77,9 +77,9 @@ class Fitbit extends (require "./baseapi.coffee")
 
         # Parse date and set filter.
         if not filter?
-            date = moment().subtract("d", 1).format settings.fitbit.dateFormat
+            date = moment().subtract(1, "d").format settings.fitbit.dateFormat
         else if lodash.isNumber filter
-            date = moment().subtract("d", filter).format settings.fitbit.dateFormat
+            date = moment().subtract(filter, "d").format settings.fitbit.dateFormat
         else if filter.date?
             date = filter?.date
         else
@@ -110,9 +110,9 @@ class Fitbit extends (require "./baseapi.coffee")
 
         # Parse date and set filter.
         if not filter?
-            date = moment().subtract("d", 1).format settings.fitbit.dateFormat
+            date = moment().subtract(1, "d").format settings.fitbit.dateFormat
         else if not isNaN filter
-            date = moment().subtract("d", filter).format settings.fitbit.dateFormat
+            date = moment().subtract(filter, "d").format settings.fitbit.dateFormat
         else if filter.date?
             date = filter?.date
         else
@@ -142,10 +142,10 @@ class Fitbit extends (require "./baseapi.coffee")
 
         # Parse dates and set filter.
         if not filter?
-            startDate = moment().subtract("w", 1).format settings.fitbit.dateFormat
+            startDate = moment().subtract(1, "w").format settings.fitbit.dateFormat
             endDate = moment().format settings.fitbit.dateFormat
         else if not isNaN filter
-            startDate = moment().subtract("d", filter).format settings.fitbit.dateFormat
+            startDate = moment().subtract(filter, "d").format settings.fitbit.dateFormat
             endDate = moment().format settings.fitbit.dateFormat
         else
             startDate = filter.startDate

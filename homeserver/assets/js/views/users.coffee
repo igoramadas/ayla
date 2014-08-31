@@ -25,9 +25,9 @@ class UsersView extends ayla.BaseView
                         online = if _.isFunction userdata.online then userdata.online() else userdata.online
                         userdata.onlineCss = ko.computed ->
                             if online
-                                return "on"
+                                return "online"
                             else
-                                return "off"
+                                return "offline"
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------

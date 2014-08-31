@@ -160,7 +160,7 @@ class Routes
             mimetype = "image/#{extname}"
 
         res.contentType mimetype
-        res.sendfile filename
+        res.sendFile filename
 
     # When the server can't return a valid result,
     # send an error response with status code 500.

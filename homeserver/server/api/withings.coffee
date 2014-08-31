@@ -88,7 +88,7 @@ class Withings extends (require "./baseapi.coffee")
 
         # Properly parse the filter.
         filter = {} if not filter?
-        filter.startdate = moment().subtract("M", 1).unix() if not filter.startdate?
+        filter.startdate = moment().subtract(1, "M").unix() if not filter.startdate?
         filter.enddate = moment().unix() if not filter.enddate?
 
         @apiRequest "measure", "getmeas", filter, (err, result, resp) =>

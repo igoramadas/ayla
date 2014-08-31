@@ -83,7 +83,7 @@ class Toshl extends (require "./baseapi.coffee")
     # Get recent expenses from Toshl for the past days depending on the
     # defined `recentExpenseDays` setting.
     getRecentExpenses: (callback) =>
-        from = moment().subtract("d", settings.toshl.recentExpensesDays).format settings.toshl.dateFormat
+        from = moment().subtract(settings.toshl.recentExpensesDays, "d").format settings.toshl.dateFormat
         to = moment().format settings.toshl.dateFormat
 
         @getExpenses {from: from, to: to}, callback

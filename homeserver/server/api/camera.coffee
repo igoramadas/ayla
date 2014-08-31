@@ -155,7 +155,7 @@ class Camera extends (require "./baseapi.coffee")
                     datePart = datePart[datePart.length - 2]
 
                     # Define comparions dates.
-                    minDate = moment().subtract "d", settings.camera.snapsMaxAgeDays
+                    minDate = moment().subtract settings.camera.snapsMaxAgeDays, "d"
                     fileDate = moment datePart, settings.camera.dateFormat
 
                     # If older than the target date, delete the file.

@@ -17,7 +17,9 @@ block contents
                             tr.user(data-bind="with: $root[username]")
                                 td.title(data-bind="text: name")
                                 td.email(data-bind="text: email")
-                                td.online(data-bind="css: onlineCss")
+                                td(data-bind="css: onlineCss")
+                                    span.fa.fa-mobile
+                                    span.fa.fa-laptop
 
             li
                 div
