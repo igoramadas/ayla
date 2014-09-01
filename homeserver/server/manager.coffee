@@ -32,7 +32,7 @@ class Manager
         # Init modules.
         files = fs.readdirSync managerPath
         for f in files
-            if f isnt "basemanager.coffee" and f.indexOf(".coffee") > 0
+            if f.indexOf("basemanager.coffee") < 0 and f.indexOf(".coffee") > 0
                 module = require "./manager/#{f}"
                 module.init()
                 @modules[module.moduleId] = module

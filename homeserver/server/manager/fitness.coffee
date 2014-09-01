@@ -55,7 +55,6 @@ class FitnessManager extends (require "./basemanager.coffee")
 
         logger.info "FitnessManager.onWithingsBody", @data.bodymeasures
 
-
 # Singleton implementation.
 # -----------------------------------------------------------------------------
 FitnessManager.getInstance = ->

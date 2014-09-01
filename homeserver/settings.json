@@ -34,6 +34,10 @@
     "electricimp": {
         "agentUrl": "https://agent.electricimp.com/"
     },
+    // Disable Expresser firewall by default.
+    "firewall": {
+        "enabled": false
+    },
     // Fitbit options. Check if user is missing sleep data 2 and 5 days ago, if
     // weight hasn't been set for more than 10 days, and default date format is YEAR-MONTH-DAY.
     "fitbit": {
@@ -61,7 +65,7 @@
         // The ideal conditions are arrays of values [criticallyLow, low, high, criticallyHigh].
         "idealConditions": {
             "co2": [0, 400, 1200, 2800],
-            "humidity": [25, 35, 60, 70],
+            "humidity": [30, 40, 65, 75],
             "temperature": [16, 18, 24, 26]
         },
         // Default timeout to auto turn off lights, in minutes (when house is empty for example).
