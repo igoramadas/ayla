@@ -86,7 +86,9 @@ class Toshl extends (require "./baseapi.coffee")
         from = moment().subtract(settings.toshl.recentDays, "d").format settings.toshl.dateFormat
         to = moment().format settings.toshl.dateFormat
 
-        @getExpenses {from: from, to: to}, callback
+        @getExpenses {from: from, to: to}, (err, result) =>
+            @setData "recentExpenses", result if result?
+            callback err, result if callback?
 
     # GET INCOME
     # -------------------------------------------------------------------------
@@ -114,7 +116,9 @@ class Toshl extends (require "./baseapi.coffee")
         from = moment().subtract(settings.toshl.recentDays, "d").format settings.toshl.dateFormat
         to = moment().format settings.toshl.dateFormat
 
-        @getIncome {from: from, to: to}, callback
+        @getIncome {from: from, to: to}, (err, result) =>
+            @setData "recentIncome", result if result?
+            callback err, result if callback?
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------
