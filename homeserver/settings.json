@@ -130,6 +130,7 @@
         "sslCertFile": "ssl.cer"
     },
     // Toshl settings. The API clientId, secret and oauthState must be set on the private settings file.
+    // The `recentDays` by default is set to 14 days.
     "toshl": {
         "api": {
             "url": "https://api.toshl.com/",
@@ -140,7 +141,7 @@
             "oauthVersion": "2.0",
             "oauthUseHeader": true
         },
-        "recentExpensesDays": 10,
+        "recentDays": 14,
         "dateFormat": "YYYY-MM-DD"
     },
     // Ubi settings. API clientId and secret must be set on the private settings file.

@@ -175,7 +175,6 @@ class Camera extends (require "./baseapi.coffee")
 
             callback err, count if callback?
 
-
 # Singleton implementation.
 # -----------------------------------------------------------------------------
 Camera.getInstance = ->

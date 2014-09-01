@@ -1,6 +1,6 @@
 # TOSHL API
 # -----------------------------------------------------------------------------
-# Module to read and add finance data to Toshl.
+# Module to read and add finance / budget data to Toshl.
 # More info at https://developer.toshl.com
 class Toshl extends (require "./baseapi.coffee")
 
@@ -81,13 +81,40 @@ class Toshl extends (require "./baseapi.coffee")
             callback err, result if lodash.isFunction callback
 
     # Get recent expenses from Toshl for the past days depending on the
-    # defined `recentExpenseDays` setting.
+    # defined `recentDays` setting.
     getRecentExpenses: (callback) =>
-        from = moment().subtract(settings.toshl.recentExpensesDays, "d").format settings.toshl.dateFormat
+        from = moment().subtract(settings.toshl.recentDays, "d").format settings.toshl.dateFormat
         to = moment().format settings.toshl.dateFormat
 
         @getExpenses {from: from, to: to}, callback
 
+    # GET INCOME
+    # -------------------------------------------------------------------------
+
+    # Get income with the specified filter. Filter can have the following
+    # properties: from, to, tags, per_page, page.
+    getIncome: (filter, callback) =>
+        if lodash.isFunction filter
+            callback = filter
+            filter = null
+
+        params = filter or {}
+
+        @apiRequest "income", params, (err, result) =>
+            if err?
+                @logError "Toshl.getIncome", err
+            else
+                @setData "income", result, filter
+
+            callback err, result if lodash.isFunction callback
+
+    # Get recent income from Toshl for the past days depending on the
+    # defined `recentDays` setting.
+    getRecentIncome: (callback) =>
+        from = moment().subtract(settings.toshl.recentDays, "d").format settings.toshl.dateFormat
+        to = moment().format settings.toshl.dateFormat
+
+        @getIncome {from: from, to: to}, callback
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

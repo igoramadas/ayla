@@ -12,14 +12,14 @@ class MoneyManager extends (require "./basemanager.coffee")
     lodash = expresser.libs.lodash
     moment = expresser.libs.moment
 
-    title: "Users"
+    title: "Money"
 
     # INIT
     # -------------------------------------------------------------------------
 
     # Init the money manager.
     init: =>
-        @baseInit {budget: []}
+        @baseInit {recentExpenses: [], recentIncome: []}
 
     # Start the money manager and listen to data updates / events.
     start: =>
