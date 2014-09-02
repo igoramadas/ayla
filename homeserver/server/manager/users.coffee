@@ -120,8 +120,9 @@ class UsersManager extends (require "./basemanager.coffee")
 
             # Everyone offline? Switch lights off after a few minutes.
             if everyoneOffline
-                logger.info "UsersManager.onUserStatus", "Everyone is offline, auto turn lights OFF soon."
-                @timers["lightsoff"] = lodash.delay events.emit, lightsTimeout * 60000, "hue.switchgrouplights", false
+                lightsTimeout = settings.home.lightsTimeout * 60000
+                logger.info "UsersManager.onUserStatus", "Everyone is offline, auto turn lights OFF in #{lightsTimeout} min."
+                @timers["lightsoff"] = lodash.delay events.emit, lightsTimeout, "hue.switchgrouplights", false
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------
