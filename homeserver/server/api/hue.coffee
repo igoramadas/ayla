@@ -98,6 +98,11 @@ class Hue extends (require "./baseapi.coffee")
             if err?
                 @logError "Hue.refreshHub", err
             else
+                # Clean results, delete whitelist for security reasons and remove pointsymbol data.
+                delete results.config.whitelist if results?.config?
+                delete light.pointsymbol for key, light of results.lights
+
+                # Save to DB.
                 @setData "hub", results
 
                 # Get hub counters.

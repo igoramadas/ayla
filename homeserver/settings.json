@@ -21,10 +21,10 @@
         "dateFormat": "YYYYMMDD-HHmmss",
         "snapsMaxAgeDays": 7
     },
-    // Connect to local MongoDB and delete cached API data after 24 hours by default.
+    // Connect to local MongoDB and delete cached API data after 48 hours by default.
     "database": {
         "connString": "mongodb://localhost/ayla",
-        "dataCacheExpireHours": 72,
+        "dataCacheExpireHours": 48,
         "normalizeId": false
     },
     // Settings to connect to your Electric Imp devices. You must set a devices
