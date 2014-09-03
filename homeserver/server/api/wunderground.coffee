@@ -43,7 +43,7 @@ class Wunderground extends (require "./baseapi.coffee")
     # Helper to make requests to Weather Underground. Accepts a query
     # or an stationIds as parameter / options. The callback result will
     # be the average of station data (if multiple station IDs).
-    apiRequest: (path, params, callback) =>
+    apiRequest: (urlpath, params, callback) =>
         if lodash.isFunction params
             callback = params
             params = {}
@@ -52,7 +52,7 @@ class Wunderground extends (require "./baseapi.coffee")
             callback "Wunderground API is not set, please check the settings." if callback?
             return
 
-        reqUrl = "#{settings.wunderground.api.url}#{settings.wunderground.api.clientId}/#{path}/q/"
+        reqUrl = "#{settings.wunderground.api.url}#{settings.wunderground.api.clientId}/#{urlpath}/q/"
 
         # Set queries based on params (query or stationId).
         # If `stationId` is set, add pws: to the URL.

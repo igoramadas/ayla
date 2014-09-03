@@ -81,7 +81,7 @@
         {
             "callback": "getRecentExpenses",
             "description": "Probe Toshl to get recent expenses three times a day",
-            "schedule": ["09:00:00", "16:00:00", "23:00:00"],
+            "schedule": ["10:00:00", "16:00:00", "22:00:00"],
             "enabled": true
         }
     ],

@@ -7,7 +7,6 @@ logs/
 newrelic.js
 newrelic_agent.log
 node_modules/
-rules.json
 settings.development.json
 settings.private.json
 settings.production.json

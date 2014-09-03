@@ -133,6 +133,8 @@ class Netatmo extends (require "./baseapi.coffee")
         if lodash.isFunction filter
             callback = filter
             filter = null
+        else
+            filter = @getJobArgs filter
 
         # Set outdoor parameters.
         params = @getParams filter
@@ -175,6 +177,8 @@ class Netatmo extends (require "./baseapi.coffee")
         if lodash.isFunction filter
             callback = filter
             filter = null
+        else
+            filter = @getJobArgs filter
 
         # Set indoor parameters.
         params = @getParams filter

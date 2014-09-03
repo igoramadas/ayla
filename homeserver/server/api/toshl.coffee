@@ -40,7 +40,7 @@ class Toshl extends (require "./baseapi.coffee")
     # -------------------------------------------------------------------------
 
     # Make a request to the Toshl API.
-    apiRequest: (path, params, callback) =>
+    apiRequest: (urlpath, params, callback) =>
         if lodash.isFunction params
             callback = params
             params = null
@@ -50,7 +50,7 @@ class Toshl extends (require "./baseapi.coffee")
             return
 
         # Get data from the security module and set request URL.
-        reqUrl = settings.toshl.api.url + path
+        reqUrl = settings.toshl.api.url + urlpath
         reqUrl += "?" + querystring.stringify params if params?
 
         logger.debug "Toshl.apiRequest", reqUrl
@@ -58,6 +58,37 @@ class Toshl extends (require "./baseapi.coffee")
         # Make request using OAuth.
         @oauth.get reqUrl, (err, result) =>
             result = JSON.parse result if lodash.isString result
+            callback err, result if lodash.isFunction callback
+
+    # GET MONTHS
+    # -------------------------------------------------------------------------
+
+    # Get overview expenses and income for the specified month. If no month is
+    # set then return everything.
+    getMonths: (filter, callback) =>
+        if lodash.isFunction filter
+            callback = filter
+            filter = null
+        else
+            filter = @getJobArgs filter
+
+        params = filter or {}
+
+        # If date is set then use the corresponding URL path.
+        if filter.year? and filter.month?
+            urlpath = "months/#{filter.year}/#{filter.month}"
+            delete filter.year
+            delete filter.month
+        else
+            urlpath = "months"
+
+        # Call Toshl API.
+        @apiRequest urlpath, params, (err, result) =>
+            if err?
+                @logError "Toshl.getMonths", err
+            else
+                @setData "months", result, filter
+
             callback err, result if lodash.isFunction callback
 
     # GET EXPENSES
@@ -69,6 +100,8 @@ class Toshl extends (require "./baseapi.coffee")
         if lodash.isFunction filter
             callback = filter
             filter = null
+        else
+            filter = @getJobArgs filter
 
         params = filter or {}
 
@@ -99,6 +132,8 @@ class Toshl extends (require "./baseapi.coffee")
         if lodash.isFunction filter
             callback = filter
             filter = null
+        else
+            filter = @getJobArgs filter
 
         params = filter or {}
 

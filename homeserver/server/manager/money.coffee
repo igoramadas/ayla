@@ -23,18 +23,35 @@ class MoneyManager extends (require "./basemanager.coffee")
 
     # Start the money manager and listen to data updates / events.
     start: =>
+        events.on "toshl.data.recentExpenses", @onToshlRecentExpenses
+        events.on "toshl.data.recentIncome", @onToshlRecentIncome
+
         @baseStart()
 
     # Stop the home manager.
     stop: =>
         @baseStop()
 
-    # TOSHL EXPENSES
+    # TOSHL DATA
     # -------------------------------------------------------------------------
 
-    # When network router info is updated, check for online and offline users.
-    onToshlExpenses: (data) =>
-        logger.debug "MoneyManager.onToshlExpenses"
+    # When recent expenses data is returned from Toshl.
+    @onToshlRecentExpenses: (data) =>
+        logger.debug "MoneyManager.onToshlRecentExpenses"
+
+        totalExpenses = 0
+
+        for e in data.value
+            totalExpenses += (e.amount * e.rate)
+
+    # When recent income data is returned from Toshl.
+    @onToshlRecentIncome: (data) =>
+        logger.debug "MoneyManager.onToshlRecentIncome"
+
+        totalIncome = 0
+
+        for i in data.value
+            totalIncome += (e.amount * e.rate)
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

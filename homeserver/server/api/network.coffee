@@ -255,9 +255,10 @@ class Network extends (require "./baseapi.coffee")
             scan = cprocess.exec cmd, (err, stdout, stderr) =>
                 if err?
                     @logError "Network.probeBluetooth", err
-                else if stderr
+                else if stderr? and stderr isnt ""
                     @logError "Network.probeBluetooth", stderr
-                else
+
+                if stdout? and stdout isnt ""
                     devices = []
                     lines = stdout.split "\n"
 
@@ -311,15 +312,15 @@ class Network extends (require "./baseapi.coffee")
                         scan = cprocess.exec cmd, (err, stdout, stderr) =>
                             if err?
                                 @logError "Network.probeBluetoothUsers", err
-                            else if stderr
+                            else if stderr? and stderr isnt ""
                                 @logError "Network.probeBluetoothUsers", stderr
+
+                            if stdout? and stdout isnt ""
+                                d.deviceName = stdout.trim()
+                                d.online = true
                             else
-                                if stdout? and stdout isnt ""
-                                    d.deviceName = stdout.trim()
-                                    d.online = true
-                                else
-                                    d.online = false
-                                logger.info "Network.probeBluetoothUsers", d
+                                d.online = false
+                            logger.info "Network.probeBluetoothUsers", d
 
                             cb null, d
                     catch ex
