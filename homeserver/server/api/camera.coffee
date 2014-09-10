@@ -5,17 +5,18 @@
 class Camera extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
-    events = expresser.events
-    downloader = expresser.downloader
-    logger = expresser.logger
-    settings = expresser.settings
 
+    downloader = expresser.downloader
+    events = expresser.events
     fs = require "fs"
     lodash = expresser.libs.lodash
+    logger = expresser.logger
     moment = expresser.libs.moment
     networkApi = require "./network.coffee"
     path = require "path"
+    settings = expresser.settings
 
+    # Path to a "no camera image"
     nocamPath = __dirname + "../../public/images/nocam.jpg"
 
     # INIT

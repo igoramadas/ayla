@@ -4,13 +4,12 @@
 class FitnessManager extends (require "./basemanager.coffee")
 
     expresser = require "expresser"
-    events = expresser.events
-    logger = expresser.logger
-    settings = expresser.settings
-    sockets = expresser.sockets
 
+    events = expresser.events
     lodash = expresser.libs.lodash
+    logger = expresser.logger
     moment = expresser.libs.moment
+    settings = expresser.settings
 
     title: "Fitness"
 

@@ -4,14 +4,14 @@
 class LightsManager extends (require "./basemanager.coffee")
 
     expresser = require "expresser"
+
     events = expresser.events
+    lodash = expresser.libs.lodash
     logger = expresser.logger
+    moment = expresser.libs.moment
     settings = expresser.settings
     sockets = expresser.sockets
     utils = expresser.utils
-
-    lodash = expresser.libs.lodash
-    moment = expresser.libs.moment
 
     title: "Lights"
 

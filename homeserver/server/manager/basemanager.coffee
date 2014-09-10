@@ -4,13 +4,13 @@
 class BaseManager extends (require "../basemodule.coffee")
 
     expresser = require "expresser"
+
     events = expresser.events
+    lodash = expresser.libs.lodash
     logger = expresser.logger
+    moment = expresser.libs.moment
     settings = expresser.settings
     sockets = expresser.sockets
-
-    lodash = expresser.libs.lodash
-    moment = expresser.libs.moment
 
     # HELPERS
     # -------------------------------------------------------------------------

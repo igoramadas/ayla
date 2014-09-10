@@ -5,13 +5,14 @@
 class Garmin extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
-    events = expresser.events
-    logger = expresser.logger
-    settings = expresser.settings
 
     async = expresser.libs.async
+    events = expresser.events
     lodash = expresser.libs.lodash
+    logger = expresser.logger
     moment = expresser.libs.moment
+    settings = expresser.settings
+
 
     # INIT
     # -------------------------------------------------------------------------

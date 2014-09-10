@@ -4,16 +4,16 @@
 class EmailManager extends (require "./basemanager.coffee")
 
     expresser = require "expresser"
-    events = expresser.events
-    logger = expresser.logger
-    mailer = expresser.mailer
-    settings = expresser.settings
 
+    events = expresser.events
     fs = require "fs"
     imapModule = require "imap"
     lodash = expresser.libs.lodash
+    logger = expresser.logger
+    mailer = expresser.mailer
     mailparser = require("mailparser").MailParser
     moment = expresser.libs.moment
+    settings = expresser.settings
     util = require "util"
 
     title: "Email"
