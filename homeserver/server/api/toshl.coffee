@@ -5,12 +5,12 @@
 class Toshl extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
-    logger = expresser.logger
-    settings = expresser.settings
 
     lodash = expresser.libs.lodash
+    logger = expresser.logger
     moment = expresser.libs.moment
     querystring = require "querystring"
+    settings = expresser.settings
 
     # INIT
     # -------------------------------------------------------------------------

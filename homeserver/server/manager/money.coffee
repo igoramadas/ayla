@@ -4,13 +4,14 @@
 class MoneyManager extends (require "./basemanager.coffee")
 
     expresser = require "expresser"
+
+    expensemodel = require "../model/expense.coffee"
     events = expresser.events
+    lodash = expresser.libs.lodash
     logger = expresser.logger
     mailer = expresser.mailer
-    settings = expresser.settings
-
-    lodash = expresser.libs.lodash
     moment = expresser.libs.moment
+    settings = expresser.settings
 
     title: "Money"
 
@@ -19,7 +20,7 @@ class MoneyManager extends (require "./basemanager.coffee")
 
     # Init the money manager.
     init: =>
-        @baseInit {recentExpenses: [], recentIncome: []}
+        @baseInit {recentExpenses: {}, recentIncome: {}}
 
     # Start the money manager and listen to data updates / events.
     start: =>
@@ -36,16 +37,32 @@ class MoneyManager extends (require "./basemanager.coffee")
     # -------------------------------------------------------------------------
 
     # When recent expenses data is returned from Toshl.
-    @onToshlRecentExpenses: (data) =>
+    onToshlRecentExpenses: (data) =>
         logger.debug "MoneyManager.onToshlRecentExpenses"
 
         totalExpenses = 0
+        recentTags = {}
 
+        # Iterate and process values and tags from recent expenses.
         for e in data.value
-            totalExpenses += (e.amount * e.rate)
+            expenseObj = new expensemodel e
+            totalExpenses += expenseObj.value
+
+            @data.recentExpenses.list.push expenseObj
+
+            # Update recent tags values.
+            for t in e.tags
+                recentTags[t] = 0 if not recentTags[t]?
+                recentTags[t] += expenseObj.value
+
+        # Update recent expenses data.
+        @data.recentExpenses.total = totalExpenses
+        @data.recentExpenses.tags = recentTags
+
+        @dataUpdated "recentExpenses"
 
     # When recent income data is returned from Toshl.
-    @onToshlRecentIncome: (data) =>
+    onToshlRecentIncome: (data) =>
         logger.debug "MoneyManager.onToshlRecentIncome"
 
         totalIncome = 0

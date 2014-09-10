@@ -4,16 +4,16 @@
 class BaseApi extends (require "../basemodule.coffee")
 
     expresser = require "expresser"
+
     database = expresser.database
     events = expresser.events
-    logger = expresser.logger
-    settings = expresser.settings
-    sockets = expresser.sockets
-
     lodash = expresser.libs.lodash
+    logger = expresser.logger
     moment = expresser.libs.moment
     path = require "path"
     request = require "request"
+    settings = expresser.settings
+    sockets = expresser.sockets
     url = require "url"
 
     # AUTH HANDLING

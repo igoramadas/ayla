@@ -4,13 +4,13 @@
 class UsersManager extends (require "./basemanager.coffee")
 
     expresser = require "expresser"
+
     events = expresser.events
+    lodash = expresser.libs.lodash
     logger = expresser.logger
     mailer = expresser.mailer
-    settings = expresser.settings
-
-    lodash = expresser.libs.lodash
     moment = expresser.libs.moment
+    settings = expresser.settings
     weatherManager = require "./weather.coffee"
 
     title: "Users"

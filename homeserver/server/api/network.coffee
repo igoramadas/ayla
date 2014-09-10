@@ -7,22 +7,22 @@
 class Network extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
-    events = expresser.events
-    logger = expresser.logger
-    settings = expresser.settings
-    utils = expresser.utils
 
     async = expresser.libs.async
     buffer = require "buffer"
     cprocess = require "child_process"
     dgram = require "dgram"
+    events = expresser.events
     fs = require "fs"
     http = require "http"
     lodash = expresser.libs.lodash
+    logger = expresser.logger
     mdns = require "mdns2"
     moment = expresser.libs.moment
     path = require "path"
+    settings = expresser.settings
     url = require "url"
+    utils = expresser.utils
 
     # PROPERTIES
     # -------------------------------------------------------------------------

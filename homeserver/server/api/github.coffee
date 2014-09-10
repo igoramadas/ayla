@@ -4,6 +4,7 @@
 class GitHub extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
+
     logger = expresser.logger
     settings = expresser.settings
 
