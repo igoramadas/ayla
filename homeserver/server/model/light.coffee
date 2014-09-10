@@ -2,8 +2,8 @@
 # -----------------------------------------------------------------------------
 class LightModel
 
-    constructor: (obj) ->
-        id = "#{obj.source}-#{obj.sourceId}"
+    constructor: (obj, @source) ->
+        id = "#{@source}-#{obj.sourceId}"
 
         @id = id
         @title = obj.title

@@ -1,13 +1,13 @@
-# SERVER: EXPENSE MODEL
+# SERVER: INCOME MODEL
 # -----------------------------------------------------------------------------
-class ExpenseModel
+class IncomeModel
 
-    constructor: (obj) ->
-        id = "#{obj.source}-#{obj.sourceId}"
-        value = obj.amount * obj.rate
+    constructor: (obj, @source) ->
+        id = "#{@source}-#{obj.id}"
+        value = (obj.amount * obj.rate).toFixed 2
 
         if obj.modified?
-            timestamp = new Date(obj.modified).getTime()
+            timestamp = moment(obj.modified).unix()
         else
             timestamp = obj.timestamp
 
@@ -21,4 +21,4 @@ class ExpenseModel
 
 # Exports model.
 # -----------------------------------------------------------------------------
-module.exports = exports = ExpenseModel
+module.exports = exports = IncomeModel

@@ -5,8 +5,9 @@ class MoneyManager extends (require "./basemanager.coffee")
 
     expresser = require "expresser"
 
-    expensemodel = require "../model/expense.coffee"
+    expenseModel = require "../model/expense.coffee"
     events = expresser.events
+    incomeModel = require "../model/income.coffee"
     lodash = expresser.libs.lodash
     logger = expresser.logger
     mailer = expresser.mailer
@@ -40,35 +41,49 @@ class MoneyManager extends (require "./basemanager.coffee")
     onToshlRecentExpenses: (data) =>
         logger.debug "MoneyManager.onToshlRecentExpenses"
 
-        totalExpenses = 0
-        recentTags = {}
+        # Reset current expenses.
+        @data.recentExpenses.total = 0
+        @data.recentExpenses.tags = {}
+        @data.recentExpenses.list = []
 
         # Iterate and process values and tags from recent expenses.
         for e in data.value
-            expenseObj = new expensemodel e
-            totalExpenses += expenseObj.value
+            expenseObj = new expenseModel e, "toshl"
 
+            @data.recentExpenses.total += expenseObj.value
             @data.recentExpenses.list.push expenseObj
 
             # Update recent tags values.
             for t in e.tags
-                recentTags[t] = 0 if not recentTags[t]?
-                recentTags[t] += expenseObj.value
+                @data.recentExpenses.tags[t] = 0 if not @data.recentExpenses.tags[t]?
+                @data.recentExpenses.tags[t] += expenseObj.value
 
         # Update recent expenses data.
-        @data.recentExpenses.total = totalExpenses
-        @data.recentExpenses.tags = recentTags
-
         @dataUpdated "recentExpenses"
 
     # When recent income data is returned from Toshl.
     onToshlRecentIncome: (data) =>
         logger.debug "MoneyManager.onToshlRecentIncome"
 
-        totalIncome = 0
+        # Reset current expenses.
+        @data.recentIncome.total = 0
+        @data.recentIncome.tags = {}
+        @data.recentIncome.list = []
 
+        # Iterate and process values and tags from recent expenses.
         for i in data.value
-            totalIncome += (e.amount * e.rate)
+            incomeObj = new incomeModel i, "toshl"
+
+            @data.recentIncome.total += incomeObj.value
+            @data.recentIncome.list.push incomeObj
+
+            # Update recent tags values.
+            for t in i.tags
+                @data.recentIncome.tags[t] = 0 if not @data.recentIncome.tags[t]?
+                @data.recentIncome.tags[t] += incomeObj.value
+
+        # Update recent expenses data.
+        @dataUpdated "recentIncome"
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

@@ -1,14 +1,15 @@
-# SERVER: INCOME MODEL
+# SERVER: EXPENSE MODEL
 # -----------------------------------------------------------------------------
-class IncomeModel
+class ExpenseModel
 
-    constructor: (obj) ->
-        id = "#{obj.source}-#{obj.id}"
-        value = obj.amount * obj.rate
-        modified = new Date(obj.modified).getTime()
+    moment = require "moment"
+
+    constructor: (obj, @source) ->
+        id = "#{@source}-#{obj.id}"
+        value = (obj.amount * obj.rate).toFixed 2
 
         if obj.modified?
-            timestamp = new Date(obj.modified).getTime()
+            timestamp = moment(obj.modified).unix()
         else
             timestamp = obj.timestamp
 
@@ -17,10 +18,15 @@ class IncomeModel
         @amount = obj.amount
         @currency = obj.currency
         @value = value or obj.amount
-        @location = [obj.location.latitude, obj.location.longitude]
-        @repeat = obj.repeat.type or obj.repeat
+
+        if obj.location?
+            @location = [obj.location.latitude, obj.location.longitude]
+
+        if obj.repeat?
+            @repeat = obj.repeat.type or obj.repeat
+
         @timestamp = timestamp
 
 # Exports model.
 # -----------------------------------------------------------------------------
-module.exports = exports = IncomeModel
+module.exports = exports = ExpenseModel
