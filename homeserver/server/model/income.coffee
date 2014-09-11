@@ -2,12 +2,15 @@
 # -----------------------------------------------------------------------------
 class IncomeModel
 
+    expresser = require "expresser"
+    moment = expresser.libs.moment
+
     constructor: (obj, @source) ->
         id = "#{@source}-#{obj.id}"
         value = (obj.amount * obj.rate).toFixed 2
 
         if obj.modified?
-            timestamp = moment(obj.modified).unix()
+            timestamp = moment(obj.modified.substring 20).unix()
         else
             timestamp = obj.timestamp
 

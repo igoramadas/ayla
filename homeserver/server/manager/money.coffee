@@ -41,7 +41,7 @@ class MoneyManager extends (require "./basemanager.coffee")
     onToshlRecentExpenses: (data) =>
         logger.debug "MoneyManager.onToshlRecentExpenses"
 
-        # Reset current expenses.
+        # Reset current expenses data.
         @data.recentExpenses.total = 0
         @data.recentExpenses.tags = {}
         @data.recentExpenses.list = []
@@ -65,12 +65,12 @@ class MoneyManager extends (require "./basemanager.coffee")
     onToshlRecentIncome: (data) =>
         logger.debug "MoneyManager.onToshlRecentIncome"
 
-        # Reset current expenses.
+        # Reset current income data.
         @data.recentIncome.total = 0
         @data.recentIncome.tags = {}
         @data.recentIncome.list = []
 
-        # Iterate and process values and tags from recent expenses.
+        # Iterate and process values and tags from recent income.
         for i in data.value
             incomeObj = new incomeModel i, "toshl"
 
@@ -82,7 +82,7 @@ class MoneyManager extends (require "./basemanager.coffee")
                 @data.recentIncome.tags[t] = 0 if not @data.recentIncome.tags[t]?
                 @data.recentIncome.tags[t] += incomeObj.value
 
-        # Update recent expenses data.
+        # Update recent income data.
         @dataUpdated "recentIncome"
 
 # Singleton implementation.

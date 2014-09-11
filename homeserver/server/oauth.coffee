@@ -206,12 +206,15 @@ class OAuth
                 logger.error "OAuth.process", "getAccessToken2", @service, err
                 return
 
-            logger.info "OAuth.process", "getAccessToken2", @service, oauth_access_token
-
             # Schedule token to be refreshed automatically with 10% of the expiry time left.
             expires = results?.expires_in or results?.expires or 43200
             expires = 3600 if expires < 3600
-            lodash.delay @refresh, expires * 900
+
+            logger.info "OAuth.process", "getAccessToken2", @service, oauth_access_token, "Expires #{expires}"
+
+            # Delayed refresh before token expires.
+            refreshInterval = parseInt(expires) * 900
+            lodash.delay @refresh, refreshInterval
 
             # Save oauth details to DB and redirect user to service page.
             oauthData = {accessToken: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add(expires, "s").unix()}
@@ -234,7 +237,7 @@ class OAuth
                 opts["state"] = settings[@service].api.oauthState
 
             if settings[@service].api.oauthPassRedirect
-                opts["redirect_uri"] = settings.general.appUrl + @service
+                opts["redirect_uri"] = settings.general.appUrl + @service + "/auth"
 
             # Get authorization code from querystring.
             qCode = qs?.code
@@ -284,7 +287,6 @@ class OAuth
             # Save oauth details to DB and redirect user to service page.
             oauthData = {accessToken: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add(expires, "s").unix()}
             @saveToken oauthData
-
 
 # Exports
 # -----------------------------------------------------------------------------
