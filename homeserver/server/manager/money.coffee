@@ -21,12 +21,12 @@ class MoneyManager extends (require "./basemanager.coffee")
 
     # Init the money manager.
     init: =>
-        @baseInit {recentExpenses: {}, recentIncome: {}}
+        @baseInit {recentExpenses: {}, recentIncomes: {}}
 
     # Start the money manager and listen to data updates / events.
     start: =>
         events.on "toshl.data.recentExpenses", @onToshlRecentExpenses
-        events.on "toshl.data.recentIncome", @onToshlRecentIncome
+        events.on "toshl.data.recentIncomes", @onToshlRecentIncomes
 
         @baseStart()
 
@@ -62,28 +62,28 @@ class MoneyManager extends (require "./basemanager.coffee")
         @dataUpdated "recentExpenses"
 
     # When recent income data is returned from Toshl.
-    onToshlRecentIncome: (data) =>
-        logger.debug "MoneyManager.onToshlRecentIncome"
+    onToshlRecentIncomes: (data) =>
+        logger.debug "MoneyManager.onToshlRecentIncomes"
 
         # Reset current income data.
-        @data.recentIncome.total = 0
-        @data.recentIncome.tags = {}
-        @data.recentIncome.list = []
+        @data.recentIncomes.total = 0
+        @data.recentIncomes.tags = {}
+        @data.recentIncomes.list = []
 
         # Iterate and process values and tags from recent income.
         for i in data.value
             incomeObj = new incomeModel i, "toshl"
 
-            @data.recentIncome.total += incomeObj.value
-            @data.recentIncome.list.push incomeObj
+            @data.recentIncomes.total += incomeObj.value
+            @data.recentIncomes.list.push incomeObj
 
             # Update recent tags values.
             for t in i.tags
-                @data.recentIncome.tags[t] = 0 if not @data.recentIncome.tags[t]?
-                @data.recentIncome.tags[t] += incomeObj.value
+                @data.recentIncomes.tags[t] = 0 if not @data.recentIncomes.tags[t]?
+                @data.recentIncomes.tags[t] += incomeObj.value
 
         # Update recent income data.
-        @dataUpdated "recentIncome"
+        @dataUpdated "recentIncomes"
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

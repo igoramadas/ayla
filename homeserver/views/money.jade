@@ -2,3 +2,16 @@ extends layout
 
 block contents
     #money
+        ul.maingrid.large-block-grid-2
+
+            li.expenses
+                div
+                    h2 Expenses
+                    div.summary(data-bind="with: recentExpenses")
+                        h3(data-bind="text: total")
+
+            li.incomes
+                div
+                    h2 Incomes
+                    div.summary(data-bind="with: recentIncomes")
+                        h3(data-bind="text: total")

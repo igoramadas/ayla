@@ -29,6 +29,7 @@ class Toshl extends (require "./baseapi.coffee")
 
                 if settings.modules.getDataOnStart and result.length > 0
                     @getRecentExpenses()
+                    @getRecentIncomes()
 
     # Stop the Toshl module.
     stop: =>
@@ -119,14 +120,14 @@ class Toshl extends (require "./baseapi.coffee")
 
         @getExpenses {from: from, to: to}, (err, result) =>
             @setData "recentExpenses", result if result?
-            callback err, result if callback?
+            callback err, result if lodash.isFunction callback
 
     # GET INCOME
     # -------------------------------------------------------------------------
 
     # Get income with the specified filter. Filter can have the following
     # properties: from, to, tags, per_page, page.
-    getIncome: (filter, callback) =>
+    getIncomes: (filter, callback) =>
         if lodash.isFunction filter
             callback = filter
             filter = null
@@ -135,23 +136,23 @@ class Toshl extends (require "./baseapi.coffee")
 
         params = filter or {}
 
-        @apiRequest "income", params, (err, result) =>
+        @apiRequest "incomes", params, (err, result) =>
             if err?
-                @logError "Toshl.getIncome", err
+                @logError "Toshl.getIncomes", err
             else
-                @setData "income", result, filter
+                @setData "incomes", result, filter
 
             callback err, result if lodash.isFunction callback
 
     # Get recent income from Toshl for the past days depending on the
     # defined `recentDays` setting.
-    getRecentIncome: (callback) =>
+    getRecentIncomes: (callback) =>
         from = moment().subtract(settings.toshl.recentDays, "d").format settings.toshl.dateFormat
         to = moment().format settings.toshl.dateFormat
 
-        @getIncome {from: from, to: to}, (err, result) =>
-            @setData "recentIncome", result if result?
-            callback err, result if callback?
+        @getIncomes {from: from, to: to}, (err, result) =>
+            @setData "recentIncomes", result if result?
+            callback err, result  if lodash.isFunction callback
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

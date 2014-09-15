@@ -14,8 +14,10 @@ block contents
                                 th.email Email
                                 th.online Home
                         tbody(data-bind="foreach: users")
+                            // ko ifnot: guest
                             tr.user(data-bind="with: $root[username]")
                                 td.title(data-bind="text: name")
                                 td.email(data-bind="text: email")
                                 td(data-bind="css: onlineCss")
                                     span.fa.fa-lg.fa-mobile
+                            // /ko
