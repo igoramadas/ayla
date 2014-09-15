@@ -160,7 +160,7 @@ class OAuth
             @client.get reqUrl, @data.accessToken, (err, result) =>
                 if err?
                     description = err.data?.error_description or err.data?.error?.message or null
-                    @refresh() if description?.indexOf("expired") > 0
+                    @refresh() if err.statusCode is 403 or description?.indexOf("expired") > 0
                 callback err, result
         else
             @client.get reqUrl, @data.token, @data.tokenSecret, (err, result) =>
@@ -275,11 +275,15 @@ class OAuth
                 logger.error "OAuth.refresh", @service, err
                 return
 
-            logger.info "OAuth.refresh", @service, oauth_access_token
-
             # Schedule token to be refreshed with 10% of time left.
-            expires = results?.expires_in or results?.expires or @data.expires or 43200
-            lodash.delay @refresh, expires * 900
+            expires = results?.expires_in or results?.expires or 43200
+            expires = 3600 if expires < 3600
+
+            logger.info "OAuth.refresh", @service, oauth_access_token, "Expires #{expires}"
+
+            # Delayed refresh before token expires.
+            refreshInterval = parseInt(expires) * 900
+            lodash.delay @refresh, refreshInterval
 
             # If no refresh token is returned, keep the last one.
             oauth_refresh_token = @data.refreshToken if not oauth_refresh_token? or oauth_refresh_token is ""
