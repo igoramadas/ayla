@@ -53,7 +53,6 @@ class Api
         # Proceed with callback?
         callback() if callback?
 
-
 # Singleton implementation.
 # -----------------------------------------------------------------------------
 Api.getInstance = ->

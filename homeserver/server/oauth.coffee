@@ -209,8 +209,9 @@ class OAuth
             # Schedule token to be refreshed automatically with 10% of the expiry time left.
             expires = results?.expires_in or results?.expires or 43200
             expires = 3600 if expires < 3600
+            lodash.delay @refresh, expires * 900
 
-            logger.info "OAuth.process", "getAccessToken2", @service, oauth_access_token, "Expires #{expires}"
+            logger.info "OAuth.process", "getAccessToken2", @service, oauth_access_token, "Expires in #{expires}s"
 
             # Delayed refresh before token expires.
             refreshInterval = parseInt(expires) * 900
@@ -288,6 +289,6 @@ class OAuth
             oauthData = {accessToken: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add(expires, "s").unix()}
             @saveToken oauthData
 
-# Exports
+# Exports OAuth module.
 # -----------------------------------------------------------------------------
 module.exports = exports = OAuth

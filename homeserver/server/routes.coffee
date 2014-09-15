@@ -178,7 +178,6 @@ class Routes
             else
                 console.log "Request", method
 
-
 # Singleton implementation.
 # -----------------------------------------------------------------------------
 Routes.getInstance = ->

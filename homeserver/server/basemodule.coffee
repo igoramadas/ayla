@@ -146,7 +146,6 @@ class BaseModule
             if value.length < 1
                 delete @errors[key]
 
-
 # Exports API Base Module.
 # -----------------------------------------------------------------------------
 module.exports = exports = BaseModule

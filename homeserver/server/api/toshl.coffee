@@ -30,8 +30,6 @@ class Toshl extends (require "./baseapi.coffee")
                 if settings.modules.getDataOnStart and result.length > 0
                     @getRecentExpenses()
 
-        @baseStart()
-
     # Stop the Toshl module.
     stop: =>
         @baseStop()

@@ -136,11 +136,11 @@
     // Strava settings.
     "strava": {
         "api": {
-            "url": "https://www.strava.com/api",
+            "url": "https://www.strava.com/api/",
             "oauthPathAuthorize": "oauth/authorize",
             "oauthPathToken": "oauth/token",
             "oauthResponseType": "code",
-            "oauthUrl": "https://www.strava.com/api",
+            "oauthUrl": "https://www.strava.com/",
             "oauthVersion": "2.0",
             "oauthUseHeader": true
         }
