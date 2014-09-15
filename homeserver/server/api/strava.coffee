@@ -23,6 +23,15 @@ class Strava extends (require "./baseapi.coffee")
 
     # Start collecting data from Strava.
     start: =>
+        @oauthInit (err, result) =>
+            if err?
+                @logError "Strava.start", err
+            else
+                @baseStart()
+
+                if settings.modules.getDataOnStart and result.length > 0
+                    @getProfile()
+
         @baseStart()
 
     # Stop collecting data from Strava.

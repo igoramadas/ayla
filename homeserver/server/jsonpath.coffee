@@ -119,4 +119,6 @@ jsonPath = (obj, expr, arg) ->
         P.trace P.normalize(expr).replace(/^\$;?/, ""), obj, "$"
         (if P.result.length then P.result else null)
 
+# Exports JSON Path helper.
+# -----------------------------------------------------------------------------
 module.exports = exports = jsonPath

@@ -126,7 +126,6 @@ class Commander
         events.emit "hue.switchgrouplights", true, (err, result) =>
             callback err, result if callback?
 
-
 # Singleton implementation.
 # -----------------------------------------------------------------------------
 Commander.getInstance = ->
