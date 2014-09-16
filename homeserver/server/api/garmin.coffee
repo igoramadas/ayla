@@ -2,6 +2,7 @@
 # NOT READY YET!!!
 # -----------------------------------------------------------------------------
 # Module to collect data from Garmin.
+# More info at http://connect.garmin.com.
 class Garmin extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
@@ -35,7 +36,6 @@ class Garmin extends (require "./baseapi.coffee")
     # Gets the list of registered devices with Garmin.
     getDeviceData: (callback) =>
         console.warn "NOT IMPLEMENTED!"
-
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

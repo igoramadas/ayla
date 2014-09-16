@@ -1,7 +1,7 @@
 # WITHINGS API
 # -----------------------------------------------------------------------------
 # Module to get weight, body fat and air quality data from Withings smart scales.
-# More info at http://www.withings.com/en/api
+# More info at http://www.withings.com/en/api.
 class Withings extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
@@ -38,23 +38,19 @@ class Withings extends (require "./baseapi.coffee")
     # API BASE METHODS
     # -------------------------------------------------------------------------
 
-    # Authentication helper for Withings.
-    auth: (req, res) =>
-        security.processAuthToken "withings", req, res
-
     # Make a request to the Withings API.
-    apiRequest: (path, action, params, callback) =>
+    apiRequest: (urlpath, action, params, callback) =>
         if lodash.isFunction params
             callback = params
             params = null
 
         if not @isRunning [@oauth, @oauth.client]
-            callback "Module not running or OAuth client not ready. Please check Withings API settings." if callback?
+            callback "Module not running or OAuth client not ready. Please check Withings API settings."
             return
 
         # Set request URL and parameters.
         userid = @oauth.data.userId
-        reqUrl = settings.withings.api.url + path + "?action=#{action}&userid=#{userid}"
+        reqUrl = settings.withings.api.url + urlpath + "?action=#{action}&userid=#{userid}"
         reqUrl = reqUrl + "&" + querystring.stringify params if params?
 
         # Withings expect OAuth parameters to be passed via querystring so we need to hack around here.
@@ -78,7 +74,8 @@ class Withings extends (require "./baseapi.coffee")
     # GET DATA
     # -------------------------------------------------------------------------
 
-    # Get body measures for the specified date.
+    # Get body measures for the specified date. If not date is specified then get
+    # for the last 30 days (or whatever is set for recentDays on settings).
     getBodyMeasures: (filter, callback) =>
         if lodash.isFunction filter
             callback = filter
@@ -86,20 +83,34 @@ class Withings extends (require "./baseapi.coffee")
         else
             filter = @getJobArgs filter
 
+        hasCallback = lodash.isFunction callback
+
         # Properly parse the filter.
         filter = {} if not filter?
-        filter.startdate = moment().subtract(1, "M").unix() if not filter.startdate?
+        filter.startdate = moment().subtract(settings.withings.recentDays, "d").unix() if not filter.startdate?
         filter.enddate = moment().unix() if not filter.enddate?
 
         @apiRequest "measure", "getmeas", filter, (err, result, resp) =>
             if err?
-                logger.error "Withings.getBodyMeasures", filter, err
+                @logError "Withings.getBodyMeasures", filter, err
             else if result?.status > 0
-                logger.error "Withings.getBodyMeasures", "Invalid response!", result.status, filter
+                @logError "Withings.getBodyMeasures", "Invalid response!", result.status, filter
             else
-                @setData "bodymeasures", result, filter
+                @setData "bodyMeasures", result, filter
 
-            callback err, result if lodash.isFunction callback
+            callback err, result if hasCallback
+
+    # Get recent body measures, using the `recentDays` setting.
+    getRecentBodyMeasures: (callback) =>
+        hasCallback = lodash.isFunction callback
+
+        startdate = moment().subtract(settings.withings.recentDays, "d").unix()
+        enddate = moment().unix()
+        filter = {startdate: startdate, enddate: enddate}
+
+        @getBodyMeasures filter, (err, result) =>
+            @setData "recentBodyMeasures", result if result?
+            callback err, result if hasCallback
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

@@ -1,8 +1,7 @@
 # STRAVA API
-# NOT READY YET!!!
 # -----------------------------------------------------------------------------
-# Module to connect to Strava.
-# More info at www.strava.com.
+# Module to connect and retrieve sports data from Strava.
+# More info at http://strava.github.io/api.
 class Strava extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
@@ -31,6 +30,7 @@ class Strava extends (require "./baseapi.coffee")
 
                 if settings.modules.getDataOnStart and result.length > 0
                     @getProfile()
+                    @getRecentActivities()
 
         @baseStart()
 
@@ -42,17 +42,17 @@ class Strava extends (require "./baseapi.coffee")
     # -------------------------------------------------------------------------
 
     # Make a request to the Strava API.
-    apiRequest: (path, params, callback) =>
+    apiRequest: (urlpath, params, callback) =>
         if lodash.isFunction params
             callback = params
             params = null
 
         if not @isRunning [@oauth, @oauth.client]
-            callback "Module not running or OAuth client not ready. Please check Strava API settings." if callback?
+            callback "Module not running or OAuth client not ready. Please check Strava API settings."
             return
 
         # Get data from the security module and set request URL.
-        reqUrl = settings.strava.api.url + path
+        reqUrl = settings.strava.api.url + urlpath
         reqUrl += "?" + querystring.stringify params if params?
 
         logger.debug "Strava.apiRequest", reqUrl
@@ -60,20 +60,22 @@ class Strava extends (require "./baseapi.coffee")
         # Make request using OAuth.
         @oauth.get reqUrl, (err, result) =>
             result = JSON.parse result if lodash.isString result
-            callback err, result if lodash.isFunction callback
+            callback err, result
 
     # GET ATHLETES
     # ------------------------------------------------------------------------
 
     # Gets the list of the user's favorite tracks from Strava.
     getProfile: (callback) =>
+        hasCallback = lodash.isFunction callback
+
         @apiRequest "athlete", (err, result) =>
             if err?
                 @logError "Strava.getProfile", err
             else
                 @setData "profile", result
 
-            callback err, result if lodash.isFunction callback
+            callback err, result if hasCallback
 
     # GET ACTIVITIES
     # ------------------------------------------------------------------------
@@ -88,7 +90,7 @@ class Strava extends (require "./baseapi.coffee")
         else
             filter = @getJobArgs filter
 
-        # Properly parse the filter.
+        hasCallback = lodash.isFunction callback
         filter = {} if not filter?
 
         @apiRequest "athlete/activities", filter, (err, result, resp) =>
@@ -97,19 +99,16 @@ class Strava extends (require "./baseapi.coffee")
             else
                 @setData "activities", result, filter
 
-            callback err, result if lodash.isFunction callback
+            callback err, result if haCallback
 
     # Gets a list of recent activities.
     getRecentActivities: (callback) =>
+        hasCallback = lodash.isFunction callback
         filter = {after: moment().subtract(settings.strava.recentDays, "d").unix()}
 
         @getActivities filter, (err, result) =>
-            if err?
-                @logError "Strava.getRecentActivities", err
-            else
-                @setData "recentActivities", result
-
-        callback err, result if lodash.isFunction callback
+            @setData "recentActivities", result if result?
+            callback err, result if hasCallback
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

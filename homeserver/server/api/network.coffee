@@ -52,8 +52,8 @@ class Network extends (require "./baseapi.coffee")
 
     # Start monitoring the network.
     start: =>
-        events.on "network.probebluetooth", @probeBluetooth
-        events.on "network.probebluetoothusers", @probeBluetoothUsers
+        events.on "network.probeBluetooth", @probeBluetooth
+        events.on "network.probeBluetoothUsers", @probeBluetoothUsers
         events.on "network.wol", @wol
 
         @serverInfo = utils.getServerInfo()
@@ -73,8 +73,8 @@ class Network extends (require "./baseapi.coffee")
 
     # Stop monitoring the network.
     stop: =>
-        events.off "network.probebluetooth", @probeBluetooth
-        events.off "network.probebluetoothusers", @probeBluetoothUsers
+        events.off "network.probeBluetooth", @probeBluetooth
+        events.off "network.probeBluetoothUsers", @probeBluetoothUsers
         events.off "network.wol", @wol
 
         if settings.network.autoDiscovery
@@ -391,7 +391,6 @@ class Network extends (require "./baseapi.coffee")
                 existingDevice.mdns = false
         catch ex
             @logError "Network.onServiceDown", ex
-
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

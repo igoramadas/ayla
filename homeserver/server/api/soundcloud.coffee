@@ -2,7 +2,7 @@
 # NOT READY YET!!!
 # -----------------------------------------------------------------------------
 # Module to connect to tracks and profiles on SoundCloud.
-# More info at www.soundcloud.com.
+# More info at http://www.soundcloud.com.
 class SoundCloud extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
@@ -35,7 +35,6 @@ class SoundCloud extends (require "./baseapi.coffee")
     # Gets the list of the user's favorite tracks from SoundCloud.
     getFavorites: (callback) =>
         console.warn "NOT IMPLEMENTED"
-
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

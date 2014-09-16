@@ -25,7 +25,7 @@ class EmailAction_Shoeboxed
         # Create message object and dispatch send event.
         body = "Forwarded automatically by Ayla."
         msg = {to: settings.shoeboxed.email, subject: parsedMsg.subject, attachments: parsedMsg.attachments, body: body}
-        events.emit "emailmanager.send", msg, (err, result) => callback err, result
+        events.emit "emailManager.send", msg, (err, result) => callback err, result
 
 
 # Exports

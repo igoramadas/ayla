@@ -1,7 +1,7 @@
 # TOSHL API
 # -----------------------------------------------------------------------------
 # Module to read and add finance / budget data to Toshl.
-# More info at https://developer.toshl.com
+# More info at https://developer.toshl.com.
 class Toshl extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
@@ -44,7 +44,7 @@ class Toshl extends (require "./baseapi.coffee")
             params = null
 
         if not @isRunning [@oauth, @oauth.client]
-            callback "Module not running or OAuth client not ready. Please check Toshl API settings." if callback?
+            callback "Module not running or OAuth client not ready. Please check Toshl API settings."
             return
 
         # Get data from the security module and set request URL.
@@ -56,7 +56,7 @@ class Toshl extends (require "./baseapi.coffee")
         # Make request using OAuth.
         @oauth.get reqUrl, (err, result) =>
             result = JSON.parse result if lodash.isString result
-            callback err, result if lodash.isFunction callback
+            callback err, result
 
     # GET MONTHS
     # -------------------------------------------------------------------------
@@ -70,7 +70,7 @@ class Toshl extends (require "./baseapi.coffee")
         else
             filter = @getJobArgs filter
 
-        params = filter or {}
+        hasCallback = lodash.isFunction callback
 
         # If date is set then use the corresponding URL path.
         if filter.year? and filter.month?
@@ -81,13 +81,13 @@ class Toshl extends (require "./baseapi.coffee")
             urlpath = "months"
 
         # Call Toshl API.
-        @apiRequest urlpath, params, (err, result) =>
+        @apiRequest urlpath, filter, (err, result) =>
             if err?
                 @logError "Toshl.getMonths", err
             else
                 @setData "months", result, filter
 
-            callback err, result if lodash.isFunction callback
+            callback err, result if hasCallback
 
     # GET EXPENSES
     # -------------------------------------------------------------------------
@@ -101,25 +101,28 @@ class Toshl extends (require "./baseapi.coffee")
         else
             filter = @getJobArgs filter
 
-        params = filter or {}
+        hasCallback = lodash.isFunction callback
 
-        @apiRequest "expenses", params, (err, result) =>
+        @apiRequest "expenses", filter, (err, result) =>
             if err?
                 @logError "Toshl.getExpenses", err
             else
                 @setData "expenses", result, filter
 
-            callback err, result if lodash.isFunction callback
+            callback err, result if hasCallback
 
     # Get recent expenses from Toshl for the past days depending on the
     # defined `recentDays` setting.
     getRecentExpenses: (callback) =>
+        hasCallback = lodash.isFunction callback
+
         from = moment().subtract(settings.toshl.recentDays, "d").format settings.toshl.dateFormat
         to = moment().format settings.toshl.dateFormat
+        {from: from, to: to}
 
-        @getExpenses {from: from, to: to}, (err, result) =>
+        @getExpenses filter, (err, result) =>
             @setData "recentExpenses", result if result?
-            callback err, result if callback?
+            callback err, result if hasCallback
 
     # GET INCOME
     # -------------------------------------------------------------------------
@@ -133,25 +136,28 @@ class Toshl extends (require "./baseapi.coffee")
         else
             filter = @getJobArgs filter
 
-        params = filter or {}
+        hasCallback = lodash.isFunction callback
 
-        @apiRequest "income", params, (err, result) =>
+        @apiRequest "income", filter, (err, result) =>
             if err?
                 @logError "Toshl.getIncome", err
             else
                 @setData "income", result, filter
 
-            callback err, result if lodash.isFunction callback
+            callback err, result if hasCallback
 
     # Get recent income from Toshl for the past days depending on the
     # defined `recentDays` setting.
     getRecentIncome: (callback) =>
+        hasCallback = lodash.isFunction callback
+
         from = moment().subtract(settings.toshl.recentDays, "d").format settings.toshl.dateFormat
         to = moment().format settings.toshl.dateFormat
+        filter = {from: from, to: to}
 
-        @getIncome {from: from, to: to}, (err, result) =>
+        @getIncome filter, (err, result) =>
             @setData "recentIncome", result if result?
-            callback err, result if callback?
+            callback err, result if hasCallback
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 # UBI API
 # -----------------------------------------------------------------------------
 # Module to collect data from Ubi sensors and send Ubi commands.
-# More info at www.theubi.com.
+# More info at http://www.theubi.com.
 class Ubi extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
@@ -42,10 +42,6 @@ class Ubi extends (require "./baseapi.coffee")
     # API BASE METHODS
     # -------------------------------------------------------------------------
 
-    # Authentication helper for the Ubi.
-    auth: (req, res) =>
-        security.processAuthToken "ubi", req, res
-
     # Make a request to the Ubi API.
     apiRequest: (path, action, params, callback) =>
         if lodash.isFunction action
@@ -57,7 +53,7 @@ class Ubi extends (require "./baseapi.coffee")
 
         # Make sure API settings were initialized.
         if not @isRunning [@oauth, @oauth.client]
-            callback "Module not running or OAuth client not ready. Please check Ubi API settings." if callback?
+            callback "Module not running or OAuth client not ready. Please check Ubi API settings."
             return
 
         # Set request URL and parameters.
@@ -76,6 +72,8 @@ class Ubi extends (require "./baseapi.coffee")
 
     # Get registered Ubi devices.
     getDevices: (callback) =>
+        hasCallback = lodash.isFunction callback
+        
         @apiRequest "list", (err, result) =>
             if err?
                 @logError "Ubi.getDevices", err
@@ -83,7 +81,7 @@ class Ubi extends (require "./baseapi.coffee")
                 @setData "devices", result.result.data
                 logger.info "Ubi.getDevices", result.result.data
 
-            callback err, result if lodash.isFunction callback
+            callback err, result if hasCallback
 
     # Get sensor data for the specified Ubi.
     getSensorData: (filter, callback) =>
@@ -92,6 +90,8 @@ class Ubi extends (require "./baseapi.coffee")
             filter = null
         else
             filter = @getJobArgs filter
+
+        hasCallback = lodash.isFunction callback
 
         # If device ID was passed then use it, otherwise get for all devices.
         if filter?.id?
@@ -120,7 +120,7 @@ class Ubi extends (require "./baseapi.coffee")
         # Sensor data will be fetched in parallel.
         async.parallelLimit tasks, settings.general.parallelTasksLimit, (err, results) =>
             if err?
-                logger.error "Ubi.getSensorData", filter, err
+                @logError "Ubi.getSensorData", filter, err
             else
                 deviceData = {device_id: results[0]?.device_id}
                 filter = {device_id: results[0]?.device_id} if not filter?
@@ -131,22 +131,27 @@ class Ubi extends (require "./baseapi.coffee")
 
                 # Save merged data.
                 @setData "sensors", deviceData, filter
-                logger.info "Ubi.getSensorData", filter, results
 
-            callback err, deviceData if lodash.isFunction callback
+            callback err, deviceData if hasCallback
 
     # SET AND SEND DEVICE DATA
     # -------------------------------------------------------------------------
 
     # Passes a phrase to be spoken by the Ubi.
     speak: (filter, callback) =>
-        filter = @getJobArgs filter
+        if lodash.isFunction filter
+            callback = filter
+            filter = null
+        else
+            filter = @getJobArgs filter
+
+        hasCallback = lodash.isFunction callback
 
         # The phrase is mandatory.
         if not filter.phrase? or filter.phrase is ""
             errorMsg = "The filter.phrase is missing or empty, phrase parameter is mandatory."
             logger.warn "Ubi.speak", filter, errorMsg
-            callback errorMsg, null if lodash.isFunction callback
+            callback errorMsg, null if hasCallback
             return
 
         # If device ID was passed then use it, otherwise get for all devices.
@@ -160,12 +165,11 @@ class Ubi extends (require "./baseapi.coffee")
             (id) =>
                 @apiRequest id, "speak", {phrase: filter.phrase}, (err, result) =>
                     if err?
-                        logger.error "Ubi.speak", filter, err
+                        @logError "Ubi.speak", filter, err
                     else
                         @setData "phrases", result, filter
-                        logger.info "Ubi.speak", filter, result
 
-                    callback err, result if lodash.isFunction callback
+                    callback err, result if hasCallback
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

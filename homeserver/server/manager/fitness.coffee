@@ -24,13 +24,13 @@ class FitnessManager extends (require "./basemanager.coffee")
 
     # Start the fitness manager and listen to data updates / events.
     start: =>
-        events.on "withings.data.bodymeasures", @onWithingsBody
+        events.on "withings.data.recentBodyMeasures", @onWithingsBody
 
         @baseStart()
 
     # Stop the fitness manager.
     stop: =>
-        events.off "withings.data.bodymeasures", @onWithingsBody
+        events.off "withings.data.recentBodyMeasures", @onWithingsBody
 
         @baseStop()
 
@@ -39,20 +39,20 @@ class FitnessManager extends (require "./basemanager.coffee")
 
     # When current body data is informed by Withings.
     onWithingsBody: (data, filter) =>
-        @data.bodymeasures = {timestamp: 0} if not @data.bodymeasures?
+        @data.recentBodyMeasures = {timestamp: 0} if not @data.recentBodyMeasures?
 
         sorted = lodash.sortBy data.value.body.measuregrps, "date"
         newest = sorted.pop()
 
         # Check if data has more recent readings for body measures.
-        if newest.date > @data.bodymeasures.timestamp
+        if newest.date > @data.recentBodyMeasures.timestamp
             weight = lodash.filter newest.measures, {type: 1}
             fat = lodash.filter newest.measures, {type: 6}
-            @data.bodymeasures.weight = weight[0].value / 1000 if weight.length > 0
-            @data.bodymeasures.fat = fat[0].value / 1000 if fat.length > 0
-            @dataUpdated "bodymeasures"
+            @data.recentBodyMeasures.weight = weight[0].value / 1000 if weight.length > 0
+            @data.recentBodyMeasures.fat = fat[0].value / 1000 if fat.length > 0
+            @dataUpdated "recentBodyMeasures"
 
-        logger.info "FitnessManager.onWithingsBody", @data.bodymeasures
+        logger.info "FitnessManager.onWithingsBody", @data.recentBodyMeasures
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

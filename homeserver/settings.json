@@ -180,7 +180,8 @@
             "url": "http://wbsapi.withings.net/",
             "oauthUrl": "https://oauth.withings.com/account/",
             "oauthVersion": "1.0"
-        }
+        },
+        "recentDays": 30
     },
     // Weather Underground settings. You must set the api.clientId and defaultQuery.
     "wunderground": {

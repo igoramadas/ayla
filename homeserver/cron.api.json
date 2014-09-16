@@ -101,8 +101,8 @@
     ],
     "withings.coffee": [
         {
-            "callback": "getBodyMeasures",
-            "description": "Get body measures for the last month twice a day.",
+            "callback": "getRecentBodyMeasures",
+            "description": "Get recent body measures for the last month twice a day.",
             "schedule": ["10:02:00", "19:02:00"],
             "enabled": true
         }

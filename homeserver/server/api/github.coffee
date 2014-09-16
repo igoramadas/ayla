@@ -1,6 +1,7 @@
 # GITHUB API
+# NOT READY YET!!!
 # -----------------------------------------------------------------------------
-# Module for GitHub ntegration.
+# Module for GitHub integration.
 class GitHub extends (require "./baseapi.coffee")
 
     expresser = require "expresser"

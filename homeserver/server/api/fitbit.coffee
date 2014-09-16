@@ -1,7 +1,7 @@
 # FITBIT API
 # -----------------------------------------------------------------------------
 # Module for activities, sleep and body data using Fitbit trackers.
-# More info at http://dev.fitbit.com
+# More info at http://dev.fitbit.com.
 class Fitbit extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
@@ -48,7 +48,7 @@ class Fitbit extends (require "./baseapi.coffee")
             params = null
 
         if not @isRunning [@oauth, @oauth.client]
-            callback "Module not running or OAuth client not ready. Please check Fitbit API settings." if callback?
+            callback "Module not running or OAuth client not ready. Please check Fitbit API settings."
             return
 
         # Set full request URL.
@@ -60,7 +60,7 @@ class Fitbit extends (require "./baseapi.coffee")
         # Make request using OAuth.
         @oauth.get reqUrl, (err, result) ->
             result = JSON.parse result if lodash.isString result
-            callback err, result if lodash.isFunction callback
+            callback err, result
 
     # SLEEP DATA
     # -------------------------------------------------------------------------
@@ -74,6 +74,8 @@ class Fitbit extends (require "./baseapi.coffee")
             filter = null
         else
             filter = @getJobArgs filter
+
+        hasCallback = lodash.isFunction callback
 
         # Parse date and set filter.
         if not filter?
@@ -94,7 +96,7 @@ class Fitbit extends (require "./baseapi.coffee")
             else
                 @setData "sleep", result, filter
 
-            callback err, result if lodash.isFunction callback
+            callback err, result if hasCallback
 
     # ACTIVITIES DATA
     # -------------------------------------------------------------------------
@@ -107,6 +109,8 @@ class Fitbit extends (require "./baseapi.coffee")
             filter = null
         else
             filter = @getJobArgs filter
+
+        hasCallback = lodash.isFunction callback
 
         # Parse date and set filter.
         if not filter?
@@ -127,7 +131,7 @@ class Fitbit extends (require "./baseapi.coffee")
             else
                 @setData "activities", result, filter
 
-            callback err, result if lodash.isFunction callback
+            callback err, result if hasCallback
 
     # BODY DATA
     # -------------------------------------------------------------------------
@@ -139,6 +143,10 @@ class Fitbit extends (require "./baseapi.coffee")
         if lodash.isFunction filter
             callback = filter
             filter = null
+        else
+            filter = @getJobArgs filter
+
+        hasCallback = lodash.isFunction callback
 
         # Parse dates and set filter.
         if not filter?
@@ -166,7 +174,7 @@ class Fitbit extends (require "./baseapi.coffee")
                 results = lodash.merge results[0], results[1]
                 @setData "body", results, filter
 
-            callback err, results if callback?
+            callback err, results if hasCallback
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

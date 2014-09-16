@@ -48,7 +48,7 @@ class EmailManager extends (require "./basemanager.coffee")
 
     # Start listening to new message events from the server.
     start: =>
-        events.on "emailmanager.send", @sendEmail
+        events.on "emailManager.send", @sendEmail
 
         # Send email telling Ayla home server has started managing emails.
         if @defaultToMobile?
@@ -68,7 +68,7 @@ class EmailManager extends (require "./basemanager.coffee")
 
     # Stop listening to new messages and disconnect. Set `running` to false.
     stop: =>
-        events.off "emailmanager.send", @sendEmail
+        events.off "emailManager.send", @sendEmail
 
         # Close IMAP clients.
         for account of @accounts
