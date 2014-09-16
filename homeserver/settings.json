@@ -133,20 +133,21 @@
         "sslKeyFile": "ssl.key",
         "sslCertFile": "ssl.cer"
     },
-    // Strava settings.
+    // Strava settings. The `recentDays` by default is set to 30 days.
     "strava": {
         "api": {
-            "url": "https://www.strava.com/api/",
+            "url": "https://www.strava.com/api/v3/",
             "oauthPathAuthorize": "oauth/authorize",
             "oauthPathToken": "oauth/token",
+            "oauthPassRedirect": true,
             "oauthResponseType": "code",
             "oauthUrl": "https://www.strava.com/",
-            "oauthVersion": "2.0",
-            "oauthUseHeader": true
-        }
+            "oauthVersion": "2.0"
+        },
+        "recentDays": 30
     },
     // Toshl settings. The API clientId, secret and oauthState must be set on the private settings file.
-    // The `recentDays` by default is set to 14 days.
+    // The `recentDays` by default is set to 30 days.
     "toshl": {
         "api": {
             "url": "https://api.toshl.com/",
@@ -157,7 +158,7 @@
             "oauthVersion": "2.0",
             "oauthUseHeader": true
         },
-        "recentDays": 14,
+        "recentDays": 30,
         "dateFormat": "YYYY-MM-DD"
     },
     // Ubi settings. API clientId and secret must be set on the private settings file.

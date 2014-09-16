@@ -52,7 +52,7 @@ class Strava extends (require "./baseapi.coffee")
             return
 
         # Get data from the security module and set request URL.
-        reqUrl = settings.toshl.api.url + path
+        reqUrl = settings.strava.api.url + path
         reqUrl += "?" + querystring.stringify params if params?
 
         logger.debug "Strava.apiRequest", reqUrl
@@ -71,9 +71,45 @@ class Strava extends (require "./baseapi.coffee")
             if err?
                 @logError "Strava.getProfile", err
             else
-                @setData "profile", result, filter
+                @setData "profile", result
 
             callback err, result if lodash.isFunction callback
+
+    # GET ACTIVITIES
+    # ------------------------------------------------------------------------
+
+    # Gets a list of activities for the current athlete. The filter can have
+    # the before and after as timestamps (seconds since unix epoch), and
+    # page and per_page options.
+    getActivities: (filter, callback) =>
+        if lodash.isFunction filter
+            callback = filter
+            filter = null
+        else
+            filter = @getJobArgs filter
+
+        # Properly parse the filter.
+        filter = {} if not filter?
+
+        @apiRequest "athlete/activities", filter, (err, result, resp) =>
+            if err?
+                @logError "Strava.getActivities", filter, err
+            else
+                @setData "activities", result, filter
+
+            callback err, result if lodash.isFunction callback
+
+    # Gets a list of recent activities.
+    getRecentActivities: (callback) =>
+        filter = {after: moment().subtract(settings.strava.recentDays, "d").unix()}
+
+        @getActivities filter, (err, result) =>
+            if err?
+                @logError "Strava.getRecentActivities", err
+            else
+                @setData "recentActivities", result
+
+        callback err, result if lodash.isFunction callback
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

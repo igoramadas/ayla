@@ -191,7 +191,6 @@ class Netatmo extends (require "./baseapi.coffee")
             else
                 body = getResultBody result, params
                 @setData "indoor", body, filter
-                logger.info "Netatmo.getIndoor", filter, body
 
             callback err, result if lodash.isFunction callback
 

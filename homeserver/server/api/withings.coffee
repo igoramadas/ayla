@@ -98,7 +98,6 @@ class Withings extends (require "./baseapi.coffee")
                 logger.error "Withings.getBodyMeasures", "Invalid response!", result.status, filter
             else
                 @setData "bodymeasures", result, filter
-                logger.info "Withings.getBodyMeasures", filter, result
 
             callback err, result if lodash.isFunction callback
 

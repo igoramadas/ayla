@@ -9,7 +9,7 @@
         {
             "callback": "cleanSnaps",
             "description": "Delete old camera snaps twice a day.",
-            "schedule": ["06:00:00", "16:00:00"],
+            "schedule": ["06:03:00", "18:03:00"],
             "enabled": true
         }
     ],
@@ -32,14 +32,14 @@
     "netatmo.coffee": [
         {
             "callback": "getDevices",
-            "description": "Get Netatmo device list three times a day.",
-            "schedule": ["08:00:00", "15:00:00", "23:00:00"],
+            "description": "Get Netatmo device list twice a day.",
+            "schedule": ["08:04:00", "18:04:00"],
             "enabled": true
         },
         {
             "callback": "getAllOutdoor",
-            "description": "Probe outdoor Netatmo conditions every 10 minutes.",
-            "schedule": 600,
+            "description": "Probe outdoor Netatmo conditions every 5 minutes.",
+            "schedule": 300,
             "enabled": true
         },
         {
@@ -77,25 +77,33 @@
             "enabled": true
         }
     ],
+    "strava.coffee": [
+        {
+            "callback": "getProfile",
+            "description": "Get Strava profile twice a day.",
+            "schedule": ["10:21:00", "21:21:00"],
+            "enabled": true
+        }
+    ],
     "toshl.coffee": [
         {
             "callback": "getRecentExpenses",
-            "description": "Probe Toshl to get recent expenses three times a day",
-            "schedule": ["10:00:00", "16:00:00", "22:00:00"],
+            "description": "Probe Toshl to get recent expenses four times a day",
+            "schedule": ["08:16:00", "12:16:00", "16:16:00", "20:16:00"],
             "enabled": true
         },
         {
             "callback": "getRecentIncome",
-            "description": "Probe Toshl to get recent income twice a day",
-            "schedule": ["09:00:00", "18:00:00"],
+            "description": "Probe Toshl to get recent income three times a day",
+            "schedule": ["08:18:00", "14:18:00", "20:18:00"],
             "enabled": true
         }
     ],
     "withings.coffee": [
         {
             "callback": "getBodyMeasures",
-            "description": "Get body measures for the last month.",
-            "schedule": 60,
+            "description": "Get body measures for the last month twice a day.",
+            "schedule": ["10:02:00", "19:02:00"],
             "enabled": true
         }
     ],
@@ -108,14 +116,14 @@
         },
         {
             "callback": "getForecast",
-            "description": "Get updated weather forecast twice a day.",
-            "schedule": ["10:00:00", "20:00:00"],
+            "description": "Get updated weather forecast three times a day.",
+            "schedule": ["08:07:00", "14:07:00", "20:07:00"],
             "enabled": true
         },
         {
             "callback": "getAstronomy",
-            "description": "Get updated astronomy (sunrise, sunset, moon) every day.",
-            "schedule": ["02:00:00"],
+            "description": "Get updated astronomy (sunrise, sunset, moon) twice a day.",
+            "schedule": ["02:01:00", "14:01:00"],
             "enabled": true
         }
     ]
