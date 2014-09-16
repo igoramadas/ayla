@@ -73,8 +73,8 @@ class BaseManager extends (require "../basemodule.coffee")
         # Only emit if data is valid.
         if data?
             data.timestamp = moment().unix()
-            sockets.emit "#{@moduleId}.#{property}", data
-            events.emit "#{@moduleId}.#{property}", data
+            sockets.emit "#{@moduleName}.#{property}", data
+            events.emit "#{@moduleName}.#{property}", data
         else
             logger.debug "#{@moduleName}.emitData", property, "Data is null or not defined. Do not emit."
 
