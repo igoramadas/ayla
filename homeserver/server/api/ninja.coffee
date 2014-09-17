@@ -1,7 +1,7 @@
 # NINJA BLOCKS API
 # -----------------------------------------------------------------------------
 # Module for Ninja Blocks and its connected devices.
-# More info at http://docs.ninja.is
+# More info at http://docs.ninja.is.
 class Ninja extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
@@ -48,6 +48,8 @@ class Ninja extends (require "./baseapi.coffee")
 
     # Gets the list of registered devices with Ninja Blocks.
     getDevices: (callback) =>
+        hasCallback = lodash.isFunction callback
+
         if not @ninjaApi?
             logger.warn "Ninja.getDevices", "Ninja API client not started (probably missing settings). Abort!"
             return
@@ -63,10 +65,8 @@ class Ninja extends (require "./baseapi.coffee")
                 @setCurrentWeather result
                 @setRf433 result
 
-                logger.info "Ninja.getDevices", "Got #{lodash.size result} devices."
-
             # Callback set?
-            callback err, result if lodash.isFunction callback
+            callback err, result if hasCallback
 
     # SET DEVICE DATA
     # -------------------------------------------------------------------------
@@ -93,7 +93,6 @@ class Ninja extends (require "./baseapi.coffee")
                 weather.humidity.push {shortName: t.shortName, value: t.last_data.DA, timestamp: t.last_data.timestamp}
 
         @setData "weather", weather
-        logger.info "Ninja.setCurrentWeather", weather
 
     # Helper to set the main RF 433 device.
     setRf433: (devices) =>
@@ -101,7 +100,6 @@ class Ninja extends (require "./baseapi.coffee")
 
         if guid?
             @setData "rf433", {guid: guid, device: devices[guid]}
-            logger.debug "Ninja.setRf433", "Detected #{lodash.size devices[guid].subDevices} RF433 devices."
 
     # RF 433 SOCKETS
     # -------------------------------------------------------------------------
@@ -109,11 +107,19 @@ class Ninja extends (require "./baseapi.coffee")
     # Actuate remote controlled RF433 sockets.The filter can be the subdevice ID,
     # short name defined or explicit filter.
     actuate433: (filter, callback) =>
+        if lodash.isFunction filter
+            callback = filter
+            filter = null
+        else
+            filter = @getJobArgs filter
+
+        hasCallback = lodash.isFunction callback
+
         if not @isRunning [@ninjaApi]
-            callback "Ninja API client not running. Please check Ninja API settings." if callback?
+            callback "Ninja API client not running. Please check Ninja API settings." if hasCallback?
             return
         else if not @data.rf433?.device?
-            callback "Ninja.actuate433", "RF 433 device not found." if callback?
+            callback "Ninja.actuate433", "RF 433 device not found." if hasCallback?
             return
 
         subDevices = @data.rf433.device.subDevices

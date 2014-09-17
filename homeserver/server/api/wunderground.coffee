@@ -49,7 +49,7 @@ class Wunderground extends (require "./baseapi.coffee")
             params = {}
 
         if not @isRunning [settings.wunderground.api]
-            callback "Wunderground API is not set, please check the settings." if callback?
+            callback "Wunderground API is not set, please check the settings."
             return
 
         reqUrl = "#{settings.wunderground.api.url}#{settings.wunderground.api.clientId}/#{urlpath}/q/"
@@ -65,7 +65,7 @@ class Wunderground extends (require "./baseapi.coffee")
             q = settings.wunderground.defaultQuery
 
         @makeRequest reqUrl + "#{q}.json", (err, result) =>
-            callback err, result if lodash.isFunction callback
+            callback err, result
 
     # GET WEATHER DATA
     # -------------------------------------------------------------------------
@@ -79,6 +79,8 @@ class Wunderground extends (require "./baseapi.coffee")
         else
             filter = @getJobArgs filter
 
+        hasCallback = lodash.isFunction callback
+
         @apiRequest "conditions", filter, (err, result) =>
             if err?
                 @logError "Wunderground.getConditions", err
@@ -86,7 +88,7 @@ class Wunderground extends (require "./baseapi.coffee")
                 result = result.current_observation
                 @setData "conditions", result, filter
 
-            callback err, result if lodash.isFunction callback
+            callback err, result if hasCallback
 
     # Get the weather forecast for the next 3 days. If not filter is specified,
     # use default location from settings.netatmo.defaultQuery.
@@ -97,6 +99,8 @@ class Wunderground extends (require "./baseapi.coffee")
         else
             filter = @getJobArgs filter
 
+        hasCallback = lodash.isFunction callback
+
         @apiRequest "forecast", filter, (err, result) =>
             if err?
                 @logError "Wunderground.getForecast", err
@@ -104,7 +108,7 @@ class Wunderground extends (require "./baseapi.coffee")
                 result = result.forecast?.simpleforecast
                 @setData "forecast", result, filter
 
-            callback err, result if lodash.isFunction callback
+            callback err, result if hasCallback
 
     # Get sunrise and sunset hours and other astronomy details for today. If not filter
     # is specified, use default location from settings.netatmo.defaultQuery.
@@ -115,6 +119,8 @@ class Wunderground extends (require "./baseapi.coffee")
         else
             filter = @getJobArgs filter
 
+        hasCallback = lodash.isFunction callback
+
         @apiRequest "astronomy", filter, (err, result) =>
             if err?
                 @logError "Wunderground.getAstronomy", err
@@ -122,7 +128,7 @@ class Wunderground extends (require "./baseapi.coffee")
                 result = result.moon_phase
                 @setData "astronomy", result, filter
 
-            callback err, result if lodash.isFunction callback
+            callback err, result if hasCallback
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

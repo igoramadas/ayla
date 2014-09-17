@@ -28,8 +28,8 @@ class LightsManager extends (require "./basemanager.coffee")
         events.on "hue.light.state", @onHueLightState
         events.on "ninja.data.rf433", @onNinjaDevices
 
-        sockets.listenTo "lightsmanager.hue.toggle", @onClientHueToggle
-        sockets.listenTo "lightsmanager.ninja.toggle", @onClientHNinjaToggle
+        sockets.listenTo "lightsManager.hue.toggle", @onClientHueToggle
+        sockets.listenTo "lightsManager.ninja.toggle", @onClientHNinjaToggle
 
         @baseStart()
 
@@ -39,8 +39,8 @@ class LightsManager extends (require "./basemanager.coffee")
         events.off "hue.light.state", @onHueLightState
         events.off "ninja.data.rf433", @onNinjaDevices
 
-        sockets.stopListening "lightsmanager.hue.toggle", @onClientHueToggle
-        sockets.stopListening "lightsmanager.ninja.toggle", @onClientHNinjaToggle
+        sockets.stopListening "lightsManager.hue.toggle", @onClientHueToggle
+        sockets.stopListening "lightsManager.ninja.toggle", @onClientHNinjaToggle
 
         @baseStop()
 

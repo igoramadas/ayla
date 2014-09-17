@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # Collect weather and climate data from Netatmo devices. Supports indoor and
 # outdoor modules, rain gauge, and device list is fetched via the getDevices method.
-# More info at http://dev.netatmo.com
+# More info at http://dev.netatmo.com.
 class Netatmo extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
@@ -69,7 +69,7 @@ class Netatmo extends (require "./baseapi.coffee")
             params = null
 
         if not @isRunning [@oauth, @oauth.client]
-            callback "Module not running or OAuth client not ready. Please check Netatmo API settings." if callback?
+            callback "Module not running or OAuth client not ready. Please check Netatmo API settings."
             return
 
         # Set default parameters and request URL.
@@ -85,7 +85,7 @@ class Netatmo extends (require "./baseapi.coffee")
         # Make request using OAuth.
         @oauth.get reqUrl, (err, result) =>
             result = JSON.parse result if result? and lodash.isString result
-            callback err, result if lodash.isFunction callback
+            callback err, result
 
     # Helper to get API request parameters based on the passed filter.
     # Sets default end date to now and scale to 30 minutes.
@@ -108,6 +108,7 @@ class Netatmo extends (require "./baseapi.coffee")
 
     # Get device and related modules from Netatmo.
     getDevices: (callback) =>
+        hasCallback = lodash.isFunction callback
         params =  {app_type: "app_station"}
 
         @apiRequest "devicelist", params, (err, result) =>
@@ -121,9 +122,8 @@ class Netatmo extends (require "./baseapi.coffee")
                     d.modules = lodash.filter result.body.modules, {"main_device": d["_id"]}
 
                 @setData "devices", deviceData
-                logger.info "Netatmo.getDevices", "Got #{result.body.devices.length} devices, #{result.body.modules.length} modules."
 
-            callback err, result if lodash.isFunction callback
+            callback err, result if hasCallback
 
     # OUTDOOR WEATHER DATA
     # -------------------------------------------------------------------------
@@ -136,13 +136,15 @@ class Netatmo extends (require "./baseapi.coffee")
         else
             filter = @getJobArgs filter
 
+        hasCallback = lodash.isFunction callback
+
         # Set outdoor parameters.
         params = @getParams filter
         params["type"] = "Temperature,Humidity,Rain"
 
         # Module ID is mandatory!
         if not params["module_id"]?
-            callback "A valid outdoor moduleId is mandatory."
+            callback "A valid outdoor moduleId is mandatory." if hasCallback
             return
 
         # Make the request for outdoor readings.
@@ -154,7 +156,7 @@ class Netatmo extends (require "./baseapi.coffee")
                 @setData "outdoor", body, filter
                 logger.info "Netatmo.getOutdoor", filter, body
 
-            callback err, result if lodash.isFunction callback
+            callback err, result if hasCallback
 
     # Get current conditions for all outdoor modules (module type NAModule1 and NAModule3 for rain gauge).
     getAllOutdoor: =>
@@ -180,6 +182,8 @@ class Netatmo extends (require "./baseapi.coffee")
         else
             filter = @getJobArgs filter
 
+        hasCallback = lodash.isFunction callback
+
         # Set indoor parameters.
         params = @getParams filter
         params["type"] = "Temperature,Humidity,Pressure,CO2,Noise"
@@ -191,9 +195,8 @@ class Netatmo extends (require "./baseapi.coffee")
             else
                 body = getResultBody result, params
                 @setData "indoor", body, filter
-                logger.info "Netatmo.getIndoor", filter, body
 
-            callback err, result if lodash.isFunction callback
+            callback err, result if hasCallback
 
     # Get current conditions for all indoor modules (module type NAModule4).
     getAllIndoor: =>

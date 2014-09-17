@@ -56,7 +56,7 @@ class BaseManager extends (require "../basemodule.coffee")
             body = options.message
 
         # Set message options and send email.
-        events.emit "emailmanager.send", {mobile: true, subject: options.subject, body: body}
+        events.emit "emailManager.send", {mobile: true, subject: options.subject, body: body}
 
         # Add to the notifications cache.
         @notifications[options.subject] = {options: options, timestamp: moment().unix()}
@@ -73,8 +73,8 @@ class BaseManager extends (require "../basemodule.coffee")
         # Only emit if data is valid.
         if data?
             data.timestamp = moment().unix()
-            sockets.emit "#{@moduleId}.#{property}", data
-            events.emit "#{@moduleId}.#{property}", data
+            sockets.emit "#{@moduleName}.#{property}", data
+            events.emit "#{@moduleName}.#{property}", data
         else
             logger.debug "#{@moduleName}.emitData", property, "Data is null or not defined. Do not emit."
 

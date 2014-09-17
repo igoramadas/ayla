@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # Module for Electric Imp devices. Compatible with the Hannah Dev Board
 # running the agent and device code located under the /imp folder.
-# More info at http://electricimp.com
+# More info at http://electricimp.com.
 class ElectricImp extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
@@ -38,23 +38,27 @@ class ElectricImp extends (require "./baseapi.coffee")
     # -------------------------------------------------------------------------
 
     # Get sensors data from the specified Electric Imp device. If no `deviceIds` is set
-    # with options then get data for all registered devices.
-    getDeviceData: (options, callback) =>
-        if not callback? and lodash.isFunction options
-            callback = options
-            options = null
+    # with filter then get data for all registered devices.
+    getDeviceData: (filter, callback) =>
+        if lodash.isFunction filter
+            callback = filter
+            filter = null
+        else
+            filter = @getJobArgs filter
+
+        hasCallback = lodash.isFunction callback
 
         if not @isRunning [settings.electricimp.devices]
-            callback "Module not running or devices not set. Please check the Electric Imp settings." if callback?
+            callback "Module not running or devices not set. Please check the Electric Imp settings." if hasCallback
             return
 
         # Properly parse device ids (all devices, multiple devices if array, single device if string).
-        if lodash.isArray options
-            deviceIds = options
-        else if lodash.isString options
-            deviceIds = [options]
-        else if options?.deviceIds?
-            deviceIds = options.deviceIds
+        if lodash.isArray filter
+            deviceIds = filter
+        else if lodash.isString filter
+            deviceIds = [filter]
+        else if filter?.deviceIds?
+            deviceIds = filter.deviceIds
         else
             deviceIds = settings.electricimp.devices
 
@@ -68,7 +72,6 @@ class ElectricImp extends (require "./baseapi.coffee")
                         # If the imp code has no id, set the same as the device.
                         result.id = id if not result.id?
                         @setData result.id, result
-                        logger.info "ElectricImp.getDeviceData", id, result
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

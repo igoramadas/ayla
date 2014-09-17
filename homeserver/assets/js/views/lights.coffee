@@ -20,13 +20,13 @@ class LightsView extends ayla.BaseView
         lightId = parentDiv.data "lightid"
         state.on = not state.on
 
-        ayla.sockets.emit "lightsmanager.hue.toggle", {lightId: lightId, on: state.on}
+        ayla.sockets.emit "lightsManager.hue.toggle", {lightId: lightId, on: state.on}
 
     # Toggle Ninja lights (these are actually power sockets).
     ninjaLightToggle: (light, e) =>
         lightId = light.id
 
-        ayla.sockets.emit "lightsmanager.ninja.toggle", {lightId: lightId}
+        ayla.sockets.emit "lightsManager.ninja.toggle", {lightId: lightId}
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------

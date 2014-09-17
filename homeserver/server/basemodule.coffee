@@ -104,7 +104,7 @@ class BaseModule
                 if err?
                     @logError "#{@moduleName}.setData", key, err
                 else
-                    logger.debug "#{@moduleName}.setData", key, value
+                    logger.info "#{@moduleName}.setData", key, dbData.value
 
         catch ex
             @logError "#{@moduleName}.setData", key, ex.message, ex.stack

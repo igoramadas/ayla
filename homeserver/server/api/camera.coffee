@@ -116,7 +116,6 @@ class Camera extends (require "./baseapi.coffee")
                 @logError "Camera.takeSnap", cam.host, err
             else
                 cam.filename = saveTo
-                logger.info "Camera.takeSnap", cam.host, cam.filename
                 @setData cam.host, cam
 
             callback err, result if lodash.isFunction callback
@@ -139,6 +138,8 @@ class Camera extends (require "./baseapi.coffee")
     cleanSnaps: (olderThanDays, callback) =>
         count = 0
         olderThanDays = settings.camera.snapsMaxAgeDays ir not olderThanDays?
+
+        hasCallback = lodash.isFunction callback
 
         # Read snaps path to iterate and check files to be deleted.
         fs.readdir @snapsPath, (err, files) =>
@@ -174,7 +175,7 @@ class Camera extends (require "./baseapi.coffee")
             else
                 logger.info "Camera.cleanSnaps", "No old snaps were deleted."
 
-            callback err, count if callback?
+            callback err, count if hasCallback
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

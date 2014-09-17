@@ -26,8 +26,8 @@ class Hue extends (require "./baseapi.coffee")
     start: =>
         @baseStart()
 
-        events.on "hue.switchgrouplights", @switchGroupLights
-        events.on "hue.setlightstate", @setLightState
+        events.on "hue.switchGroupLights", @switchGroupLights
+        events.on "hue.setLightState", @setLightState
 
         if settings.modules.getDataOnStart
             @refreshHub()
@@ -36,8 +36,8 @@ class Hue extends (require "./baseapi.coffee")
     stop: =>
         @baseStop()
 
-        events.off "hue.switchgrouplights", @switchGroupLights
-        events.off "hue.setlightstate", @setLightState
+        events.off "hue.switchGroupLights", @switchGroupLights
+        events.off "hue.setLightState", @setLightState
 
     # API BASE METHODS
     # -------------------------------------------------------------------------
@@ -94,6 +94,8 @@ class Hue extends (require "./baseapi.coffee")
     refreshHub: (callback) =>
         logger.debug "Hue.refreshHub"
 
+        hasCallback = lodash.isFunction callback
+
         @apiRequest "", (err, results) =>
             if err?
                 @logError "Hue.refreshHub", err
@@ -111,10 +113,7 @@ class Hue extends (require "./baseapi.coffee")
                 lightCount = lodash.keys(results.lights).length if results?.lights?
                 groupCount = lodash.keys(results.groups).length if results?.groups?
 
-                # Log and emit refresh event.
-                logger.info "Hue.refreshHub", "#{lightCount} lights and #{groupCount} groups."
-
-            callback err, results if callback?
+            callback err, results if hasCallback
 
     # LIGHT CONTROL
     # -------------------------------------------------------------------------
@@ -125,6 +124,8 @@ class Hue extends (require "./baseapi.coffee")
             throw new Error "A valid light, array of lights or filter must be specified."
         else
             logger.debug "Hue.setLightState", filter, state
+
+        hasCallback = lodash.isFunction callback
 
         # Set request parameter to use PUT and pass the full state and create tasks array.
         params = {method: "PUT", body: state}
@@ -160,7 +161,7 @@ class Hue extends (require "./baseapi.coffee")
                 logger.info "Hue.setLightState", filter, state
                 events.emit "hue.light.state", filter, state
 
-            callback err, results if callback?
+            callback err, results if hasCallback
 
     # Turn group lights on (true) or off (false). If no ID is passed or ID is 0, switch all lights.
     switchGroupLights: (id, turnOn, callback) =>
@@ -179,6 +180,7 @@ class Hue extends (require "./baseapi.coffee")
     # Turn the specified light on (true) or off (false).
     switchLight: (id, turnOn, callback) =>
         logger.debug "Hue.switchLight", id, turnOn
+
         @setLightState {lightId: id}, {on: turnOn}, callback
 
     # JOBS
