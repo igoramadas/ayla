@@ -26,6 +26,7 @@ class BaseModule
         # Create initial data or an empty object if none was passed.
         initialData = {} if not initialData?
         @data = initialData if not @data?
+        expresser.datastore[@moduleName] = @data
 
         # Create module controlling and health objects.
         @errors = {}

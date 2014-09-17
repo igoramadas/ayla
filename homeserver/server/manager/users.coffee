@@ -5,13 +5,13 @@ class UsersManager extends (require "./basemanager.coffee")
 
     expresser = require "expresser"
 
+    datastore = expresser.datastore
     events = expresser.events
     lodash = expresser.libs.lodash
     logger = expresser.logger
     mailer = expresser.mailer
     moment = expresser.libs.moment
     settings = expresser.settings
-    weatherManager = require "./weather.coffee"
 
     title: "Users"
 
@@ -104,8 +104,8 @@ class UsersManager extends (require "./basemanager.coffee")
             # If first person online, get current time, sunrise and sunset hours.
             if not anyoneOnline
                 currentHour = moment().hour()
-                sunrise = weatherManager.data.astronomy?.sunrise.hour or 7
-                sunset = weatherManager.data.astronomy?.sunset.hour or 17
+                sunrise = datastore.weatherManager.astronomy?.sunrise.hour or 7
+                sunset = datastore.weatherManager.astronomy?.sunset.hour or 17
 
                 # Is it dark now? Turn lights on!
                 if currentHour < sunrise or currentHour > sunset

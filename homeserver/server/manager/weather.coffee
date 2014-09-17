@@ -172,7 +172,7 @@ class WeatherManager extends (require "./basemanager.coffee")
 
         # Update conditions and set icon.
         @data.conditions.setData data
-        @data.conditions.icon = @getWeatherIcon data.value.icon
+        @data.conditions.icon = @getWeatherIcon data.value, true
         @dataUpdated "conditions"
         logger.info "WeatherManager.setCurrentConditions", @data.conditions
 
@@ -189,7 +189,7 @@ class WeatherManager extends (require "./basemanager.coffee")
             a.avgHumidity = d.avehumidity
             a.maxHumidity = d.maxhumidity
             a.minHumidity = d.minhumidity
-            a.icon = @getWeatherIcon d.icon
+            a.icon = @getWeatherIcon d
 
             # Set the friendly date string.
             if a.date is moment().format("L")
@@ -298,8 +298,9 @@ class WeatherManager extends (require "./basemanager.coffee")
         return avg / count
 
     # Helper to get correct weather icon. Default is sunny / cloudy.
-    getWeatherIcon: (icon) =>
+    getWeatherIcon: (data, nightMode) =>
         result = "sunny-cloudy"
+        icon = data.icon
 
         currentHour = moment().hour()
         sunriseHour = parseInt @data.astronomy.sunrise?.split(":")[0]
@@ -319,7 +320,7 @@ class WeatherManager extends (require "./basemanager.coffee")
             result = "thunder"
 
         # Force moon icon when clear skies at night.
-        if icon.indexOf("sunny") >= 0 and currentHour < sunriseHour or currentHour > sunsetHour
+        if nightMode and result.indexOf("sunny") >= 0 and (currentHour < sunriseHour or currentHour > sunsetHour)
             result = "moon"
 
         return result

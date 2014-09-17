@@ -38,14 +38,14 @@ block contents
                     table
                         thead
                             tr
-                                th.title Date
+                                th.title Forecast
                                 th.icon
                                 th.temperature Temp
                                 th.humidity Humidity
                                 th.wind Wind
                         tbody
                             tr(data-bind="with: conditions")
-                                td.date Now
+                                td.date Current
                                 td.icon(data-bind="css: icon")
                                 td.temperature(data-bind="text: temperature ? temperature + '°C' : '-'")
                                 td.humidity(data-bind="text: humidity ? humidity + '%' : '-'")
