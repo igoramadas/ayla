@@ -11,7 +11,7 @@ class ExpenseModel
         value = parseFloat value
 
         if obj.modified?
-            timestamp = moment(obj.modified.substring 20).unix()
+            timestamp = moment(new Date(obj.modified.substring 20)).unix()
         else
             timestamp = obj.timestamp
 

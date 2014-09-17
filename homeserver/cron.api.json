@@ -93,7 +93,7 @@
             "enabled": true
         },
         {
-            "callback": "getRecentIncome",
+            "callback": "getRecentIncomes",
             "description": "Probe Toshl to get recent income three times a day",
             "schedule": ["08:18:00", "14:18:00", "20:18:00"],
             "enabled": true
