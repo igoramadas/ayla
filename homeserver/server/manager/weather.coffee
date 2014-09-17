@@ -27,9 +27,9 @@ class WeatherManager extends (require "./basemanager.coffee")
         indoor.co2 = @getWeatherAverage "indoor", "temperature"
 
         outside = {}
-        outside.temperature = @getWeatherAverage "outside", "temperature"
-        outside.humidity = @getWeatherAverage "outside", "humidity"
-        outside.rain = @getWeatherAverage "outside", "rain"
+        outside.temperature = @getWeatherAverage "outdoor", "temperature"
+        outside.humidity = @getWeatherAverage "outdoor", "humidity"
+        outside.rain = @getWeatherAverage "outdoor", "rain"
 
         return {indoor: indoor, outside: outside}
 
@@ -108,7 +108,7 @@ class WeatherManager extends (require "./basemanager.coffee")
 
         # Alert about bad room conditions.
         if condition isnt "good"
-            notifyOptions.subject = "#{room.title}: #{condition}"
+            notifyOptions.subject = "#{room.title}: #{room.climate.condition}"
             notifyOptions.message =  "Conditions: temperature #{room.climate.temperature}, humidity #{room.climate.humidity}, CO2 #{room.climate.co2}."
 
             @notify notifyOptions
@@ -212,7 +212,7 @@ class WeatherManager extends (require "./basemanager.coffee")
         else
             source = {"netatmo": ""}
 
-        @setRoomClimate source, data
+        @setRoomClimate data, source
 
     # Check outdoor weather conditions using Netatmo.
     onNetatmoOutdoor: (data, filter) =>
@@ -286,12 +286,12 @@ class WeatherManager extends (require "./basemanager.coffee")
         if where is "indoor"
             arr = lodash.pluck settings.home.rooms, "id"
         else
-            arr = ["outdoor", "conditions"]
+            arr = ["outside", "conditions"]
 
         # Iterate readings.
         for r in arr
-            if @data[r][prop]?
-                avg += @data[r][prop]
+            if @data[r].climate[prop]?
+                avg += @data[r].climate[prop]
                 count += 1
 
         # Return average reading for the specified property.

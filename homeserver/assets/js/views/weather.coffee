@@ -41,16 +41,17 @@ class WeatherView extends ayla.BaseView
 
             if room?
                 room = room()
+                climate = room.climate
 
                 # Get specific readings.
-                if room.temperature?
-                    temp += parseFloat room.temperature
+                if climate.temperature?
+                    temp += parseFloat climate.temperature
                     tempCount++
-                if room.humidity?
-                    humidity += parseFloat room.humidity
+                if climate.humidity?
+                    humidity += parseFloat climate.humidity
                     humidityCount++
-                if room.co2?
-                    co2 += parseFloat room.co2
+                if climate.co2?
+                    co2 += parseFloat climate.co2
                     co2Count++
 
         tempCount = 1 if tempCount is 0

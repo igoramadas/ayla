@@ -13,6 +13,7 @@ class RoomModel extends (require "./basemodel.coffee")
     # Set room data and check climate conditions straight away.
     setData: (obj) =>
         data = obj.value or obj
+        data.indoor = true
 
         @title = data.title or @title
         @climateSource = data.climateSource or @climateSource

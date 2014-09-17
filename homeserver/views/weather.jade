@@ -21,7 +21,7 @@ block contents
                                 th.co2 CO2
                         tbody(data-bind="foreach: rooms")
                             tr.room(data-bind="css: $root[id]().conditionCss, with: $root[id]")
-                                td.title(data-bind="text: title")
+                                td.title(data-bind="text: title", nowrap)
                                 td.temperature(data-bind="text: climate.temperature ? climate.temperature + '°C' : '-'")
                                 td.humidity(data-bind="text: climate.humidity ? climate.humidity + '%' : '-'")
                                 td.co2(data-bind="text: climate.co2 ? climate.co2 + ' ppm' : '-'")

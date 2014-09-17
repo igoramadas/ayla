@@ -253,11 +253,10 @@ class EmailManager extends (require "./basemanager.coffee")
         if not options.to?
             options.to = if options.mobile then @defaultToMobile else @defaultTo
 
-        logger.info "EmailManager.sendEmail", "From #{options.from} to #{options.to}: #{options.subject}"
+        logger.info "EmailManager.sendEmail", "To #{options.to}: #{options.subject}"
 
         # Send the email using the Expresser Mailer module.
         mailer.send options, (err, result) => callback err, result if callback?
-
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------
