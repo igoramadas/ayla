@@ -22,17 +22,17 @@ block contents
                         tbody(data-bind="foreach: rooms")
                             tr.room(data-bind="css: $root[id]().conditionCss, with: $root[id]")
                                 td.title(data-bind="text: title")
-                                td.temperature(data-bind="text: temperature ? temperature + '°C' : '-'")
-                                td.humidity(data-bind="text: humidity ? humidity + '%' : '-'")
-                                td.co2(data-bind="text: co2 ? co2 + ' ppm' : '-'")
+                                td.temperature(data-bind="text: climate.temperature ? climate.temperature + '°C' : '-'")
+                                td.humidity(data-bind="text: climate.humidity ? climate.humidity + '%' : '-'")
+                                td.co2(data-bind="text: climate.co2 ? climate.co2 + ' ppm' : '-'")
 
             li.outside
                 div
                     h2 Outside
                     div.summary
-                        span.temperature(data-bind="text: outdoor().temperature ? outdoor().temperature + '°C' : '-'")
-                        span.humidity(data-bind="text: outdoor().humidity ? outdoor().humidity + '%' : '-'")
-                        span.rain(data-bind="text: outdoor().rain ? outdoor().rain + 'mm' : '0mm'")
+                        span.temperature(data-bind="text: outside().temperature ? outside().temperature + '°C' : '-'")
+                        span.humidity(data-bind="text: outside().humidity ? outside().humidity + '%' : '-'")
+                        span.rain(data-bind="text: outside().rain ? outside().rain + 'mm' : '0mm'")
                         div.icon(data-bind="css: conditions().icon")
 
                     table

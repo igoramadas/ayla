@@ -22,10 +22,10 @@ class BaseManager extends (require "../basemodule.coffee")
 
         if lodash.isArray newData.value
             for d in newData.value
-                if d.timestamp >= currentData.timestamp and d.timestamp >= lastData.timestamp
+                if not currentData.timestamp? or d.timestamp >= currentData.timestamp and d.timestamp >= lastData.timestamp
                     lastData = d
                     dataFound = true
-        else if newData.timestamp >= currentData.timestamp
+        else if not currentData.timestamp? or newData.timestamp >= currentData.timestamp
             lastData = newData.value
             dataFound = true
 

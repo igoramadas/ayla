@@ -1,13 +1,14 @@
 # SERVER: INCOME MODEL
 # -----------------------------------------------------------------------------
-class IncomeModel
+class IncomeModel extends (require "./basemodel.coffee")
 
     expresser = require "expresser"
     moment = expresser.libs.moment
 
+    # Income constructor.
     constructor: (obj, @source) ->
         id = "#{@source}-#{obj.id}"
-        value = (obj.amount * obj.rate).toFixed 2
+        value = (obj.amount / obj.rate).toFixed 2
         value = parseFloat value
 
         if obj.modified?

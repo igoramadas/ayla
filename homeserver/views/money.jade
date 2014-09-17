@@ -8,10 +8,10 @@ block contents
                 div
                     h2 Expenses
                     div.summary(data-bind="with: recentExpenses")
-                        h3(data-bind="text: total")
+                        h3(data-bind="text: total.toFixed(2)")
 
             li.incomes
                 div
                     h2 Incomes
                     div.summary(data-bind="with: recentIncomes")
-                        h3(data-bind="text: total")
+                        h3(data-bind="text: total.toFixed(2)")
