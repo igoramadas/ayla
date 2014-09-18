@@ -122,7 +122,7 @@ class Toshl extends (require "./baseapi.coffee")
 
         from = moment().subtract(settings.toshl.recentDays, "d").format settings.toshl.dateFormat
         to = moment().format settings.toshl.dateFormat
-        filter = {from: from, to: to, per_page: 999}
+        filter = {from: from, to: to, per_page: 300}
 
         @getExpenses filter, (err, result) =>
             @setData "recentExpenses", result if result?
@@ -157,7 +157,7 @@ class Toshl extends (require "./baseapi.coffee")
 
         from = moment().subtract(settings.toshl.recentDays, "d").format settings.toshl.dateFormat
         to = moment().format settings.toshl.dateFormat
-        filter = {from: from, to: to, per_page: 999}
+        filter = {from: from, to: to, per_page: 300}
 
         @getIncomes filter, (err, result) =>
             @setData "recentIncomes", result if result?

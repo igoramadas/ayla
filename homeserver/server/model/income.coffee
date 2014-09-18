@@ -12,9 +12,7 @@ class IncomeModel extends (require "./basemodel.coffee")
     # Set income data.
     setData: (obj) =>
         data = obj.value or obj
-
-        value = (data.amount / data.rate).toFixed 2
-        value = parseFloat value
+        value = data.amount / data.rate
 
         if data.location?
             geolocation = [data.location.latitude, data.location.longitude]

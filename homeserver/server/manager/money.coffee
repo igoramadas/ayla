@@ -63,49 +63,47 @@ class MoneyManager extends (require "./basemanager.coffee")
     onToshlRecentExpenses: (data) =>
         logger.debug "MoneyManager.onToshlRecentExpenses"
 
-        # Reset current expenses data.
-        @data.recentExpenses.total = 0
-        @data.recentExpenses.tags = {}
-        @data.recentExpenses.list = []
-
-        # Iterate and process values and tags from recent expenses.
-        for e in data.value
-            expenseObj = new expenseModel e, "toshl"
-
-            @data.recentExpenses.total += expenseObj.value
-            @data.recentExpenses.list.push expenseObj
-
-            # Update recent tags values.
-            for t in e.tags
-                @data.recentExpenses.tags[t] = 0 if not @data.recentExpenses.tags[t]?
-                @data.recentExpenses.tags[t] += expenseObj.value
-
-        # Update recent expenses data.
-        @dataUpdated "recentExpenses"
+        @processRecentToshlData @data.recentExpenses, data, expenseModel, "Expenses"
 
     # When recent income data is returned from Toshl.
     onToshlRecentIncomes: (data) =>
         logger.debug "MoneyManager.onToshlRecentIncomes"
 
-        # Reset current income data.
-        @data.recentIncomes.total = 0
-        @data.recentIncomes.tags = {}
-        @data.recentIncomes.list = []
+        @processRecentToshlData @data.recentIncomes, data, incomeModel, "Incomes"
 
-        # Iterate and process values and tags from recent income.
-        for i in data.value
-            incomeObj = new incomeModel i, "toshl"
+    # Helper to process recent expenses and incomes from Toshl.
+    processRecentToshlData: (target, data, model, key) =>
+        target.total = 0
+        target.tags = []
+        target.list = []
 
-            @data.recentIncomes.total += incomeObj.value
-            @data.recentIncomes.list.push incomeObj
+        # Object to hold tag values.
+        tags = {}
+
+        # Iterate and process values and tags.
+        for e in data.value
+            obj = new model e, "toshl"
+
+            target.total += obj.value
+            target.list.push obj
 
             # Update recent tags values.
-            for t in i.tags
-                @data.recentIncomes.tags[t] = 0 if not @data.recentIncomes.tags[t]?
-                @data.recentIncomes.tags[t] += incomeObj.value
+            for t in e.tags
+                tags[t] = {tag: t, total: 0, last3: 0, last10: 0} if not tags[t]?
+                tags[t].total += obj.value
 
-        # Update recent income data.
-        @dataUpdated "recentIncomes"
+                if obj.date > moment().subtract(3, "d").format settings.toshl.dateFormat
+                    tags[t].last3 += obj.value
+
+                if obj.date > moment().subtract(10, "d").format settings.toshl.dateFormat
+                    tags[t].last10 += obj.value
+
+        # Add tags to target list.
+        target.tags.push tagdata for tag, tagdata of tags
+        target.tags = lodash.sortBy target.tags, "tag"
+
+        # Update recent data.
+        @dataUpdated "recent#{key}"
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

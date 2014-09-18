@@ -11,6 +11,7 @@ class Strava extends (require "./baseapi.coffee")
     lodash = expresser.libs.lodash
     logger = expresser.logger
     moment = expresser.libs.moment
+    querystring = require "querystring"
     settings = expresser.settings
 
     # INIT
@@ -99,7 +100,7 @@ class Strava extends (require "./baseapi.coffee")
             else
                 @setData "activities", result, filter
 
-            callback err, result if haCallback
+            callback err, result if hasCallback
 
     # Gets a list of recent activities.
     getRecentActivities: (callback) =>
