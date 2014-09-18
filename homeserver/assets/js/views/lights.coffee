@@ -18,9 +18,9 @@ class LightsView extends ayla.BaseView
     hueLightToggle: (state, e) =>
         parentDiv = $ e.target.parentNode
         lightId = parentDiv.data "lightid"
-        state.on = not state.on
+        state = not state
 
-        ayla.sockets.emit "lightsManager.hue.toggle", {lightId: lightId, on: state.on}
+        ayla.sockets.emit "lightsManager.hue.toggle", {lightId: lightId, state: state}
 
     # Toggle Ninja lights (these are actually power sockets).
     ninjaLightToggle: (light, e) =>

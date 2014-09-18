@@ -15,6 +15,10 @@ class BaseModel
         else if obj.modified?
             @timestamp = moment(new Date(obj.modified.substring 20)).unix()
 
+        # Remove all undefined and null properties.
+        for key, data of this
+            delete @[key] if not data?
+
 # Exports model.
 # -----------------------------------------------------------------------------
 module.exports = exports = BaseModel

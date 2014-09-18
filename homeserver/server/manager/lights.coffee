@@ -6,6 +6,7 @@ class LightsManager extends (require "./basemanager.coffee")
     expresser = require "expresser"
 
     events = expresser.events
+    lightModel = require "../model/light.coffee"
     lodash = expresser.libs.lodash
     logger = expresser.logger
     moment = expresser.libs.moment
@@ -20,7 +21,7 @@ class LightsManager extends (require "./basemanager.coffee")
 
     # Init the lights manager.
     init: =>
-        @baseInit {hue: []}
+        @baseInit {hue: {lights: [], groups: []}}
 
     # Start the lights manager and listen to data updates / events.
     start: =>
@@ -29,7 +30,7 @@ class LightsManager extends (require "./basemanager.coffee")
         events.on "ninja.data.rf433", @onNinjaDevices
 
         sockets.listenTo "lightsManager.hue.toggle", @onClientHueToggle
-        sockets.listenTo "lightsManager.ninja.toggle", @onClientHNinjaToggle
+        sockets.listenTo "lightsManager.ninja.toggle", @onClientNinjaToggle
 
         @baseStart()
 
@@ -40,61 +41,30 @@ class LightsManager extends (require "./basemanager.coffee")
         events.off "ninja.data.rf433", @onNinjaDevices
 
         sockets.stopListening "lightsManager.hue.toggle", @onClientHueToggle
-        sockets.stopListening "lightsManager.ninja.toggle", @onClientHNinjaToggle
+        sockets.stopListening "lightsManager.ninja.toggle", @onClientNinjaToggle
 
         @baseStop()
 
     # HUE
     # -------------------------------------------------------------------------
 
-    # Helper to return a Hue light object.
-    createHueLight = (lightId, light) ->
-        hex = utils.hslToHex light.state.xy[0], light.state.xy[1], light.state.bri
-        state = {on: light.state.on, color: hex}
-        return {id: lightId, name: light.name, state: state}
-
-    # Helper to get the HEX colour from Hue lights.
-    xyBriToHex = (x, y, bri) ->
-        z = 1.0 - x - y
-        Y = bri / 255.0
-        X = (Y / y) * x
-        Z = (Y / y) * z
-        r = X * 1.612 - Y * 0.203 - Z * 0.302
-        g = -X * 0.509 + Y * 1.412 + Z * 0.066
-        b = X * 0.026 - Y * 0.072 + Z * 0.962
-        r = (if r <= 0.0031308 then 12.92 * r else (1.0 + 0.055) * Math.pow(r, (1.0 / 2.4)) - 0.055)
-        g = (if g <= 0.0031308 then 12.92 * g else (1.0 + 0.055) * Math.pow(g, (1.0 / 2.4)) - 0.055)
-        b = (if b <= 0.0031308 then 12.92 * b else (1.0 + 0.055) * Math.pow(b, (1.0 / 2.4)) - 0.055)
-        maxValue = Math.max(r, g, b)
-        r /= maxValue
-        g /= maxValue
-        b /= maxValue
-        r = r * 255
-        r = 255 if r < 0
-        g = g * 255
-        g = 255 if g < 0
-        b = b * 255
-        b = 255 if b < 0
-
-        bin = r << 16 | g << 8 | b
-        hex = ((h) -> new Array(7 - h.length).join("0") + h) bin.toString(16).toUpperCase()
-
-        return "##{hex}"
-
     # Update hue lights and groups.
     onHueHub: (data) =>
-        @data.hue = {lights: [], groups: []}
+        logger.debug "LightsManager.onHueHub", data
+
+        @data.hue.lights = []
+        @data.hue.groups = []
 
         # Iterate groups.
         for groupId, group of data.value.groups
-            groupData = {id: groupId, room: group.name, lights: group.lights}
-            @data.hue.groups.push groupData
+            obj = {id: groupId, room: group.name, lights: group.lights}
+            @data.hue.groups.push obj
 
         # Iterate lights.
         for lightId, light of data.value.lights
-            light.state.hex = xyBriToHex light.state.xy[0], light.state.xy[1], light.state.bri
-            lightData = {id: lightId, name: light.name, state: light.state}
-            @data.hue.lights.push lightData
+            light.id = lightId
+            obj = new lightModel light, "hue"
+            @data.hue.lights.push obj
 
         # Emit updated hue lights and save log.
         @dataUpdated "hue"
@@ -122,7 +92,13 @@ class LightsManager extends (require "./basemanager.coffee")
     onClientHueToggle: (light) =>
         logger.debug "LightsManager.onClientHueToggle", light
 
-        events.emit "hue.setlightstate", {lightId: light.lightId}, {on: light.on}
+        events.emit "hue.setlightstate", {lightId: light.lightId}, {on: light.state}
+
+    # When a toggle ON/OFF is received from the client.
+    onClientNinjaToggle: (light) =>
+        logger.debug "LightsManager.onClientHueToggle", light
+
+        events.emit "hue.setlightstate", {lightId: light.lightId}, {on: light.state}
 
     # NINJA
     # -------------------------------------------------------------------------
@@ -136,7 +112,9 @@ class LightsManager extends (require "./basemanager.coffee")
 
         for id, device of data.value.device.subDevices
             if device.shortName.toLowerCase().indexOf("light") >= 0
-                @data.ninja.push {id: id, name: device.shortName, code: device.data}
+                device.id = id
+                obj = new lightModel device, "ninja"
+                @data.ninja.push obj
 
         # Emit updated ninja lights and save log.
         @dataUpdated "ninja"
