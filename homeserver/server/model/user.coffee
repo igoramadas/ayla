@@ -19,6 +19,16 @@ class UserModel extends (require "./basemodel.coffee")
         @computerMac = data.computerMac or @computerMac
         @bluetoothMac = data.bluetoothMac or @bluetoothMac
         @mobileIP = data.mobileIP or @mobileIP
+        @location = data.location or @location
+
+        # Set location to Unknown if not set.
+        @location = "Unknown" if not @location
+
+        # Set user online or offline
+        if data.online is true
+            @online = true
+        else
+            @online = false
 
         @afterSetData obj
 

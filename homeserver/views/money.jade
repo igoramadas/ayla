@@ -2,7 +2,7 @@ extends layout
 
 block contents
     #money
-        ul.maingrid.large-block-grid-2
+        ul.maingrid.large-block-grid-3
 
             li.expenses
                 div
@@ -15,3 +15,8 @@ block contents
                     h2 Incomes
                     div.summary(data-bind="with: recentIncomes")
                         h3(data-bind="text: total.toFixed(2)")
+
+            li.balance
+                div
+                    h2 Balance
+                    canvas.chart

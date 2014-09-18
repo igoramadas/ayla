@@ -21,10 +21,11 @@ class MoneyManager extends (require "./basemanager.coffee")
 
     # Init the money manager.
     init: =>
-        @baseInit {recentExpenses: {}, recentIncomes: {}}
+        @baseInit {recentExpenses: {}, recentIncomes: {}, months: []}
 
     # Start the money manager and listen to data updates / events.
     start: =>
+        events.on "toshl.data.months", @onToshlMonths
         events.on "toshl.data.recentExpenses", @onToshlRecentExpenses
         events.on "toshl.data.recentIncomes", @onToshlRecentIncomes
 
@@ -32,10 +33,31 @@ class MoneyManager extends (require "./basemanager.coffee")
 
     # Stop the home manager.
     stop: =>
+        events.off "toshl.data.months", @onToshlMonths
+        events.off "toshl.data.recentExpenses", @onToshlRecentExpenses
+        events.off "toshl.data.recentIncomes", @onToshlRecentIncomes
+
         @baseStop()
 
     # TOSHL DATA
     # -------------------------------------------------------------------------
+
+    # When months data is returned from Toshl.
+    onToshlMonths: (data) =>
+        logger.debug "MoneyManager.onToshlMonths"
+
+        @data.months = []
+
+        # Iterate months.
+        for m in data.value
+            month = {expenses: m.expenses, incomes: m.incomes}
+            month.date = moment(new Date(m.from))
+            month.shortDate = month.date.format "MMM YY"
+
+            @data.months.push month
+
+        # Update months data.
+        @dataUpdated "months"
 
     # When recent expenses data is returned from Toshl.
     onToshlRecentExpenses: (data) =>

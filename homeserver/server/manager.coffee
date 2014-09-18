@@ -29,9 +29,6 @@ class Manager
         # Init the commander.
         commander.init()
 
-        # Temporary set a shared Data on Expresser.
-        expresser.datastore = {}
-
         # Init modules.
         files = fs.readdirSync managerPath
         for f in files

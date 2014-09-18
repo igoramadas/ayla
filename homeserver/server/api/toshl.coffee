@@ -28,6 +28,7 @@ class Toshl extends (require "./baseapi.coffee")
                 @baseStart()
 
                 if settings.modules.getDataOnStart and result.length > 0
+                    @getMonths()
                     @getRecentExpenses()
                     @getRecentIncomes()
 
@@ -72,6 +73,8 @@ class Toshl extends (require "./baseapi.coffee")
             filter = @getJobArgs filter
 
         hasCallback = lodash.isFunction callback
+
+        filter = {} if not filter?
 
         # If date is set then use the corresponding URL path.
         if filter.year? and filter.month?
@@ -119,7 +122,7 @@ class Toshl extends (require "./baseapi.coffee")
 
         from = moment().subtract(settings.toshl.recentDays, "d").format settings.toshl.dateFormat
         to = moment().format settings.toshl.dateFormat
-        filter = {from: from, to: to}
+        filter = {from: from, to: to, per_page: 999}
 
         @getExpenses filter, (err, result) =>
             @setData "recentExpenses", result if result?
@@ -154,7 +157,7 @@ class Toshl extends (require "./baseapi.coffee")
 
         from = moment().subtract(settings.toshl.recentDays, "d").format settings.toshl.dateFormat
         to = moment().format settings.toshl.dateFormat
-        filter = {from: from, to: to}
+        filter = {from: from, to: to, per_page: 999}
 
         @getIncomes filter, (err, result) =>
             @setData "recentIncomes", result if result?

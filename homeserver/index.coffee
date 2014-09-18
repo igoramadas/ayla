@@ -14,6 +14,9 @@ settings = expresser.settings
 # Load private settings.
 settings.loadFromJson "settings.private.json"
 
+# Temporary set a shared Data on Expresser.
+expresser.datastore = {}
+
 # Required modules.
 api = require "./server/api.coffee"
 manager = require "./server/manager.coffee"

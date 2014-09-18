@@ -10,6 +10,7 @@
 #= require lib/placeholder.js
 #= require lib/fastclick.js
 #= require lib/foundation.js
+#= require lib/chart.js
 #= require sockets.coffee
 #= require views/baseview.coffee
 

@@ -12,12 +12,12 @@ block contents
                             tr
                                 th.name Name
                                 th.email Email
-                                th.online Home
-                        tbody(data-bind="foreach: users")
-                            // ko ifnot: guest
+                                th.status Home
+                                th.location Last location
+                        tbody(data-bind="foreach: {data: users, as: 'username'}")
                             tr.user(data-bind="with: $root[username]")
                                 td.title(data-bind="text: name")
                                 td.email(data-bind="text: email")
-                                td(data-bind="css: onlineCss")
+                                td.status(data-bind="css: onlineCss")
                                     span.fa.fa-lg.fa-mobile
-                            // /ko
+                                td.location(data-bind="text: location")

@@ -7,29 +7,29 @@ class ExpenseModel extends (require "./basemodel.coffee")
 
     # Expense constructor.
     constructor: (obj, @source) ->
-        id = "#{@source}-#{obj.id}"
-        value = (obj.amount / obj.rate).toFixed 2
+        @setData obj
+
+    # Set expense data.
+    setData: (obj) =>
+        data = obj.value or obj
+
+        value = (data.amount / data.rate).toFixed 2
         value = parseFloat value
 
-        if obj.modified?
-            timestamp = moment(new Date(obj.modified.substring 20)).unix()
-        else
-            timestamp = obj.timestamp
+        if data.location?
+            geolocation = [data.location.latitude, data.location.longitude]
 
-        if obj.location?
-            geolocation = [obj.location.latitude, obj.location.longitude]
+        if data.repeat?
+            repeat = data.repeat.type or data.repeat
 
-        if obj.repeat?
-            repeat = obj.repeat.type or obj.repeat
+        @date = data.date or @date
+        @amount = data.amount or @amount
+        @currency = data.currency or @currency
+        @value = value
+        @location = geolocation or @geolocation
+        @repeat = repeat or @repeat
 
-        @id = id
-        @date = obj.date
-        @amount = obj.amount
-        @currency = obj.currency
-        @value = value or obj.amount
-        @location = geolocation
-        @repeat = repeat
-        @timestamp = timestamp
+        @afterSetData obj
 
 # Exports model.
 # -----------------------------------------------------------------------------

@@ -30,9 +30,6 @@ class UsersView extends ayla.BaseView
                                 return "online"
                             else
                                 return "offline"
-                    else if username is "users"
-                        for u in userdata
-                            u.guest = false if not u.guest?
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------

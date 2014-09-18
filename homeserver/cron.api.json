@@ -87,14 +87,20 @@
     ],
     "toshl.coffee": [
         {
+            "callback": "getMonths",
+            "description": "Probe Toshl to get months data daily.",
+            "schedule": ["06:17:00"],
+            "enabled": true
+        },
+        {
             "callback": "getRecentExpenses",
-            "description": "Probe Toshl to get recent expenses four times a day",
+            "description": "Probe Toshl to get recent expenses four times a day.",
             "schedule": ["08:16:00", "12:16:00", "16:16:00", "20:16:00"],
             "enabled": true
         },
         {
             "callback": "getRecentIncomes",
-            "description": "Probe Toshl to get recent income three times a day",
+            "description": "Probe Toshl to get recent income three times a day.",
             "schedule": ["08:18:00", "14:18:00", "20:18:00"],
             "enabled": true
         }

@@ -12,6 +12,7 @@ class UsersManager extends (require "./basemanager.coffee")
     mailer = expresser.mailer
     moment = expresser.libs.moment
     settings = expresser.settings
+    userModel = require "../model/user.coffee"
 
     title: "Users"
 
@@ -27,12 +28,12 @@ class UsersManager extends (require "./basemanager.coffee")
         @data.users = []
 
         for username, userdata of settings.users
-            @data.users.push userdata
+            @data.users.push username
 
             if not @data[username]?
-                @data[username] = userdata
-                @data[username].username = username
-                @data[username].online = false
+                user = new userModel userdata, "settings"
+                user.username = username
+                @data[username] = user
 
         events.on "network.data.router", @onNetworkRouter
         events.on "network.data.bluetoothUsers", @onBluetoothUsers
@@ -75,7 +76,7 @@ class UsersManager extends (require "./basemanager.coffee")
     # happen in case the module has started less than 2 minutes ago.
     onUserStatus: (userStatus) =>
         if moment().subtract(2, "m").unix() < @initTimestamp
-            logger.info "UsersManager.onUserStatus", userStatus, "Do nothing! Module has just started."
+            logger.debug "UsersManager.onUserStatus", userStatus, "Do nothing! Module has just started."
             return
 
         logger.info "UsersManager.onUserStatus", userStatus
