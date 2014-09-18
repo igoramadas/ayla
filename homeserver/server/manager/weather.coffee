@@ -16,31 +16,14 @@ class WeatherManager extends (require "./basemanager.coffee")
 
     title: "Weather"
 
-    # COMPUTED PROPERTIES
-    # -------------------------------------------------------------------------
-
-    # Computed weather stats.
-    weatherAvgData: =>
-        indoor = {}
-        indoor.temperature = @getWeatherAverage "indoor", "temperature"
-        indoor.humidity = @getWeatherAverage "indoor", "temperature"
-        indoor.co2 = @getWeatherAverage "indoor", "temperature"
-
-        outside = {}
-        outside.temperature = @getWeatherAverage "outdoor", "temperature"
-        outside.humidity = @getWeatherAverage "outdoor", "humidity"
-        outside.rain = @getWeatherAverage "outdoor", "rain"
-
-        return {indoor: indoor, outside: outside}
-
     # INIT
     # -------------------------------------------------------------------------
 
     # Init the weather manager with the default values.
     init: =>
         astronomy = {sunrise: "7:00", sunset: "18:00"}
-        outside = new climateModel {title: "Outdoor", outdoor: true}
-        conditions = new climateModel {title: "Conditions", outdoor: true}
+        outside = new climateModel {title: "Outdoor"}
+        conditions = new climateModel {title: "Conditions"}
 
         @baseInit {forecast: [], astronomy: astronomy, outside: outside, conditions: conditions, rooms: settings.home.rooms}
 
@@ -143,7 +126,7 @@ class WeatherManager extends (require "./basemanager.coffee")
 
     # Helper to set current conditions for outdoors.
     # Make sure data is taken out of the array and newer than current available data.
-    setOutdoorClimate: (data) =>
+    setOutsideClimate: (data) =>
         return if not data?
 
         # Make sure data is taken out of the array and newer than current available data.
@@ -154,7 +137,7 @@ class WeatherManager extends (require "./basemanager.coffee")
         # Update outside data.
         @data.outside.setData lastData
         @dataUpdated "outside"
-        logger.info "WeatherManager.setOutdoorClimate", @data.outside
+        logger.info "WeatherManager.setOutsideClimate", @data.outside
 
     # Helper to set current astronomy details, like sunrise and moon phase.
     setAstronomy: (data) =>
@@ -170,36 +153,23 @@ class WeatherManager extends (require "./basemanager.coffee")
     setCurrentConditions: (data) =>
         return if not data?
 
+        data.value.outdoor = true
+
         # Update conditions and set icon.
         @data.conditions.setData data
         @data.conditions.icon = @getWeatherIcon data.value, true
+
         @dataUpdated "conditions"
         logger.info "WeatherManager.setCurrentConditions", @data.conditions
 
     # Helper to set forecast details for the next days.
-    setWeatherForecast: (data) =>
+    setWeatherForecast: (data, source) =>
         @data.forecast = []
 
         for d in data.value.forecastday
-            a = {date: moment.unix(d.date.epoch).format("L"), conditions: d.conditions}
-            a.highTemp = d.high.celsius
-            a.lowTemp = d.low.celsius
-            a.avgWind = d.avewind.dir + " " + d.avewind.kph + "kph"
-            a.maxWind = d.maxwind.dir + " " + d.maxwind.kph + "kph"
-            a.avgHumidity = d.avehumidity
-            a.maxHumidity = d.maxhumidity
-            a.minHumidity = d.minhumidity
-            a.icon = @getWeatherIcon d
-
-            # Set the friendly date string.
-            if a.date is moment().format("L")
-                a.dateString = "Today"
-            else if a.date is moment().add(1, "d").format("L")
-                a.dateString = "Tomorrow"
-            else
-                a.dateString = a.date
-
-            @data.forecast.push a
+            obj = new climateModel d, source
+            obj.icon = @getWeatherIcon d
+            @data.forecast.push obj
 
         # Emit forecast dat and log.
         @dataUpdated "forecast"
@@ -216,7 +186,7 @@ class WeatherManager extends (require "./basemanager.coffee")
 
     # Check outdoor weather conditions using Netatmo.
     onNetatmoOutdoor: (data, filter) =>
-        @setOutdoorClimate data
+        @setOutsideClimate data, "netatmo"
 
     # Check indoor weather conditions using Ninja Blocks.
     onNinjaWeather: (data, filter) =>
@@ -250,7 +220,7 @@ class WeatherManager extends (require "./basemanager.coffee")
 
     # Check outdoor weather forecast for next days using Weather Underground.
     onWundergroundForecast: (data) =>
-        @setWeatherForecast data
+        @setWeatherForecast data, "wunderground"
 
     # WEATHER MAINTENANCE
     # -------------------------------------------------------------------------

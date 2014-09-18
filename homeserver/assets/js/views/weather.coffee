@@ -71,36 +71,36 @@ class WeatherView extends ayla.BaseView
 
     # Create a chart representing the next days forecast.
     createChart: (data) =>
-        labels = _.pluck data, "date"
+        labels = _.pluck data, "dateString"
 
         # Set highest temperature dataset.
         dsTemperatureHigh = {
             label: "Temp High"
-            fillColor: "Transparent"
+            fillColor: "rgba(240, 65, 36, 0.3)"
             strokeColor: "rgb(240, 65, 36)"
             pointColor: "rgb(240, 65, 36)"
             pointStrokeColor: "rgb(250, 245, 240)"
-            data: _.pluck data, "highTemp"
+            data: _.pluck data, "temperatureHigh"
         }
 
         # Set lowest temperature dataset.
         dsTemperatureLow = {
             label: "Temp Low"
-            fillColor: "Transparent"
+            fillColor: "rgba(255, 255, 255, 0.9)"
             strokeColor: "rgb(230, 130, 60)"
             pointColor: "rgb(230, 130, 60)"
             pointStrokeColor: "rgb(250, 245, 240)"
-            data: _.pluck data, "lowTemp"
+            data: _.pluck data, "temperatureLow"
         }
 
         # Set humidity dataset.
-        dsHumidity = {
-            label: "Humidity"
+        dsWind = {
+            label: "Wind"
             fillColor: "Transparent"
-            strokeColor: "rgb(0, 140, 186)"
-            pointColor: "rgb(0, 140, 186)"
-            pointStrokeColor: "rgb(240, 245, 250)"
-            data: _.pluck data, "avgHumidity"
+            strokeColor: "rgb(160, 170, 160)"
+            pointColor: "rgb(160, 170, 160)"
+            pointStrokeColor: "rgb(245, 245, 245)"
+            data: _.pluck data, "windSpeed"
         }
 
         # Set line chart options.
@@ -109,7 +109,7 @@ class WeatherView extends ayla.BaseView
         }
 
         # Create chart.
-        chartData = {labels: labels, datasets: [dsTemperatureHigh, dsTemperatureLow, dsHumidity]}
+        chartData = {labels: labels, datasets: [dsTemperatureHigh, dsTemperatureLow, dsWind]}
         canvas = $("canvas.chart").get(0).getContext "2d"
         chart = new Chart(canvas).Line chartData, lineOptions
 

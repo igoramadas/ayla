@@ -32,7 +32,7 @@ block contents
                     div.summary
                         span.temperature(data-bind="text: outside().temperature ? outside().temperature + '°C' : '-'")
                         span.humidity(data-bind="text: outside().humidity ? outside().humidity + '%' : '-'")
-                        span.rain(data-bind="text: outside().rain ? outside().rain + 'mm' : '0mm'")
+                        span.precp(data-bind="text: outside().precp ? outside().precp + 'mm' : '0mm'")
                         div.icon(data-bind="css: conditions().icon")
 
                     table
@@ -40,25 +40,25 @@ block contents
                             tr
                                 th.title Forecast
                                 th.icon
-                                th.temperature Temp
-                                th.humidity Humidity
+                                th.temperature Temp.
+                                th.precp Precp.
                                 th.wind Wind
                         tbody
                             tr(data-bind="with: conditions")
                                 td.date Current
                                 td.icon(data-bind="css: icon")
-                                td.temperature(data-bind="text: temperature ? temperature + '°C' : '-'")
-                                td.humidity(data-bind="text: humidity ? humidity + '%' : '-'")
-                                td.wind(data-bind="text: windSpeed > 0 ? wind : '0kph'")
+                                td.temperature(data-bind="text: temperature + '°C'", nowrap)
+                                td.humidity(data-bind="text: precpChance + '%'")
+                                td.wind(data-bind="text: windSpeed + 'kph'", nowrap)
                             // ko foreach: forecast
                             tr
                                 td.date(data-bind="text: dateString")
                                 td.icon(data-bind="css: icon")
-                                td.min(data-bind="text: highTemp + ' / ' + lowTemp + '°C'")
-                                td.humidity(data-bind="text: avgHumidity + '%'")
-                                td.wind(data-bind="text: avgWind")
+                                td.min(data-bind="text: temperatureHigh + ' / ' + temperatureLow + '°C'", nowrap)
+                                td.humidity(data-bind="text: precpChance + '%'")
+                                td.wind(data-bind="text: windSpeed + 'kph'", nowrap)
                             // /ko
 
             li.overview
                 div
-                    canvas.chart(height="230")
+                    canvas.chart(height="246")
