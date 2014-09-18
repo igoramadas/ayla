@@ -59,8 +59,6 @@ block contents
                                 td.wind(data-bind="text: avgWind")
                             // /ko
 
-            li.picture
+            li.overview
                 div
-                    h2 Camera
-                    div.camera
-                        img(src="/camera/random.jpg")
+                    canvas.chart(height="230")

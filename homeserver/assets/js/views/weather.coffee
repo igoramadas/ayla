@@ -25,6 +25,10 @@ class WeatherView extends ayla.BaseView
             condition = if _.isFunction data.condition then data.condition() else data.condition
             data.conditionCss = ko.computed -> return condition.toLowerCase().replace(/\s/g, "-").replace(",-", " ")
 
+        # Create chart for forecast.
+        if key is "forecast"
+            @createChart data
+
         return if not @data.rooms?
 
         # Indoor average variables.
@@ -65,6 +69,49 @@ class WeatherView extends ayla.BaseView
             co2 = (co2 / co2Count).toFixed 0
             @data.indoorAvg {temperature: temp, humidity: humidity, co2: co2}
 
+    # Create a chart representing the next days forecast.
+    createChart: (data) =>
+        labels = _.pluck data, "date"
+
+        # Set highest temperature dataset.
+        dsTemperatureHigh = {
+            label: "Temp High"
+            fillColor: "Transparent"
+            strokeColor: "rgb(240, 65, 36)"
+            pointColor: "rgb(240, 65, 36)"
+            pointStrokeColor: "rgb(250, 245, 240)"
+            data: _.pluck data, "highTemp"
+        }
+
+        # Set lowest temperature dataset.
+        dsTemperatureLow = {
+            label: "Temp Low"
+            fillColor: "Transparent"
+            strokeColor: "rgb(230, 130, 60)"
+            pointColor: "rgb(230, 130, 60)"
+            pointStrokeColor: "rgb(250, 245, 240)"
+            data: _.pluck data, "lowTemp"
+        }
+
+        # Set humidity dataset.
+        dsHumidity = {
+            label: "Humidity"
+            fillColor: "Transparent"
+            strokeColor: "rgb(0, 140, 186)"
+            pointColor: "rgb(0, 140, 186)"
+            pointStrokeColor: "rgb(240, 245, 250)"
+            data: _.pluck data, "avgHumidity"
+        }
+
+        # Set line chart options.
+        lineOptions = {
+            pointDotRadius: 3
+        }
+
+        # Create chart.
+        chartData = {labels: labels, datasets: [dsTemperatureHigh, dsTemperatureLow, dsHumidity]}
+        canvas = $("canvas.chart").get(0).getContext "2d"
+        chart = new Chart(canvas).Line chartData, lineOptions
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------

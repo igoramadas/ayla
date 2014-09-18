@@ -11,6 +11,14 @@ class MoneyView extends ayla.BaseView
     onReady: =>
         @dataProcessor @data
 
+        # Add balance css property.
+        @data.balanceCss = ko.computed =>
+            if @data.recentExpenses?.total > @data.recentIncomes?.total
+                return "negative"
+            else
+                return "positive"
+
+        # Create balance chart.
         @createBalanceChart()
 
     # Parse and process data coming from the server.
@@ -19,15 +27,17 @@ class MoneyView extends ayla.BaseView
             data = key
             key = null
 
-        if not @data.balanceCss?
-            @data.balanceCss = ko.computed =>
-                if @data.recentExpenses?.total > @data.recentIncomes?.total
-                    return "negative"
-                else
-                    return "positive"
+        if key is "recentExpenses" or key is "recentIncomes"
+            data.topTags = ko.observable() if not data.topTags?
+
+            topTags = _.sortBy data.tags, "total"
+            topTags = _.last topTags, 6
+            topTags.reverse()
+
+            data.topTags topTags
 
     # Create a balance line chart with expenses and incomes.
-    createBalanceChart: (months) =>
+    createBalanceChart: =>
         months = @data.months()
 
         labels = _.pluck months, "shortDate"
@@ -54,16 +64,21 @@ class MoneyView extends ayla.BaseView
         dsIncomes = {
             label: "Incomes"
             fillColor: "rgba(67, 172, 106, 0.3)"
-            strokeColor: "(67, 172, 106)"
+            strokeColor: "rgb(67, 172, 106)"
             pointColor: "rgb(67, 172, 106)"
             pointStrokeColor: "rgb(245, 250, 240)"
             data: incomesData
         }
 
+        # Set line chart options.
+        lineOptions = {
+            pointDotRadius: 3
+        }
+
         # Create chart.
         chartData = {labels: labels, datasets: [dsExpenses, dsIncomes]}
         canvas = $("canvas.balance").get(0).getContext "2d"
-        chart = new Chart(canvas).Line chartData
+        chart = new Chart(canvas).Line chartData, lineOptions
 
         @createTagsChart @data.recentExpenses().tags, dsExpenses
         @createTagsChart @data.recentIncomes().tags, dsIncomes
