@@ -18,7 +18,7 @@ class BaseView
         @setData()
         @bindSockets()
 
-        # Call view `onReady` if present.
+        # Call view `onReady` but only if present.
         @onReady() if @onReady?
 
         # Knockout.js bindings.
