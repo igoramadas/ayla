@@ -40,11 +40,11 @@ class Api
                 else
                     module = require "./api/#{f}"
                     module.init()
-                    @modules[module.moduleId] = module
+                    @modules[module.moduleNameLower] = module
 
                     # Create database TTL index.
                     expires = settings.database.dataCacheExpireHours * 3600
-                    database.db.collection("data-#{module.moduleId}").ensureIndex {"datestamp": 1}, {expireAfterSeconds: expires}, (err) -> console.error err if err?
+                    database.db.collection("data-#{module.dbName}").ensureIndex {"datestamp": 1}, {expireAfterSeconds: expires}, (err) -> console.error err if err?
 
         # Start all API modules and load cron jobs.
         m.start() for k, m of @modules

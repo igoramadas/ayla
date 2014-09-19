@@ -61,14 +61,20 @@ class BaseView
             $("nav").find(".#{currentPath}").addClass "active"
 
     # Create a KO compatible object based on the original `serverData` property.
-    setData: =>
-        @data = {}
-        return if not ayla.serverData?
+    setData: (key, data) =>
+        @data = {} if not @data?
 
-        # Iterate passed data and populate the view's data property.
-        for key, value of ayla.serverData
-            @dataProcessor key, value if @dataProcessor?
-            @data[key] = ko.observable value
+        if not key?
+            for k, v of ayla.serverData
+                @dataProcessor k, v if @dataProcessor?
+                @data[k] = ko.observable v
+        else
+            @dataProcessor key, data if @dataProcessor?
+
+            if @data[key]?
+                @data[key] data
+            else
+                @data[key] = ko.observable data
 
     # Helper to listen to socket events sent by the server. If no event name is
     # passed then use the view's default.
@@ -76,25 +82,16 @@ class BaseView
         @socketsName = "#{@wrapperId}Manager" if not @socketsName?
 
         # Listen to global sockets updates.
-        ayla.sockets.on @socketsName, (data) => @onData data
-
-        # Listen to socket updates for each data property.
-        for key, value of @data
-            do (key) =>
-                e = @socketsName + "." + key
-                ayla.sockets.on e, (data) => @onData data, key
+        ayla.sockets.on @socketsName + ".error", (err) => console.warn "ERROR!", err
+        ayla.sockets.on @socketsName + ".result", (result) => console.warn "RESULT!", result
+        ayla.sockets.on @socketsName + ".data", (key, data) => @onData key, data
 
     # DATA UPDATES
     # ----------------------------------------------------------------------
 
-    # Updates data sent by the server. A property can be passed so it will
-    # update data for that particular property, otherwise assume it's the full data object.
-    onData: (data, property) =>
-        if property?
-            @dataProcessor data if @dataProcessor?
-            @data[property] data
-        else
-            @setData data
+    # Updates data sent by the server.
+    onData: (key, data) =>
+        @setData key, data
 
 # BIND BASE VIEW AND OPTIONS TO WINDOW
 # --------------------------------------------------------------------------

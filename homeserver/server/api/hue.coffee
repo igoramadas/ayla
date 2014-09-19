@@ -26,8 +26,8 @@ class Hue extends (require "./baseapi.coffee")
     start: =>
         @baseStart()
 
-        events.on "hue.switchGroupLights", @switchGroupLights
-        events.on "hue.setLightState", @setLightState
+        events.on "Hue.switchGroupLights", @switchGroupLights
+        events.on "Hue.setLightState", @setLightState
 
         if settings.modules.getDataOnStart
             @refreshHub()
@@ -36,8 +36,8 @@ class Hue extends (require "./baseapi.coffee")
     stop: =>
         @baseStop()
 
-        events.off "hue.switchGroupLights", @switchGroupLights
-        events.off "hue.setLightState", @setLightState
+        events.off "Hue.switchGroupLights", @switchGroupLights
+        events.off "Hue.setLightState", @setLightState
 
     # API BASE METHODS
     # -------------------------------------------------------------------------

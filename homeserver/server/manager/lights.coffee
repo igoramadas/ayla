@@ -21,36 +21,37 @@ class LightsManager extends (require "./basemanager.coffee")
 
     # Init the lights manager.
     init: =>
-        @baseInit {hue: {lights: [], groups: []}}
+        @baseInit {hue: {lights: [], groups: []}, ninja: []}
 
     # Start the lights manager and listen to data updates / events.
     start: =>
-        events.on "hue.data.hub", @onHueHub
-        events.on "hue.light.state", @onHueLightState
-        events.on "ninja.data.rf433", @onNinjaDevices
+        events.on "Hue.data", @onHue
+        events.on "Hue.light.state", @onHueLightState
+        events.on "Ninja.data", @onNinja
 
-        sockets.listenTo "lightsManager.hue.toggle", @onClientHueToggle
-        sockets.listenTo "lightsManager.ninja.toggle", @onClientNinjaToggle
+        sockets.listenTo "LightsManager.Hue.toggle", @onClientHueToggle
+        sockets.listenTo "LightsManager.Ninja.toggle", @onClientNinjaToggle
 
         @baseStart()
 
     # Stop the lights manager.
     stop: =>
-        events.off "hue.data.hub", @onHueHub
-        events.off "hue.light.state", @onHueLightState
-        events.off "ninja.data.rf433", @onNinjaDevices
+        events.off "Hue.data", @onHue
+        events.off "Hue.light.state", @onHueLightState
+        events.off "Ninja.data", @onNinja
 
-        sockets.stopListening "lightsManager.hue.toggle", @onClientHueToggle
-        sockets.stopListening "lightsManager.ninja.toggle", @onClientNinjaToggle
+        sockets.stopListening "LightsManager.Hue.toggle", @onClientHueToggle
+        sockets.stopListening "LightsManager.Ninja.toggle", @onClientNinjaToggle
 
         @baseStop()
 
     # HUE
     # -------------------------------------------------------------------------
 
-    # Update hue lights and groups.
-    onHueHub: (data) =>
+    # Update hue hub information.
+    onHue: (key, data) =>
         logger.debug "LightsManager.onHueHub", data
+        return if key isnt "hub"
 
         @data.hue.lights = []
         @data.hue.groups = []
@@ -89,8 +90,8 @@ class LightsManager extends (require "./basemanager.coffee")
                 light = lodash.find @data.hue.lights, {id: id}
 
                 if light?
-                    lodash.assign light.state, state
-                    logger.debug "LightsManager.onHueLightState", light, "Changed state", state
+                    light.setData state
+                    logger.info "LightsManager.onHueLightState", light.title, state
 
         # Tell others that hue data was updated.
         @dataUpdated "hue"
@@ -99,21 +100,24 @@ class LightsManager extends (require "./basemanager.coffee")
     onClientHueToggle: (light) =>
         logger.debug "LightsManager.onClientHueToggle", light
 
-        events.emit "hue.setLightState", {lightId: light.lightId}, {on: light.state}
+        onOrOff = if light.state then "on" else "off"
 
-    # When a toggle ON/OFF is received from the client, filtered by title.
-    onClientNinjaToggle: (light) =>
-        logger.debug "LightsManager.onClientHueToggle", light
+        events.emit "hue.setLightState", {lightId: light.lightId}, {on: light.state}, (err, result) =>
+            if err?
+                err = {message: "Could not toggle hue light #{light.title}", err: err}
+            else
+                result = {message: "#{light.title} switched #{onOrOff}", result: result}
 
-        events.emit "ninja.actuate433", light
+            @emitResultSocket err, result
 
     # NINJA
     # -------------------------------------------------------------------------
 
     # Update list of light actuators from Ninja Blocks, by getting all RF433 devices
     # that have "light" on their name.
-    onNinjaDevices: (data) =>
+    onNinja: (key, data) =>
         logger.debug "LightsManager.onNinjaDevices", data
+        return if key isnt "rf433"
 
         @data.ninja = []
         lights = {}
@@ -144,6 +148,12 @@ class LightsManager extends (require "./basemanager.coffee")
 
         # Emit updated ninja lights and save log.
         @dataUpdated "ninja"
+
+    # When a toggle ON/OFF is received from the client, filtered by title.
+    onClientNinjaToggle: (light) =>
+        logger.debug "LightsManager.onClientHueToggle", light
+
+        events.emit "ninja.actuate433", light
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

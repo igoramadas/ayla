@@ -38,6 +38,13 @@ class BaseManager extends (require "../basemodule.coffee")
     # NOTIFICATIONS
     # -------------------------------------------------------------------------
 
+    # This is a callback helper to emit results and errors back to the client.
+    emitResultSocket: (err, result) =>
+        if err?
+            sockets.emit "#{@moduleName}.error", err
+        else
+            sockets.emit "#{@moduleName}.result", result
+
     # Used to send alerts and general notifications to users.
     notify: (options, callback) =>
         expiryDate = moment().subtract(settings.modules.notifyExpireMinutes, "m").unix()
@@ -64,19 +71,19 @@ class BaseManager extends (require "../basemodule.coffee")
     # Called whenever data gets updated, will emit to other modules using the Expresser
     # events and to clients using Socket.IO. If value is not set, get from the
     # current `data` object.
-    dataUpdated: (property, value) =>
+    dataUpdated: (key, value) =>
         if value?
             data = value
         else
-            data = @data[property]
+            data = @data[key]
 
         # Only emit if data is valid.
         if data?
             data.timestamp = moment().unix()
-            sockets.emit "#{@moduleName}.#{property}", data
-            events.emit "#{@moduleName}.#{property}", data
+            sockets.emit "#{@moduleName}.data", key, data
+            events.emit "#{@moduleName}.data", key, data
         else
-            logger.debug "#{@moduleName}.emitData", property, "Data is null or not defined. Do not emit."
+            logger.debug "#{@moduleName}.emitData", key, "Data is null or not defined. Do not emit."
 
 # Exports API Base Module.
 # -----------------------------------------------------------------------------

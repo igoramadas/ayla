@@ -8,7 +8,7 @@ class LightsView extends ayla.BaseView
     # MAIN METHODS
     # ----------------------------------------------------------------------
 
-    # Init the System Jobs view.
+    # Init the Lights view.
     onReady: =>
 
     # LIGHT CONTROL
@@ -16,17 +16,18 @@ class LightsView extends ayla.BaseView
 
     # Toggle lights om or off based on its current state.
     hueLightToggle: (light, e) =>
-        state = not light.state
+        data = {lightId: light.id, title: light.title, state: light.state}
 
-        ayla.sockets.emit "lightsManager.hue.toggle", {lightId: light.id, state: state}
+        ayla.sockets.emit "lightsManager.hue.toggle", data
 
         return true
 
     # Toggle Ninja lights (these are actually power sockets).
     ninjaLightToggle: (light, e) =>
         code = if $(e.target).hasClass("success") then light.codeOn else light.codeOff
+        data = {title: light.title, code: code}
 
-        ayla.sockets.emit "lightsManager.ninja.toggle", {code: code}
+        ayla.sockets.emit "lightsManager.ninja.toggle", data
 
         return true
 

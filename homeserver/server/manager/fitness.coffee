@@ -24,13 +24,13 @@ class FitnessManager extends (require "./basemanager.coffee")
 
     # Start the fitness manager and listen to data updates / events.
     start: =>
-        events.on "withings.data.recentBodyMeasures", @onWithingsBody
+        events.on "Withings.data", @onWithingsBody
 
         @baseStart()
 
     # Stop the fitness manager.
     stop: =>
-        events.off "withings.data.recentBodyMeasures", @onWithingsBody
+        events.off "Withings.data", @onWithingsBody
 
         @baseStop()
 

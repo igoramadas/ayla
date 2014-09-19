@@ -2,24 +2,30 @@
 # -----------------------------------------------------------------------------
 class LightModel extends (require "./basemodel.coffee")
 
-    # Light constructor.
+    # Light constructor. Default state is off.
     constructor: (obj, @source) ->
+        @state = false
         @setData obj
 
     # Update climate data.
     setData: (obj) =>
         data = obj.value or obj
 
-        @title = data.title or data.shortName or data.name
-        @state = data.state?.on or data.on or false
-        @color = data.color or data.colour
+        @title = data.title or data.shortName or data.name or @title
+        @color = data.color or data.colour or @color
+
+        # Set state on or off (true or false).
+        if data.state?.on?
+            @state = data.state?.on
+        else if data.on?
+            @state = data.on
 
         # This is used for Ninja lights, to define the code to turn on and off.
         @codeOn = data.codeOn if data.codeOn?
         @codeOff = data.codeOff if data.codeOff?
 
         # Set hue color.
-        if not @color? and data.state?.xy?
+        if data.state?.xy? and data.state?.bri?
             @color = xyBriToHex data.state.xy[0], data.state.xy[1], data.state.bri
 
         @afterSetData obj

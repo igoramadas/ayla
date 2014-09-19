@@ -20,7 +20,7 @@ class BaseModule
     # Called when the module inits.
     baseInit: (initialData) =>
         @moduleName = @__proto__.constructor.name.toString()
-        @moduleId = @moduleName.toLowerCase()
+        @moduleNameLower = @moduleName.toLowerCase()
         @initTimestamp = moment().unix()
 
         # Create initial data or an empty object if none was passed.
@@ -42,22 +42,22 @@ class BaseModule
         @running = true
 
         # Start cron jobs for that module.
-        cron.start {module: "#{@moduleId}.coffee"}
+        cron.start {module: "#{@moduleNameLower}.coffee"}
 
     # Called when the module stops.
     baseStop: =>
         @running = false
-        logger.debug "#{@moduleName}.baseStop"
+        logger.debug "#{@moduleNameLower}.baseStop"
 
         # Stop cron jobs for that module.
-        cron.stop {module: "#{@moduleId}.coffee"}
+        cron.stop {module: "#{@moduleNameLower}.coffee"}
 
     # DATA HANDLING
     # -------------------------------------------------------------------------
 
     # Load data from the database and populate the `data` property.
     loadData: =>
-        database.get "data-#{@moduleId}", (err, results) =>
+        database.get "data-#{@moduleName}", (err, results) =>
             if err?
                 logger.error "#{@moduleName}.loadData", err
             else
@@ -68,7 +68,7 @@ class BaseModule
                 @data[r.key] = r.data
 
             # Trigger load event.
-            events.emit "#{@moduleId}.data.load"
+            events.emit "#{@moduleName}.data.load"
 
     # Save module's data for the specified key. The filter is optional and
     # if not passed it will use `default` as filter.
@@ -82,10 +82,8 @@ class BaseModule
             @data[key].pop() if @data[key].length > settings.modules.dataKeyCacheSize
 
             # Emit events to other modules and clients.
-            events.emit "#{@moduleId}.data", key, dataObj, filter
-            events.emit "#{@moduleId}.data.#{key}", dataObj, filter
-            sockets.emit "#{@moduleId}.data", key, dataObj, filter
-            sockets.emit "#{@moduleId}.data.#{key}", dataObj, filter
+            events.emit "#{@moduleName}.data", key, dataObj, filter
+            sockets.emit "#{@moduleName}.data", key, dataObj, filter
 
             # Save the new data to the database.
             dbData = {key: key, value: value, filter: filter, datestamp: new Date()}
@@ -101,7 +99,7 @@ class BaseModule
             cleanData dbData.value
 
             # Save clean data to the MongoDB database.
-            database.insert "data-#{@moduleId}", dbData, (err, result) =>
+            database.insert "data-#{@moduleNameLower}", dbData, (err, result) =>
                 if err?
                     @logError "#{@moduleName}.setData", key, err
                 else

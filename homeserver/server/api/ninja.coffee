@@ -32,7 +32,7 @@ class Ninja extends (require "./baseapi.coffee")
             @ninjaApi = ninjablocks.app {user_access_token: settings.ninja.api.userToken}
             @baseStart()
 
-            events.on "ninja.actuate433", @actuate433
+            events.on "Ninja.actuate433", @actuate433
 
             if settings.modules.getDataOnStart
                 @getDevices()
@@ -41,7 +41,7 @@ class Ninja extends (require "./baseapi.coffee")
     stop: =>
         @baseStop()
 
-        events.off "ninja.actuate433", @actuate433
+        events.off "Ninja.actuate433", @actuate433
 
     # GET DEVICE DATA
     # -------------------------------------------------------------------------

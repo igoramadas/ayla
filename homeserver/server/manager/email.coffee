@@ -48,7 +48,7 @@ class EmailManager extends (require "./basemanager.coffee")
 
     # Start listening to new message events from the server.
     start: =>
-        events.on "emailManager.send", @sendEmail
+        events.on "EmailManager.send", @sendEmail
 
         # Send email telling Ayla home server has started managing emails.
         if @defaultToMobile?

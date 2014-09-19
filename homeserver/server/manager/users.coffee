@@ -35,25 +35,30 @@ class UsersManager extends (require "./basemanager.coffee")
                 user.username = username
                 @data[username] = user
 
-        events.on "network.data.router", @onNetworkRouter
-        events.on "network.data.bluetoothUsers", @onBluetoothUsers
+        events.on "Network.data", @onNetwork
 
         @baseStart()
 
     # Stop the home manager.
     stop: =>
-        events.off "network.data.router", @onNetworkRouter
-        events.off "network.data.bluetoothUsers", @onBluetoothUsers
+        events.off "Network.data", @onNetwork
 
         @baseStop()
 
-    # USER STATUS
+    # NETWORK UPDATES
     # -------------------------------------------------------------------------
+
+    # When network data is updated.
+    onNetwork: (key, data, filter) =>
+        logger.debug "UsersManager.onNetworkRouter", key, data, filter
+
+        if key is "router"
+            @onNetworkRouter data
+        else if key is "bluetoothUsers"
+            @onBluetoothUsers data
 
     # When network router info is updated, check for online and offline users.
     onNetworkRouter: (data) =>
-        logger.debug "UsersManager.onNetworkRouter"
-
         for username, userdata of settings.users
             online = lodash.find data.wifi24g, {macaddr: userdata.computerMac}
             online = lodash.find data.wifi5g, {macaddr: userdata.computerMac} if not online?
@@ -65,8 +70,6 @@ class UsersManager extends (require "./basemanager.coffee")
 
     # When user bluetooth devices are queried, check who's online (at home).
     onBluetoothUsers: (data) =>
-        logger.debug "UsersManager.onBluetoothUsers"
-
         for d in data.value
             @onUserStatus {user: d.user, online: d.online} if d.online isnt @data[d.user].online
             @data[d.user].online = d.online

@@ -36,27 +36,21 @@ class WeatherManager extends (require "./basemanager.coffee")
             for room in settings.home.rooms
                 @data[room.id] = new roomModel(room) if not @data[room.id]?
 
-        events.on "electricimp.data", @onElectricImp
-        events.on "netatmo.data.indoor", @onNetatmoIndoor
-        events.on "ninja.data.weather", @onNinjaWeather
-        events.on "netatmo.data.outdoor", @onNetatmoOutdoor
-        events.on "ubi.data.sensors", @onUbiSensors
-        events.on "wunderground.data.astronomy", @onWundergroundAstronomy
-        events.on "wunderground.data.conditions", @onWundergroundConditions
-        events.on "wunderground.data.forecast", @onWundergroundForecast
+        events.on "ElectricImp.data", @onElectricImp
+        events.on "Netatmo.data", @onNetatmo
+        events.on "Ninja.data", @onNinja
+        events.on "Ubi.data", @onUbi
+        events.on "Wunderground.data", @onWunderground
 
         @baseStart()
 
     # Stop the weather manager.
     stop: =>
-        events.off "electricimp.data", @onElectricImp
-        events.off "netatmo.data.indoor", @onNetatmoIndoor
-        events.off "netatmo.data.outdoor", @onNetatmoOutdoor
-        events.off "ninja.data.weather", @onNinjaWeather
-        events.off "ubi.data.sensors", @onUbiSensors
-        events.off "wunderground.data.astronomy", @onWundergroundAstronomy
-        events.off "wunderground.data.conditions", @onWundergroundConditions
-        events.off "wunderground.data.forecast", @onWundergroundForecast
+        events.off "ElectricImp.data", @onElectricImp
+        events.off "Netatmo.data", @onNetatmo
+        events.off "Ninja.data", @onNinja
+        events.off "Ubi.data", @onUbi
+        events.off "Wunderground.data", @onWunderground
 
         @baseStop()
 
@@ -175,6 +169,18 @@ class WeatherManager extends (require "./basemanager.coffee")
         @dataUpdated "forecast"
         logger.info "WeatherManager.setWeatherForecast", @data.forecast
 
+    # NETATMO
+    # -------------------------------------------------------------------------
+
+    # When Netatmo data is updated.
+    onNetatmo: (key, data, filter) =>
+        logger.debug "WeatherManager.onNetatmo", key, data, filter
+
+        if key is "indoor"
+            @onNetatmoIndoor data, filter
+        else if key is "outdoor"
+            @onNetatmoOutdoor data, filter
+
     # Check indoor weather conditions using Netatmo.
     onNetatmoIndoor: (data, filter) =>
         if filter["module_id"]?
@@ -188,8 +194,15 @@ class WeatherManager extends (require "./basemanager.coffee")
     onNetatmoOutdoor: (data, filter) =>
         @setOutsideClimate data, "netatmo"
 
+    # NINJA
+    # -------------------------------------------------------------------------
+
     # Check indoor weather conditions using Ninja Blocks.
-    onNinjaWeather: (data, filter) =>
+    onNinja: (key, data, filter) =>
+        logger.debug "WeatherManager.onNinja", key, data, filter
+
+        return if key isnt "weather"
+
         weather = {}
         weather.temperature = data.value.temperature[0].value if data.value.temperature[0]?
         weather.humidity = data.value.humidity[0].value if data.value.humidity[0]?
@@ -201,26 +214,39 @@ class WeatherManager extends (require "./basemanager.coffee")
         data.value = weather
         @setRoomClimate data, {"ninja": ""}
 
+    # ELECTRIC IMP
+    # -------------------------------------------------------------------------
+
     # Check indoor weather conditions using Electric Imp. We're binding to the global data event,
     # so a key is passed here as well.
     onElectricImp: (key, data, filter) =>
+        logger.debug "WeatherManager.onElectricImp", key, data, filter
+
         @setRoomClimate data, {"electricimp": key}
 
+    # UBI
+    # -------------------------------------------------------------------------
+
     # Check sensor data from Ubi.
-    onUbiSensors: (data, filter) =>
+    onUbi: (key, data, filter) =>
+        logger.debug "WeatherManager.onUbi", key, data, filter
+        return if key isnt "sensors"
+
         @setRoomClimate data, {"ubi": data.value.device_id}
 
-    # Check astronomy for today using Weather Underground.
-    onWundergroundAstronomy: (data) =>
-        @setAstronomy data
+    # WUNDERGROUND
+    # -------------------------------------------------------------------------
 
-    # Check outdoor weather conditions using Weather Underground.
-    onWundergroundConditions: (data) =>
-        @setCurrentConditions data
+    # When Wunderground data is updated.
+    onWunderground: (key, data, filter) =>
+        logger.debug "WeatherManager.onWunderground", key, data, filter
 
-    # Check outdoor weather forecast for next days using Weather Underground.
-    onWundergroundForecast: (data) =>
-        @setWeatherForecast data, "wunderground"
+        if key is "astronomy"
+            @setAstronomy data
+        else if key is "conditions"
+            @setCurrentConditions data
+        else if key is "astronomy"
+            @setWeatherForecast data, "wunderground"
 
     # WEATHER MAINTENANCE
     # -------------------------------------------------------------------------

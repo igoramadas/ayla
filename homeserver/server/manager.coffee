@@ -35,7 +35,7 @@ class Manager
             if f.indexOf("basemanager.coffee") < 0 and f.indexOf(".coffee") > 0
                 module = require "./manager/#{f}"
                 module.init()
-                @modules[module.moduleId] = module
+                @modules[module.moduleNameLower] = module
 
         # Start all managers.
         m.start() for k, m of @modules

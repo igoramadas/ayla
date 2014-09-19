@@ -41,7 +41,7 @@ class Routes
         # API modules routes.
         for key, m of api.modules
             do (m) ->
-                link = m.moduleId
+                link = m.moduleNameLower
 
                 # Set default module route (/apiModuleId).
                 app.get "/#{link}", (req, res) -> renderApiModulePage req, res, m
@@ -49,9 +49,9 @@ class Routes
                 # Has OAuth bindings? If so, set OAuth routes.
                 if m.oauth?
                     oauthProcess = (req, res) -> m.oauth.process req, res
-                    app.get "/#{m.moduleId}/auth", oauthProcess
-                    app.get "/#{m.moduleId}/auth/callback", oauthProcess
-                    app.post "/#{m.moduleId}/auth/callback", oauthProcess
+                    app.get "/#{m.moduleNameLower}/auth", oauthProcess
+                    app.get "/#{m.moduleNameLower}/auth/callback", oauthProcess
+                    app.post "/#{m.moduleNameLower}/auth/callback", oauthProcess
 
                 # Bind API module specific routes.
                 bindModuleRoutes m
@@ -74,7 +74,7 @@ class Routes
             method = route.method.toLowerCase()
 
             # Get or post? Available render types are page, json and image.
-            app[method] "/#{m.moduleId}/#{route.path}", (req, res) ->
+            app[method] "/#{m.moduleNameLower}/#{route.path}", (req, res) ->
                 if route.render is "page"
                     renderFn = renderPage
                 else if route.render is "json"

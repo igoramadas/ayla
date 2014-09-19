@@ -25,27 +25,32 @@ class MoneyManager extends (require "./basemanager.coffee")
 
     # Start the money manager and listen to data updates / events.
     start: =>
-        events.on "toshl.data.months", @onToshlMonths
-        events.on "toshl.data.recentExpenses", @onToshlRecentExpenses
-        events.on "toshl.data.recentIncomes", @onToshlRecentIncomes
+        events.on "Toshl.data", @onToshl
 
         @baseStart()
 
     # Stop the home manager.
     stop: =>
-        events.off "toshl.data.months", @onToshlMonths
-        events.off "toshl.data.recentExpenses", @onToshlRecentExpenses
-        events.off "toshl.data.recentIncomes", @onToshlRecentIncomes
+        events.off "Toshl.data", @onToshl
 
         @baseStop()
 
     # TOSHL DATA
     # -------------------------------------------------------------------------
 
+    # When Toshl data is updated.
+    onToshl: (key, data, filter) =>
+        logger.debug "MoneyManager.onToshl", key, data, filter
+
+        if key is "months"
+            @onToshlMonths data
+        else if key is "recentExpenses"
+            @onToshlRecentExpenses data
+        else if key is "recentIncomes"
+            @onToshlRecentIncomes data
+
     # When months data is returned from Toshl.
     onToshlMonths: (data) =>
-        logger.debug "MoneyManager.onToshlMonths"
-
         @data.months = []
 
         # Iterate months.

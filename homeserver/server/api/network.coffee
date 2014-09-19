@@ -47,9 +47,9 @@ class Network extends (require "./baseapi.coffee")
 
     # Start monitoring the network.
     start: =>
-        events.on "network.probeBluetooth", @probeBluetooth
-        events.on "network.probeBluetoothUsers", @probeBluetoothUsers
-        events.on "network.wol", @wol
+        events.on "Network.probeBluetooth", @probeBluetooth
+        events.on "Network.probeBluetoothUsers", @probeBluetoothUsers
+        events.on "Network.wol", @wol
 
         @checkIP()
 
@@ -72,9 +72,9 @@ class Network extends (require "./baseapi.coffee")
 
     # Stop monitoring the network.
     stop: =>
-        events.off "network.probeBluetooth", @probeBluetooth
-        events.off "network.probeBluetoothUsers", @probeBluetoothUsers
-        events.off "network.wol", @wol
+        events.off "Network.probeBluetooth", @probeBluetooth
+        events.off "Network.probeBluetoothUsers", @probeBluetoothUsers
+        events.off "Network.wol", @wol
 
         if settings.network.autoDiscovery
             @mdnsBrowser.off "serviceUp", @onServiceUp
