@@ -2,7 +2,7 @@
 # --------------------------------------------------------------------------
 class LightsView extends ayla.BaseView
 
-    wrapperId: "lights"
+    viewId: "lights"
     elements: ["button.state", "select.colourpicker"]
 
     # MAIN METHODS
@@ -18,7 +18,7 @@ class LightsView extends ayla.BaseView
     hueLightToggle: (light, e) =>
         data = {lightId: light.id, title: light.title, state: light.state}
 
-        ayla.sockets.emit "lightsManager.hue.toggle", data
+        ayla.sockets.emit "#{@socketsName}.Hue.toggle", data
 
         return true
 
@@ -27,7 +27,7 @@ class LightsView extends ayla.BaseView
         code = if $(e.target).hasClass("success") then light.codeOn else light.codeOff
         data = {title: light.title, code: code}
 
-        ayla.sockets.emit "lightsManager.ninja.toggle", data
+        ayla.sockets.emit "#{@socketsName}.Ninja.toggle", data
 
         return true
 

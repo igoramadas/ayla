@@ -2,7 +2,7 @@
 # --------------------------------------------------------------------------
 class NetworkView extends ayla.BaseView
 
-    wrapperId: "network"
+    viewId: "network"
     elements: ["table"]
 
     # MAIN METHODS

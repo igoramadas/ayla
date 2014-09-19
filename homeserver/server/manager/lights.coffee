@@ -102,7 +102,7 @@ class LightsManager extends (require "./basemanager.coffee")
 
         onOrOff = if light.state then "on" else "off"
 
-        events.emit "hue.setLightState", {lightId: light.lightId}, {on: light.state}, (err, result) =>
+        events.emit "Hue.setLightState", {lightId: light.lightId}, {on: light.state}, (err, result) =>
             if err?
                 err = {message: "Could not toggle hue light #{light.title}", err: err}
             else
@@ -153,7 +153,7 @@ class LightsManager extends (require "./basemanager.coffee")
     onClientNinjaToggle: (light) =>
         logger.debug "LightsManager.onClientHueToggle", light
 
-        events.emit "ninja.actuate433", light
+        events.emit "Ninja.actuate433", light
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

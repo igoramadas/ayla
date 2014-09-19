@@ -2,7 +2,7 @@
 # --------------------------------------------------------------------------
 class WeatherView extends ayla.BaseView
 
-    wrapperId: "weather"
+    viewId: "Weather"
 
     # MAIN METHODS
     # ----------------------------------------------------------------------

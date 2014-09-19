@@ -2,7 +2,7 @@
 # --------------------------------------------------------------------------
 class FitnessView extends ayla.BaseView
 
-    wrapperId: "fitness"
+    viewId: "fitness"
     elements: [".weight", ".fat", ".sleep"]
 
     # MAIN METHODS

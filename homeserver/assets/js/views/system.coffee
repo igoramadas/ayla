@@ -2,7 +2,7 @@
 # --------------------------------------------------------------------------
 class SystemView extends ayla.BaseView
 
-    wrapperId: "system"
+    viewId: "system"
     elements: ["table"]
 
     # MAIN METHODS

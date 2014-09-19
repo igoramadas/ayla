@@ -159,7 +159,7 @@ class Hue extends (require "./baseapi.coffee")
                 @logError "Hue.setLightState", filter, state, err
             else
                 logger.info "Hue.setLightState", filter, state
-                events.emit "hue.light.state", filter, state
+                events.emit "Hue.light.state", filter, state
 
             callback err, results if hasCallback
 

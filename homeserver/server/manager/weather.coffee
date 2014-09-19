@@ -260,15 +260,15 @@ class WeatherManager extends (require "./basemanager.coffee")
 
         # Actuate correct Ninja device depending if on or off.
         if onOrOff
-            events.emit "ninja.actuate433", {id: source.ninja.on}
+            events.emit "Ninja.actuate433", {id: source.ninja.on}
         else
-            events.emit "ninja.actuate433", {id: source.ninja.off}
+            events.emit "Ninja.actuate433", {id: source.ninja.off}
 
         # Turn off automatically after timeout, if specified.
         # Convert timeout to milliseconds.
         if timeoutMinutes? and timeoutMinutes > 0 and onOrOff
             timeoutMinutes = timeoutMinutes * 60000
-            lodash.delay events.emit, timeoutMinutes, "ninja.actuate433", {id: source.ninja.off}
+            lodash.delay events.emit, timeoutMinutes, "Ninja.actuate433", {id: source.ninja.off}
 
     # GENERAL GET HELPERS
     # -------------------------------------------------------------------------

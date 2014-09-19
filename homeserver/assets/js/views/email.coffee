@@ -2,7 +2,7 @@
 # --------------------------------------------------------------------------
 class EmailView extends ayla.BaseView
 
-    wrapperId: "email"
+    viewId: "email"
     elements: [".emails"]
 
     # MAIN METHODS

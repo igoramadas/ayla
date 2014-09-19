@@ -25,14 +25,14 @@ class BaseView
         ko.applyBindings @data if @data?
 
     # This will iterate over the `elements` property to create the dom cache
-    # and set the main wrapper based on the `wrapperId` property. The list
+    # and set the main wrapper based on the `viewId` property. The list
     # is optional, and can be used to add elements after the page has loaded.
     setElements: (list) =>
         if not @dom?
             @dom = {}
 
-            if @wrapperId
-                @dom.wrapper = $ "#" + @wrapperId
+            if @viewId
+                @dom.wrapper = $ "#" + @viewId
             else
                 @dom.wrapper = $ "#contents"
 
@@ -79,7 +79,8 @@ class BaseView
     # Helper to listen to socket events sent by the server. If no event name is
     # passed then use the view's default.
     bindSockets: =>
-        @socketsName = "#{@wrapperId}Manager" if not @socketsName?
+        socketsId = @viewId.charAt(0).toUpperCase() + @viewId.slice 1;
+        @socketsName = "#{socketsId}Manager" if not @socketsName?
 
         # Listen to global sockets updates.
         ayla.sockets.on @socketsName + ".error", (err) => console.warn "ERROR!", err

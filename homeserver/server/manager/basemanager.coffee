@@ -63,7 +63,7 @@ class BaseManager extends (require "../basemodule.coffee")
             body = options.message
 
         # Set message options and send email.
-        events.emit "emailManager.send", {mobile: true, subject: options.subject, body: body}
+        events.emit "EmailManager.send", {mobile: true, subject: options.subject, body: body}
 
         # Add to the notifications cache.
         @notifications[options.subject] = {options: options, timestamp: moment().unix()}

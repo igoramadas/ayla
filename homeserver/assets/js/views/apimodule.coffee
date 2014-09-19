@@ -2,7 +2,7 @@
 # --------------------------------------------------------------------------
 class ApiView extends ayla.BaseView
 
-    wrapperId: "api"
+    viewId: "api"
     elements: [".tabs", ".tabs-content"]
 
     # MAIN METHODS

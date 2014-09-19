@@ -24,13 +24,13 @@ class FitnessManager extends (require "./basemanager.coffee")
 
     # Start the fitness manager and listen to data updates / events.
     start: =>
-        events.on "Withings.data", @onWithingsBody
+        events.on "Withings.data", @onWithings
 
         @baseStart()
 
     # Stop the fitness manager.
     stop: =>
-        events.off "Withings.data", @onWithingsBody
+        events.off "Withings.data", @onWithings
 
         @baseStop()
 
@@ -38,7 +38,8 @@ class FitnessManager extends (require "./basemanager.coffee")
     # -------------------------------------------------------------------------
 
     # When current body data is informed by Withings.
-    onWithingsBody: (data, filter) =>
+    onWithings: (key, data, filter) =>
+        return if key isnt "bodyMeasures"
         @data.recentBodyMeasures = {timestamp: 0} if not @data.recentBodyMeasures?
 
         sorted = lodash.sortBy data.value.body.measuregrps, "date"
