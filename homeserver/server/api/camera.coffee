@@ -121,7 +121,7 @@ class Camera extends (require "./baseapi.coffee")
             callback err, result if lodash.isFunction callback
 
     # Take a snapshot for every registered camera on the network.
-    takeAllSnaps: (job) =>
+    takeAllSnaps: =>
         cameras = lodash.filter settings.network.devices, {type: "camera"}
         count = lodash.size cameras
 
