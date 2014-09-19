@@ -14,7 +14,7 @@ settings = expresser.settings
 # Load private settings.
 settings.loadFromJson "settings.private.json"
 
-# Temporary set a shared Data on Expresser.
+# Temporary set a global data store on Expresser.
 expresser.datastore = {}
 
 # Required modules.

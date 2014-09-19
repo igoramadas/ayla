@@ -7,10 +7,10 @@ class Hue extends (require "./baseapi.coffee")
     expresser = require "expresser"
 
     async = expresser.libs.async
+    datastore = expresser.datastore
     events = expresser.events
     lodash = expresser.libs.lodash
     logger = expresser.logger
-    networkApi = require "./network.coffee"
     settings = expresser.settings
     url = require "url"
     utils = expresser.utils
@@ -72,7 +72,7 @@ class Hue extends (require "./baseapi.coffee")
             return
 
         # Get correct URL depending on home or remote location.
-        if networkApi.isHome
+        if datastore.NetworkApi?.isHome
             baseUrl = "http://#{device.ip}:#{device.localPort}/api/#{settings.hue.api.user}/"
         else
             baseUrl = "http://#{settings.network.router.remoteHost}:#{device.remotePort}/api/#{settings.hue.api.user}/"

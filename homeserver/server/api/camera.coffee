@@ -6,13 +6,13 @@ class Camera extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
 
+    datastore = expresser.datastore
     downloader = expresser.downloader
     events = expresser.events
     fs = require "fs"
     lodash = expresser.libs.lodash
     logger = expresser.logger
     moment = expresser.libs.moment
-    networkApi = require "./network.coffee"
     path = require "path"
     settings = expresser.settings
 
@@ -99,7 +99,7 @@ class Camera extends (require "./baseapi.coffee")
         now = moment().format settings.camera.dateFormat
         saveTo = @snapsPath + "#{cam.host}.#{now}.jpg"
 
-        if networkApi.isHome
+        if datastore.NetworkApi?.isHome
             downloadUrl = "#{cam.ip}:#{cam.localPort}/#{cam.imagePath}"
         else
             downloadUrl = "#{settings.network.router.remoteHost}:#{cam.remotePort}/#{cam.imagePath}"

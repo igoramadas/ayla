@@ -105,8 +105,8 @@ class UsersManager extends (require "./basemanager.coffee")
             # If first person online, get current time, sunrise and sunset hours.
             if not anyoneOnline
                 currentHour = moment().hour()
-                sunrise = datastore.weatherManager.astronomy?.sunrise.hour or 7
-                sunset = datastore.weatherManager.astronomy?.sunset.hour or 17
+                sunrise = datastore.WeatherManager.astronomy?.sunrise.hour or 7
+                sunset = datastore.WeatherManager.astronomy?.sunset.hour or 17
 
                 # Is it dark now? Turn lights on!
                 if currentHour < sunrise or currentHour > sunset

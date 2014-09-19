@@ -140,8 +140,7 @@ class Ninja extends (require "./baseapi.coffee")
         logger.info "Ninja.actuate433", actuatorNames
 
         # Iterate and send command to subdevices.
-        for s in actuators
-            @ninjaApi.device(rf433data.guid).actuate s.data
+        @ninjaApi.device(rf433data.guid).actuate s.data for s in actuators
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

@@ -11,6 +11,7 @@ class Network extends (require "./baseapi.coffee")
     async = expresser.libs.async
     buffer = require "buffer"
     cprocess = require "child_process"
+    datastore = expresser.datastore
     dgram = require "dgram"
     events = expresser.events
     fs = require "fs"
@@ -30,9 +31,6 @@ class Network extends (require "./baseapi.coffee")
     # Local network discovery.
     mdnsBrowser: null
 
-    # Is it running on the expected local network, or remotely?
-    isHome: true
-
     # Server information cache.
     serverInfo: {}
 
@@ -45,10 +43,7 @@ class Network extends (require "./baseapi.coffee")
 
     # Init the Network module.
     init: =>
-        @mdnsBrowser = mdns.createBrowser mdns.tcp("http")
-        @checkIP()
-
-        @baseInit {devices: []}
+        @baseInit {isHome: true, devices: []}
 
     # Start monitoring the network.
     start: =>
@@ -56,8 +51,12 @@ class Network extends (require "./baseapi.coffee")
         events.on "network.probeBluetoothUsers", @probeBluetoothUsers
         events.on "network.wol", @wol
 
+        @checkIP()
+
         @serverInfo = utils.getServerInfo()
         @serverInfo.platform = @serverInfo.platform.toLowerCase()
+
+        @mdnsBrowser = mdns.createBrowser mdns.tcp("http")
 
         if settings.network.autoDiscovery
             @mdnsBrowser.on "serviceUp", @onServiceUp
@@ -101,11 +100,11 @@ class Network extends (require "./baseapi.coffee")
         homeSubnet = settings.network.router?.ip?.substring 0, 7
 
         if not homeSubnet? or ips.indexOf(homeSubnet) < 0
-            @isHome = false
+            @data.isHome = false
         else
-            @isHome = true
+            @data.isHome = true
 
-        logger.info "Network.checkIP", ips, "isHome = #{@isHome}"
+        logger.info "Network.checkIP", ips, "isHome = #{@data.isHome}"
 
     # Check if the specified device / server / URL is up.
     # Abort if device is invalid or was found using mdns.
