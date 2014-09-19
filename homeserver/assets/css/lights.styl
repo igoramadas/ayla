@@ -1,16 +1,36 @@
 // LIGHTS PAGE STYLES
 
+offColor = rgb(240, 65, 36)
+onColor = rgb(67, 172, 106)
+
 // Hue lights and sockets
 #lights
-    .lightlist
+    .hue
+        th.state
+            text-align right
+            span
+                margin-right 6px
 
-        button
-            margin-right 10px
-            min-width 60px
+        div.switch
+            label
+                background-color offColor
+                margin-bottom 1px
+
+            input:checked + label
+                background-color onColor
 
         .colourpicker
-            height 35px
-            margin-right 10px
+            height 32px
+            margin 0
+
+    .ninja
+        th.state
+            text-align right
+            span
+                margin-right 12px
+
+        button
+            margin 0 0 0 6px
 
     .all
         button

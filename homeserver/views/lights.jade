@@ -8,24 +8,48 @@ block contents
                 div
                     h2 Hue lights
                     <!-- ko with: hue -->
-                    div.lightlist(data-bind="foreach: lights")
-                        div.clearfix(data-bind="attr: {'data-lightid': id}")
-                            span(data-bind="text: title")
-                            button.button.tiny.right(data-bind="text: state ? 'ON' : 'OFF', css: state ? 'success' : 'alert', click: ayla.currentView.hueLightToggle")
-                            input.right(data-bind="value: color, colourPicker: true")
+                    table
+                        thead
+                            tr
+                                th.title Lights
+                                th.colour
+                                th.state
+                                    span Toggle
+                        tbody(data-bind="foreach: lights")
+                            tr
+                                td(nowrap)
+                                    span(data-bind="text: title")
+                                td
+                                    div(data-bind="visible: state")
+                                        input.right(data-bind="value: color, colourPicker: true")
+                                td
+                                    div.right
+                                        div.switch
+                                            input(type="checkbox", data-bind="attr: {id: 'chk-hue-' + id}, checked: state, click: ayla.currentView.hueLightToggle")
+                                            label(data-bind="attr: {for: 'chk-hue-' + id}")
+
                     <!-- /ko -->
 
             li.ninja
                 div
                     h2 Ninja lights
-                    div.lightlist(data-bind="foreach: ninja")
-                        div.clearfix
-                            span(data-bind="text: title")
-                            button.button.tiny.right(data-bind="click: ayla.currentView.ninjaLightToggle") Actuate
+                    table
+                        thead
+                            tr
+                                th.title Lights
+                                th.state
+                                    span Toggle
+                        tbody(data-bind="foreach: ninja")
+                            tr
+                                td(nowrap)
+                                    span(data-bind="text: title")
+                                td
+                                    button.button.tiny.right.alert(data-bind="click: ayla.currentView.ninjaLightToggle") OFF
+                                    button.button.tiny.right.success(data-bind="click: ayla.currentView.ninjaLightToggle") ON
 
             li.all
-            div
-                h2 All
-                div.all
-                    button.success All ON
-                    button.alert All OFF
+                div.right
+                    h2 All
+                    div
+                        button.success All ON
+                        button.alert All OFF

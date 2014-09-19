@@ -66,13 +66,17 @@ class LightsManager extends (require "./basemanager.coffee")
             obj = new lightModel light, "hue"
             @data.hue.lights.push obj
 
+        # Sort collections.
+        @data.hue.groups = lodash.sortBy @data.hue.groups, "room"
+        @data.hue.lights = lodash.sortBy @data.hue.lights, "title"
+        logger.debug "LightsManager.onHueHub", @data.hue
+
         # Emit updated hue lights and save log.
         @dataUpdated "hue"
-        logger.info "LightsManager.onHueHub", @data.hue
 
     # When Hue light state changes, propagate to clients.
     onHueLightState: (filter, state) =>
-        logger.debug "LightsManager.onClientHueToggle", filter, state
+        logger.debug "LightsManager.onHueLightState", filter, state
 
         if filter.lightId?
             if lodash.isArray filter.lightId
@@ -83,22 +87,25 @@ class LightsManager extends (require "./basemanager.coffee")
             # Update all lights by iterating the array of light IDs.
             for id in arr
                 light = lodash.find @data.hue.lights, {id: id}
-                lodash.assign light.state, state if light?
+
+                if light?
+                    lodash.assign light.state, state
+                    logger.debug "LightsManager.onHueLightState", light, "Changed state", state
 
         # Tell others that hue data was updated.
         @dataUpdated "hue"
 
-    # When a toggle ON/OFF is received from the client.
+    # When a toggle ON/OFF is received from the client., filtered by light ID.
     onClientHueToggle: (light) =>
         logger.debug "LightsManager.onClientHueToggle", light
 
-        events.emit "hue.setlightstate", {lightId: light.lightId}, {on: light.state}
+        events.emit "hue.setLightState", {lightId: light.lightId}, {on: light.state}
 
-    # When a toggle ON/OFF is received from the client.
+    # When a toggle ON/OFF is received from the client, filtered by title.
     onClientNinjaToggle: (light) =>
         logger.debug "LightsManager.onClientHueToggle", light
 
-        events.emit "hue.setlightstate", {lightId: light.lightId}, {on: light.state}
+        events.emit "ninja.actuate433", light
 
     # NINJA
     # -------------------------------------------------------------------------
@@ -109,16 +116,34 @@ class LightsManager extends (require "./basemanager.coffee")
         logger.debug "LightsManager.onNinjaDevices", data
 
         @data.ninja = []
+        lights = {}
 
+        # Iterated filtered light list to create the specific light models.
+        # It merges devices containing same title with On and Off.
         for id, device of data.value.device.subDevices
             if device.shortName.toLowerCase().indexOf("light") >= 0
+                lightTitle = device.shortName.replace(" On", "").replace(" Off", "")
                 device.id = id
-                obj = new lightModel device, "ninja"
-                @data.ninja.push obj
+                device.title = lightTitle
+
+                if not lights[lightTitle]?
+                    lights[lightTitle] = new lightModel device, "ninja"
+                else
+                    lights[lightTitle].setData device
+
+                # Here's where the action happens. Instead of creating one light for Off
+                # and another for On, we merge them and set the codeOn and codeOff properties.
+                if device.shortName.indexOf(" On") > 0
+                    lights[lightTitle].codeOn = id
+                else if device.shortName.indexOf(" Off") > 0
+                    lights[lightTitle].codeOff = id
+
+        # Push created light models to the ninja light collection.
+        @data.ninja.push light for title, light of lights
+        logger.debug "LightsManager.onNinjaDevices", @data.ninja
 
         # Emit updated ninja lights and save log.
         @dataUpdated "ninja"
-        logger.info "LightsManager.onNinjaDevices", @data.ninja
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

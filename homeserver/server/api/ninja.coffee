@@ -104,7 +104,7 @@ class Ninja extends (require "./baseapi.coffee")
     # RF 433 SOCKETS
     # -------------------------------------------------------------------------
 
-    # Actuate remote controlled RF433 sockets.The filter can be the subdevice ID,
+    # Actuate remote controlled RF433 actuators.The filter can be the subdevice ID,
     # short name defined or explicit filter.
     actuate433: (filter, callback) =>
         if lodash.isFunction filter
@@ -114,31 +114,34 @@ class Ninja extends (require "./baseapi.coffee")
             filter = @getJobArgs filter
 
         hasCallback = lodash.isFunction callback
+        rf433data = @data.rf433?[0].value?.device
 
         if not @isRunning [@ninjaApi]
-            callback "Ninja API client not running. Please check Ninja API settings." if hasCallback?
+            callback "Ninja API client not running. Please check Ninja API settings." if hasCallback
             return
-        else if not @data.rf433?.device?
-            callback "Ninja.actuate433", "RF 433 device not found." if hasCallback?
+        else if not rf433data?
+            callback "Ninja.actuate433", "RF 433 device not found." if hasCallback
             return
 
-        subDevices = @data.rf433.device.subDevices
+        subDevices = rf433data.subDevices
+        actuators = []
 
-        # Get correct list of subdevices based on the provided filter.
         if lodash.isString filter or lodash.isNumber filter
             if subDevices[filter]?
-                sockets = [subDevices[filter]]
-            else
-                sockets = lodash.filter subDevices, {shortName: filter}
-        else
-            sockets = lodash.filter subDevices, filter
+                actuators = [subDevices[filter]]
 
-        socketNames = lodash.pluck sockets, "shortName"
-        logger.info "Ninja.actuate433", socketNames
+        # Get correct list of subdevices based on the provided filter.
+        if actuators.length < 1
+            for id, device of subDevices
+                if device.shortName is filter or device.shortName is filter.shortName or id is filter or id is filter.code
+                    actuators.push device
+
+        actuatorNames = lodash.pluck actuators, "shortName"
+        logger.info "Ninja.actuate433", actuatorNames
 
         # Iterate and send command to subdevices.
-        for s in sockets
-            @ninjaApi.device(@data.rf433.device.guid).actuate s.data
+        for s in actuators
+            @ninjaApi.device(rf433data.guid).actuate s.data
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------
