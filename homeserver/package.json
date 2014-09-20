@@ -1,6 +1,6 @@
 {
     "name": "ayla",
-    "version": "0.3.2",
+    "version": "0.3.3",
     "description": "Ayla at your service.",
     "homepage": "http://ayla.codeplex.com",
     "author": "Igor Ramadas <igor@devv.com>",
@@ -28,7 +28,8 @@
         "mdns2": ">= 2.0.0",
         "ninja-blocks": ">= 0.1.3",
         "oauth": ">= 0.9.10",
-        "request": ">= 2.33.0"
+        "request": ">= 2.33.0",
+        "tinycolor2": ">= 1.0.0"
     },
     "devDependencies": {
         "chai": "*",

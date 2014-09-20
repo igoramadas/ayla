@@ -134,7 +134,7 @@ class EmailManager extends (require "./basemanager.coffee")
 
     # Download the specified message and load the related Email Action.
     downloadMessage: (account, msg, seqno) =>
-        parser = new mailparser {debug: true}
+        parser = new mailparser()
         msgAttributes = {}
         parsedMsg = {}
 

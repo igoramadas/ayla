@@ -3,7 +3,7 @@
 class LightsView extends ayla.BaseView
 
     viewId: "lights"
-    elements: ["button.state", "select.colourpicker"]
+    elements: ["input.colorpicker"]
 
     # MAIN METHODS
     # ----------------------------------------------------------------------
@@ -13,6 +13,12 @@ class LightsView extends ayla.BaseView
 
     # LIGHT CONTROL
     # ----------------------------------------------------------------------
+
+    # Change hue light color.
+    hueLightColor: (light, e) =>
+        data = {lightId: light.id, title: light.title, colorHex: $(e.target).val()}
+
+        ayla.sockets.emit "#{@socketsName}.Hue.color", data
 
     # Toggle lights om or off based on its current state.
     hueLightToggle: (light, e) =>

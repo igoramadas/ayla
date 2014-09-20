@@ -139,8 +139,12 @@ class Ninja extends (require "./baseapi.coffee")
         actuatorNames = lodash.pluck actuators, "shortName"
         logger.info "Ninja.actuate433", actuatorNames
 
-        # Iterate and send command to subdevices.
-        @ninjaApi.device(rf433data.guid).actuate a.data for a in actuators
+        # Iterate and send command to subdevices twice to make sure it'll work.
+        for a in actuators
+            do (a) =>
+                actuate = => @ninjaApi.device(rf433data.guid).actuate a.data
+                setTimeout actuate, 1
+                setTimeout actuate, 300
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

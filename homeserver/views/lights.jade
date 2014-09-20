@@ -21,7 +21,7 @@ block contents
                                     span(data-bind="text: title")
                                 td
                                     div(data-bind="visible: state")
-                                        input.right(data-bind="value: color, colourPicker: true")
+                                        input.right(type="text", data-bind="value: colorHex, colorPicker: true, event: {change: ayla.currentView.hueLightColor}")
                                 td
                                     div.right
                                         div.switch

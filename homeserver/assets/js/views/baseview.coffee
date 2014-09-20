@@ -116,18 +116,22 @@ class BaseView
 
         obj = @announcementsQueue.shift()
 
-        @announcing = true
+        if obj.err?
+            css = "error"
+            timeout = 3000
+        else if obj.result? and obj.important
+            css = "ok"
+            timeout = 1600
+        else
+            return @nextAnnouncement()
 
+        # Set announcing and remove color classes.
+        @announcing = true
         @dom.announcements.removeClass "error"
         @dom.announcements.removeClass "ok"
+        @dom.announcements.addClass css
 
-        if obj.err?
-            @dom.announcements.addClass "error"
-            timeout = 2200
-        else if obj.result?
-            @dom.announcements.addClass "ok"
-            timeout = 1200
-
+        # Update announcement element.
         @dom.announcements.find(".message").html obj.message
         @dom.announcements.fadeIn 200, =>
             hideFunc = =>

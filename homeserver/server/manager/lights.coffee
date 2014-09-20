@@ -29,6 +29,7 @@ class LightsManager extends (require "./basemanager.coffee")
         events.on "Hue.light.state", @onHueLightState
         events.on "Ninja.data", @onNinja
 
+        sockets.listenTo "LightsManager.Hue.color", @onClientHueColor
         sockets.listenTo "LightsManager.Hue.toggle", @onClientHueToggle
         sockets.listenTo "LightsManager.Ninja.toggle", @onClientNinjaToggle
 
@@ -40,6 +41,7 @@ class LightsManager extends (require "./basemanager.coffee")
         events.off "Hue.light.state", @onHueLightState
         events.off "Ninja.data", @onNinja
 
+        sockets.stopListening "LightsManager.Hue.color", @onClientHueColor
         sockets.stopListening "LightsManager.Hue.toggle", @onClientHueToggle
         sockets.stopListening "LightsManager.Ninja.toggle", @onClientNinjaToggle
 
@@ -96,15 +98,45 @@ class LightsManager extends (require "./basemanager.coffee")
         # Tell others that hue data was updated.
         @dataUpdated "hue"
 
-    # When a toggle ON/OFF is received from the client., filtered by light ID.
-    onClientHueToggle: (light) =>
-        logger.debug "LightsManager.onClientHueToggle", light
+    # When a hue color change received from the client.
+    onClientHueColor: (data) =>
+        logger.debug "LightsManager.onClientHueColor", data
+        light = lodash.find @data.hue.lights, {id: data.lightId}
+
+        # Check if light is valid.
+        if not light
+            logger.warn "LightsManager.onClientHueColor", data, "Does not exist or has invalid state!"
+            return
+
+        # Update light color and emit event to Hue.
+        light.setData {colorHex: data.colorHex}
+
+        events.emit "Hue.setLightState", {lightId: light.id}, light.colorHsv, (err, result) =>
+            if err?
+                err = {message: "Could not updated #{light.title} color.", err: err}
+            else
+                result = {message: "#{light.title} updated color to #{light.colorHex}.", result: result}
+
+            @emitResultSocket err, result
+
+    # When a toggle ON/OFF is received from the client.
+    onClientHueToggle: (data) =>
+        logger.debug "LightsManager.onClientHueToggle", data
+        light = lodash.find @data.hue.lights, {id: data.lightId}
+
+        # Check if light is valid.
+        if not light
+            logger.warn "LightsManager.onClientHueToggle", data, "Does not exist or has invalid state!"
+            return
 
         onOrOff = if light.state then "on" else "off"
 
-        events.emit "Hue.setLightState", {lightId: light.lightId}, {on: light.state}, (err, result) =>
+        # Update light state and emit event to Hue.
+        light.setData {state: data.state}
+
+        events.emit "Hue.setLightState", {lightId: light.id}, {on: light.state}, (err, result) =>
             if err?
-                err = {message: "Could not toggle hue light #{light.title}", err: err}
+                err = {message: "Could not toggle hue light #{light.title}.", err: err}
             else
                 result = {message: "#{light.title} switched #{onOrOff}", result: result}
 
@@ -150,10 +182,10 @@ class LightsManager extends (require "./basemanager.coffee")
         @dataUpdated "ninja"
 
     # When a toggle ON/OFF is received from the client, filtered by title.
-    onClientNinjaToggle: (light) =>
-        logger.debug "LightsManager.onClientHueToggle", light
+    onClientNinjaToggle: (data) =>
+        logger.debug "LightsManager.onClientHueToggle", data
 
-        events.emit "Ninja.actuate433", light
+        events.emit "Ninja.actuate433", data
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

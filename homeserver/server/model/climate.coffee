@@ -58,7 +58,7 @@ class ClimateModel extends (require "./basemodel.coffee")
             @precp = data.precp or data.rain
             @precpChance = data.precpChance or data.pop
             @windDirection = data.windDirection or data.avewind?.dir or data.wind_dir
-            @windSpeed = data.windSpeed or data.avewind?.kph or data.wind_kph
+            @windSpeed = data.windSpeed or data.avewind?.kph or data.wind_kph or 0
             @windSpeedMax = data.windSpeedMax or data.maxwind?.kph
 
             # Guess precipitation chance.
@@ -70,6 +70,7 @@ class ClimateModel extends (require "./basemodel.coffee")
                 else
                     @precpChance = 0
 
+            # Properly set precipitation value.
             if @precp?
                 @precp = parseFloat(@precp).toFixed 1
                 @precp = parseFloat @precp
