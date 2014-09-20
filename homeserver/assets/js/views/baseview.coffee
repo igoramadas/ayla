@@ -18,6 +18,10 @@ class BaseView
         @setData()
         @bindSockets()
 
+        # Create announcements queue.
+        @announcementsQueue = []
+        @announcing = false
+
         # Call view `onReady` but only if present.
         @onReady() if @onReady?
 
@@ -52,6 +56,9 @@ class BaseView
 
             @dom[domId] = @dom.wrapper.find s
 
+        # Set announcement element.
+        @dom.announcements = $ "#announcements"
+
     # Set active navigation and header properties.
     setHeader: =>
         $(document).foundation()
@@ -61,20 +68,21 @@ class BaseView
             $("nav").find(".#{currentPath}").addClass "active"
 
     # Create a KO compatible object based on the original `serverData` property.
-    setData: (key, data) =>
+    setData: (obj) =>
         @data = {} if not @data?
 
-        if not key?
+        if not obj?
             for k, v of ayla.serverData
                 @dataProcessor k, v if @dataProcessor?
                 @data[k] = ko.observable v
         else
-            @dataProcessor key, data if @dataProcessor?
+            @dataProcessor obj.key, obj.data if @dataProcessor?
 
-            if @data[key]?
-                @data[key] data
+            if @data[obj.key]?
+
+                @data[obj.key] obj.data
             else
-                @data[key] = ko.observable data
+                @data[obj.key] = ko.observable obj.data
 
     # Helper to listen to socket events sent by the server. If no event name is
     # passed then use the view's default.
@@ -83,9 +91,9 @@ class BaseView
         @socketsName = "#{socketsId}Manager" if not @socketsName?
 
         # Listen to global sockets updates.
-        ayla.sockets.on @socketsName + ".error", (err) => console.warn "ERROR!", err
-        ayla.sockets.on @socketsName + ".result", (result) => console.warn "RESULT!", result
-        ayla.sockets.on @socketsName + ".data", (key, data) => @onData key, data
+        ayla.sockets.on @socketsName + ".error", (err) => @announce err
+        ayla.sockets.on @socketsName + ".result", (result) => @announce result
+        ayla.sockets.on @socketsName + ".data", (obj) => @onData obj
 
     # DATA UPDATES
     # ----------------------------------------------------------------------
@@ -93,6 +101,41 @@ class BaseView
     # Updates data sent by the server.
     onData: (key, data) =>
         @setData key, data
+
+    # ANNOUNCEMENTS
+    # ----------------------------------------------------------------------
+
+    # Show bottom announcement.
+    announce: (obj) =>
+        @announcementsQueue.push obj
+        @nextAnnouncement()
+
+    # Show next announcement.
+    nextAnnouncement: =>
+        return if @announcing or @announcementsQueue.length < 1
+
+        obj = @announcementsQueue.shift()
+
+        @announcing = true
+
+        @dom.announcements.removeClass "error"
+        @dom.announcements.removeClass "ok"
+
+        if obj.err?
+            @dom.announcements.addClass "error"
+            timeout = 2200
+        else if obj.result?
+            @dom.announcements.addClass "ok"
+            timeout = 1200
+
+        @dom.announcements.find(".message").html obj.message
+        @dom.announcements.fadeIn 200, =>
+            hideFunc = =>
+                @dom.announcements.fadeOut 200, =>
+                    @announcing = false
+                    @nextAnnouncement()
+
+            _.delay hideFunc, timeout
 
 # BIND BASE VIEW AND OPTIONS TO WINDOW
 # --------------------------------------------------------------------------

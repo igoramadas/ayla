@@ -23,19 +23,25 @@ html.no-js(lang="en")
                 ayla.serverData = !{JSON.stringify(data)};
     body
         #wrapper
-            nav#header.top-bar(data-topbar)
-                ul.title-area
-                    li.name
-                        h1
-                            a(href="#") Ayla
-                    li.toggle-topbar.menu-icon
-                        a(href="#") Menu
-                section.top-bar-section
-                    ul.left
-                        for m, key in managers
-                            li(class="#{m.title.toLowerCase()}")
-                                a(href="/#{m.title.toLowerCase()}") #{m.title}
-                        li.api
-                            a(href="/api") API Modules
+            div.sticky
+                nav#header.top-bar(data-topbar)
+                    ul.title-area
+                        li.name
+                            h1
+                                a(href="#") Ayla
+                        li.toggle-topbar.menu-icon
+                            a(href="#") Menu
+                    section.top-bar-section
+                        ul.left
+                            for m, key in managers
+                                li(class="#{m.title.toLowerCase()}")
+                                    a(href="/#{m.title.toLowerCase()}") #{m.title}
+                            li.api
+                                a(href="/api") API Modules
             div#contents
                 block contents
+
+            div#announcements(style="display: none")
+                div
+                    span.message
+                    span.details

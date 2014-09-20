@@ -27,7 +27,6 @@ class EmailAction_Shoeboxed
         msg = {to: settings.shoeboxed.email, subject: parsedMsg.subject, attachments: parsedMsg.attachments, body: body}
         events.emit "EmailManager.send", msg, (err, result) => callback err, result
 
-
 # Exports
 # -----------------------------------------------------------------------------
 module.exports = exports = EmailAction_Shoeboxed

@@ -245,7 +245,7 @@ class WeatherManager extends (require "./basemanager.coffee")
             @setAstronomy data
         else if key is "conditions"
             @setCurrentConditions data
-        else if key is "astronomy"
+        else if key is "forecast"
             @setWeatherForecast data, "wunderground"
 
     # WEATHER MAINTENANCE
