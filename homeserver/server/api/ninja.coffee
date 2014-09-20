@@ -114,7 +114,7 @@ class Ninja extends (require "./baseapi.coffee")
             filter = @getJobArgs filter
 
         hasCallback = lodash.isFunction callback
-        rf433data = @data.rf433?[0].value?.device
+        rf433data = @data.rf433?[0].value
 
         if not @isRunning [@ninjaApi]
             callback "Ninja API client not running. Please check Ninja API settings." if hasCallback
@@ -123,7 +123,7 @@ class Ninja extends (require "./baseapi.coffee")
             callback "Ninja.actuate433", "RF 433 device not found." if hasCallback
             return
 
-        subDevices = rf433data.subDevices
+        subDevices = rf433data.device.subDevices
         actuators = []
 
         if lodash.isString filter or lodash.isNumber filter
@@ -140,7 +140,7 @@ class Ninja extends (require "./baseapi.coffee")
         logger.info "Ninja.actuate433", actuatorNames
 
         # Iterate and send command to subdevices.
-        @ninjaApi.device(rf433data.guid).actuate s.data for s in actuators
+        @ninjaApi.device(rf433data.guid).actuate a.data for a in actuators
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

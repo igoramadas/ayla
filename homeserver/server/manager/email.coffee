@@ -48,7 +48,7 @@ class EmailManager extends (require "./basemanager.coffee")
 
     # Start listening to new message events from the server.
     start: =>
-        events.on "EmailManager.send", @sendEmail
+        events.on "EmailManager.send", @send
 
         # Send email telling Ayla home server has started managing emails.
         if @defaultToMobile?
@@ -68,7 +68,7 @@ class EmailManager extends (require "./basemanager.coffee")
 
     # Stop listening to new messages and disconnect. Set `running` to false.
     stop: =>
-        events.off "emailManager.send", @sendEmail
+        events.off "emailManager.send", @send
 
         # Close IMAP clients.
         for account of @accounts
@@ -134,22 +134,22 @@ class EmailManager extends (require "./basemanager.coffee")
 
     # Download the specified message and load the related Email Action.
     downloadMessage: (account, msg, seqno) =>
-        parser = new mailparser {streamAttachments: false}
+        parser = new mailparser {debug: true}
         msgAttributes = {}
         parsedMsg = {}
 
         # Parse mail message using mailparser.
-        parser.on "end", (result) -> parsedMsg = result
+        parser.on "end", (result) =>
+            try
+                parsedMsg = result
+                @processMessage account, parsedMsg, msgAttributes
+            catch ex
+                @logError "EmailManager.downloadMessage", ex.message, ex.stack
 
         # Get message attributes and body chunks, and on end proccess the message.
         msg.on "body", (stream, info) -> stream.pipe parser
         msg.once "attributes", (attrs) -> msgAttributes = attrs
-        msg.once "end", =>
-            parser.end()
-
-            # Delayed processing to make sure parsedMsg is set.
-            timedProcess = => @processMessage account, parsedMsg, msgAttributes
-            setTimeout timedProcess, 500
+        msg.once "end", -> parser.end()
 
     # After message has been downloaded, process it.
     processMessage: (account, parsedMsg, msgAttributes) =>
@@ -167,12 +167,17 @@ class EmailManager extends (require "./basemanager.coffee")
         # Get message actions.
         actions = @getMessageActions account, parsedMsg
 
-        # Has action? Process them!
+        # Has action? Process them! And append a message to the body.
         if actions.length > 0
+            parsedMsg.headers["Ayla-OriginalSender"] = parsedMsg.from
+            parsedMsg.headers["Ayla-EmailActions"] = ""
+
             processedEmail = {message: parsedMsg, actions: {}}
             @data.processedEmails.push processedEmail
 
             for action in actions
+                parsedMsg.headers["Ayla-EmailActions"] += action.id + " "
+
                 action?.process account, parsedMsg, (err, result) =>
                     processedEmail.actions[action.id] = not err?
 
@@ -208,7 +213,7 @@ class EmailManager extends (require "./basemanager.coffee")
         actions = []
 
         # Get matching `from` rules.
-        from = lodash.find account.rules, (rule) ->
+        from = lodash.where account.rules, (rule) ->
             return false if not rule.from?
             return false if rule.hasAttachments and parsedMsg.attachments?.length < 1
 
@@ -218,7 +223,7 @@ class EmailManager extends (require "./basemanager.coffee")
             return false
 
         # Get matching `subject` rules.
-        subject = lodash.find account.rules, (rule) ->
+        subject = lodash.where account.rules, (rule) ->
             return false if not rule.subject?
             return false if rule.hasAttachments and parsedMsg.attachments?.length < 1
 
@@ -228,8 +233,7 @@ class EmailManager extends (require "./basemanager.coffee")
             return false
 
         # Get rules result list by merging results agove.
-        rules = lodash.union from, subject
-        rules = [] if not rules?
+        rules = lodash.uniq(lodash.union from, subject)
 
         # Iterate rules and get related action scripts.
         for r in rules
@@ -249,11 +253,11 @@ class EmailManager extends (require "./basemanager.coffee")
     # Default way to send emails. Called when a module triggers the `emailmanager.send` event.
     # If no `to` is present on the options send to the `defaultTo` specified above, or
     # to the `defaultToMobile` in case `options.mobile` is true.
-    sendEmail: (options, callback) =>
+    send: (options, callback) =>
         if not options.to?
             options.to = if options.mobile then @defaultToMobile else @defaultTo
 
-        logger.info "EmailManager.sendEmail", "To #{options.to}: #{options.subject}"
+        logger.info "EmailManager.send", "To #{options.to}: #{options.subject}"
 
         # Send the email using the Expresser Mailer module.
         mailer.send options, (err, result) => callback err, result if callback?

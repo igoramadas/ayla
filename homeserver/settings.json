@@ -77,7 +77,8 @@
     // with a delay of 90 seconds between retries.
     "imap": {
         "maxRetry": 3,
-        "retryInterval": 90000
+        "retryInterval": 90000,
+        "tagProcessedMessages": "<strong>Message processed automatically by Ayla!</strong><br /><br />"
     },
     // Modules (API and managers) settings. You'll need to enable modules individually by
     // creating a `enable` property containing an array of modules to be enabled.
