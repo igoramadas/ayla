@@ -1,6 +1,5 @@
 ﻿using System;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Navigation;
 using Ayla.App.Common;
 using Ayla.App.PortableRuntime.Services;
 
