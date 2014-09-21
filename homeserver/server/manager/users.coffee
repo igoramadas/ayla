@@ -21,7 +21,7 @@ class UsersManager extends (require "./basemanager.coffee")
 
     # Init the user manager.
     init: =>
-        @baseInit {users: []}
+        @baseInit {users: [], bluetoothDevices: []}
 
     # Start the user manager and listen to data updates / events.
     start: =>
@@ -54,6 +54,8 @@ class UsersManager extends (require "./basemanager.coffee")
 
         if key is "router"
             @onNetworkRouter data
+        else if key is "bluetooth"
+            @onBluetooth data
         else if key is "bluetoothUsers"
             @onBluetoothUsers data
 
@@ -68,7 +70,17 @@ class UsersManager extends (require "./basemanager.coffee")
             @onUserStatus {user: username, online: online} if online isnt @data[d.user].online
             @data[username].online = online
 
-    # When user bluetooth devices are queried, check who's online (at home).
+    # When a list of bluetooth devices are queried, update the manager's data.
+    onBluetooth: (data) =>
+        @data.bluetoothDevices = []
+
+        for device in data.value
+            arr = device.split "\t"
+            @data.bluetoothDevices.push {name: arr[1], type: arr[2], mac: arr[0]}
+
+        @dataUpdated "bluetoothDevices"
+
+    # When registered user bluetooth devices are queried, check who's online (at home).
     onBluetoothUsers: (data) =>
         for d in data.value
             @onUserStatus {user: d.user, online: d.online} if d.online isnt @data[d.user].online

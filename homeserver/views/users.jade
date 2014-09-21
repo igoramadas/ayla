@@ -21,3 +21,18 @@ block contents
                                 td.status(data-bind="css: onlineCss")
                                     span.fa.fa-lg.fa-mobile
                                 td.location(data-bind="text: location")
+
+            li.bluetooth
+                div
+                    h2 Bluetooth devices
+                    table
+                        thead
+                            tr
+                                th.device Device
+                                th.type Type
+                                th.mac Mac
+                        tbody(data-bind="foreach: bluetoothDevices")
+                            tr
+                                td.device(data-bind="text: name")
+                                td.type(data-bind="text: type")
+                                td.mac(data-bind="text: mac")

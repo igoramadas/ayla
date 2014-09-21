@@ -267,7 +267,7 @@ class Network extends (require "./baseapi.coffee")
 
                     # Iterate and trim device details.
                     for d in lines
-                        devices.push d.replace("\t", " ").trim() if d? and d isnt ""
+                        devices.push d.trim() if d? and d isnt ""
 
                     @setData "bluetooth", devices
 
