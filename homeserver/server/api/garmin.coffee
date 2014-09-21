@@ -1,5 +1,4 @@
 # GARMIN API
-# NOT READY YET!!!
 # -----------------------------------------------------------------------------
 # Module to collect data from Garmin.
 # More info at http://connect.garmin.com.
@@ -12,8 +11,8 @@ class Garmin extends (require "./baseapi.coffee")
     lodash = expresser.libs.lodash
     logger = expresser.logger
     moment = expresser.libs.moment
+    querystring = require "querystring"
     settings = expresser.settings
-
 
     # INIT
     # -------------------------------------------------------------------------
@@ -30,12 +29,46 @@ class Garmin extends (require "./baseapi.coffee")
     stop: =>
         @baseStop()
 
-    # GET DEVICE DATA
+    # API BASE METHODS
+    # -------------------------------------------------------------------------
+
+    # Helper to make requests to the Garmin Connect website.
+    apiRequest: (service, urlpath, params, callback) =>
+        if lodash.isFunction params
+            callback = params
+            params = {}
+
+        if not @isRunning [settings.garmin.api]
+            callback "Garmin Connect API is not set, please check the settings."
+            return
+
+        reqUrl = "#{settings.garmin.api.url}#{service}/#{urlpath}"
+
+        # Set queries based on params (query or stationId).
+        # If `stationId` is set, add pws: to the URL.
+        reqUrl += querystring.stringify params if params?
+
+        @makeRequest reqUrl, (err, result) =>
+            callback err, result
+
+    # GET SLEEP DATA
     # ------------------------------------------------------------------------
 
     # Gets the list of registered devices with Garmin.
-    getDeviceData: (callback) =>
-        console.warn "NOT IMPLEMENTED!"
+    getSleep: (filter, callback) =>
+        if lodash.isFunction filter
+            callback = filter
+            filter = null
+        else
+            filter = @getJobArgs filter
+
+        hasCallback = lodash.isFunction callback
+
+        apiRequest "wellness/dailySleeps", filter, (err, result) =>
+            if err?
+                @logError "Garmin.getSleep", id, err
+            else
+                @setData "sleep", result, filter
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

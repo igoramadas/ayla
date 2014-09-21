@@ -51,6 +51,15 @@
         "missingWeightAfterDays": 10,
         "dateFormat": "YYYY-MM-DD"
     },
+    // Garmin Connect settings. The API `username` and `password` must be set on
+    // your private settings file. The `recentDays` define how many days to get
+    // recent sleep, activities and fitness stats data.
+    "garmin": {
+        "api": {
+            "url": "http://http://connect.garmin.com/modern/proxy/"
+        },
+        "recentDays": 30
+    },
     // General app settings. Debug is disabled by default.
     "general": {
         "appTitle": "Ayla",
