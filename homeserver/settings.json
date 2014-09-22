@@ -56,7 +56,8 @@
     // recent sleep, activities and fitness stats data.
     "garmin": {
         "api": {
-            "url": "http://http://connect.garmin.com/modern/proxy/"
+            "url": "http://connect.garmin.com/modern/proxy/",
+            "loginUrl": "https://connect.garmin.com/signin"
         },
         "recentDays": 30
     },

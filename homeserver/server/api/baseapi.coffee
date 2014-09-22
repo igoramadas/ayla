@@ -55,8 +55,9 @@ class BaseApi extends (require "../basemodule.coffee")
 
         # Set request parameters.
         if params?
-            reqOptions.method = params.method || (if params.body? then "POST" else "GET")
-            reqOptions.headers = params.headers || {}
+            reqOptions.method = params.method or (if params.body? then "POST" else "GET")
+            reqOptions.headers = params.headers or {}
+            reqOptions.auth = params.auth or null
 
             # Has body? If so, set proper JSON or form data.
             if params.body?

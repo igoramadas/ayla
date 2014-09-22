@@ -25,12 +25,29 @@ class Garmin extends (require "./baseapi.coffee")
     start: =>
         @baseStart()
 
+        if settings.modules.getDataOnStart and @isRunning [settings.garmin.api.username]
+            @getSleep()
+
     # Stop collecting data from Garmin Connect.
     stop: =>
         @baseStop()
 
     # API BASE METHODS
     # -------------------------------------------------------------------------
+
+    # Helper to signin and get the session token.
+    login: =>
+        reqUrl = "#{settings.garmin.api.loginUrl}"
+
+        params = {method: "POST"}
+        params.body = {
+            "login": "login"
+            "login:loginUsernameField": settings.garmin.api.username
+            "login:password": settings.garmin.api.password
+            "login:signInButton": "Sign In"}
+
+        @makeRequest reqUrl, params, (err, result) =>
+            callback err, result
 
     # Helper to make requests to the Garmin Connect website.
     apiRequest: (service, urlpath, params, callback) =>
@@ -64,9 +81,11 @@ class Garmin extends (require "./baseapi.coffee")
 
         hasCallback = lodash.isFunction callback
 
-        apiRequest "wellness/dailySleeps", filter, (err, result) =>
+        @apiRequest "wellness-service", "wellness/dailySleeps", filter, (err, result) =>
+            console.warn err, result
+
             if err?
-                @logError "Garmin.getSleep", id, err
+                @logError "Garmin.getSleep", filter, err
             else
                 @setData "sleep", result, filter
 
