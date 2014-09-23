@@ -67,7 +67,7 @@
         "debug": false,
         // Maximum tasks to execute in parallel using async.
         "parallelTasksLimit": 4
-    },
+    },o amor
     // Home settings.
     "home": {
         // Auto control lights based on environment and user presence?

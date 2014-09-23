@@ -89,6 +89,16 @@ class Garmin extends (require "./baseapi.coffee")
             else
                 @setData "sleep", result, filter
 
+            callback err, result if hasCallback
+
+    getRecentSleep: (callback) =>
+        hasCallback = lodash.isFunction callback
+
+        @getSleep {from: from, to: to}, (err, result) =>
+            if not err?
+                @setData "recentSleep", result
+
+
 # Singleton implementation.
 # -----------------------------------------------------------------------------
 Garmin.getInstance = ->
