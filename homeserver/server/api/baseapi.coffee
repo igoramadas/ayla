@@ -59,6 +59,14 @@ class BaseApi extends (require "../basemodule.coffee")
             reqOptions.headers = params.headers or {}
             reqOptions.auth = params.auth or null
 
+            # Force a specific content type?
+            if params.contentType isnt undefined
+                reqOptions.headers["Content-Type"] = params.contentType
+
+            # Force a specific encoding
+            if params.encoding isnt undefined
+                reqOptions.encoding = params.encoding
+
             # Has body? If so, set proper JSON or form data.
             if params.body?
                 if params.isForm
@@ -68,10 +76,6 @@ class BaseApi extends (require "../basemodule.coffee")
                         reqOptions.body = params.body
                     else
                         reqOptions.body = JSON.stringify params.body
-
-                    # Force a specific content type?
-                    if params.contentType?
-                        reqOptions.headers["Content-Type"] = params.contentType
 
         # No custom parameters? Set default GET request.
         else

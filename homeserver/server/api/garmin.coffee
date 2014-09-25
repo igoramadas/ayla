@@ -13,6 +13,11 @@ class Garmin extends (require "./baseapi.coffee")
     moment = expresser.libs.moment
     querystring = require "querystring"
     settings = expresser.settings
+    zombie = require "zombie"
+
+    # Zombie browser state objects.
+    zombieBrowser: null
+    cookie: {data: null, timestamp: 0}
 
     # INIT
     # -------------------------------------------------------------------------
@@ -26,7 +31,9 @@ class Garmin extends (require "./baseapi.coffee")
         @baseStart()
 
         if settings.modules.getDataOnStart and @isRunning [settings.garmin.api.username]
-            @getSleep()
+            @login (err, result) =>
+                if not err?
+                    @getRecentSleep()
 
     # Stop collecting data from Garmin Connect.
     stop: =>
@@ -36,18 +43,32 @@ class Garmin extends (require "./baseapi.coffee")
     # -------------------------------------------------------------------------
 
     # Helper to signin and get the session token.
-    login: =>
-        reqUrl = "#{settings.garmin.api.loginUrl}"
+    login: (callback) =>
+        if not @zombieBrowser?
+            @zombieBrowser = new zombie {debug: settings.general.debug, silent: not settings.general.debug}
+            @zombieBrowser.resources.mock "https://www.google-analytics.com/analytics.js", {}
 
-        params = {method: "POST"}
-        params.body = {
-            "login": "login"
-            "login:loginUsernameField": settings.garmin.api.username
-            "login:password": settings.garmin.api.password
-            "login:signInButton": "Sign In"}
+        try
+            @zombieBrowser.visit settings.garmin.api.loginUrl, {waitFor: 5000}, (err, browser) =>
+                if err?
+                    @logError "Garmin.login", "Open signin", err
+                else
+                    @zombieBrowser.wait 5000, =>
+                        @zombieBrowser.assert.success();
+                        @zombieBrowser.fill "#username", settings.garmin.api.username
+                        @zombieBrowser.fill "#password", settings.garmin.api.password
+                        @zombieBrowser.check "#login-remember-checkbox"
 
-        @makeRequest reqUrl, params, (err, result) =>
-            callback err, result
+                        @zombieBrowser.pressButton "#login-btn-signin", (e, browser) =>
+                            console.warn "yes!!!"
+                            console.warn @cookie.data
+                            @cookie.data = @zombieBrowser.cookies.toString()
+                            @cookie.timestamp = moment().unix()
+
+                callback err, browser.body
+        catch ex
+            @logError "Garmin.login", "Exception", ex.message, ex.stack
+            callback {exception: ex}
 
     # Helper to make requests to the Garmin Connect website.
     apiRequest: (service, urlpath, params, callback) =>
@@ -55,7 +76,7 @@ class Garmin extends (require "./baseapi.coffee")
             callback = params
             params = {}
 
-        if not @isRunning [settings.garmin.api]
+        if not @isRunning [settings.garmin.api.username]
             callback "Garmin Connect API is not set, please check the settings."
             return
 
@@ -65,7 +86,8 @@ class Garmin extends (require "./baseapi.coffee")
         # If `stationId` is set, add pws: to the URL.
         reqUrl += querystring.stringify params if params?
 
-        @makeRequest reqUrl, (err, result) =>
+        @zombieBrowser.visit reqUrl, (err, result) =>
+            console.warn err, result
             callback err, result
 
     # GET SLEEP DATA
@@ -91,13 +113,13 @@ class Garmin extends (require "./baseapi.coffee")
 
             callback err, result if hasCallback
 
+    # Get sleep data for recent days, default is 30.
     getRecentSleep: (callback) =>
         hasCallback = lodash.isFunction callback
 
-        @getSleep {from: from, to: to}, (err, result) =>
-            if not err?
-                @setData "recentSleep", result
-
+        @getSleep {limit: settings.garmin.recentDays}, (err, result) =>
+            @setData "recentSleep", result if result?
+            callback err, result if hasCallback
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

@@ -48,7 +48,7 @@ class Api
 
         # Start all API modules and load cron jobs.
         m.start() for k, m of @modules
-        cron.load cronPath, {basePath: apiPath}
+        cron.load cronPath, {basePath: apiPath} if settings.cron.enabled
 
         # Proceed with callback?
         callback() if callback?
