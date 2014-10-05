@@ -48,7 +48,7 @@ class Strava extends (require "./baseapi.coffee")
             callback = params
             params = null
 
-        if not @isRunning [@oauth, @oauth.client]
+        if not @isRunning [@oauth]
             callback "Module not running or OAuth client not ready. Please check Strava API settings."
             return
 

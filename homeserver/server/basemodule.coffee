@@ -14,6 +14,9 @@ class BaseModule
     lodash = expresser.libs.lodash
     moment = expresser.libs.moment
 
+    # Holds a list of errors that happened on the module.
+    errors: {}
+
     # INIT
     # -------------------------------------------------------------------------
 
@@ -29,7 +32,6 @@ class BaseModule
         expresser.datastore[@moduleName] = @data
 
         # Create module controlling and health objects.
-        @errors = {}
         @timers = {}
         @notifications = {}
         @routes = []

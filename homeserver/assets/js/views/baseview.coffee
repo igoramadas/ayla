@@ -87,6 +87,9 @@ class BaseView
     # Helper to listen to socket events sent by the server. If no event name is
     # passed then use the view's default.
     bindSockets: =>
+        return if not @viewId?
+
+        # Get sockets name based on view ID.
         socketsId = @viewId.charAt(0).toUpperCase() + @viewId.slice 1;
         @socketsName = "#{socketsId}Manager" if not @socketsName?
 

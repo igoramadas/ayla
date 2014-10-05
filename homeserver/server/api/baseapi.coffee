@@ -5,6 +5,7 @@ class BaseApi extends (require "../basemodule.coffee")
 
     expresser = require "expresser"
 
+    cron = expresser.cron
     database = expresser.database
     events = expresser.events
     lodash = expresser.libs.lodash
@@ -106,6 +107,10 @@ class BaseApi extends (require "../basemodule.coffee")
                     callback respError, body
                 catch ex
                     callback {exception: ex, body: body, url: reqUrl, params: params}
+
+    # Helper to get the list of scheduled jobs related to this API module.
+    getScheduledJobs: =>
+        return lodash.where cron.jobs, {module: @moduleNameLower + ".coffee"}
 
     # Helper to get filter from a job. Used by most of API modules to properly handle
     # the filter argument (which can be passed directly or via the `args` property

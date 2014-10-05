@@ -49,6 +49,7 @@ class ClimateModel extends (require "./basemodel.coffee")
         if @humidity?
             @humidity = parseFloat(@humidity.toString().replace("%", "")).toFixed 1
             @humidity = parseFloat @humidity
+            @humidity = 100 if @humidity > 100
 
         # Set indoor specific properties.
         if data.indoor

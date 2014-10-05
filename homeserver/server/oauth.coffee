@@ -14,6 +14,8 @@ class OAuth
     oauthModule = require "oauth"
     url = require "url"
 
+    authenticated: false
+
     # INIT
     # -------------------------------------------------------------------------
 
@@ -37,6 +39,7 @@ class OAuth
                 logger.debug "OAuth.loadTokens", result
 
                 @client = getClient @service
+                @authenticated = true
 
                 # Iterate results to create OAuth clients for all users.
                 for t in result
@@ -75,6 +78,9 @@ class OAuth
         if not callback? and lodash.isFunction params
             callback = params
             params = null
+
+        # Mark as authenticated.
+        @authenticated = true
 
         # Get current time and set data.
         now = moment().unix()
@@ -160,7 +166,7 @@ class OAuth
             @client.get reqUrl, @data.accessToken, (err, result) =>
                 if err?
                     description = err.data?.error_description or err.data?.error?.message or null
-                    @refresh() if err.statusCode is 403 or description?.indexOf("expired") > 0
+                    @refresh() if err.statusCode is 401 or err.statusCode is 403 or description?.indexOf("expired") > 0
                 callback err, result
         else
             @client.get reqUrl, @data.token, @data.tokenSecret, (err, result) =>
@@ -264,6 +270,7 @@ class OAuth
         return if @refreshing
 
         # Get oauth object and refresh token and set grant type to refresh_token.
+        @authenticated = false
         @refreshing = true
         refreshToken = @data.refreshToken
         opts = {"grant_type": "refresh_token"}
@@ -274,6 +281,9 @@ class OAuth
 
             if err?
                 logger.error "OAuth.refresh", @service, err
+                return
+            else if not oauth_access_token? or oauth_access_token is ""
+                logger.warn "OAuth.refresh", @service, "Access token is blank!"
                 return
 
             # Schedule token to be refreshed with 10% of time left.
