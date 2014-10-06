@@ -47,7 +47,7 @@ class ClimateModel extends (require "./basemodel.coffee")
 
         # Properly format humidity.
         if @humidity?
-            @humidity = parseFloat(@humidity.toString().replace("%", "")).toFixed 1
+            @humidity = parseFloat(@humidity.toString().replace("%", "")).toFixed 0
             @humidity = parseFloat @humidity
             @humidity = 100 if @humidity > 100
 
