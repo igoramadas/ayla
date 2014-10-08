@@ -57,7 +57,7 @@
     "garmin": {
         "api": {
             "url": "http://connect.garmin.com/modern/proxy/",
-            "loginUrl": "http://connect.garmin.com/signin"
+            "loginUrl": "http://connect.garmin.com/en-US/signin"
         },
         "recentDays": 30
     },

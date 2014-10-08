@@ -68,7 +68,7 @@ class Netatmo extends (require "./baseapi.coffee")
             callback = params
             params = null
 
-        if not @isRunning [@oauth, @oauth.client]
+        if not @isRunning [@oauth.authenticated]
             callback "Module not running or OAuth client not ready. Please check Netatmo API settings."
             return
 

@@ -45,7 +45,7 @@ class Toshl extends (require "./baseapi.coffee")
             callback = params
             params = null
 
-        if not @isRunning [@oauth]
+        if not @isRunning [@oauth.authenticated]
             callback "Module not running or OAuth client not ready. Please check Toshl API settings."
             return
 

@@ -52,7 +52,7 @@ class Ubi extends (require "./baseapi.coffee")
             params = null
 
         # Make sure API settings were initialized.
-        if not @isRunning [@oauth, @oauth.client]
+        if not @isRunning [@oauth.authenticated]
             callback "Module not running or OAuth client not ready. Please check Ubi API settings."
             return
 
