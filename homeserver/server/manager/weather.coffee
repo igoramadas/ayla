@@ -22,10 +22,10 @@ class WeatherManager extends (require "./basemanager.coffee")
     # Init the weather manager with the default values.
     init: =>
         astronomy = {sunrise: "7:00", sunset: "18:00"}
-        outside = new climateModel {title: "Outdoor"}
-        conditions = new climateModel {title: "Conditions"}
+        outside = new climateModel {title: "Outside"}
+        current = new climateModel {title: "Current forecast"}
 
-        @baseInit {forecast: [], astronomy: astronomy, outside: outside, conditions: conditions, rooms: settings.home.rooms}
+        @baseInit {forecastDays: [], forecastCurrent: current, astronomy: astronomy, outside: outside, rooms: settings.home.rooms}
 
     # Start the weather manager and listen to data updates / events.
     # Indoor weather data depends on rooms being set on the settings.
@@ -144,30 +144,31 @@ class WeatherManager extends (require "./basemanager.coffee")
         logger.info "WeatherManager.setAstronomy", @data.astronomy
 
     # Helper to set expected conditions for outdoors.
-    setCurrentConditions: (data) =>
+    setForecastCurrent: (data) =>
         return if not data?
 
         data.value.outdoor = true
 
         # Update conditions and set icon.
-        @data.conditions.setData data
-        @data.conditions.icon = @getWeatherIcon data.value, true
+        @data.forecastCurrent.setData data
+        @data.forecastCurrent.icon = @getWeatherIcon data.value, true
 
-        @dataUpdated "conditions"
-        logger.info "WeatherManager.setCurrentConditions", @data.conditions
+        @dataUpdated "forecastCurrent"
+        logger.info "WeatherManager.setForecastCurrent", @data.forecastCurrent
 
     # Helper to set forecast details for the next days.
-    setWeatherForecast: (data, source) =>
-        @data.forecast = []
+    setForecastDays: (data, source) =>
+        @data.forecastDays = []
 
         for d in data.value.forecastday
+            d.outdoor = true
             obj = new climateModel d, source
             obj.icon = @getWeatherIcon d
-            @data.forecast.push obj
+            @data.forecastDays.push obj
 
         # Emit forecast dat and log.
-        @dataUpdated "forecast"
-        logger.info "WeatherManager.setWeatherForecast", @data.forecast
+        @dataUpdated "forecastDays"
+        logger.info "WeatherManager.setForecastDays", @data.forecastDays
 
     # NETATMO
     # -------------------------------------------------------------------------
@@ -244,9 +245,9 @@ class WeatherManager extends (require "./basemanager.coffee")
         if key is "astronomy"
             @setAstronomy data
         else if key is "conditions"
-            @setCurrentConditions data
+            @setForecastCurrent data
         else if key is "forecast"
-            @setWeatherForecast data, "wunderground"
+            @setForecastDays data, "wunderground"
 
     # WEATHER MAINTENANCE
     # -------------------------------------------------------------------------

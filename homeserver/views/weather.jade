@@ -12,53 +12,53 @@ block contents
                         span.humidity(data-bind="text: humidity + '%'")
                         span.co2(data-bind="text: co2 + 'ppm'")
 
-                    table
-                        thead
-                            tr
-                                th.title Room
-                                th.temperature Temp
-                                th.humidity Humidity
-                                th.co2 CO2
-                        tbody(data-bind="foreach: rooms")
-                            tr.room(data-bind="css: $root[id]().conditionCss, with: $root[id]")
-                                td.title(data-bind="text: title", nowrap)
-                                td.temperature(data-bind="text: climate.temperature ? climate.temperature + '°C' : '-'")
-                                td.humidity(data-bind="text: climate.humidity ? climate.humidity + '%' : '-'")
-                                td.co2(data-bind="text: climate.co2 ? climate.co2 + ' ppm' : '-'")
+                    .translucent
+                        table
+                            thead.translucent
+                                tr
+                                    th.title Room
+                                    th.temperature Temp
+                                    th.humidity Humidity
+                                    th.co2 CO2
+                            tbody(data-bind="foreach: rooms")
+                                tr.room(data-bind="css: $root[id]().conditionCss, with: $root[id]")
+                                    td.title(data-bind="text: title", nowrap)
+                                    td.temperature(data-bind="text: climate.temperature != undefined ? climate.temperature + '°C' : '-'")
+                                    td.humidity(data-bind="text: climate.humidity != undefined ? climate.humidity + '%' : '-'")
+                                    td.co2(data-bind="text: climate.co2 != undefined ? climate.co2 + ' ppm' : '-'")
 
             li.outside
                 div
                     h2 Outside
                     div.summary
-                        span.temperature(data-bind="text: outside().temperature ? outside().temperature + '°C' : '-'")
-                        span.humidity(data-bind="text: outside().humidity ? outside().humidity + '%' : '-'")
-                        span.precp(data-bind="text: outside().precp ? outside().precp + 'mm' : '0mm'")
-                        div.icon(data-bind="css: conditions().icon")
+                        span.temperature(data-bind="text: outside().temperature != undefined ? outside().temperature + '°C' : '-'")
+                        span.humidity(data-bind="text: outside().humidity != undefined ? outside().humidity + '%' : '-'")
+                        span.precp(data-bind="text: outside().precp != undefined ? outside().precp + 'mm' : '0mm'")
 
-                    table
-                        thead
-                            tr
-                                th.title Forecast
-                                th.icon
-                                th.temperature Temp.
-                                th.precp Precp.
-                                th.wind Wind
-                        tbody
-                            tr(data-bind="with: conditions")
-                                td.date Current
-                                td.icon(data-bind="css: icon")
-                                td.temperature(data-bind="text: temperature + '°C'", nowrap)
-                                td.humidity(data-bind="text: precpChance + '%'")
-                                td.wind(data-bind="text: windSpeed + 'kph'", nowrap)
-                            // ko foreach: forecast
-                            tr
-                                td.date(data-bind="text: dateString")
-                                td.icon(data-bind="css: icon")
-                                td.min(data-bind="text: temperatureHigh + ' / ' + temperatureLow + '°C'", nowrap)
-                                td.humidity(data-bind="text: precpChance + '%'")
-                                td.wind(data-bind="text: windSpeed + 'kph'", nowrap)
-                            // /ko
+                    .translucent
+                        table(style="display: none")
+                            thead.translucent
+                                tr
+                                    th.title Forecast
+                                    th.icon
+                                    th.temperature Temp.
+                                    th.precp Precp.
+                                    th.wind Wind
+                            tbody
+                                tr(data-bind="with: forecastCurrent")
+                                    td.date Current
+                                    td.icon(data-bind="css: icon")
+                                    td.temperature(data-bind="text: temperature + '°C'", nowrap)
+                                    td.humidity(data-bind="text: precpChance + '%'")
+                                    td.wind(data-bind="text: windSpeed + 'kph'", nowrap)
+                                // ko foreach: forecastDays
+                                tr
+                                    td.date(data-bind="text: dateString")
+                                    td.icon(data-bind="css: icon")
+                                    td.min(data-bind="text: temperatureHigh + ' / ' + temperatureLow + '°C'", nowrap)
+                                    td.humidity(data-bind="text: precpChance + '%'")
+                                    td.wind(data-bind="text: windSpeed + 'kph'", nowrap)
+                                // /ko
 
-            li.overview
-                div
-                    canvas.chart(height="246")
+                        div.chart
+                            canvas(height="204")

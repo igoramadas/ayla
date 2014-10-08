@@ -22,6 +22,9 @@ class BaseView
         @announcementsQueue = []
         @announcing = false
 
+        # Set default chart options.
+        Chart.defaults.global.responsive = true
+
         # Call view `onReady` but only if present.
         @onReady() if @onReady?
 

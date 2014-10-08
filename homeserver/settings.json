@@ -23,7 +23,7 @@
     },
     // Connect to local MongoDB and delete cached API data after 48 hours by default.
     "database": {
-        "connString": "mongodb://localhost/ayla",
+        "connString": "mongodb://localhost/ayla?auto_reconnect",
         "dataCacheExpireHours": 48,
         "normalizeId": false
     },

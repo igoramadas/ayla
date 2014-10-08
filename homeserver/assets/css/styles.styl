@@ -8,6 +8,7 @@
 // ----------------------------------------------------------------------------
 
 // General variables
+textColor = rgb(255, 255, 255)
 lightBgColor = rgb(245, 250, 255)
 lightHoverColor = rgb(220, 230, 250)
 gridBlockMargin = 5px
@@ -41,11 +42,31 @@ body
 
 // Main wrapper
 #wrapper
+    background rgb(0, 0, 0)
+    height 100%
     margin auto
+    position relative
+
+#bg
+    background-attach fixed
+    background-origin border-box
+    background-repeat no-repeat
+    background-size cover
+    height 100%
+    left 0
+    opacity 0.7
+    position fixed
+    top 0
+    width 100%
+    z-index 1
 
 // Main contents
 #contents
+    color textColor
     margin 13px
+    position relative
+    text-shadow 0 0 5px rgb(42, 42, 42)
+    z-index 2
 
 .maingrid h2
     margin-left -2px
@@ -60,18 +81,26 @@ body
 .invalid
     color rgb(220, 80, 60)
 
+// Sticky om top of everything.
+.sticky
+    position relative
+    z-index 9
+
+.translucent
+    background rgba(0, 0, 0, 0.3) !important
+
 // ----------------------------------------------------------------------------
 
 // Summary tables.
 div.summary
     display inline-block
-    font-size 170%
 
     h2
         display inline-block
-        margin-right 17px
+        margin-right 30px
     span
-        margin-right 17px
+        font-size 2.6em
+        margin-right 30px
 
 // ----------------------------------------------------------------------------
 
@@ -95,9 +124,17 @@ div.summary
     .sorting_1
         background lightHoverColor
 
+// ----------------------------------------------------------------------------
+
+// Override foundation colors.
+table th, table td, h1, h2, h3, h4
+    color textColor !important
+
 // Foundation: topbar navigation
 .top-bar-section li.active a
     background-color rgb(0, 0, 0) !important
+
+// ----------------------------------------------------------------------------
 
 // Bottom sticky announcements.
 #announcements

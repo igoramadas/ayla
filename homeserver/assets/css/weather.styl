@@ -8,36 +8,46 @@ dryColor = rgb(180, 80, 120)
 co2Color = rgb(160, 80, 200)
 
 #weather
+    table, table tr
+        background transparent
+    table, table thead, table tbody
+        border 0
+
+    .translucent
+        height 220px
+
+    .summary span
+        background-repeat no-repeat
+        background-position left
+        padding-left 28px
+
+    .summary span.temperature
+        background-image url(/images/icons/thermometer-24.png)
+    .summary span.humidity
+        background-image url(/images/icons/humidity-24.png)
+    .summary span.co2
+        background-image url(/images/icons/co2-24.png)
 
     // Weather icon
     div.cloud, td.cloud
-        background url("../images/weather-cloud.png") no-repeat top right
+        background url("../images/icons/weather-cloud.png") no-repeat top right
     div.moon, td.moon
-        background url("../images/weather-moon.png") no-repeat top right
+        background url("../images/icons/weather-moon.png") no-repeat top right
     div.rain, td.rain
-        background url("../images/weather-rain.png") no-repeat top right
+        background url("../images/icons/weather-rain.png") no-repeat top right
     div.snow, td.snow
-        background url("../images/weather-snow.png") no-repeat top right
+        background url("../images/icons/weather-snow.png") no-repeat top right
     div.sunny, td.sunny
-        background url("../images/weather-sunny.png") no-repeat top right
+        background url("../images/icons/weather-sunny.png") no-repeat top right
     div.sunny-cloudy, td.sunny-cloudy
-        background url("../images/weather-sunny-cloudy.png") no-repeat top right
+        background url("../images/icons/weather-sunny-cloudy.png") no-repeat top right
     div.thunder, td.thunder
-        background url("../images/weather-thunder.png") no-repeat top right
+        background url("../images/icons/weather-thunder.png") no-repeat top right
     div.icon
         background-size contain
     td.icon
         background-size 26px 26px
         background-position center center
-
-    // Summary icons.
-    div.summary
-        div.icon
-            clear none
-            display inline-block
-            margin-bottom -4px
-            height 30px
-            width 30px
 
     // Weather legends
     span.legend
@@ -70,7 +80,39 @@ co2Color = rgb(160, 80, 200)
     .too-warm .temperature, .too-cold .temperature, .too-humid .humidity, .too-dry .humidity, .co2-too-high .co2
         font-weight bold !important
 
-// Chart styling on big screens.
-@media only screen and (min-width: 64em)
-    canvas.chart
-        margin-top 99px
+    // Canvas chart with margin.
+    .chart canvas
+        margin 8px 10px 1px 10px
+
+// Specific background images and wrapper colours.
+#wrapper
+    td.icon
+        -webkit-filter invert(100%)
+
+#wrapper.sunny
+    #bg
+        background-image url(/images/weather/sunny.jpg)
+
+#wrapper.sunny-cloudy
+    #bg
+        background-image url(/images/weather/sunny-cloudy.jpg)
+
+#wrapper.cloudy
+    #bg
+        background-image url(/images/weather/cloudy.jpg)
+
+#wrapper.rain
+    #bg
+        background-image url(/images/weather/rain.jpg)
+
+#wrapper.thunder
+    #bg
+        background-image url(/images/weather/thunder.jpg)
+
+#wrapper.snow
+    #bg
+        background-image url(/images/weather/snow.jpg)
+
+#wrapper.moon
+    #bg
+        background-image url(/images/weather/thunder.jpg)

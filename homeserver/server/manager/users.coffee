@@ -90,6 +90,8 @@ class UsersManager extends (require "./basemanager.coffee")
     # when there's no one home for a few minutes. Please note that nothing will
     # happen in case the module has started less than 2 minutes ago.
     onUserStatus: (userStatus) =>
+        @dataUpdated userStatus.user
+
         if moment().subtract(2, "m").unix() < @initTimestamp
             logger.debug "UsersManager.onUserStatus", userStatus, "Do nothing! Module has just started."
             return

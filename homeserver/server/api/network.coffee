@@ -251,7 +251,7 @@ class Network extends (require "./baseapi.coffee")
                 cmd = "hcitool scan"
 
             # On close parse the output and get device mac and names out of it.
-            scan = cprocess.exec cmd, (err, stdout, stderr) =>
+            cprocess.exec cmd, (err, stdout, stderr) =>
                 if err?
                     @logError "Network.probeBluetooth", err
                 else if stderr? and stderr isnt ""
@@ -308,7 +308,7 @@ class Network extends (require "./baseapi.coffee")
 
                         # On close parse the output and get device name, and set its online property.
                         # If name is found, add `deviceName` to the original object.
-                        scan = cprocess.exec cmd, (err, stdout, stderr) =>
+                        cprocess.exec cmd, (err, stdout, stderr) =>
                             if err?
                                 @logError "Network.probeBluetoothUsers", err
                             else if stderr? and stderr isnt ""

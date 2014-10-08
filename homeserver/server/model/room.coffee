@@ -15,8 +15,8 @@ class RoomModel extends (require "./basemodel.coffee")
         data = obj.value or obj
         data.indoor = true
 
-        @title = data.title or @title
-        @climateSource = data.climateSource or @climateSource
+        @title = @getValue [data.title, @title]
+        @climateSource = @getValue [data.climateSource, @climateSource]
 
         if @climateModel?
             @climate.setData data

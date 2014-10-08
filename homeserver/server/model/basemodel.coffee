@@ -5,6 +5,12 @@ class BaseModel
     expresser = require "expresser"
     moment = expresser.libs.moment
 
+    # Helper to get a property value from a list of possible keys.
+    getValue: (list) =>
+        for v in list
+            return v if v isnt undefined
+        return list[list.length - 1]
+
     # Set ID and update timestamp after setting data.
     afterSetData: (obj) =>
         if obj.id? and not @id?

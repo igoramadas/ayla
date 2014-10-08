@@ -3,7 +3,8 @@ html.no-js(lang="en")
     head
         title Ayla
         meta(charset="utf-8")
-        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no")
+        meta(name="mobile-web-app-capable", content="yes")
 
         != css("styles")
         != css("foundation")
@@ -23,6 +24,7 @@ html.no-js(lang="en")
                 ayla.serverData = !{JSON.stringify(data)};
     body
         #wrapper
+            #bg
             div.sticky
                 nav#header.top-bar(data-topbar)
                     ul.title-area
