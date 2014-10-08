@@ -6,6 +6,7 @@ class Garmin extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
 
+    assert = require "assert"
     async = expresser.libs.async
     events = expresser.events
     lodash = expresser.libs.lodash
@@ -42,30 +43,40 @@ class Garmin extends (require "./baseapi.coffee")
     # API BASE METHODS
     # -------------------------------------------------------------------------
 
-    # Helper to signin and get the session token.
+    # Helper to login and get the session token.
     login: (callback) =>
         if not @zombieBrowser?
-            @zombieBrowser = new zombie {debug: settings.general.debug, silent: not settings.general.debug}
+            zombie.debug()
+            @zombieBrowser = zombie.create()
             @zombieBrowser.resources.mock "https://www.google-analytics.com/analytics.js", {}
 
         try
-            @zombieBrowser.visit settings.garmin.api.loginUrl, {waitFor: 5000}, (err, browser) =>
+            @zombieBrowser.visit settings.garmin.api.loginUrl, (err) =>
                 if err?
-                    @logError "Garmin.login", "Open signin", err
-                else
-                    @zombieBrowser.wait 5000, =>
-                        @zombieBrowser.assert.success();
-                        @zombieBrowser.fill "#username", settings.garmin.api.username
-                        @zombieBrowser.fill "#password", settings.garmin.api.password
-                        @zombieBrowser.check "#login-remember-checkbox"
+                    @logError "Garmin.login", "Could not fetch sigin page.", err
+                    return callback err
 
-                        @zombieBrowser.pressButton "#login-btn-signin", (e, browser) =>
-                            console.warn "yes!!!"
-                            console.warn @cookie.data
-                            @cookie.data = @zombieBrowser.cookies.toString()
-                            @cookie.timestamp = moment().unix()
+                iframe = @zombieBrowser.document.querySelector "iframe"
+                iframeSrc = iframe?.getAttribute "src"
 
-                callback err, browser.body
+                # Only proceed if SSO iframe is present.
+                if not iframeSrc?
+                    err = "Could not get SSO URL from iframe."
+                    @logError "Garmin.login", err
+                    return callback err
+
+                # Visit SSO URL and fill the login form.
+                @zombieBrowser.visit iframeSrc, (err, browser) =>
+                    @zombieBrowser.fill "#username", settings.garmin.api.username
+                    @zombieBrowser.fill "#password", settings.garmin.api.password
+                    @zombieBrowser.check "#login-remember-checkbox"
+
+                    @zombieBrowser.pressButton "#login-btn-signin", (err) =>
+                        cookies = @zombieBrowser.cookies()
+                        @cookie.data = cookies._cookies while cookies._cookies?
+                        @cookie.timestamp = moment().unix()
+
+                        callback err, browser.body
         catch ex
             @logError "Garmin.login", "Exception", ex.message, ex.stack
             callback {exception: ex}
@@ -84,11 +95,14 @@ class Garmin extends (require "./baseapi.coffee")
 
         # Set queries based on params (query or stationId).
         # If `stationId` is set, add pws: to the URL.
-        reqUrl += querystring.stringify params if params?
+        reqUrl += "?" + querystring.stringify params if params?
 
         @zombieBrowser.visit reqUrl, (err, result) =>
-            console.warn err, result
-            callback err, result
+            if err?
+                console.warn err
+            else
+                console.warn "logged", @zombieBrowser.cookies()
+                callback err, result.document
 
     # GET SLEEP DATA
     # ------------------------------------------------------------------------
@@ -104,8 +118,6 @@ class Garmin extends (require "./baseapi.coffee")
         hasCallback = lodash.isFunction callback
 
         @apiRequest "wellness-service", "wellness/dailySleeps", filter, (err, result) =>
-            console.warn err, result
-
             if err?
                 @logError "Garmin.getSleep", filter, err
             else

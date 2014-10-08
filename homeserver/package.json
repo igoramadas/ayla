@@ -21,6 +21,7 @@
         "node": "*"
     },
     "dependencies": {
+        "assert": ">= 1.1.2",
         "coffee-script": ">= 1.7.1",
         "expresser": ">= 0.9.17",
         "imap": ">= 0.8.7",

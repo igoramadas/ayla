@@ -47,7 +47,7 @@ class Fitbit extends (require "./baseapi.coffee")
             callback = params
             params = null
 
-        if not @isRunning [@oauth, @oauth.client]
+        if not @isRunning [@oauth]
             callback "Module not running or OAuth client not ready. Please check Fitbit API settings."
             return
 
