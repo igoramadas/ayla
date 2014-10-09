@@ -295,8 +295,8 @@ class WeatherManager extends (require "./basemanager.coffee")
         return avg / count
 
     # Helper to get correct weather icon. Default is sunny / cloudy.
-    getWeatherIcon: (data, nightMode) =>
-        result = "sunny-cloudy"
+    getWeatherIcon: (data, considerTime) =>
+        result = "day-cloudy"
         icon = data.icon
 
         currentHour = moment().hour()
@@ -305,20 +305,24 @@ class WeatherManager extends (require "./basemanager.coffee")
 
         icon = icon.replace(".gif", "").replace("nt_", "")
 
-        if "fog,hazy,cloudy,mostlycloudy".indexOf(icon) >= 0
-            result = "cloud"
-        else if "chancerain,rain,chancesleet,sleet".indexOf(icon) >= 0
+        if "fog,hazy".indexOf(icon) >= 0
+            result = "day-fog"
+        if "cloudy,mostlycloudy".indexOf(icon) >= 0
+            result = "cloudy"
+        else if "chancerain,chancesleet".indexOf(icon) >= 0
+            result = "day-sprinkle"
+        else if "rain,sleet".indexOf(icon) >= 0
             result = "rain"
         else if "chanceflurries,flurries,chancesnow,snow".indexOf(icon) >= 0
             result = "snow"
         else if "clear,sunny".indexOf(icon) >= 0
-            result = "sunny"
+            result = "day-sunny"
         else if "chancestorms,tstorms".indexOf(icon) >= 0
-            result = "thunder"
+            result = "thunderstorm"
 
         # Force moon icon when clear skies at night.
-        if nightMode and result.indexOf("sunny") >= 0 and (currentHour < sunriseHour or currentHour > sunsetHour)
-            result = "moon"
+        if considerTime and result.indexOf("sunny") >= 0 and (currentHour < sunriseHour or currentHour > sunsetHour)
+            result = "moon-old"
 
         return result
 

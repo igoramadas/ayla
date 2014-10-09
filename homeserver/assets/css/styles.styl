@@ -36,14 +36,13 @@ gridBlockPadding = 5px
 
 // Body main styles
 body
+    background rgb(0, 0, 0) !important
     font-family OpenSansLight, sans-serif
 
 // ----------------------------------------------------------------------------
 
 // Main wrapper
 #wrapper
-    background rgb(0, 0, 0)
-    height 100%
     margin auto
     position relative
 
@@ -87,7 +86,7 @@ body
     z-index 9
 
 .translucent
-    background rgba(0, 0, 0, 0.3) !important
+    background rgba(0, 0, 0, 0.35) !important
 
 // ----------------------------------------------------------------------------
 
@@ -97,10 +96,12 @@ div.summary
 
     h2
         display inline-block
-        margin-right 30px
+        margin-right 28px
     span
-        font-size 2.6em
-        margin-right 30px
+        font-size 2.2em
+        margin-right 24px
+    i
+        margin-right 5px
 
 // ----------------------------------------------------------------------------
 
@@ -129,6 +130,11 @@ div.summary
 // Override foundation colors.
 table th, table td, h1, h2, h3, h4
     color textColor !important
+
+table, table tr
+    background transparent !important
+table, table thead, table tbody
+    border 0 !important
 
 // Foundation: topbar navigation
 .top-bar-section li.active a

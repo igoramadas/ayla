@@ -8,8 +8,11 @@ block contents
                 div
                     h2 Inside
                     div.summary(data-bind="with: indoorAvg")
+                        i(class="wi wi-thermometer")
                         span.temperature(data-bind="text: temperature + '°C'")
+                        i(class="wi wi-smoke")
                         span.humidity(data-bind="text: humidity + '%'")
+                        i(class="fa fa-leaf")
                         span.co2(data-bind="text: co2 + 'ppm'")
 
                     .translucent
@@ -31,8 +34,11 @@ block contents
                 div
                     h2 Outside
                     div.summary
+                        i(class="wi wi-thermometer")
                         span.temperature(data-bind="text: outside().temperature != undefined ? outside().temperature + '°C' : '-'")
+                        i(class="wi wi-smoke")
                         span.humidity(data-bind="text: outside().humidity != undefined ? outside().humidity + '%' : '-'")
+                        i(class="wi wi-sprinkles")
                         span.precp(data-bind="text: outside().precp != undefined ? outside().precp + 'mm' : '0mm'")
 
                     .translucent
@@ -47,14 +53,16 @@ block contents
                             tbody
                                 tr(data-bind="with: forecastCurrent")
                                     td.date Current
-                                    td.icon(data-bind="css: icon")
+                                    td.icon
+                                        i(class="wi", data-bind="css:'wi-' + icon")
                                     td.temperature(data-bind="text: temperature + '°C'", nowrap)
                                     td.humidity(data-bind="text: precpChance + '%'")
                                     td.wind(data-bind="text: windSpeed + 'kph'", nowrap)
                                 // ko foreach: forecastDays
                                 tr
                                     td.date(data-bind="text: dateString")
-                                    td.icon(data-bind="css: icon")
+                                    td.icon
+                                        i(class="wi", data-bind="css: 'wi-' + icon")
                                     td.min(data-bind="text: temperatureHigh + ' / ' + temperatureLow + '°C'", nowrap)
                                     td.humidity(data-bind="text: precpChance + '%'")
                                     td.wind(data-bind="text: windSpeed + 'kph'", nowrap)

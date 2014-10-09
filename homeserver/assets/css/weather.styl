@@ -8,25 +8,22 @@ dryColor = rgb(180, 80, 120)
 co2Color = rgb(160, 80, 200)
 
 #weather
-    table, table tr
-        background transparent
-    table, table thead, table tbody
-        border 0
+    .summary
+        i
+            position relative
+        .wi-thermometer
+            font-size 2.05em
+            top 1px
+        .wi-smoke
+            font-size 1.60em
+        .wi-sprinkles
+            font-size 2.50em
+            top 6px
+        .fa-leaf
+            font-size 1.75em
 
     .translucent
-        height 220px
-
-    .summary span
-        background-repeat no-repeat
-        background-position left
-        padding-left 28px
-
-    .summary span.temperature
-        background-image url(/images/icons/thermometer-24.png)
-    .summary span.humidity
-        background-image url(/images/icons/humidity-24.png)
-    .summary span.co2
-        background-image url(/images/icons/co2-24.png)
+        min-height 220px
 
     // Weather icon
     div.cloud, td.cloud
@@ -113,6 +110,6 @@ co2Color = rgb(160, 80, 200)
     #bg
         background-image url(/images/weather/snow.jpg)
 
-#wrapper.moon
+#wrapper.moon-old
     #bg
         background-image url(/images/weather/thunder.jpg)
