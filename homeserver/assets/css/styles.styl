@@ -9,6 +9,7 @@
 
 // General variables
 textColor = rgb(255, 255, 255)
+linkColor = rgb(120, 210, 240)
 lightBgColor = rgb(245, 250, 255)
 lightHoverColor = rgb(220, 230, 250)
 gridBlockMargin = 5px
@@ -87,6 +88,8 @@ body
 // Translucent panels
 .translucent
     background rgba(0, 0, 0, 0.35) !important
+.translucent-light
+    background rgba(245, 245, 245, 0.35) !important
 
 // Summary data
 .summary
@@ -159,7 +162,11 @@ li div .summary
 
 // ----------------------------------------------------------------------------
 
-// Override foundation colors
+// Override foundation links
+a
+    color linkColor
+
+// Override foundation text color
 table th, table td, h1, h2, h3, h4
     color textColor !important
 

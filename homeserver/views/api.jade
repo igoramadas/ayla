@@ -5,10 +5,10 @@ block contents
         ul.maingrid.small-block-grid-1.medium-block-grid-4
             for m, key in apiModules
                 li
-                    .panel
-                        h5
+                    .panel.translucent
+                        h5.translucent
                             a(href="/#{m.moduleNameLower}") #{m.moduleName}
-                        .inner-panel.dark-translucent
+                        .inner-panel
                             div
                                 span Data:
                                 span #{Object.keys(m.data).length} keys
