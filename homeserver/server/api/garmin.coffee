@@ -47,7 +47,7 @@ class Garmin extends (require "./baseapi.coffee")
     login: (callback) =>
         if not @zombieBrowser?
             zombie.debug()
-            @zombieBrowser = zombie.create()
+            @zombieBrowser = zombie.create {maxRedirects: 10}
             @zombieBrowser.resources.mock "https://www.google-analytics.com/analytics.js", {}
 
         try
@@ -56,27 +56,14 @@ class Garmin extends (require "./baseapi.coffee")
                     @logError "Garmin.login", "Could not fetch sigin page.", err
                     return callback err
 
-                iframe = @zombieBrowser.document.querySelector "iframe"
-                iframeSrc = iframe?.getAttribute "src"
+                @zombieBrowser.fill "#username", settings.garmin.api.username
+                @zombieBrowser.fill "#password", settings.garmin.api.password
 
-                # Only proceed if SSO iframe is present.
-                if not iframeSrc?
-                    err = "Could not get SSO URL from iframe."
-                    @logError "Garmin.login", err
-                    return callback err
+                @zombieBrowser.pressButton "#login-btn-signin", (err) =>
+                    @cookie.data = @zombieBrowser.cookies
+                    @cookie.timestamp = moment().unix()
 
-                # Visit SSO URL and fill the login form.
-                @zombieBrowser.visit iframeSrc, (err, browser) =>
-                    @zombieBrowser.fill "#username", settings.garmin.api.username
-                    @zombieBrowser.fill "#password", settings.garmin.api.password
-                    @zombieBrowser.check "#login-remember-checkbox"
-
-                    @zombieBrowser.pressButton "#login-btn-signin", (err) =>
-                        cookies = @zombieBrowser.cookies()
-                        @cookie.data = cookies._cookies while cookies._cookies?
-                        @cookie.timestamp = moment().unix()
-
-                        callback err, browser.body
+                    callback null
         catch ex
             @logError "Garmin.login", "Exception", ex.message, ex.stack
             callback {exception: ex}
@@ -97,12 +84,19 @@ class Garmin extends (require "./baseapi.coffee")
         # If `stationId` is set, add pws: to the URL.
         reqUrl += "?" + querystring.stringify params if params?
 
-        @zombieBrowser.visit reqUrl, (err, result) =>
-            if err?
-                console.warn err
-            else
-                console.warn "logged", @zombieBrowser.cookies()
-                callback err, result.document
+        # Set request options.
+        options = {headers: {"Accept": "application/json"}}
+
+        @zombieBrowser.resources.request "GET", reqUrl, options, (err, result) =>
+            if result?.body?
+                try
+                    result = result.body.toString "utf8"
+                    result = JSON.parse result
+                catch ex
+                    @logError "Garmin.apiRequest", "Could not parse response JSON.", ex.message, ex.stack
+                    result = null
+
+            callback err, result
 
     # GET SLEEP DATA
     # ------------------------------------------------------------------------

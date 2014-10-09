@@ -13,6 +13,7 @@ lightBgColor = rgb(245, 250, 255)
 lightHoverColor = rgb(220, 230, 250)
 gridBlockMargin = 5px
 gridBlockPadding = 5px
+textShadow = 0 0 5px rgb(42, 42, 42)
 
 // Fonts
 @font-face
@@ -36,6 +37,7 @@ gridBlockPadding = 5px
 
 // Body main styles
 body
+    background rgb(0, 0, 0) !important
     font-family OpenSansLight, sans-serif
 
 // ----------------------------------------------------------------------------
@@ -45,6 +47,7 @@ body
     margin auto
     position relative
 
+// Bg wrapper
 #bg
     background-attach fixed
     background-origin border-box
@@ -63,37 +66,30 @@ body
     color textColor
     margin 13px
     position relative
-    text-shadow 0 0 5px rgb(42, 42, 42)
     z-index 2
+
+// ----------------------------------------------------------------------------
 
 .maingrid h2
     margin-left -2px
 
-// Top bar.
-.top-bar-section ul li.active > a
-    font-weight bold !important
-
-// Green and red colours.
+// Green and red colours
 .valid
     color rgb(10, 190, 10)
 .invalid
     color rgb(220, 80, 60)
 
-// Sticky om top of everything.
+// Sticky om top of everything
 .sticky
     position relative
     z-index 9
 
+// Translucent panels
 .translucent
     background rgba(0, 0, 0, 0.35) !important
 
-.dark-translucent
-    background rgba(0, 0, 0, 0.85) !important
-
-// ----------------------------------------------------------------------------
-
-// Summary tables.
-div.summary
+// Summary data
+.summary
     display inline-block
 
     h2
@@ -104,6 +100,14 @@ div.summary
         margin-right 24px
     i
         margin-right 5px
+
+// Text shadow for text-on-backgrounds
+.shadow
+    text-shadow textShadow
+li div h2
+    text-shadow textShadow
+li div .summary
+    text-shadow textShadow
 
 // ----------------------------------------------------------------------------
 
@@ -129,24 +133,7 @@ div.summary
 
 // ----------------------------------------------------------------------------
 
-// Override foundation colors.
-table th, table td, h1, h2, h3, h4
-    color textColor !important
-
-table, table tr
-    background transparent !important
-table, table thead, table tbody
-    border 0 !important
-.panel
-    border 0 !important
-
-// Foundation: topbar navigation
-.top-bar-section li.active a
-    background-color rgb(0, 0, 0) !important
-
-// ----------------------------------------------------------------------------
-
-// Bottom sticky announcements.
+// Bottom sticky announcements
 #announcements
     background rgba(60, 60, 60, 0.9)
     bottom 0
@@ -162,8 +149,29 @@ table, table thead, table tbody
         font-size 90%
         padding 2px 0 0 8px
 
+// Sticky error message
 #announcements.error
     background rgba(240, 65, 36, 0.9)
 
+// Sticky OK message
 #announcements.ok
     background rgba(67, 172, 106, 0.9)
+
+// ----------------------------------------------------------------------------
+
+// Override foundation colors
+table th, table td, h1, h2, h3, h4
+    color textColor !important
+
+table, table tr
+    background transparent !important
+table, table thead, table tbody
+    border 0 !important
+.panel
+    border 0 !important
+
+// Foundation: topbar navigation
+.top-bar, .top-bar li a
+    background-color rgb(0, 0, 0) !important
+.top-bar-section li.active a
+    background-color rgb(67, 67, 67) !important

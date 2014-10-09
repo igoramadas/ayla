@@ -22,29 +22,9 @@ co2Color = rgb(160, 80, 200)
         .fa-leaf
             font-size 1.75em
 
+    // Set minimum height for panels.
     .translucent
         min-height 220px
-
-    // Weather icon
-    div.cloud, td.cloud
-        background url("../images/icons/weather-cloud.png") no-repeat top right
-    div.moon, td.moon
-        background url("../images/icons/weather-moon.png") no-repeat top right
-    div.rain, td.rain
-        background url("../images/icons/weather-rain.png") no-repeat top right
-    div.snow, td.snow
-        background url("../images/icons/weather-snow.png") no-repeat top right
-    div.sunny, td.sunny
-        background url("../images/icons/weather-sunny.png") no-repeat top right
-    div.sunny-cloudy, td.sunny-cloudy
-        background url("../images/icons/weather-sunny-cloudy.png") no-repeat top right
-    div.thunder, td.thunder
-        background url("../images/icons/weather-thunder.png") no-repeat top right
-    div.icon
-        background-size contain
-    td.icon
-        background-size 26px 26px
-        background-position center center
 
     // Weather legends
     span.legend
@@ -77,39 +57,35 @@ co2Color = rgb(160, 80, 200)
     .too-warm .temperature, .too-cold .temperature, .too-humid .humidity, .too-dry .humidity, .co2-too-high .co2
         font-weight bold !important
 
-    // Canvas chart with margin.
+    // Canvas chart with margin
     .chart canvas
         margin 8px 10px 1px 10px
 
-// Specific background images and wrapper colours.
+// Specific background images and wrapper colours
 #wrapper
     td.icon
         -webkit-filter invert(100%)
 
-#wrapper.sunny
-    #bg
-        background-image url(/images/bg/weather/sunny.jpg)
+#wrapper.day-fog #bg
+    background-image url(/images/bg/weather/foggy.jpg)
 
-#wrapper.sunny-cloudy
-    #bg
-        background-image url(/images/bg/weather/sunny-cloudy.jpg)
+#wrapper.day-sunny #bg
+    background-image url(/images/bg/weather/sunny.jpg)
 
-#wrapper.cloudy
-    #bg
-        background-image url(/images/bg/weather/cloudy.jpg)
+#wrapper.sunny-cloudy #bg
+    background-image url(/images/bg/weather/sunny-cloudy.jpg)
 
-#wrapper.rain
-    #bg
-        background-image url(/images/bg/weather/rain.jpg)
+#wrapper.cloudy #bg
+    background-image url(/images/bg/weather/cloudy.jpg)
 
-#wrapper.thunder
-    #bg
-        background-image url(/images/bg/weather/thunder.jpg)
+#wrapper.rain #bg
+    background-image url(/images/bg/weather/rain.jpg)
 
-#wrapper.snow
-    #bg
-        background-image url(/images/bg/weather/snow.jpg)
+#wrapper.thunder #bg
+    background-image url(/images/bg/weather/thunder.jpg)
 
-#wrapper.moon-old
-    #bg
-        background-image url(/images/bg/weather/thunder.jpg)
+#wrapper.snow #bg
+    background-image url(/images/bg/weather/snow.jpg)
+
+#wrapper.moon-old #bg
+    background-image url(/images/bg/weather/moon.jpg)
