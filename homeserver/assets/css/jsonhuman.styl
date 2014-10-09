@@ -1,0 +1,49 @@
+.jh-root, .jh-type-object, .jh-type-array, .jh-key, .jh-value, .jh-root tr
+    -webkit-box-sizing border-box
+    -moz-box-sizing border-box
+    box-sizing border-box
+
+.jh-key, .jh-value
+    margin 0
+    padding 0.2em
+
+.jh-value
+    border-left 1px solid transparent
+
+.jh-type-bool, .jh-type-number
+    font-weight bold
+    text-align center
+    color rgb(160, 220, 250)
+
+.jh-type-string
+    color rgb(250, 240, 160)
+
+.jh-array-key
+    font-size small
+    text-align center
+
+.jh-object-key, .jh-array-key
+    color rgb(160, 160, 160)
+    vertical-align top
+
+.jh-type-object, .jh-type-array
+    width 100%
+
+th
+    &.jh-key
+        text-align left
+
+.jh-type-object > tr, .jh-type-array > tr
+    border 1px solid transparent
+    border-bottom none
+
+.jh-type-object > tr:last-child, .jh-type-array > tr:last-child
+    border-bottom 1px solid transparent
+
+.jh-type-object > tr:hover, .jh-type-array > tr:hover
+    border 1px solid rgb(20, 160, 190)
+
+.jh-empty
+    font-style italic
+    color rgb(190, 190, 190)
+    font-size small

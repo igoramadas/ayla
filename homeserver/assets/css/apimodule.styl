@@ -1,19 +1,37 @@
 // API PAGE STYLES
 
 #api
-    label.label
-        font-size 110%
+    table td
+        vertical-align top !important
 
-    .tabs-content .content > div
-        margin-bottom 18px
-        margin-top 4px
+    .tabs-content
+        .panel
+            height 310px
+        .content > div
+            margin-bottom 18px
 
-    .tabs dd
-        border-bottom 2px solid rgb(239, 239, 239)
+    .auth
+        a
+            margin-left 10px
 
-    .data-contents
-        height 380px
-        overflow scroll
+    .error-details
+        white-space nowrap
 
-    span.info
+    .data
+        height 100%
+        overflow auto
+
+    .data > table
+        margin-bottom 1px
+
+    // JSON transformed to tables
+    .data-table
+        table
+            width 100%
+            td, th
+                white-space nowrap
+            th
+                width 20%
+
+      span.info
         margin-right 8px

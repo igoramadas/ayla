@@ -6,6 +6,7 @@ class Routes
     expresser = require "expresser"
     cron = expresser.cron
     logger = expresser.logger
+    moment = expresser.libs.moment
     settings = expresser.settings
     utils = expresser.utils
 
@@ -116,6 +117,8 @@ class Routes
 
     # Helper to show an overview about the specified API module.
     renderApiModulePage = (req, res, module) ->
+        jobs = module.getScheduledJobs()
+
         fs.readFile "#{__dirname}/api/#{module.moduleNameLower}.coffee", {encoding: settings.general.encoding}, (err, data) ->
             lines = data.split "\n"
             description = ""
@@ -125,7 +128,7 @@ class Routes
                 if i.substring(0, 1) is "#"
                     description += i.replace("#", "") + "<br />"
                 else
-                    options = {title: module.moduleName, description: description, jobs: module.getScheduledJobs(), data: module.data}
+                    options = {title: module.moduleName, description: description, jobs: jobs, errors: module.errors, data: module.data}
                     options.oauth = module.oauth if module.oauth?
 
                     return renderPage req, res, "apimodule", options
@@ -137,6 +140,7 @@ class Routes
         options.title = settings.general.appTitle if not options.title?
         options.loadJs = [] if not options.loadJs?
         options.loadCss = [] if not options.loadCss?
+        options.moment = moment
 
         # Set base file name.
         baseName = filename.replace ".jade",""

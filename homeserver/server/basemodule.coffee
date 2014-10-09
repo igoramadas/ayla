@@ -14,14 +14,13 @@ class BaseModule
     lodash = expresser.libs.lodash
     moment = expresser.libs.moment
 
-    # Holds a list of errors that happened on the module.
-    errors: {}
-
     # INIT
     # -------------------------------------------------------------------------
 
     # Called when the module inits.
     baseInit: (initialData) =>
+        @errors = {}
+
         @moduleName = @__proto__.constructor.name.toString()
         @moduleNameLower = @moduleName.toLowerCase()
         @initTimestamp = moment().unix()

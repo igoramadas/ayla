@@ -3,22 +3,68 @@ extends layout
 block contents
     #api
         h1= title
-        ul.maingrid.small-block-grid-1.medium-block-grid-2
+        ul.maingrid.small-block-grid-1
             li
                 dl.tabs(data-tab)
                     dd
-                        a(href="#jobs", title="Scheduled jobs") jobs
+                        a(href="#about", title="About this module") about
                     if oauth
                         dd
                             a(href="#oauth", title="OAuth parameters") oauth
+                    dd
+                        a(href="#errors", title="Errors triggered by this module") errors
+                    dd
+                        a(href="#jobs", title="Scheduled jobs") jobs
+                    for value, key in data
+                        dd
+                            a(href="#data-#{key}", title="Data: #{key}") #{key}
 
-                div.tabs-content
+                .tabs-content
+                    #about.content.panel.translucent
+                        .inner-panel !{description}
+
+                    if oauth
+                        #oauth.content.panel.translucent
+                            .inner-panel
+                                .auth
+                                    span.info Authenticated:
+                                    span #{oauth.authenticated}
+                                    a(href="/#{title.toLowerCase()}/auth") Trigger authentication
+                                if oauth.authenticated
+                                    div
+                                        span.info Token:
+                                        span #{oauth.data.accessToken}
+                                    div
+                                        span.info Expires:
+                                        span #{moment(oauth.data.expires * 1000).format("lll")}
+
+                    #errors.content.panel.translucent
+                        if Object.keys(errors).length > 0
+                            table
+                                thead
+                                    th Method
+                                    th Count
+                                    th Details
+                                tbody
+                                    for err, key in errors
+                                        tr
+                                            td #{key}
+                                            td #{err.length}
+                                            td.error-details
+                                                for e in err
+                                                    span.label #{moment(e.timestamp * 1000).format("lll")}
+                                                    span #{e.data.join(", ")}
+                        else
+                            .inner-panel
+                                span No errors found.
+
                     #jobs.content.panel.translucent
                         if jobs.length > 0
-                            table.translucent
+                            table
                                 thead
                                     th Job
-                                    th Times
+                                    th Schedule
+                                    th Last run
                                 tbody
                                     for job in jobs
                                         tr
@@ -29,22 +75,19 @@ block contents
                                                     span #{job.schedule.join(", ")}
                                                 else
                                                     span every #{job.schedule} seconds
+                                            td
+                                                if job.endTime
+                                                    span #{job.endTime.format("lll")}
+                                                else
+                                                    span Never
                         else
-                            div No scheduled jobs
+                            .inner-panel No scheduled jobs.
 
-                    if oauth
-                        #oauth.content.panel.translucent
-                            .inner-panel
-                                div
-                                    span.info Authenticated:
-                                    span #{oauth.authenticated}
-                                if oauth.authenticated
-                                    div
-                                        span.info Token:
-                                        span #{oauth.data.accessToken}
-                                    div
-                                        span.info Expires:
-                                        span #{new Date(oauth.data.expires * 1000)}
-            li
-                .panel
-                    .inner-panel !{description}
+                    for value, key in data
+                        .content.panel.translucent.data(id="data-#{key}")
+                            for a in value
+                                table
+                                    thead
+                                        th #{JSON.stringify(a.filter)}
+                                        th.small #{moment(a.timestamp * 1000).format("lll")}
+                                .data-table #{JSON.stringify(a.value)}

@@ -5,21 +5,21 @@ block contents
         ul.maingrid.small-block-grid-1.medium-block-grid-4
             for m, key in apiModules
                 li
-                    .panel.translucent
+                    .panel.translucent.module
                         h5.translucent
                             a(href="/#{m.moduleNameLower}") #{m.moduleName}
                         .inner-panel
                             div
-                                span Data:
-                                span #{Object.keys(m.data).length} keys
+                                span #{Object.keys(m.data).length} data keys,
+                                span #{m.getScheduledJobs().length} jobs,
+                                span #{Object.keys(m.errors).length} errors
                             div
                                 span OAuth:
                                 if m.oauth != undefined
-                                    a(href="#{m.moduleNameLower}/auth")
-                                        if m.oauth.authenticated
-                                            span.valid Authenticated
-                                        else
-                                            span.invalid Not authenticated
+                                    if m.oauth.authenticated
+                                        span.valid Authenticated
+                                    else
+                                        span.invalid Not authenticated
                                 else
                                     span None
         .panel.translucent

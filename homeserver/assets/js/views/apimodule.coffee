@@ -1,45 +1,23 @@
 # API VIEW
 # --------------------------------------------------------------------------
-class ApiView extends ayla.BaseView
+class ApiModuleView extends ayla.BaseView
 
-    viewId: "api"
-    elements: [".tabs", ".tabs-content"]
+    viewId: "apimodule"
 
     # MAIN METHODS
     # ----------------------------------------------------------------------
 
     # Init the API data table.
     onReady: =>
-        for key, arr of ayla.serverData
-            container = $ document.createElement "div"
-            container.attr "id", "data-#{key}"
-            container.addClass "content panel translucent data-contents"
+        for key, data of ayla.serverData
+            containers = $ "#data-#{key} .data-table"
+            $.each containers, (i, d) ->
+                div = $ d
+                json = JSON.parse div.html()
+                div.html JsonHuman.format json
 
-            for data in arr
-                filter = $ document.createElement "label"
-                filter.addClass("filter label").html JSON.stringify data.filter
-                timestamp = $ document.createElement "label"
-                timestamp.addClass("timestamp label secondary").html moment.unix(data.timestamp).format "lll"
-                details = $ document.createElement "div"
-                details.addClass "inner-panel"
-                details.JSONView JSON.stringify(data.value)
-
-                contents = $ document.createElement "div"
-                contents.append filter
-                contents.append timestamp
-                contents.append details
-
-                container.append contents
-
-            link = $ document.createElement "a"
-            link.html key
-            link.attr "href", "#data-#{key}"
-            title = $ document.createElement "dd"
-            title.append link
-
-            @dom["tabs"].append title
-            @dom["tabs-content"].append container
+        $("dd a").eq(0).click()
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.currentView = new ApiView()
+window.ayla.currentView = new ApiModuleView()
