@@ -9,12 +9,17 @@
 
 // General variables
 textColor = rgb(255, 255, 255)
+formTextColor = rgb(30, 30, 30)
 linkColor = rgb(120, 210, 240)
 lightBgColor = rgb(245, 250, 255)
 lightHoverColor = rgb(220, 230, 250)
 gridBlockMargin = 5px
 gridBlockPadding = 5px
 textShadow = 0 0 5px rgb(42, 42, 42)
+validColor = rgb(10, 190, 10)
+invalidColor = rgb(230, 100, 80)
+invalidBgColor = rgba(250, 110, 90, 0.45)
+translucentBgColor = rgba(0, 0, 0, 0.35)
 
 // Fonts
 @font-face
@@ -51,6 +56,7 @@ body
 // Bg wrapper
 #bg
     background-attach fixed
+    background-image url(/images/bg/nature.jpg)
     background-origin border-box
     background-repeat no-repeat
     background-size cover
@@ -69,27 +75,76 @@ body
     position relative
     z-index 2
 
+// Forms
+textarea
+    color formTextColor
+
 // ----------------------------------------------------------------------------
+
+// Override foundation links
+a
+    color linkColor
+
+// Override foundation text color
+table th, table td, h1, h2, h3, h4, h5, h6
+    color textColor !important
+
+table, table tr
+    background transparent !important
+table, table thead, table tbody
+    border 0 !important
+
+// Foundation: topbar navigation
+.top-bar, .top-bar li a
+    background-color rgb(0, 0, 0) !important
+.top-bar-section li.active a
+    background-color rgb(67, 67, 67) !important
+
+.panel
+    border 0 !important
+    padding 0 !important
+    text-shadow none
+
+    p, li, dl
+        color textColor
+
+    h5
+        display block
+        margin 0
+        padding 7px 10px 7px 10px
+        a
+            color rgb(245, 245, 245)
+
+    .inner-panel
+        padding 10px
+
+.tabs
+    dd
+        a
+            padding 8px 14px 8px 14px
 
 .maingrid h2
     margin-left -2px
 
+// Translucent panels
+.translucent
+    background translucentBgColor !important
+    thead
+        background translucentBgColor !important
+
 // Green and red colours
-.valid
-    color rgb(10, 190, 10)
-.invalid
-    color rgb(220, 80, 60)
+span.valid
+    color validColor
+span.invalid
+    color invalidColor
+h5.invalid
+    background-color invalidBgColor !important
+
 
 // Sticky om top of everything
 .sticky
     position relative
     z-index 9
-
-// Translucent panels
-.translucent
-    background rgba(0, 0, 0, 0.35) !important
-.translucent-light
-    background rgba(245, 245, 245, 0.35) !important
 
 // Summary data
 .summary
@@ -159,26 +214,3 @@ li div .summary
 // Sticky OK message
 #announcements.ok
     background rgba(67, 172, 106, 0.9)
-
-// ----------------------------------------------------------------------------
-
-// Override foundation links
-a
-    color linkColor
-
-// Override foundation text color
-table th, table td, h1, h2, h3, h4
-    color textColor !important
-
-table, table tr
-    background transparent !important
-table, table thead, table tbody
-    border 0 !important
-.panel
-    border 0 !important
-
-// Foundation: topbar navigation
-.top-bar, .top-bar li a
-    background-color rgb(0, 0, 0) !important
-.top-bar-section li.active a
-    background-color rgb(67, 67, 67) !important

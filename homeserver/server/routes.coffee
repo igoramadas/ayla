@@ -96,7 +96,8 @@ class Routes
 
     # The API modules listing.
     apiPage = (req, res) ->
-        renderPage req, res, "api", {title: "API Modules", apiModules: api.modules}
+        options = {title: "API Modules", apiModules: api.modules, disabledApiModules: api.disabledModules}
+        renderPage req, res, "api", options
 
     # The commander processor.
     commanderPage = (req, res) ->
@@ -115,8 +116,19 @@ class Routes
 
     # Helper to show an overview about the specified API module.
     renderApiModulePage = (req, res, module) ->
-        options = {title: module.moduleName, data: module.data}
-        renderPage req, res, "apimodule", options
+        fs.readFile "#{__dirname}/api/#{module.moduleNameLower}.coffee", {encoding: settings.general.encoding}, (err, data) ->
+            lines = data.split "\n"
+            description = ""
+
+            # Iterate first lines of the module code to get its description.
+            for i in lines
+                if i.substring(0, 1) is "#"
+                    description += i.replace("#", "") + "<br />"
+                else
+                    options = {title: module.moduleName, description: description, jobs: module.getScheduledJobs(), data: module.data}
+                    options.oauth = module.oauth if module.oauth?
+
+                    return renderPage req, res, "apimodule", options
 
     # Helper to render pages.
     renderPage = (req, res, filename, options) ->

@@ -13,7 +13,7 @@ class ApiView extends ayla.BaseView
         for key, arr of ayla.serverData
             container = $ document.createElement "div"
             container.attr "id", "data-#{key}"
-            container.addClass "content"
+            container.addClass "content panel translucent data-contents"
 
             for data in arr
                 filter = $ document.createElement "label"
@@ -21,6 +21,7 @@ class ApiView extends ayla.BaseView
                 timestamp = $ document.createElement "label"
                 timestamp.addClass("timestamp label secondary").html moment.unix(data.timestamp).format "lll"
                 details = $ document.createElement "div"
+                details.addClass "inner-panel"
                 details.JSONView JSON.stringify(data.value)
 
                 contents = $ document.createElement "div"

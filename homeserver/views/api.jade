@@ -22,3 +22,8 @@ block contents
                                             span.invalid Not authenticated
                                 else
                                     span None
+        .panel.translucent
+            h5.translucent.invalid Disabled modules
+            .inner-panel.disabled-modules
+                for m, key in disabledApiModules
+                    span #{m}

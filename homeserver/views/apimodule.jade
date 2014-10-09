@@ -3,5 +3,48 @@ extends layout
 block contents
     #api
         h1= title
-        dl.tabs(data-tab)
-        div.tabs-content
+        ul.maingrid.small-block-grid-1.medium-block-grid-2
+            li
+                dl.tabs(data-tab)
+                    dd
+                        a(href="#jobs", title="Scheduled jobs") jobs
+                    if oauth
+                        dd
+                            a(href="#oauth", title="OAuth parameters") oauth
+
+                div.tabs-content
+                    #jobs.content.panel.translucent
+                        if jobs.length > 0
+                            table.translucent
+                                thead
+                                    th Job
+                                    th Times
+                                tbody
+                                    for job in jobs
+                                        tr
+                                            td
+                                                span #{job.id.replace(title.toLowerCase() + ".coffee.", "")}
+                                            td
+                                                if isNaN(job.schedule)
+                                                    span #{job.schedule.join(", ")}
+                                                else
+                                                    span every #{job.schedule} seconds
+                        else
+                            div No scheduled jobs
+
+                    if oauth
+                        #oauth.content.panel.translucent
+                            .inner-panel
+                                div
+                                    span.info Authenticated:
+                                    span #{oauth.authenticated}
+                                if oauth.authenticated
+                                    div
+                                        span.info Token:
+                                        span #{oauth.data.accessToken}
+                                    div
+                                        span.info Expires:
+                                        span #{new Date(oauth.data.expires * 1000)}
+            li
+                .panel
+                    .inner-panel !{description}
