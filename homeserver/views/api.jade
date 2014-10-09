@@ -2,36 +2,23 @@ extends layout
 
 block contents
     #api
-        h1= title
-        ul.maingrid.small-block-grid-1.large-block-grid-4
+        ul.maingrid.small-block-grid-1.medium-block-grid-4
             for m, key in apiModules
                 li
-                    .panel.translucent
+                    .panel
                         h5
                             a(href="/#{m.moduleNameLower}") #{m.moduleName}
-                        div
-                            span Data:
-                            span #{Object.keys(m.data).length} keys
-                        div
-                            span OAuth:
-                            if m.oauth != undefined
-                                if m.oauth.authenticated
-                                    span.valid Authenticated
-                                else
-                                    span.invalid Not authenticated
-                                    label
-                                        a(href="#{m.moduleNameLower}/auth") reauth
-                            else
-                                span None
-                        div.schedule
-                            strong Schedule
-                            if m.getScheduledJobs().length > 0
-                                for job in m.getScheduledJobs()
-                                    div
-                                        span #{job.id.replace(m.moduleNameLower + ".coffee.", "")}
-                                        if isNaN(job.schedule)
-                                            .small #{job.schedule.join(", ")}
+                        .inner-panel.dark-translucent
+                            div
+                                span Data:
+                                span #{Object.keys(m.data).length} keys
+                            div
+                                span OAuth:
+                                if m.oauth != undefined
+                                    a(href="#{m.moduleNameLower}/auth")
+                                        if m.oauth.authenticated
+                                            span.valid Authenticated
                                         else
-                                            .small every #{job.schedule} seconds
-                            else
-                                div No scheduled jobs
+                                            span.invalid Not authenticated
+                                else
+                                    span None
