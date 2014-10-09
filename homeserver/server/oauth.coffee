@@ -39,7 +39,7 @@ class OAuth
                 logger.debug "OAuth.loadTokens", result
 
                 @client = getClient @service
-                @authenticated = true
+
 
                 # Iterate results to create OAuth clients for all users.
                 for t in result
@@ -53,6 +53,10 @@ class OAuth
                     @data.accessToken = settings[@service].api.accessToken
                     @data.refreshToken = settings[@service].api.refreshToken
                     result =[{accessToken: settings[@service].api.accessToken}]
+
+                # Is it authenticated?
+                if @data.accessToken?
+                    @authenticated = true
 
                 # Pass data back to caller.
                 if callback?

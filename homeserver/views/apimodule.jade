@@ -31,7 +31,7 @@ block contents
                                     span #{oauth.authenticated}
                                     a(href="/#{title.toLowerCase()}/auth") Trigger authentication
                                 if oauth.authenticated
-                                    div
+                                    div.clip
                                         span.info Token:
                                         span #{oauth.data.accessToken}
                                     div
@@ -76,7 +76,7 @@ block contents
                                                 else
                                                     span every #{job.schedule} seconds
                                             td
-                                                if job.endTime
+                                                if job.endTime.year() > 2000
                                                     span #{job.endTime.format("lll")}
                                                 else
                                                     span Never
@@ -88,6 +88,5 @@ block contents
                             for a in value
                                 table
                                     thead
-                                        th #{JSON.stringify(a.filter)}
-                                        th.small #{moment(a.timestamp * 1000).format("lll")}
+                                        th #{JSON.stringify(a.filter, null, 2)} #{moment(a.timestamp * 1000).format("lll")}
                                 .data-table #{JSON.stringify(a.value)}

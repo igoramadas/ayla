@@ -2,50 +2,48 @@ extends layout
 
 block contents
     #lights
-        ul.maingrid.small-block-grid-1.large-block-grid-3
+        ul.maingrid.small-block-grid-1.medium-block-grid-2
 
             li.hue
-                div
-                    h2 Hue lights
-                    <!-- ko with: hue -->
-                    table
-                        thead
-                            tr
-                                th.title Lights
-                                th.colour
-                                th.state
-                                    span Toggle
-                        tbody(data-bind="foreach: lights")
-                            tr
-                                td(nowrap)
-                                    span(data-bind="text: title")
-                                td
-                                    div(data-bind="visible: state")
-                                        input.right(type="text", data-bind="value: colorHex, colorPicker: true, event: {change: ayla.currentView.hueLightColor}")
-                                td
-                                    div.right
-                                        div.switch
-                                            input(type="checkbox", data-bind="attr: {id: 'chk-hue-' + id}, checked: state, click: ayla.currentView.hueLightToggle")
-                                            label(data-bind="attr: {for: 'chk-hue-' + id}")
+                h2 Hue lights
+                <!-- ko with: hue -->
+                table.translucent
+                    thead
+                        tr
+                            th.title Lights
+                            th.colour
+                            th.state
+                                span Toggle
+                    tbody(data-bind="foreach: lights")
+                        tr
+                            td(nowrap)
+                                span(data-bind="text: title")
+                            td
+                                div(data-bind="visible: state")
+                                    input.right(type="text", data-bind="value: colorHex, colorPicker: true, event: {change: ayla.currentView.hueLightColor}")
+                            td
+                                div.right
+                                    div.switch
+                                        input(type="checkbox", data-bind="attr: {id: 'chk-hue-' + id}, checked: state, click: ayla.currentView.hueLightToggle")
+                                        label(data-bind="attr: {for: 'chk-hue-' + id}")
 
-                    <!-- /ko -->
+                <!-- /ko -->
 
             li.ninja
-                div
-                    h2 Ninja lights
-                    table
-                        thead
-                            tr
-                                th.title Lights
-                                th.state
-                                    span Toggle
-                        tbody(data-bind="foreach: ninja")
-                            tr
-                                td(nowrap)
-                                    span(data-bind="text: title")
-                                td
-                                    button.button.tiny.right.alert(data-bind="click: ayla.currentView.ninjaLightToggle") OFF
-                                    button.button.tiny.right.success(data-bind="click: ayla.currentView.ninjaLightToggle") ON
+                h2 Ninja lights
+                table.translucent
+                    thead
+                        tr
+                            th.title Lights
+                            th.state
+                                span Toggle
+                    tbody(data-bind="foreach: ninja")
+                        tr
+                            td(nowrap)
+                                span(data-bind="text: title")
+                            td
+                                button.button.tiny.right.alert(data-bind="click: ayla.currentView.ninjaLightToggle") OFF
+                                button.button.tiny.right.success(data-bind="click: ayla.currentView.ninjaLightToggle") ON
 
             li.all
                 div.right

@@ -6,16 +6,16 @@
 
     .tabs-content
         .panel
+            overflow hidden
             height 310px
-        .content > div
-            margin-bottom 18px
+
+    .clip
+        overflow hidden
+        text-overflow: ellipsis
 
     .auth
         a
             margin-left 10px
-
-    .error-details
-        white-space nowrap
 
     .data
         height 100%
@@ -27,11 +27,14 @@
     // JSON transformed to tables
     .data-table
         table
+            margin 0 7px 1px 7px
             width 100%
-            td, th
-                white-space nowrap
             th
+                white-space nowrap
                 width 20%
+            th, td, span
+                overflow hidden
+                text-overflow: ellipsis
 
       span.info
         margin-right 8px

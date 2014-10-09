@@ -62,6 +62,9 @@ class BaseView
         # Set announcement element.
         @dom.announcements = $ "#announcements"
 
+        # Add refresh event handler.
+        $(".top-bar .refresh").click -> location.reload()
+
     # Set active navigation and header properties.
     setHeader: =>
         $(document).foundation()

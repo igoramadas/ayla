@@ -56,7 +56,7 @@ body
 // Bg wrapper
 #bg
     background-attach fixed
-    background-image url(/images/bg/nature.jpg)
+    background-image url(/images/bg/green.jpg)
     background-origin border-box
     background-repeat no-repeat
     background-size cover
@@ -95,10 +95,20 @@ table, table thead, table tbody
     border 0 !important
 
 // Foundation: topbar navigation
-.top-bar, .top-bar li a
+.top-bar, .top-bar li a, .top-bar.expanded .title-area, .top-bar.expanded .toggle-topbar a
     background-color rgb(0, 0, 0) !important
 .top-bar-section li.active a
     background-color rgb(67, 67, 67) !important
+.toggle-topbar.menu-icon
+    left 50px !important
+.top-bar .refresh
+    color textColor
+    cursor pointer
+    float right
+    font-size 1.8em
+    margin 9px 10px
+    position relative
+    z-index 9
 
 .panel
     border 0 !important

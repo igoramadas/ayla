@@ -2,7 +2,7 @@ extends layout
 
 block contents
     #money
-        ul.maingrid.small-block-grid-1.large-block-grid-3
+        ul.maingrid.small-block-grid-1.medium-block-grid-2
 
             li.expenses
                 div(data-bind="with: recentExpenses")
@@ -10,7 +10,7 @@ block contents
                         h2 Expenses
                         span.total(data-bind="text: total.toFixed(2)")
 
-                    table
+                    table.translucent
                         thead
                             tr
                                 th.tag Top tags
@@ -33,7 +33,7 @@ block contents
                         h2 Incomes
                         span.total(data-bind="text: total.toFixed(2)")
 
-                    table
+                    table.translucent
                         thead
                             tr
                                 th.tag Top tags
