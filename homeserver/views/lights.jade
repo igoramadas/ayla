@@ -7,25 +7,16 @@ block contents
             li.hue
                 h2 Hue lights
                 <!-- ko with: hue -->
-                table.translucent
-                    thead
-                        tr
-                            th.title Lights
-                            th.colour
-                            th.state
-                                span Toggle
-                    tbody(data-bind="foreach: lights")
-                        tr
-                            td(nowrap)
-                                span(data-bind="text: title")
-                            td
-                                div(data-bind="visible: state")
-                                    input.right(type="text", data-bind="value: colorHex, colorPicker: true, event: {change: ayla.currentView.hueLightColor}")
-                            td
-                                div.right
-                                    div.switch
-                                        input(type="checkbox", data-bind="attr: {id: 'chk-hue-' + id}, checked: state, click: ayla.currentView.hueLightToggle")
-                                        label(data-bind="attr: {for: 'chk-hue-' + id}")
+                ul.small-block-grid-2.medium-block-grid-3(data-bind="foreach: lights")
+                    li
+                        .panel.translucent
+                            h5(data-bind="text: title")
+                            .inner-panel
+                                div.switch
+                                    input(type="checkbox", data-bind="attr: {id: 'chk-hue-' + id}, checked: state, click: ayla.currentView.hueLightToggle")
+                                    label(data-bind="attr: {for: 'chk-hue-' + id}")
+                                div.color(data-bind="visible: state")
+                                    input(type="text", data-bind="value: colorHex, colorPicker: true, event: {change: ayla.currentView.hueLightColor}")
 
                 <!-- /ko -->
 
