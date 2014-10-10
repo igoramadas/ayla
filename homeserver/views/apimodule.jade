@@ -58,9 +58,9 @@ block contents
                                 for e in err
                                     table
                                         thead
-                                            th #{moment(e.timestamp * 1000).format("YYYY-MM-DD HH:mm:ss")}
+                                            th #{moment(e.timestamp * 1000).format("YYYY-MM-DD HH:mm:ss")} #{e.data[0]}
                                     .inner-panel.error-details
-                                        span #{e.data.join(", ")}
+                                        span #{e.data.slice(1).join(", ")}
                         else
                             .inner-panel
                                 span No errors found.
