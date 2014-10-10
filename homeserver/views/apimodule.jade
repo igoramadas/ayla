@@ -8,6 +8,8 @@ block contents
                 dl.tabs(data-tab)
                     dd
                         a(href="#about", title="About this module") about
+                    dd
+                        a(href="#settings", title="Module's settings") settings
                     if oauth
                         dd
                             a(href="#oauth", title="OAuth parameters") oauth
@@ -22,38 +24,43 @@ block contents
                 .tabs-content
                     #about.content.panel.translucent
                         .inner-panel !{description}
+                        .inner-panel
+                            a(href="https://ayla.codeplex.com/wikipage?title=API:%20#{title}") View online documentation
+
+                    #settings.content.panel.translucent
+                        table
+                            thead
+                                th settings.#{title.toLowerCase()}
+                        .data-table !{JSON.stringify(settings[title.toLowerCase()])}
 
                     if oauth
                         #oauth.content.panel.translucent
-                            .inner-panel
-                                .auth
+                            .inner-panel.auth
+                                div
                                     span.info Authenticated:
                                     span #{oauth.authenticated}
-                                    a(href="/#{title.toLowerCase()}/auth") Trigger authentication
                                 if oauth.authenticated
                                     div.clip
                                         span.info Token:
                                         span #{oauth.data.accessToken}
-                                    div
+                                        br
                                         span.info Expires:
-                                        span #{moment(oauth.data.expires * 1000).format("lll")}
+                                        if oauth.data.expires > 0
+                                            span #{moment(oauth.data.expires * 1000).format("lll")}
+                                        else
+                                            span No expiration date
+                                div
+                                    a.button(href="/#{title.toLowerCase()}/auth") Trigger authentication
 
                     #errors.content.panel.translucent
                         if Object.keys(errors).length > 0
-                            table
-                                thead
-                                    th Method
-                                    th Count
-                                    th Details
-                                tbody
-                                    for err, key in errors
-                                        tr
-                                            td #{key}
-                                            td #{err.length}
-                                            td.error-details
-                                                for e in err
-                                                    span.label #{moment(e.timestamp * 1000).format("lll")}
-                                                    span #{e.data.join(", ")}
+                            for err, key in errors
+                                for e in err
+                                    table
+                                        thead
+                                            th #{moment(e.timestamp * 1000).format("YYYY-MM-DD HH:mm:ss")}
+                                    .inner-panel.error-details
+                                        span #{e.data.join(", ")}
                         else
                             .inner-panel
                                 span No errors found.
@@ -88,5 +95,5 @@ block contents
                             for a in value
                                 table
                                     thead
-                                        th #{JSON.stringify(a.filter, null, 2)} #{moment(a.timestamp * 1000).format("lll")}
-                                .data-table #{JSON.stringify(a.value)}
+                                        th !{JSON.stringify(a.filter, null, 2)} #{moment(a.timestamp * 1000).format("lll")}
+                                .data-table !{JSON.stringify(a.value)}

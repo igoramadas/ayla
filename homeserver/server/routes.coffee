@@ -121,12 +121,13 @@ class Routes
 
         fs.readFile "#{__dirname}/api/#{module.moduleNameLower}.coffee", {encoding: settings.general.encoding}, (err, data) ->
             lines = data.split "\n"
+            lines.splice 0, 2
             description = ""
 
             # Iterate first lines of the module code to get its description.
             for i in lines
                 if i.substring(0, 1) is "#"
-                    description += i.replace("#", "") + "<br />"
+                    description += i.replace("#", "") + "\n"
                 else
                     options = {title: module.moduleName, description: description, jobs: jobs, errors: module.errors, data: module.data}
                     options.oauth = module.oauth if module.oauth?
@@ -141,6 +142,7 @@ class Routes
         options.loadJs = [] if not options.loadJs?
         options.loadCss = [] if not options.loadCss?
         options.moment = moment
+        options.settings = settings
 
         # Set base file name.
         baseName = filename.replace ".jade",""

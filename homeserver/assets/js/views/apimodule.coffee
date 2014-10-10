@@ -10,11 +10,18 @@ class ApiModuleView extends ayla.BaseView
     # Init the API data table.
     onReady: =>
         for key, data of ayla.serverData
-            containers = $ "#data-#{key} .data-table"
+            containers = $ ".data-table"
+
+            # Iterate all data tables and transform JSON to readable tables.
             $.each containers, (i, d) ->
-                div = $ d
-                json = JSON.parse div.html()
-                div.html JsonHuman.format json
+                try
+                    div = $ d
+                    html = div.html()
+                    if html.indexOf("<table") < 1
+                        json = JSON.parse html
+                        div.html JsonHuman.format json
+                catch ex
+                    console.warn "Could not parse JSON.", html
 
         $("dd a").eq(0).click()
 

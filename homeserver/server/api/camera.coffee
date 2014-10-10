@@ -1,7 +1,7 @@
 # CAMERA API
 # -----------------------------------------------------------------------------
-# Module to take snaps from cameras or other picture sources. The camera devices
-# must be set on the settings.network.devices array with a type "camera".
+# Module to take snaps from webcams or local IP cameras. It will get all devices
+# from `settings.network.devices` with a type `camera`.
 class Camera extends (require "./baseapi.coffee")
 
     expresser = require "expresser"

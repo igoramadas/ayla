@@ -6,7 +6,7 @@
 
     .tabs-content
         .panel
-            overflow hidden
+            overflow auto
             height 310px
 
     .clip
@@ -14,27 +14,31 @@
         text-overflow: ellipsis
 
     .auth
-        a
-            margin-left 10px
+        div
+            margin-bottom 10px
 
     .data
         height 100%
         overflow auto
 
-    .data > table
+    .panel > table
         margin-bottom 1px
+
+    .error-details
+        padding-top 2px
 
     // JSON transformed to tables
     .data-table
         table
-            margin 0 7px 1px 7px
-            width 100%
+            width 99%
             th
                 white-space nowrap
-                width 20%
+                width 15%
             th, td, span
                 overflow hidden
                 text-overflow: ellipsis
+        .depth-0
+            margin 0 10px 1px 10px
 
       span.info
         margin-right 8px
