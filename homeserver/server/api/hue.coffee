@@ -1,7 +1,7 @@
 # PHILIPS HUE API
 # -----------------------------------------------------------------------------
-# Module to identify and control Hue bridges and lamps.
-# More info at http://developers.meethue.com
+# Module to identify and control Hue bridges, lamps and lights.
+# More info at http://developers.meethue.com.
 class Hue extends (require "./baseapi.coffee")
 
     expresser = require "expresser"

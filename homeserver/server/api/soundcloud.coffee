@@ -1,7 +1,7 @@
 # SOUNDCLOUD API
-# NOT READY YET!!!
 # -----------------------------------------------------------------------------
-# Module to connect to tracks and profiles on SoundCloud.
+# NOT READY YET! Module to get and manage to playlists, tracks and profile data
+# on SoundCloud.
 # More info at http://www.soundcloud.com.
 class SoundCloud extends (require "./baseapi.coffee")
 

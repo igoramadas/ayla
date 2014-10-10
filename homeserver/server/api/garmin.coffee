@@ -1,6 +1,8 @@
-# GARMIN API
+# GARMIN CONNECT API
 # -----------------------------------------------------------------------------
-# Module to collect data from Garmin.
+# Module to get activities and general health data from Garmin Connect.
+# Implemented using a headless browser (Zombie) to simulate a browser
+# and get data, avoiding the $5000 fee charged for the Garmin API.
 # More info at http://connect.garmin.com.
 class Garmin extends (require "./baseapi.coffee")
 

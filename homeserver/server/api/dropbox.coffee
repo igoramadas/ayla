@@ -1,7 +1,7 @@
 # DROPBOX API
 # -----------------------------------------------------------------------------
-# Module to connect and manage files on DropBox.
-# More info at https://www.dropbox.com/developers
+# NOT READY YET! Module to connect and manage files on Dropbox.
+# More info at https://www.dropbox.com/developers.
 class Dropbox extends (require "./baseapi.coffee")
 
     expresser = require "expresser"

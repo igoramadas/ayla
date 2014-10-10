@@ -1,7 +1,7 @@
 # GITHUB API
-# NOT READY YET!!!
 # -----------------------------------------------------------------------------
-# Module for GitHub integration.
+# NOT READY YET! Get and post programming related data to GitHub.
+# More info at https://developer.github.com/v3.
 class GitHub extends (require "./baseapi.coffee")
 
     expresser = require "expresser"

@@ -1,9 +1,9 @@
 # NETWORK API
 # -----------------------------------------------------------------------------
-# Module for internal network management and discovery. Please note that a few
-# other API modules depend on this Network module to work, so unless you have a
-# very specific use case please leave it on the `settings.modules.enabled` list.
-# Bluetooth methods require BlueZ package on Linux and Bluetooth Command Line Tools on Windows.
+# Module for devices management and discovery. This is considered a core module
+# of the server and should be left enabled unless you have very specific reasons
+# not to do so. Bluetooth related methods require the `BlueZ` package on Linux
+# and `Bluetooth Command Line Tools` on Windows.
 class Network extends (require "./baseapi.coffee")
 
     expresser = require "expresser"

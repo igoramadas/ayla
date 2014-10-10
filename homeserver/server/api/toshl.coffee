@@ -1,6 +1,6 @@
 # TOSHL API
 # -----------------------------------------------------------------------------
-# Module to read and add finance / budget data to Toshl.
+# Module to read and add finances and budget data to Toshl.
 # More info at https://developer.toshl.com.
 class Toshl extends (require "./baseapi.coffee")
 

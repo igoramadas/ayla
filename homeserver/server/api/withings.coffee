@@ -1,6 +1,7 @@
 # WITHINGS API
 # -----------------------------------------------------------------------------
-# Module to get weight, body fat and air quality data from Withings smart scales.
+# Module to get weight, body fat and air quality data from Withings Healthmate.
+# At the moment activity data (from Pulse) is not supported.
 # More info at http://www.withings.com/en/api.
 class Withings extends (require "./baseapi.coffee")
 

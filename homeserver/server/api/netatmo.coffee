@@ -1,7 +1,7 @@
 # NETATMO API
 # -----------------------------------------------------------------------------
 # Collect weather and climate data from Netatmo devices. Supports indoor and
-# outdoor modules, rain gauge, and device list is fetched via the getDevices method.
+# outdoor modules, and the rain gauge.
 # More info at http://dev.netatmo.com.
 class Netatmo extends (require "./baseapi.coffee")
 

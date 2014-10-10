@@ -1,6 +1,6 @@
 # FITBIT API
 # -----------------------------------------------------------------------------
-# Module for activities, sleep and body data using Fitbit trackers.
+# Module to get activities, sleep and general fitness data from Fitbit.
 # More info at http://dev.fitbit.com.
 class Fitbit extends (require "./baseapi.coffee")
 

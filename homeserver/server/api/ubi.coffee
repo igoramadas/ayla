@@ -1,6 +1,6 @@
 # UBI API
 # -----------------------------------------------------------------------------
-# Module to collect data from Ubi sensors and send Ubi commands.
+# Module to collect data from Ubi sensors and send Ubi commands via HTTP.
 # More info at http://www.theubi.com.
 class Ubi extends (require "./baseapi.coffee")
 

@@ -1,6 +1,6 @@
 # NINJA BLOCKS API
 # -----------------------------------------------------------------------------
-# Module for Ninja Blocks and its connected devices.
+# Module to collect and send data to devices connected to a Ninja Block.
 # More info at http://docs.ninja.is.
 class Ninja extends (require "./baseapi.coffee")
 
