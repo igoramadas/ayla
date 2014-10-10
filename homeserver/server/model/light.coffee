@@ -20,8 +20,8 @@ class LightModel extends (require "./basemodel.coffee")
             @state = data.state?.on
         else if data.on?
             @state = data.on
-        else
-            @state = data.state or @state
+        else if data.state?
+            @state = data.state
 
         # This is used for Ninja lights, to define the code to turn on and off.
         @codeOn = data.codeOn if data.codeOn?

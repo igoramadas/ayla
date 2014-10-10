@@ -78,11 +78,15 @@ class Camera extends (require "./baseapi.coffee")
     # SNAPS
     # -------------------------------------------------------------------------
 
-    # Save a snapshop for the specified camera. If `cam` is a string, consider
+    # Save a snapshot for the specified camera. If `cam` is a string, consider
     # it being the camera host or IP.
     takeSnap: (cam, callback) =>
         if not cam?
             throw new Error "The argument cam must be specified."
+
+        if not @isRunning [@snapsPath]
+            callback "Module not running. Please check Camera settings."
+            return
 
         # Find camera by host or IP in case `cam` is a string.
         if lodash.isString cam

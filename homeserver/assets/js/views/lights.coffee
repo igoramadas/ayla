@@ -5,12 +5,6 @@ class LightsView extends ayla.BaseView
     viewId: "lights"
     elements: ["input.colorpicker"]
 
-    # MAIN METHODS
-    # ----------------------------------------------------------------------
-
-    # Init the Lights view.
-    onReady: =>
-
     # LIGHT CONTROL
     # ----------------------------------------------------------------------
 
@@ -20,8 +14,11 @@ class LightsView extends ayla.BaseView
 
         ayla.sockets.emit "#{@socketsName}.Hue.color", data
 
+        return true
+
     # Toggle lights om or off based on its current state.
     hueLightToggle: (light, e) =>
+        light.state = $(e.target).is ":checked"
         data = {lightId: light.id, title: light.title, state: light.state}
 
         ayla.sockets.emit "#{@socketsName}.Hue.toggle", data

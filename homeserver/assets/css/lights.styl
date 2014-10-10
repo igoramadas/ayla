@@ -3,17 +3,14 @@
 offColor = rgb(240, 65, 36)
 onColor = rgb(67, 172, 106)
 
-// Hue lights and sockets
 #lights
-    .hue
-        th.state
-            text-align right
-            span
-                margin-right 6px
+    .panel
+        height 92px
 
+    .hue
         div.switch
             display inline-block
-            margin-right 10px
+
             label
                 background-color offColor
                 margin-bottom 1px
@@ -21,22 +18,25 @@ onColor = rgb(67, 172, 106)
             input:checked + label
                 background-color onColor
 
-        div.color
+        .color
             float right
 
-        .colorpicker
+        .color.false
+            opacity 0.1
+
+        input.colorpicker
+            border 0 !important
+            color transparent !important
             height 32px
             margin 0
+            width 60px
 
     .ninja
-        th.state
-            text-align right
-            span
-                margin-right 12px
-
         button
-            margin 0 0 0 6px
-            width 64px
+            margin 0
+            width 68px
+        button.success
+            margin-left 10px
 
     .all
         button
