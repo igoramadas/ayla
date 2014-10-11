@@ -16,7 +16,7 @@ block contents
                                     input(type="checkbox", data-bind="attr: {id: 'chk-hue-' + id}, checked: state, click: ayla.currentView.hueLightToggle")
                                     label(data-bind="attr: {for: 'chk-hue-' + id}")
                                 div.color(data-bind="css: state")
-                                    input(type="text", data-bind="value: colorHex, colorPicker: true, event: {change: ayla.currentView.hueLightColor}")
+                                    input(type="text", data-bind="value: colorHex, colorPicker: true, attr: {title: title + ' colour'}, event: {change: ayla.currentView.hueLightColor}")
 
                 <!-- /ko -->
 

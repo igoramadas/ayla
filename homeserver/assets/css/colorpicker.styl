@@ -2,43 +2,51 @@
 
 // Color picker wrapper
 #jquery-colorpicker
-
-    background rgba(240, 240, 240, 0.9)
-    border 1px solid rgb(180, 180, 180)
-    box-shadow 0 0 3px rgba(0, 0, 0, 0.5)
-    max-width 250px
-    padding 10px 5px 5px 10px
-    position absolute
+    background rgba(255, 255, 255, 0.85)
+    box-shadow 0 0 20px rgb(25, 25, 25)
+    box-sizing border-box
+    height 375px
+    left 50%
+    margin-left -267px
+    margin-top -190px
+    position fixed
+    top 50%
     z-index 999
+    width 535px
+
+    @media only screen and (max-width: 40em)
+        height 100%
+        left 0
+        margin 0
+        top 45px
+        width 100%
+
+    div
+        background rgba(255, 255, 255, 0.85)
+        color rgb(0, 0, 0)
+        font-size 1.4em
+        margin-bottom 10px
+        padding 10px
 
     ul
-        margin 0
+        margin 0 0 0 10px
         padding 0
         list-style-type none
-        +zoom 1
-
-        &:after
-            content "."
-            display block
-            height 0
-            visibility hidden
-            clear both
 
         li
+            display block
             float left
+            border 1px solid transparent
+            box-sizing border-box
+            display block
+            height 40px
             margin 0 5px 5px 0
-            a
-                border 1px solid rgb(180, 180, 180)
-                display block
-                height 24px
-                outline 0
-                text-decoration none
-                text-indent -100000px
-                width 24px
-                &:hover
-                    border-color rgb(0, 0, 0)
-            a.selected
-                border-color rgb(0, 0, 0)
+            width 60px
+        li:hover, li.selected
+            border-color rgb(0, 0, 0) !important
+
+        @media only screen and (max-width: 40em)
+            width 11%
 
 // Colour picker input fields
 input.colorpicker

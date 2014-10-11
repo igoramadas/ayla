@@ -6,7 +6,6 @@ $.fn.colorPicker = function (conf) {
         "#FFEEEE", "#FFCCCC", "#FFAAAA", "#FF8888", "#FF6666", "#FF4444", "#FF2222", "#FF1111",
         "#EEFFEE", "#CCFFCC", "#AAFFAA", "#88FF88", "#66FF66", "#44FF44", "#22FF22", "#00FF00",
         "#EEEEFF", "#CCCCFF", "#AAAAFF", "#8888FF", "#6666FF", "#4444FF", "#2222FF", "#0000FF",
-        "#FFFFEE", "#FFFFCC", "#FFFFAA", "#FFFF88", "#FFFF66", "#FFFF44", "#FFFF22", "#FFFF00",
         "#FFEEFF", "#FFCCFF", "#FFAAFF", "#FF88FF", "#FF66FF", "#FF44FF", "#FF22FF", "#FF00FF",
         "#EEFFFF", "#CCFFFF", "#AAFFFF", "#88FFFF", "#66FFFF", "#44FFFF", "#22FFFF", "#00FFFF",
         "#EEEEEE", "#CCCCCC", "#AAAAAA", "#888888", "#666666", "#444444", "#222222", "#000000"
@@ -53,16 +52,22 @@ $.fn.colorPicker = function (conf) {
     // For every select passed to the plugin...
     return this.each(function () {
         var source = $(this);
-        var dataColors = source.data("colors");
-        var colors = config.colors;
 
-        // If source is already set up then stop there.
+        // If source is already set up then stop here.
         if (source.hasClass("colorpicker")) {
             return;
         }
 
+        var dataColors = source.data("colors");
+        var colors = config.colors;
+        var isInput = source.prop("tagName") === "INPUT";
+
         // Set field properties and class.
         source.attr("type", "text").addClass("colorpicker");
+
+        if (isInput) {
+            source.attr("type", "text");
+        }
 
         // Get colors from data field in case there's one.
         if (dataColors && dataColors.length > 0) {
@@ -70,9 +75,12 @@ $.fn.colorPicker = function (conf) {
         }
 
         // When you click the field, show the color picker.
-        source.on("click", function() {
+        source.on("click", function(e) {
+            e.preventDefault();
+            source.blur();
+
             var val = source.val();
-            var pos	= source.offset();
+            var title = $(document.createElement("div"));
             var ul = $(document.createElement("ul"));
             var li, a;
 
@@ -82,51 +90,26 @@ $.fn.colorPicker = function (conf) {
             // Iterate colors to create list options.
             for (var c = 0; c < colors.length; c++) {
                 li = $(document.createElement("li"));
-                a = $(document.createElement("a"));
-                a.attr("rel", colors[c]).css("background", colors[c]).html(colors[c]);
+                li.attr("rel", colors[c]).css("background", colors[c]);
 
                 if (val == colors[c]) {
-                    a.addClass("selected");
+                    li.addClass("selected");
                 }
 
-                li.append(a);
                 ul.append(li);
             }
 
+            // Set title.
+            title.html(source.attr("title"));
+
             // Append colors to HTML.
-            colorPicker.append(ul).show();
-
-            // Calculate position.
-            var posLeft, posTop;
-            var srcWidth = source.outerWidth();
-            var divHeight = colorPicker.outerHeight();
-            var divWidth = colorPicker.outerWidth();
-            var windowHeight = $(window).height();
-            var windowWidth = $(window).width();
-
-            if (pos.top + divHeight >= windowHeight) {
-                posTop = windowHeight - divHeight + $(window).scrollTop();
-            } else {
-                posTop = pos.top;
-            }
-
-            if (pos.left + divWidth + srcWidth >= windowWidth) {
-                posLeft = windowWidth - divWidth + $(window).scrollLeft();
-            } else {
-                posLeft = pos.left + source.outerWidth();
-            }
-
-            // Set colorpicker position.
-            colorPicker.css({
-                left: posLeft + "px",
-                top: posTop + "px"
-            });
+            colorPicker.append(title).append(ul).show();
 
             // Unbind previous click events.
-            $("a", colorPicker).off("click");
+            $("li", colorPicker).off("click");
 
             // When you click a color in the color picker...
-            $("a", colorPicker).on("click", function () {
+            $("li", colorPicker).on("click", function () {
                 var hex = $(this).attr("rel");
                 source.val(hex);
                 source.css({background: hex, color: hexInvert(hex)});

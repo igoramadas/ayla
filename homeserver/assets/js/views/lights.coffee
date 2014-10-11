@@ -3,7 +3,6 @@
 class LightsView extends ayla.BaseView
 
     viewId: "lights"
-    elements: ["input.colorpicker"]
 
     # LIGHT CONTROL
     # ----------------------------------------------------------------------
