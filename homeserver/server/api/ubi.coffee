@@ -96,6 +96,10 @@ class Ubi extends (require "./baseapi.coffee")
         # If device ID was passed then use it, otherwise get for all devices.
         if filter?.id?
             deviceIds = [filter.id]
+        else if @data.devices.length < 1
+            @logError "Ubi.getSensorData", "No devices found. Please run getDevices first."
+            callback "No devices found. Please run getDevices first." if hassCallback
+            return
         else
             deviceIds = lodash.pluck @data.devices[0].value, "id"
 

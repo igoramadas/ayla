@@ -167,10 +167,9 @@ class Hue extends (require "./baseapi.coffee")
     switchGroupLights: (id, turnOn, callback) =>
         logger.debug "Hue.switchGroupLights", turnOn
 
-        if not turnOn?
-            turnOn = id
-        else if lodash.isFunction turnOn
+        if not turnOn? or lodash.isFunction turnOn
             callback = turnOn
+            turnOn = id
 
         if not id? or lodash.isBoolean id
             id = 0

@@ -2,13 +2,20 @@ extends layout
 
 block contents
     #fitness
-        ul.small-block-grid-1.maingrid.large-block-grid-3
-            li.weight
-                span(data-bind="text: weight().value")
-                span kg
-            li.fat
-                span(data-bind="text: fat().value")
-                span % fat
-            li.bmi
-                span(data-bind="text: weight().bmi")
-                span bmi
+        ul.maingrid.small-block-grid-1.medium-block-grid-2
+
+            li.body(data-bind="with: recentBodyMeasures")
+                h2 Body measures
+                .summary
+                    i.weight.fa.fa-tachometer
+                    span(data-bind="text: weight.toFixed(1) + 'kg'")
+                    i.fat.fa.fa-filter
+                    span(data-bind="text: fat.toFixed(1) + '%'")
+                .panel.translucent
+                    canvas.chart
+            li
+                h2 Activities
+                .summary
+                    span ...
+                .panel.translucent
+                    span Soon...

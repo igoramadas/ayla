@@ -8,11 +8,13 @@
     "turnLightsOff": [
         "turn lights off",
         "all lights off",
+        "lights off please",
         "darkness please"
     ],
     "turnLightsOn": [
         "turn lights on",
         "all lights on",
+        "lights on please",
         "there be light"
     ]
 }

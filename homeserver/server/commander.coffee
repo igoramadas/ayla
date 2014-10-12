@@ -6,12 +6,12 @@
 class Commander
 
     expresser = require "expresser"
+
     database = expresser.database
     events = expresser.events
+    lodash = expresser.libs.lodash
     logger = expresser.logger
     settings = expresser.settings
-
-    lodash = expresser.libs.lodash
 
     # The commands list is loaded on init, from file commands.json.
     commands: null
@@ -33,10 +33,13 @@ class Commander
     # external triggers (for example email action or SMS).
     execute: (cmd, options, callback) =>
         logger.debug "Commander.execute", cmd, options
+        executed = false
 
         # Command exists as a function? Execute it.
         if lodash.isFunction @[cmd]
             return @[cmd] options, callback
+
+        cmd = cmd.toLowerCase()
 
         # Otherwise iterate all command triggers till it finds a matching one.
         for key, value of @commands
@@ -62,9 +65,14 @@ class Commander
 
                         # Execute!
                         eval (this[key] options, callback)
+                        executed = true
                     catch ex
                         logger.error "Commander.execute", cmd, options, ex.message, ex.stack
                         callback {err: ex, command: cmd, options: options} if callback?
+
+        # Nothing executed? Make sure callback is called.
+        if not executed
+            callback null, true if callback?
 
     # HOME GENERAL
     # -------------------------------------------------------------------------
@@ -83,24 +91,24 @@ class Commander
         if not tarantino?
             logger.warn "Commander.movieMode", "Media server (Tarantino) settings are not defined. Do not send WOL."
         else
-            events.emit "network.wol", tarantino.mac, tarantino.ip, (err, result) =>
+            events.emit "Network.wol", tarantino.mac, tarantino.ip, (err, result) =>
                 cError.push err if err?
                 cResult.push result
 
         # Turn off all Hue lights.
-        events.emit "hue.switchgrouplights", false, (err, result) =>
+        events.emit "Hue.switchGroupGights", false, (err, result) =>
             cError.push err if err?
             cResult.push result
 
         # Turn off all RF sockets (execute all commands with short name having "Off").
         lightsFilter = (d) -> return d.shortName.indexOf("Off") >= 0 and d.shortName.indexOf("TV") < 0
-        events.emit "ninja.actuate433", lightsFilter, (err, result) =>
+        events.emit "Ninja.actuate433", lightsFilter, (err, result) =>
             cError.push err if err?
             cResult.push result
 
         # Turn on TV coloured light. Will actuate RF having "TV" and "On" on the short name.
         tvLightFilter = (d) -> return d.shortName.indexOf("On") >= 0 and d.shortName.indexOf("TV") >= 0
-        events.emit "ninja.actuate433", tvLightFilter, (err, result) =>
+        events.emit "Ninja.actuate433", tvLightFilter, (err, result) =>
             cError.push err if err?
             cResult.push result
 
@@ -116,14 +124,14 @@ class Commander
     turnLightsOff: (options, callback) =>
         logger.info "Commander.turnLightsOff", options
 
-        events.emit "hue.switchgrouplights", false, (err, result) =>
+        events.emit "Hue.switchGroupLights", false, (err, result) =>
             callback err, result if callback?
 
     # Turn the specified house lights on.
     turnLightsOn: (options, callback) =>
         logger.info "Commander.turnLightsOn", options
 
-        events.emit "hue.switchgrouplights", true, (err, result) =>
+        events.emit "Hue.switchGroupLights", true, (err, result) =>
             callback err, result if callback?
 
 # Singleton implementation.

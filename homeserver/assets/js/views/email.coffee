@@ -3,7 +3,6 @@
 class EmailView extends ayla.BaseView
 
     viewId: "email"
-    elements: [".emails"]
 
     # MAIN METHODS
     # ----------------------------------------------------------------------

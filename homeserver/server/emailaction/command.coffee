@@ -19,7 +19,6 @@ class EmailAction_Command
         # Execute command.
         commander.execute parsedMsg.subject, parsedMsg.text, callback
 
-
 # Exports
 # -----------------------------------------------------------------------------
 module.exports = exports = EmailAction_Command

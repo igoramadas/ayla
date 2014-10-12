@@ -99,6 +99,14 @@
             "enabled": true
         }
     ],
+    "ubi.coffee": [
+        {
+            "callback": "getSensorData",
+            "description": "Get sensor readings from Ubi every 5 minutes.",
+            "schedule": 300,
+            "enabled": true
+        }
+    ],
     "withings.coffee": [
         {
             "callback": "getRecentBodyMeasures",

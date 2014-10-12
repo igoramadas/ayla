@@ -6,20 +6,29 @@ block contents
 
             li.processed
                 h2 Processed emails
-                table
-                    tbody(data-bind="foreach: processedEmails")
-                        tr
-                            td(data-bind="text: from")
-                            td(data-bind="text: subject")
+                .translucent.panel(data-bind="if: processedEmails().length < 1")
+                    .inner-panel.empty No recent processed emails!
+                .translucent(data-bind="foreach: processedEmails")
+                    .panel
+                        h5
+                            span(data-bind="text: message.from.name || message.from.address")
+                            .actions(data-bind="foreach: actions")
+                                span.label.small(data-bind="text: action")
+                        .inner-panel
+                            .subject(data-bind="text: message.subject")
+                            .message-footer
+                                span.to(data-bind="text: _.pluck(message.to, 'address')")
+                                span.date(data-bind="text: moment(message.date).format('lll')")
 
             li.skipped
                 h2 Skipped emails
+                .translucent.panel(data-bind="if: skippedEmails().length < 1")
+                    .inner-panel.empty No recent skipped emails!
                 .translucent(data-bind="foreach: skippedEmails")
                     .panel
-                        h5
-                            span(data-bind="text: from.name || from.address")
+                        h5(data-bind="text: from.name || from.address")
                         .inner-panel
-                            div(data-bind="text: subject")
+                            .subject(data-bind="text: subject")
                             .message-footer
                                 span.to(data-bind="text: _.pluck(to, 'address')")
                                 span.date(data-bind="text: moment(date).format('lll')")

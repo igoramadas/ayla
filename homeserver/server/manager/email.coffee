@@ -109,7 +109,7 @@ class EmailManager extends (require "./basemanager.coffee")
                 else
                     logger.info "EmailManager.openBox", account.id, "Inbox ready!"
 
-                    # Start fetching unseen messages immediatelly.
+                    # Start fetching unseen messages immediately
                     @fetchNewMessages account
                     account.client.on "mail", => @fetchNewMessages account
 
@@ -187,23 +187,26 @@ class EmailManager extends (require "./basemanager.coffee")
 
         # Has action? Process them! And append a message to the body.
         else
+            logger.debug "EmailManager.processMessage", parsedMsg.from, parsedMsg.subject, "#{actions.length} actions"
+
             parsedMsg.headers["Ayla-OriginalSender"] = parsedMsg.from
             parsedMsg.headers["Ayla-EmailActions"] = ""
 
-            processedEmail = {message: parsedMsg, actions: {}}
+            processedEmail = {message: parsedMsg, actions: []}
             @data.processedEmails.push processedEmail
 
             for action in actions
-                parsedMsg.headers["Ayla-EmailActions"] += action.id + " "
+                do (action) =>
+                    parsedMsg.headers["Ayla-EmailActions"] += action.id + " "
 
-                action?.process account, parsedMsg, (err, result) =>
-                    processedEmail.actions[action.id] = not err?
+                    action?.process account, parsedMsg, (err, result) =>
+                        processedEmail.actions.push {action: action.id, err: err, result: result}
 
-                    if err?
-                        @logError "EmailManager.processMessage", parsedMsg.from.address, parsedMsg.subject, action.id, err
-                    else if result isnt false
-                        logger.info "EmailManager.processMessage", "From: #{parsedMsg.from.address}: #{parsedMsg.subject}", action.id
-                        @archiveMessage account, parsedMsg unless action.doNotArchive
+                        if err?
+                            @logError "EmailManager.processMessage", parsedMsg.from.address, parsedMsg.subject, action.id, err
+                        else if result isnt false
+                            logger.info "EmailManager.processMessage", "#{parsedMsg.from.address}: #{parsedMsg.subject}", action.id
+                            @archiveMessage account, parsedMsg unless action.doNotArchive
 
     # Archive a processed message for the specified account.
     archiveMessage: (account, parsedMsg) =>
@@ -218,13 +221,14 @@ class EmailManager extends (require "./basemanager.coffee")
 
         # Move message to the archive box. Remove attachments contents for performance reasons.
         account.client.move parsedMsg.attributes.uid, account.archiveName, (err) =>
-            if parsedMsg.attachments?
-                delete a.content for a in parsedMsg.attachments
+            account.client.addFlags parsedMsg.attributes.uid, "Seen"
+
+            delete a.content for a in parsedMsg.attachments
 
             if err?
                 @logError "EmailManager.archiveMessage", account.id, parsedMsg.from.address, parsedMsg.subject, err
 
-            @dataUpdated "processedEmails"
+        @dataUpdated "processedEmails"
 
     # MESSAGE ACTIONS
     # -------------------------------------------------------------------------
@@ -259,7 +263,7 @@ class EmailManager extends (require "./basemanager.coffee")
         # Iterate rules and get related action scripts.
         for r in rules
             try
-                a = new (require "./emailaction/#{r.action}.coffee")
+                a = new (require "../emailaction/#{r.action}.coffee")
                 a.id = r.action
                 actions.push a
             catch ex
