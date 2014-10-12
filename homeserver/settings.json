@@ -84,9 +84,11 @@
         "ventilatorTimeout": 60
     },
     // Default settings for IMAP connections. Try connecting to accounts up to 3 times in a row,
-    // with a delay of 90 seconds between retries.
+    // with a delay of 90 seconds between retries. The `messageCacheSize` sets how many
+    // email messages should be cached on memory (skippedEmails and processedEmails lists).
     "imap": {
         "maxRetry": 3,
+        "messagesCacheSize": 10,
         "retryInterval": 90000,
         "tagProcessedMessages": "<strong>Message processed automatically by Ayla!</strong><br /><br />"
     },

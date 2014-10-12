@@ -2,9 +2,24 @@ extends layout
 
 block contents
     #email
-        h1 Email
-        table
-            tbody(data-bind="foreach: processedEmails")
-                tr
-                    td(data-bind="text: message.from")
-                    td(data-bind="text: message.subject")
+        ul.maingrid.small-block-grid-1.medium-block-grid-2
+
+            li.processed
+                h2 Processed emails
+                table
+                    tbody(data-bind="foreach: processedEmails")
+                        tr
+                            td(data-bind="text: from")
+                            td(data-bind="text: subject")
+
+            li.skipped
+                h2 Skipped emails
+                .translucent(data-bind="foreach: skippedEmails")
+                    .panel
+                        h5
+                            span(data-bind="text: from.name || from.address")
+                        .inner-panel
+                            div(data-bind="text: subject")
+                            .message-footer
+                                span.to(data-bind="text: _.pluck(to, 'address')")
+                                span.date(data-bind="text: moment(date).format('lll')")

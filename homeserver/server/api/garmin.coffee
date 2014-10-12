@@ -48,7 +48,7 @@ class Garmin extends (require "./baseapi.coffee")
     # Helper to login and get the session token.
     login: (callback) =>
         if not @zombieBrowser?
-            zombie.debug()
+            zombie.debug() if settings.general.debug
             @zombieBrowser = zombie.create {maxRedirects: 10}
             @zombieBrowser.resources.mock "https://www.google-analytics.com/analytics.js", {}
 

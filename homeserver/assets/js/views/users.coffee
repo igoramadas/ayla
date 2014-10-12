@@ -19,17 +19,13 @@ class UsersView extends ayla.BaseView
 
         # Add onlineCss property to user objects, and make sure
         # the "guest" property is set on users list.
-        for username, user of @data
-            if _.isFunction user
-                userdata = user()
-                do (userdata) =>
-                    if username isnt "users" and userdata.online? and not userdata.onlineCss?
-                        online = if _.isFunction userdata.online then userdata.online() else userdata.online
-                        userdata.onlineCss = ko.computed ->
-                            if online
-                                return "online"
-                            else
-                                return "offline"
+        if key isnt "users" and key isnt "bluetoothDevices"
+            if data.online? and not data.onlineCss?
+                data.onlineCss = ko.computed ->
+                    if data.online is true or data.online is "true"
+                        return "online"
+                    else
+                        return "offline"
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------

@@ -58,14 +58,8 @@
         },
         {
             "callback": "probeBluetooth",
-            "description": "Probe discoverable bluetooth devices every 10 minutes.",
-            "schedule": 600,
-            "enabled": true
-        },
-        {
-            "callback": "probeBluetoothUsers",
-            "description": "Probe user bluetooth devices every minute.",
-            "schedule": 60,
+            "description": "Probe discoverable bluetooth devices every 5 minutes.",
+            "schedule": 300,
             "enabled": true
         }
     ],

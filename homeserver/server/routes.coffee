@@ -46,13 +46,14 @@ class Routes
 
                 # Set default module route (/apiModuleId).
                 app.get "/#{link}", (req, res) -> renderApiModulePage req, res, m
+                app.get "/#{link}/data", -> renderJson req, res, m.data
 
                 # Has OAuth bindings? If so, set OAuth routes.
                 if m.oauth?
                     oauthProcess = (req, res) -> m.oauth.process req, res
-                    app.get "/#{m.moduleNameLower}/auth", oauthProcess
-                    app.get "/#{m.moduleNameLower}/auth/callback", oauthProcess
-                    app.post "/#{m.moduleNameLower}/auth/callback", oauthProcess
+                    app.get "/#{link}/auth", oauthProcess
+                    app.get "/#{link}/auth/callback", oauthProcess
+                    app.post "/#{link}/auth/callback", oauthProcess
 
                 # Bind API module specific routes.
                 bindModuleRoutes m
@@ -76,12 +77,12 @@ class Routes
 
             # Get or post? Available render types are page, json and image.
             app[method] "/#{m.moduleNameLower}/#{route.path}", (req, res) ->
-                if route.render is "page"
-                    renderFn = renderPage
-                else if route.render is "json"
+                if route.render is "json"
                     renderFn = renderJson
                 else if route.render is "image"
                     renderFn = renderImage
+                else
+                    renderFn = renderPage
 
                 renderFn req, res, route.callback(req), route.options
 
@@ -112,7 +113,7 @@ class Routes
     statusPage = (req, res) ->
         renderJson req, res, utils.getServerInfo()
 
-    # HELPER METHODS
+    # RENDER METHODS
     # -------------------------------------------------------------------------
 
     # Helper to show an overview about the specified API module.
@@ -136,6 +137,8 @@ class Routes
 
     # Helper to render pages.
     renderPage = (req, res, filename, options) ->
+        return if not checkSecurity req, res
+
         options = {} if not options?
         options.pageTitle = filename if not options.pageTitle?
         options.title = settings.general.appTitle if not options.title?
@@ -166,10 +169,14 @@ class Routes
 
     # Render response as JSON data.
     renderJson = (req, res, data) ->
+        return if not checkSecurity req, res
+
         res.json data
 
     # Render response as image.
     renderImage = (req, res, filename, options) ->
+        return if not checkSecurity req, res
+
         mimetype = options?.mimetype
 
         if not mimetype?
@@ -179,6 +186,36 @@ class Routes
 
         res.contentType mimetype
         res.sendFile filename
+
+    # SECURITY METHODS
+    # -------------------------------------------------------------------------
+
+    # Check if request is allowed by getting the client's IP and if coming
+    # from a remote address, check if it's using a valid user token.
+    # IP is calculated based on the `settings.network.router.ip` value.
+    checkSecurity = (req, res) ->
+        ipClient = req.headers['X-Forwarded-For'] or req.connection.remoteAddress or req.socket?.remoteAddress
+        ipRouter = settings.network.router.ip
+
+        # Get router and client subnet.
+        clientSubnet = ipClient.substring(0, ipClient.lastIndexOf ".")
+        routerSubnet = ipRouter.substring(0, ipRouter.lastIndexOf ".")
+
+        # Same subnet? Grant access.
+        return true if clientSubnet is routerSubnet
+
+        # Valid token? Grant access.
+        token = req.query.token
+        return true if token? and settings.accessTokens[token]?
+
+        # Oops, access denied.
+        logger.warn "Routes.checkSecurity", req.url, ipClient
+        res.status 401
+        res.send "Access denied or invalid token."
+        return false
+
+    # HELPER METHODS
+    # -------------------------------------------------------------------------
 
     # When the server can't return a valid result,
     # send an error response with status code 500.

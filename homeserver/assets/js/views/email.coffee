@@ -10,11 +10,8 @@ class EmailView extends ayla.BaseView
 
     # Init the System Jobs view.
     onReady: =>
-        @dataProcessor @data
+        console.warn 1
 
-    # Parse and process data coming from the server.
-    dataProcessor: (data) =>
-        console.warn data
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------

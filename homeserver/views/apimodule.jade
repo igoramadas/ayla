@@ -60,7 +60,7 @@ block contents
                                         thead
                                             th #{moment(e.timestamp * 1000).format("YYYY-MM-DD HH:mm:ss")} #{e.data[0]}
                                     .inner-panel.error-details
-                                        span #{e.data.slice(1).join(", ")}
+                                        span #{JSON.stringify(e.data.slice(1), null, 2)}
                         else
                             .inner-panel
                                 span No errors found.

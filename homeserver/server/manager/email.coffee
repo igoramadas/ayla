@@ -21,8 +21,9 @@ class EmailManager extends (require "./basemanager.coffee")
     # PROPERTIES
     # -------------------------------------------------------------------------
 
-    # Holds all email accounts with IMAP clients.
+    # Holds all email accounts with IMAP clients and message IDs.
     accounts: {}
+    messageIds: {}
 
     # The default email and mobile email addresses, taken from
     # the users collections on settings. Set on init.
@@ -44,7 +45,7 @@ class EmailManager extends (require "./basemanager.coffee")
         # Set default mobile email to same as email if none was specified!
         @defaultToMobile = @defaultTo if not @defaultToMobile?
 
-        @baseInit {processedEmails: []}
+        @baseInit {skippedEmails: [], processedEmails: []}
 
     # Start listening to new message events from the server.
     start: =>
@@ -153,9 +154,12 @@ class EmailManager extends (require "./basemanager.coffee")
 
     # After message has been downloaded, process it.
     processMessage: (account, parsedMsg, msgAttributes) =>
-        hasFrom = parsedMsg.from[0]?.address?
+        return if @messageIds[parsedMsg.messageId]
+        @messageIds[parsedMsg.messageId] = moment().unix()
 
         # Make sure the `from` is set.
+        hasFrom = parsedMsg.from[0]?.address?
+
         if not hasFrom
             logger.warn "EmailManager.processMessage", account.id, "No valid 'from' address, skip message."
             return false
@@ -163,12 +167,26 @@ class EmailManager extends (require "./basemanager.coffee")
         # Set parsed message properties.
         parsedMsg.from = parsedMsg.from[0]
         parsedMsg.attributes = msgAttributes
+        parsedMsg.attachments = [] if not parsedMsg.attachments?
 
         # Get message actions.
         actions = @getMessageActions account, parsedMsg
 
+        # No actions? Add to the skippedMessages list. Message body and attachments
+        # will be removed for performance and security reasons.
+        if actions.length < 1
+            @data.skippedEmails.unshift parsedMsg
+
+            delete parsedMsg.html
+            delete a.content for a in parsedMsg.attachments
+
+            if @data.skippedEmails.length >= settings.imap.messagesCacheSize
+                @data.skippedEmails.pop()
+
+            @dataUpdated "skippedEmails"
+
         # Has action? Process them! And append a message to the body.
-        if actions.length > 0
+        else
             parsedMsg.headers["Ayla-OriginalSender"] = parsedMsg.from
             parsedMsg.headers["Ayla-EmailActions"] = ""
 
@@ -198,8 +216,11 @@ class EmailManager extends (require "./basemanager.coffee")
         # Set `archibing` flag to prevent duplicate archive routines.
         parsedMsg.archiving = true
 
-        # Move message to the archive box.
+        # Move message to the archive box. Remove attachments contents for performance reasons.
         account.client.move parsedMsg.attributes.uid, account.archiveName, (err) =>
+            if parsedMsg.attachments?
+                delete a.content for a in parsedMsg.attachments
+
             if err?
                 @logError "EmailManager.archiveMessage", account.id, parsedMsg.from.address, parsedMsg.subject, err
 

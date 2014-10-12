@@ -20,6 +20,7 @@ class Network extends (require "./baseapi.coffee")
     logger = expresser.logger
     mdns = require "mdns2"
     moment = expresser.libs.moment
+    querystring = require "querystring"
     path = require "path"
     settings = expresser.settings
     url = require "url"
@@ -44,6 +45,7 @@ class Network extends (require "./baseapi.coffee")
     # Init the Network module.
     init: =>
         @baseInit {isHome: true, devices: []}
+        @routes.push {method: "get", path: "userpresence", render: "json", callback: @routeUserPresence}
 
     # Start monitoring the network.
     start: =>
@@ -56,7 +58,7 @@ class Network extends (require "./baseapi.coffee")
         @serverInfo = utils.getServerInfo()
         @serverInfo.platform = @serverInfo.platform.toLowerCase()
 
-        @mdnsBrowser = mdns.createBrowser mdns.tcp("http")
+        @mdnsBrowser = mdns.createBrowser mdns.tcp "http"
 
         if settings.network.autoDiscovery
             @mdnsBrowser.on "serviceUp", @onServiceUp
@@ -82,6 +84,28 @@ class Network extends (require "./baseapi.coffee")
             @mdnsBrowser.stop()
 
         @baseStop()
+
+    # ROUTES
+    # -------------------------------------------------------------------------
+
+    # Route to set user presence, mainly called when user is identified as
+    # online or offline by checking bluetooth devices.
+    routeUserPresence: (req) =>
+        result = []
+
+        for username, online of req.query
+            if username isnt "token"
+                user = settings.users[username]
+
+                if not user?
+                    logger.warn "Network.routeUserPresence", "User not found: #{username}"
+                    result.push "User #{username} not found."
+                else
+                    @setData "userPresence", {user: user.name, online: online}, username
+                    logger.info "Network.routeUserPresence", username, online
+                    result.push "#{username}: #{online}"
+
+        return {result: result}
 
     # GET NETWORK STATS
     # -------------------------------------------------------------------------
@@ -289,41 +313,40 @@ class Network extends (require "./baseapi.coffee")
             callback platformErrorMsg if callback?
             return
 
-        macs = []
         tasks = []
 
-        # Iterate users and get bluetooth mach addresses.
-        for username, user of settings.users
-            macs.push {user: username, mac: user.bluetoothMac} if user.bluetoothMac?
-
         # Iterate and create tasks for each passed mac address.
-        for d in macs
-            do (d) =>
-                tasks.push (cb) =>
-                    try
-                        if @serverInfo.platform.indexOf("linux") < 0
-                            cmd = "btdiscovery -b#{d.mac} -d%n%"
-                        else
-                            cmd = "hcitool name #{d.mac}"
+        for username, user of settings.users
+            do (user) =>
+                user.username = username
 
-                        # On close parse the output and get device name, and set its online property.
-                        # If name is found, add `deviceName` to the original object.
-                        cprocess.exec cmd, (err, stdout, stderr) =>
-                            if err?
-                                @logError "Network.probeBluetoothUsers", err
-                            else if stderr? and stderr isnt ""
-                                @logError "Network.probeBluetoothUsers", stderr
-
-                            if stdout? and stdout isnt ""
-                                d.deviceName = stdout.trim()
-                                d.online = true
+                if user.bluetoothMac?
+                    tasks.push (cb) =>
+                        try
+                            if @serverInfo.platform.indexOf("linux") < 0
+                                cmd = "btdiscovery -b#{user.bluetoothMac} -d%n%"
                             else
-                                d.online = false
-                            logger.info "Network.probeBluetoothUsers", d
+                                cmd = "hcitool name #{user.bluetoothMac}"
 
-                            cb null, d
-                    catch ex
-                        cb ex
+                            # On close parse the output and get device name, and set its online property.
+                            # If name is found, add `deviceName` to the original object.
+                            cprocess.exec cmd, (err, stdout, stderr) =>
+                                if err?
+                                    @logError "Network.probeBluetoothUsers", err
+                                else if stderr? and stderr isnt ""
+                                    @logError "Network.probeBluetoothUsers", stderr
+
+                                if stdout? and stdout isnt ""
+                                    user.deviceName = stdout.trim()
+                                    user.online = true
+                                else
+                                    user.online = false
+
+                                logger.info "Network.probeBluetoothUsers", user.name, user.bluetoothMac, user.online
+
+                                cb null, user
+                        catch ex
+                            cb ex
 
         # Check all passed bluetooth devices.
         if tasks.length > 0
@@ -331,7 +354,8 @@ class Network extends (require "./baseapi.coffee")
                 if err?
                     @logError "Network.probeBluetoothUsers", err
                 else
-                    @setData "bluetoothUsers", results
+                    for user in results
+                        @setData "userPresence", {user: user.name, mac: user.bluetoothMac, online: user.online}, user.username
 
                 callback err, results if callback?
 

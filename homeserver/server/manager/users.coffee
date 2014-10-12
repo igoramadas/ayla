@@ -50,14 +50,14 @@ class UsersManager extends (require "./basemanager.coffee")
 
     # When network data is updated.
     onNetwork: (key, data, filter) =>
-        logger.debug "UsersManager.onNetworkRouter", key, data, filter
+        logger.debug "UsersManager.onNetwork", key, data, filter
 
         if key is "router"
             @onNetworkRouter data
         else if key is "bluetooth"
             @onBluetooth data
-        else if key is "bluetoothUsers"
-            @onBluetoothUsers data
+        else if key is "userPresence"
+            @onUserPresence data, filter
 
     # When network router info is updated, check for online and offline users.
     onNetworkRouter: (data) =>
@@ -67,7 +67,7 @@ class UsersManager extends (require "./basemanager.coffee")
             online = online?
 
             # Status updated?
-            @onUserStatus {user: username, online: online} if online isnt @data[d.user].online
+            @onUserStatus {username: username, online: online} if online isnt @data[username].online
             @data[username].online = online
 
     # When a list of bluetooth devices are queried, update the manager's data.
@@ -81,22 +81,20 @@ class UsersManager extends (require "./basemanager.coffee")
         @dataUpdated "bluetoothDevices"
 
     # When registered user bluetooth devices are queried, check who's online (at home).
-    onBluetoothUsers: (data) =>
-        for d in data.value
-            @onUserStatus {user: d.user, online: d.online} if d.online isnt @data[d.user].online
-            @data[d.user].online = d.online
+    # The filter defines the username.
+    onUserPresence: (data, filter) =>
+        user = data.value
+        @onUserStatus {username: filter, online: user.online} if user.online isnt @data[filter].online
+        @data[filter].online = user.online
 
     # Update user status (online or offline) and automatically turn off lights
     # when there's no one home for a few minutes. Please note that nothing will
     # happen in case the module has started less than 2 minutes ago.
     onUserStatus: (userStatus) =>
-        @dataUpdated userStatus.user
-
-        if moment().subtract(2, "m").unix() < @initTimestamp
-            logger.debug "UsersManager.onUserStatus", userStatus, "Do nothing! Module has just started."
-            return
-
         logger.info "UsersManager.onUserStatus", userStatus
+
+        delayedUpdate = => @dataUpdated userStatus.username
+        setTimeout delayedUpdate, 500
 
         # Auto control house lights?
         @switchLightsOnStatus userStatus if settings.home.autoControlLights
@@ -127,7 +125,7 @@ class UsersManager extends (require "./basemanager.coffee")
 
                 # Is it dark now? Turn lights on!
                 if currentHour < sunrise or currentHour > sunset
-                    logger.info "UsersManager.onUserStatus", "Auto turned lights ON, #{userStatus.user} arrived."
+                    logger.info "UsersManager.switchLightsOnStatus", "Auto turned lights ON, #{userStatus.username} arrived."
                     events.emit "hue.switchgrouplights", true
 
         # Otherwise proceed wich checking if everyone's offline.
@@ -139,7 +137,7 @@ class UsersManager extends (require "./basemanager.coffee")
             # Everyone offline? Switch lights off after a few minutes.
             if everyoneOffline
                 lightsTimeout = settings.home.lightsTimeout * 60000
-                logger.info "UsersManager.onUserStatus", "Everyone is offline, auto turn lights OFF in #{lightsTimeout} min."
+                logger.info "UsersManager.switchLightsOnStatus", "Everyone is offline, auto turn lights OFF in #{lightsTimeout} min."
                 @timers["lightsoff"] = lodash.delay events.emit, lightsTimeout, "hue.switchgrouplights", false
 
 # Singleton implementation.
