@@ -197,6 +197,9 @@ class Routes
         ipClient = req.headers['X-Forwarded-For'] or req.connection.remoteAddress or req.socket?.remoteAddress
         ipRouter = settings.network.router.ip
 
+        # Grant access for localhost.
+        return true if ipClient is "127.0.0.1"
+
         # Get router and client subnet.
         clientSubnet = ipClient.substring(0, ipClient.lastIndexOf ".")
         routerSubnet = ipRouter.substring(0, ipRouter.lastIndexOf ".")
