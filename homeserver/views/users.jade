@@ -31,6 +31,6 @@ block contents
                             th.mac Mac
                     tbody(data-bind="foreach: bluetoothDevices")
                         tr
-                            td.device(data-bind="text: name")
-                            td.type(data-bind="text: type")
+                            td.device(data-bind="text: name", nowrap)
+                            td.type(data-bind="text: type", nowrap)
                             td.mac(data-bind="text: mac")

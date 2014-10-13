@@ -46,6 +46,7 @@ class Network extends (require "./baseapi.coffee")
     init: =>
         @baseInit {isHome: true, devices: []}
         @routes.push {method: "get", path: "userpresence", render: "json", callback: @routeUserPresence}
+        @routes.push {method: "get", path: "userlocation", render: "json", callback: @routeUserLocation}
 
     # Start monitoring the network.
     start: =>
@@ -104,6 +105,24 @@ class Network extends (require "./baseapi.coffee")
                     @setData "userPresence", {user: user.name, online: online}, username
                     logger.info "Network.routeUserPresence", username, online
                     result.push "#{username}: #{online}"
+
+        return {result: result}
+
+    # Route to set user location.
+    routeUserLocation: (req) =>
+        result = []
+
+        for username, location of req.query
+            if username isnt "token"
+                user = settings.users[username]
+
+                if not user?
+                    logger.warn "Network.routeUserLocation", "User not found: #{username}"
+                    result.push "User #{username} not found."
+                else
+                    @setData "userLocation", {user: user.name, location: location}, username
+                    logger.info "Network.routeUserLocation", username, location
+                    result.push "#{username}: #{location}"
 
         return {result: result}
 
