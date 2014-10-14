@@ -36,9 +36,14 @@ html.no-js(lang="en")
                         ul.left
                             for m, key in managers
                                 li(class="#{m.title.toLowerCase()}")
-                                    a(href="/#{m.title.toLowerCase()}") #{m.title}
+                                    a(href="/#{m.title.toLowerCase()}")
+                                        i(class="fa #{m.icon}")
+                                        span #{m.title}
                             li.api
-                                a(href="/api") API Modules
+
+                                a(href="/api")
+                                    i.fa.fa-cogs
+                                    span API Modules
             div#contents
                 block contents
 

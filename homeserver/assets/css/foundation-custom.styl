@@ -5,22 +5,23 @@
     position relative
     z-index 9
 
-// Top bar navigation
-.top-bar, .top-bar li a, .top-bar.expanded .title-area, .top-bar.expanded .toggle-topbar a
-    background-color rgb(0, 0, 0) !important
-.top-bar-section li.active a
-    background-color rgb(67, 67, 67) !important
+// Top bar icons
+.top-bar a i
+    color transparent
+    width 22px
+    @media only screen and (min-width: 40.063em)
+        margin-right 6px
+        width auto !important
+.top-bar a:hover i
+    color textColor
 
-
-
-// Light panels.
-
-.light
-    background translucentLightBgColor !important
-    color textDarkColor !important
-    a
-        color textDarkColor
-
+// Top bar force bg color
+.top-bar
+    background-color rgba(0, 0, 0, 0.9) !important
+.top-bar-section ul li, .top-bar li a, .top-bar.expanded .title-area, .top-bar.expanded .toggle-topbar a
+    background-color transparent !important
+.top-bar-section li.active a, .top-bar-section li.active a i
+    color linkColor !important
 
 // Make panels translucent
 .panel
@@ -30,8 +31,12 @@
     padding 0 !important
     text-shadow none
 
-    table th, table td, h1, h2, h3, h4, h5, h6
+    // Force colors
+    table th, table td, h1, h2, h3, h4, h5,, h5 a, h6
         color textColor
+
+    table thead tr th, table thead tr td
+        padding-bottom 0.5rem
 
     table
         width 100%
@@ -59,14 +64,3 @@
     dd.active, .tabs .tab-title.active
         a
             background-color rgba(255, 255, 255, 0.9)
-
-
-
-// Override foundation text color
-table th, table td, h1, h2, h3, h4, h5, h6
-    color textColor !important
-
-table, table tr
-    background transparent !important
-table, table thead, table tbody
-    border 0 !important

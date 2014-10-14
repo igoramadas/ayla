@@ -12,7 +12,7 @@ class WeatherView extends ayla.BaseView
         @dataProcessor @data
 
         # Add a click handler to swap the outside view.
-        $(".outside .translucent").click @toggleChart
+        $(".outside .panel").click @toggleChart
 
     # Parse and process data coming from the server. Weather data will be appended
     # directly to the rooms object. If only one argument is passed, assume it's the data.

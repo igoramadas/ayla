@@ -52,8 +52,18 @@ translucentLightBgColor = rgba(250, 250, 250, 0.75)
 
 // Body main styles
 body
-    background rgb(0, 0, 0) !important
+    background rgb(0, 0, 0)
     font-family OpenSansLight, sans-serif
+
+// Special font for headers
+h1, h2, h3, h4, h5, h6, nav
+    font-family OpenSans, sans-serif
+
+// Force transparent and border-less tables
+table, table tr
+    background transparent !important
+table, table thead, table tbody
+    border 0 !important
 
 // Main wrapper
 #wrapper
