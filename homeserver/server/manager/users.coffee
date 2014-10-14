@@ -15,6 +15,7 @@ class UsersManager extends (require "./basemanager.coffee")
     userModel = require "../model/user.coffee"
 
     title: "Users"
+    icon: "fa-users"
 
     # INIT
     # -------------------------------------------------------------------------

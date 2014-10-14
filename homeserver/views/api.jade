@@ -5,7 +5,7 @@ block contents
         ul.maingrid.small-block-grid-1.medium-block-grid-4
             for m, key in apiModules
                 li
-                    .panel.translucent.module
+                    .panel.module
                         h5
                             a(href="/#{m.moduleNameLower}") #{m.moduleName}
                         .inner-panel
@@ -22,7 +22,7 @@ block contents
                                         span.invalid Not authenticated
                                 else
                                     span None
-        .panel.translucent
+        .panel
             h5.translucent.invalid Disabled modules
             .inner-panel.disabled-modules
                 for m, key in disabledApiModules

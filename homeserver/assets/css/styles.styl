@@ -1,13 +1,6 @@
-// GENERIC STYLES
+// MAIN STYLES
 
-// Import css libs
-@import normalize
-@import jsonhuman
-@import colorpicker
-
-// ----------------------------------------------------------------------------
-
-// General variables
+// Variables
 textShadow = 0 0 6px rgb(22, 22, 22)
 textColor = rgb(255, 255, 255)
 textDarkColor = rgb(10, 10, 10)
@@ -23,7 +16,18 @@ invalidBgColor = rgba(250, 110, 90, 0.45)
 translucentBgColor = rgba(0, 0, 0, 0.35)
 translucentLightBgColor = rgba(250, 250, 250, 0.75)
 
-// Fonts
+// Import css libs
+@import normalize
+@import foundation
+@import foundation-custom
+@import fontawesome
+@import weathericons
+@import jsonhuman
+@import colorpicker
+
+// FONTS
+// ----------------------------------------------------------------------------
+
 @font-face
     font-family "OpenSans"
     src url("../fonts/OpenSans-Regular-webfont.eot")
@@ -43,12 +47,13 @@ translucentLightBgColor = rgba(250, 250, 250, 0.75)
     font-weight normal
     font-style normal
 
+// MAIN LAYOUT
+// ----------------------------------------------------------------------------
+
 // Body main styles
 body
     background rgb(0, 0, 0) !important
     font-family OpenSansLight, sans-serif
-
-// ----------------------------------------------------------------------------
 
 // Main wrapper
 #wrapper
@@ -77,86 +82,25 @@ body
     position relative
     z-index 2
 
+// FORMS
+// ----------------------------------------------------------------------------
+
 // Forms
 textarea
     color formTextColor
 
+// SPECIAL STYLES
 // ----------------------------------------------------------------------------
 
-// Override foundation links
-a
-    color linkColor
-
-// Override foundation text color
-table th, table td, h1, h2, h3, h4, h5, h6
-    color textColor !important
-
-table, table tr
-    background transparent !important
-table, table thead, table tbody
-    border 0 !important
-
-// Foundation: topbar navigation
-.top-bar, .top-bar li a, .top-bar.expanded .title-area, .top-bar.expanded .toggle-topbar a
-    background-color rgb(0, 0, 0) !important
-.top-bar-section li.active a
-    background-color rgb(67, 67, 67) !important
-
-.panel
-    border 0 !important
-    padding 0 !important
-    text-shadow none
-
-    p, li, dl
-        color textColor
-
-    h5
-        display block
-        margin 0
-        padding 7px 10px 7px 10px
-
-    .inner-panel
-        padding 10px
-
-.tabs
-    dd, .tab-title
-        a
-            background-color translucentLightBgColor
-            padding 9px 16px 9px 16px
-
-    dd.active, .tabs .tab-title.active
-        a
-            background-color rgba(255, 255, 255, 0.9)
-
-// Translucent panels
-.translucent
-    background translucentBgColor !important
-    thead
-        background translucentBgColor !important
-    h5
-        background translucentBgColor !important
-        color textColor
-    h5 a
-        color textColor
-
-.translucent-light
-    background translucentLightBgColor !important
-    color textDarkColor !important
-    a
-        color textDarkColor
-
 // Green and red colours
-span.valid
+span.valid, label.valid
     color validColor
-span.invalid
+span.invalid, label.invalid
     color invalidColor
+
+// Invalid H5 with red background
 h5.invalid
     background-color invalidBgColor !important
-
-// Sticky om top of everything
-.sticky
-    position relative
-    z-index 9
 
 // Summary data
 .summary
@@ -179,9 +123,9 @@ li div h2
 li div .summary
     text-shadow textShadow
 
+// ANNOUNCEMENTS
 // ----------------------------------------------------------------------------
 
-// Bottom sticky announcements
 #announcements
     background rgba(60, 60, 60, 0.9)
     bottom 0
@@ -197,10 +141,8 @@ li div .summary
         font-size 90%
         padding 2px 0 0 8px
 
-// Sticky error message
 #announcements.error
     background rgba(240, 65, 36, 0.9)
 
-// Sticky OK message
 #announcements.ok
     background rgba(67, 172, 106, 0.9)

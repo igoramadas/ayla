@@ -22,19 +22,17 @@ block contents
                             a(href="#data-#{key}", title="Data: #{key}") #{key}
 
                 .tabs-content
-                    #about.content.panel.translucent
+                    #about.content.panel
                         .inner-panel !{description}
                         .inner-panel
                             a(href="https://ayla.codeplex.com/wikipage?title=API:%20#{title}", target="AylaDocs") View online documentation
 
-                    #settings.content.panel.translucent
-                        table
-                            thead
-                                th settings.#{title.toLowerCase()}
+                    #settings.content.panel
+                        h5 settings.#{title.toLowerCase()}
                         .data-table !{JSON.stringify(settings[title.toLowerCase()])}
 
                     if oauth
-                        #oauth.content.panel.translucent
+                        #oauth.content.panel
                             .inner-panel.auth
                                 div
                                     span.info Authenticated:
@@ -52,7 +50,7 @@ block contents
                                 div
                                     a.button(href="/#{title.toLowerCase()}/auth") Trigger authentication
 
-                    #errors.content.panel.translucent
+                    #errors.content.panel
                         if Object.keys(errors).length > 0
                             for err, key in errors
                                 for e in err
@@ -65,7 +63,7 @@ block contents
                             .inner-panel
                                 span No errors found.
 
-                    #jobs.content.panel.translucent
+                    #jobs.content.panel
                         if jobs.length > 0
                             table
                                 thead
@@ -91,7 +89,7 @@ block contents
                             .inner-panel No scheduled jobs.
 
                     for value, key in data
-                        .content.panel.translucent.data(id="data-#{key}")
+                        .content.panel.data(id="data-#{key}")
                             for a in value
                                 table
                                     thead

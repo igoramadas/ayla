@@ -12,6 +12,7 @@ class FitnessManager extends (require "./basemanager.coffee")
     settings = expresser.settings
 
     title: "Fitness"
+    icon: "fa-bicycle"
 
     # INIT
     # -------------------------------------------------------------------------

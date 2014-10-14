@@ -70,7 +70,7 @@ class BaseView
         currentPath = location.pathname.substring 1
 
         if currentPath isnt "/" and currentPath isnt ""
-            $("nav").find(".#{currentPath}").addClass "active"
+            $("#header").find(".#{currentPath}").addClass "active"
 
     # Create a KO compatible object based on the original `serverData` property.
     setData: (obj) =>

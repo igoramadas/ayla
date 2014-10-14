@@ -9,7 +9,7 @@ block contents
                 <!-- ko with: hue -->
                 ul.small-block-grid-2.medium-block-grid-3(data-bind="foreach: lights")
                     li
-                        .panel.translucent
+                        .panel
                             h5(data-bind="text: title")
                             .inner-panel
                                 div.switch
@@ -24,7 +24,7 @@ block contents
                 h2 Ninja lights
                 ul.small-block-grid-2.medium-block-grid-3(data-bind="foreach: ninja")
                     li
-                        .panel.translucent
+                        .panel
                             h5(data-bind="text: title.replace('Light', '')")
                             .inner-panel
                                 button.button.tiny.alert(data-bind="click: ayla.currentView.ninjaLightToggle") OFF

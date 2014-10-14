@@ -17,6 +17,7 @@ class EmailManager extends (require "./basemanager.coffee")
     util = require "util"
 
     title: "Email"
+    icon: "fa-envelope-o"
 
     # PROPERTIES
     # -------------------------------------------------------------------------

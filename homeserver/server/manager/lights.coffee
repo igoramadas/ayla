@@ -15,6 +15,7 @@ class LightsManager extends (require "./basemanager.coffee")
     utils = expresser.utils
 
     title: "Lights"
+    icon: "fa-lightbulb-o"
 
     # INIT
     # -------------------------------------------------------------------------

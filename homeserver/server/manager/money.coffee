@@ -15,6 +15,7 @@ class MoneyManager extends (require "./basemanager.coffee")
     settings = expresser.settings
 
     title: "Money"
+    icon: "fa-money"
 
     # INIT
     # -------------------------------------------------------------------------

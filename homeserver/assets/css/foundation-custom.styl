@@ -1,0 +1,72 @@
+// OVERWRITE FOUNDATION STYLES
+
+// Sticky on top of the bg
+.sticky
+    position relative
+    z-index 9
+
+// Top bar navigation
+.top-bar, .top-bar li a, .top-bar.expanded .title-area, .top-bar.expanded .toggle-topbar a
+    background-color rgb(0, 0, 0) !important
+.top-bar-section li.active a
+    background-color rgb(67, 67, 67) !important
+
+
+
+// Light panels.
+
+.light
+    background translucentLightBgColor !important
+    color textDarkColor !important
+    a
+        color textDarkColor
+
+
+// Make panels translucent
+.panel
+    background translucentBgColor !important
+    border 0 !important
+    color textColor
+    padding 0 !important
+    text-shadow none
+
+    table th, table td, h1, h2, h3, h4, h5, h6
+        color textColor
+
+    table
+        width 100%
+    thead
+        background translucentBgColor !important
+    h5
+        background translucentBgColor !important
+        color textColor
+        display block
+        font-size 0.875rem
+        font-weight bold
+        margin 0
+        padding 0.625rem
+
+    .inner-panel
+        padding 10px
+
+// Make tabs smaller
+.tabs
+    dd, .tab-title
+        a
+            background-color translucentLightBgColor
+            padding 9px 16px 9px 16px
+
+    dd.active, .tabs .tab-title.active
+        a
+            background-color rgba(255, 255, 255, 0.9)
+
+
+
+// Override foundation text color
+table th, table td, h1, h2, h3, h4, h5, h6
+    color textColor !important
+
+table, table tr
+    background transparent !important
+table, table thead, table tbody
+    border 0 !important

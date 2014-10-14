@@ -7,9 +7,6 @@ html.no-js(lang="en")
         meta(name="mobile-web-app-capable", content="yes")
         link(rel="icon", type="image/x-icon", href="/favicon.ico")
 
-        != css("foundation")
-        != css("fontawesome")
-        != css("weathericons")
         != css("styles")
         for c in loadCss
             != css(c)
