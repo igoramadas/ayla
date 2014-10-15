@@ -211,6 +211,10 @@ class Routes
         token = req.query.token
         return true if token? and settings.accessTokens[token]?
 
+        # Check if token is present as a cookie.
+        cookie = req.cookie?.token
+        return true if cookie? and settings.accessTokens[cookie]?
+
         # Oops, access denied.
         logger.warn "Routes.checkSecurity", req.url, ipClient
         res.status 401

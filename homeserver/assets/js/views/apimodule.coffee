@@ -17,9 +17,8 @@ class ApiModuleView extends ayla.BaseView
                 try
                     div = $ d
                     html = div.html()
-                    if html.indexOf("<table") < 1
-                        json = JSON.parse html
-                        div.html JsonHuman.format json
+                    json = JSON.parse html
+                    div.html JsonHuman.format json
                 catch ex
                     console.warn "Could not parse JSON.", html
 
