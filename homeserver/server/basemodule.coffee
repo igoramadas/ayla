@@ -35,6 +35,7 @@ class BaseModule
         @notifications = {}
         @routes = []
         @running = false
+        @initialDataLoaded = false
 
         logger.debug "#{@moduleName}.baseInit"
 

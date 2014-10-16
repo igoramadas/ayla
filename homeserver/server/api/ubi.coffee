@@ -26,18 +26,25 @@ class Ubi extends (require "./baseapi.coffee")
 
     # Start collecting data from the Ubi.
     start: =>
+        @baseStart()
+
         @oauthInit (err, result) =>
             if err?
                 @logError "Ubi.start", err
-            else
-                @baseStart()
-
-                if settings.modules.getDataOnStart and result.length > 0
-                    @getDevices (err, result) => @getSensorData() if not err?
 
     # Stop collecting data from the Ubi.
     stop: =>
         @baseStop()
+
+    # Load initial data, usually called when module has authenticated.
+    getInitialData: =>
+        return if @initialDataLoaded
+
+        @initialDataLoaded = true
+
+        # Get devices first, then sensor data for each device.
+        @getDevices (err, result) =>
+            @getSensorData() if not err?
 
     # API BASE METHODS
     # -------------------------------------------------------------------------

@@ -50,6 +50,8 @@ class Network extends (require "./baseapi.coffee")
 
     # Start monitoring the network.
     start: =>
+        @baseStart()
+
         events.on "Network.probeBluetooth", @probeBluetooth
         events.on "Network.probeBluetoothUsers", @probeBluetoothUsers
         events.on "Network.wol", @wol
@@ -66,12 +68,10 @@ class Network extends (require "./baseapi.coffee")
             @mdnsBrowser.on "serviceDown", @onServiceDown
             @mdnsBrowser.start()
 
-        @baseStart()
-
-        if settings.modules.getDataOnStart
-            @probeDevices()
-            @probeBluetooth()
-            @probeBluetoothUsers()
+        # Probe network.
+        @probeDevices()
+        @probeBluetooth()
+        @probeBluetoothUsers()
 
     # Stop monitoring the network.
     stop: =>

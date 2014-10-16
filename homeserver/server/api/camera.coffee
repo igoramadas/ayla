@@ -39,10 +39,7 @@ class Camera extends (require "./baseapi.coffee")
                 @snapsPath = settings.path.cameraSnaps
 
             @baseStart()
-
-            # Take snaps on start?
-            if settings.modules.getDataOnStart
-                @takeAllSnaps()
+            @takeAllSnaps()
 
     # Stop the Camera module.
     stop: =>

@@ -22,19 +22,25 @@ class Withings extends (require "./baseapi.coffee")
 
     # Start collecting fitness and health data from Withings.
     start: =>
+        @baseStart()
+
         @oauthInit (err, result) =>
             if err?
                 @logError "Withings.start", err
             else
-                @baseStart()
                 @oauth.client?.setClientOptions {requestTokenHttpMethod: "GET", accessTokenHttpMethod: "GET"}
-
-                if settings.modules.getDataOnStart and result.length > 0
-                    @getBodyMeasures()
 
     # Stop collecting fitness and health data from Withings.
     stop: =>
         @baseStop()
+
+    # Load initial data, usually called when module has authenticated.
+    getInitialData: =>
+        return if @initialDataLoaded
+
+        @initialDataLoaded = true
+
+        @getBodyMeasures()
 
     # API BASE METHODS
     # -------------------------------------------------------------------------

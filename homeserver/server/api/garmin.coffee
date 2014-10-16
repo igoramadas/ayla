@@ -31,9 +31,11 @@ class Garmin extends (require "./baseapi.coffee")
 
     # Start collecting data from Garmin Connect.
     start: =>
-        @baseStart()
+        if not settings.garmin.api.username? or not settings.garmin.api.password?
+            @logError "Garmin.start", "Garmin username and/or password is missing, please set on settings.garmin.api."
+        else
+            @baseStart()
 
-        if settings.modules.getDataOnStart and @isRunning [settings.garmin.api.username]
             @login (err, result) =>
                 if not err?
                     @getRecentSleep()

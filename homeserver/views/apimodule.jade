@@ -40,13 +40,13 @@ block contents
                                 if oauth.authenticated
                                     div.clip
                                         span.info Token:
-                                        span #{oauth.data.accessToken}
+                                        span #{(oauth.data.token || oauth.data.accessToken)}
                                         br
                                         span.info Expires:
                                         if oauth.data.expires > 0
                                             span #{moment(oauth.data.expires * 1000).format("lll")}
                                         else
-                                            span No expiration date
+                                            span No expiration date set
                                 div
                                     a.button(href="/#{title.toLowerCase()}/auth") Trigger authentication
 

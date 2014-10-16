@@ -26,9 +26,7 @@ class ElectricImp extends (require "./baseapi.coffee")
             @logError "ElectricImp.start", "No Electric Imp devices defined. Please check the settings."
         else
             @baseStart()
-
-            if settings.modules.getDataOnStart
-                @getDeviceData()
+            @getDeviceData()
 
     # Stop collecting Electric Imp data.
     stop: =>

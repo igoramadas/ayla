@@ -102,10 +102,11 @@
         // Modules errors will stay logged on the module itself fogoor up to 48 hours.
         // Used to check module's health (for example if it's throwing too many errors).
         "errorMaxAgeHours": 48,
-        // By default modules will get essential data on start.
-        "getDataOnStart": true,
         // OAUth expired tokens will be saved for a week.
         "maxAuthTokenAgeDays": 7,
+        // How long before trying to refresh an OAuth token again, in seconds.
+        // Default represents 5 minutes.
+        "minRefreshTokenInterval": 300,
         // The `notifyExpireMinutes` is used to avoid sending repeated notifications.
         // By default it won't resend the same notification if last was sent less than 60 minutes ago.
         "notifyExpireMinutes": 60,
@@ -121,7 +122,8 @@
             "oauthPathAuthorize": "oauth2/authorize",
             "oauthPathToken": "oauth2/token",
             "oauthUrl": "https://api.netatmo.net/",
-            "oauthVersion": "2.0"
+            "oauthVersion": "2.0",
+            "oauthPassRedirect": true
         }
     },
     // Network settings. You must defined a `router` object with router details like

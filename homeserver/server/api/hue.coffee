@@ -29,8 +29,7 @@ class Hue extends (require "./baseapi.coffee")
         events.on "Hue.switchGroupLights", @switchGroupLights
         events.on "Hue.setLightState", @setLightState
 
-        if settings.modules.getDataOnStart
-            @refreshHub()
+        @refreshHub()
 
     # Stop the module and cancel the Hue hub refresh jobs.
     stop: =>

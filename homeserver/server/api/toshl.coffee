@@ -21,20 +21,25 @@ class Toshl extends (require "./baseapi.coffee")
 
     # Start the Toshl module.
     start: =>
+        @baseStart()
+
         @oauthInit (err, result) =>
             if err?
                 @logError "Toshl.start", err
-            else
-                @baseStart()
-
-                if settings.modules.getDataOnStart and result.length > 0
-                    @getMonths()
-                    @getRecentExpenses()
-                    @getRecentIncomes()
 
     # Stop the Toshl module.
     stop: =>
         @baseStop()
+
+    # Load initial data, usually called when module has authenticated.
+    getInitialData: =>
+        return if @initialDataLoaded
+
+        @initialDataLoaded = true
+
+        @getMonths()
+        @getRecentExpenses()
+        @getRecentIncomes()
 
     # API BASE METHODS
     # -------------------------------------------------------------------------

@@ -21,11 +21,11 @@ class Dropbox extends (require "./baseapi.coffee")
 
     # Start the Dropbox module.
     start: =>
+        @baseStart()
+        
         @oauthInit (err, result) =>
             if err?
                 @logError "Dropbox.start", err
-            else
-                @baseStart()
 
     # Stop the Dropbox module.
     stop: =>

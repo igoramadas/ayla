@@ -4,17 +4,17 @@
 class OAuth
 
     expresser = require "expresser"
+
     database = expresser.database
     events = expresser.events
+    lodash = expresser.libs.lodash
     logger = expresser.logger
+    moment = expresser.libs.moment
     settings = expresser.settings
 
-    lodash = expresser.libs.lodash
-    moment = expresser.libs.moment
     oauthModule = require "oauth"
     url = require "url"
 
-    authenticated: false
 
     # INIT
     # -------------------------------------------------------------------------
@@ -23,6 +23,12 @@ class OAuth
     constructor: (@service) ->
         logger.debug "OAuth", "New for #{@service}"
 
+        # Used as a helper callback, triggered when a valid token has been taken
+        # from the API server.
+        @onAuthenticated = null
+
+        # Set initial variables.
+        @authenticated = false
         @data = {}
 
     # AUTH SYNC
@@ -31,7 +37,7 @@ class OAuth
     # Get most recent auth tokens from the database and update the `oauth` DB collection.
     # Callback (err, result) is optional.
     loadTokens: (callback) =>
-        database.get "oauth", {"service": @service, "active": true}, (err, result) =>
+        database.get "oauth", {service: @service, active: true}, (err, result) =>
             if err?
                 logger.critical "OAuth.loadTokens", err
                 callback err, false if callback?
@@ -39,7 +45,6 @@ class OAuth
                 logger.debug "OAuth.loadTokens", result
 
                 @client = getClient @service
-
 
                 # Iterate results to create OAuth clients for all users.
                 for t in result
@@ -55,8 +60,9 @@ class OAuth
                     result =[{accessToken: settings[@service].api.accessToken}]
 
                 # Is it authenticated?
-                if @data.accessToken?
+                if @data.token? or @data.accessToken?
                     @authenticated = true
+                    @onAuthenticated() if @onAuthenticated?
 
                 # Pass data back to caller.
                 if callback?
@@ -83,9 +89,6 @@ class OAuth
             callback = params
             params = null
 
-        # Mark as authenticated.
-        @authenticated = true
-
         # Get current time and set data.
         now = moment().unix()
         @data = lodash.defaults params, {service: @service, active: true, timestamp: now}
@@ -95,10 +98,16 @@ class OAuth
         @data.userId = params.encoded_user_id if params.encoded_user_id?
         @data.userId = params.userid if params.userid?
         @data.userId = params.userId if params.userId?
+        delete @data.encoded_user_id
         delete @data.userid
 
+        # Set and trigger authenticated callback.
+        # Mark as authenticated.
+        @authenticated = true
+        @onAuthenticated() if @onAuthenticated?
+
         # Update oauth collection and set related tokens `active` to false.
-        database.update "oauth", {active: false}, {patch: true, upsert: false, filter: {service: @service}}, (err, result) =>
+        database.update "oauth", {active: false}, {patch: true, filter: {service: @service}}, (err, result) =>
             if err?
                 logger.error "OAuth.saveToken", @service, "Set active=false", err
             else
@@ -186,7 +195,7 @@ class OAuth
         qs = url.parse(req.url, true).query if req?
 
         # Helper function to get the request token using OAUth 1.x.
-        getRequestToken1 = (err, oauth_token, oauth_token_secret, additionalParameters) =>
+        getRequestToken1 = (err, oauth_token, oauth_token_secret) =>
             if err?
                 logger.error "OAuth.process", "getRequestToken1", @service, err
                 return
@@ -217,9 +226,9 @@ class OAuth
                 return
 
             # Schedule token to be refreshed automatically with 10% of the expiry time left.
+            # Minimum refresh time is 1 hour.
             expires = results?.expires_in or results?.expires or 43200
             expires = 3600 if expires < 3600
-            lodash.delay @refresh, expires * 900
 
             logger.info "OAuth.process", "getAccessToken2", @service, oauth_access_token, "Expires in #{expires}s"
 
@@ -236,7 +245,7 @@ class OAuth
         if settings[@service].api.oauthVersion is "2.0"
 
             # Use cliend credentials (password) or authorization code?
-            if settings[@service].api.username?
+            if settings[@service].api.username? and settings[@service].api.password?
                 opts = {"grant_type": "password", username: settings[@service].api.username, password: settings[@service].api.password}
             else
                 opts = {"grant_type": "authorization_code"}
@@ -248,7 +257,7 @@ class OAuth
                 opts["state"] = settings[@service].api.oauthState
 
             if settings[@service].api.oauthPassRedirect
-                opts["redirect_uri"] = settings.general.appUrl + @service + "/auth"
+                opts["redirect_uri"] = settings.general.appUrl + @service + "/auth/callback"
 
             # Get authorization code from querystring.
             qCode = qs?.code
@@ -271,18 +280,20 @@ class OAuth
             return
 
         # Abort if token is already being refreshed.
-        return if @refreshing
+        minRefreshTime = moment().add(settings.modules.minRefreshTokenInterval * -1, "s").unix()
+        return if @lastRefresh? and @lastRefresh > minRefreshTime
+
+        @authenticated = false
+        @lastRefresh = moment().unix()
 
         # Get oauth object and refresh token and set grant type to refresh_token.
-        @authenticated = false
-        @refreshing = true
         refreshToken = @data.refreshToken
         opts = {"grant_type": "refresh_token"}
 
+        logger.info "OAuth.refresh", @service, refreshToken
+
         # Proceed and get OAuth2 tokens.
         @client.getOAuthAccessToken refreshToken, opts, (err, oauth_access_token, oauth_refresh_token, results) =>
-            @refreshing = false
-
             if err?
                 logger.error "OAuth.refresh", @service, err
                 return

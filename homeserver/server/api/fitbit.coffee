@@ -23,20 +23,25 @@ class Fitbit extends (require "./baseapi.coffee")
 
     # Start the Fitbit module.
     start: =>
+        @baseStart()
+
         @oauthInit (err, result) =>
             if err?
                 @logError "Fitbit.start", err
-            else
-                @baseStart()
-
-                if settings.modules.getDataOnStart and result.length > 0
-                    @getSleep()
-                    @getActivities()
-                    @getBody()
 
     # Stop the Fitbit module.
     stop: =>
         @baseStop()
+
+    # Load initial data, usually called when module has authenticated.
+    getInitialData: =>
+        return if @initialDataLoaded
+
+        @initialDataLoaded = true
+
+        @getSleep()
+        @getActivities()
+        @getBody()
 
     # API BASE METHODS
     # -------------------------------------------------------------------------

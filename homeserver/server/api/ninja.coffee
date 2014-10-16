@@ -29,13 +29,13 @@ class Ninja extends (require "./baseapi.coffee")
         if not settings.ninja?.api?.userToken?
             @logError "Ninja.start", "Ninja API userToken not set."
         else
-            @ninjaApi = ninjablocks.app {user_access_token: settings.ninja.api.userToken}
             @baseStart()
 
             events.on "Ninja.actuate433", @actuate433
 
-            if settings.modules.getDataOnStart
-                @getDevices()
+            @ninjaApi = ninjablocks.app {user_access_token: settings.ninja.api.userToken}
+
+            @getDevices()
 
     # Stop collecting data from Ninja Blocks.
     stop: =>

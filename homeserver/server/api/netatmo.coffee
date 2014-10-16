@@ -20,23 +20,29 @@ class Netatmo extends (require "./baseapi.coffee")
     init: ->
         @baseInit()
 
-    # Start collecting weather data. If OAuth is fine, get devlice list straight away.
+    # Start collecting weather data.
     start: =>
+        @baseStart()
+
         @oauthInit (err, result) =>
             if err?
                 @logError "Netatmo.start", err
-            else
-                @baseStart()
-
-                if settings.modules.getDataOnStart and result.length > 0
-                    @getDevices (err, result) =>
-                        if not err?
-                            @getAllIndoor()
-                            @getAllOutdoor()
 
     # Stop collecting weather data.
     stop: =>
         @baseStop()
+
+    # Load initial data, usually called when module has authenticated.
+    getInitialData: =>
+        return if @initialDataLoaded
+
+        @initialDataLoaded = true
+
+        # Get device list first, then get indoor and outdoor readings.
+        @getDevices (err, result) =>
+            if not err?
+                @getAllIndoor()
+                @getAllOutdoor()
 
     # API BASE METHODS
     # -------------------------------------------------------------------------
