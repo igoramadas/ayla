@@ -105,7 +105,7 @@ class Ubi extends (require "./baseapi.coffee")
             deviceIds = [filter.id]
         else if not @data.devices? or @data.devices.length < 1
             @logError "Ubi.getSensorData", "No devices found. Please run getDevices first."
-            callback "No devices found. Please run getDevices first." if hassCallback
+            callback "No devices found. Please run getDevices first." if hasCallback
             return
         else
             deviceIds = lodash.pluck @data.devices[0].value, "id"
@@ -158,9 +158,15 @@ class Ubi extends (require "./baseapi.coffee")
 
         hasCallback = lodash.isFunction callback
 
+        # Filter might be the phrase itself.
+        if lodash.isString filter
+            phrase = filter
+        else
+            phrase = filter.phrase
+
         # The phrase is mandatory.
-        if not filter.phrase? or filter.phrase is ""
-            errorMsg = "The filter.phrase is missing or empty, phrase parameter is mandatory."
+        if not phrase? or phrase is ""
+            errorMsg = "The phrase is missing or empty, phrase parameter is mandatory."
             logger.warn "Ubi.speak", filter, errorMsg
             callback errorMsg, null if hasCallback
             return
@@ -171,16 +177,26 @@ class Ubi extends (require "./baseapi.coffee")
         else
             deviceIds = lodash.pluck @data.devices, "id"
 
+        tasks = []
+
         # Get sensor data for all or specified device.
         for id in deviceIds
             (id) =>
-                @apiRequest id, "speak", {phrase: filter.phrase}, (err, result) =>
-                    if err?
-                        @logError "Ubi.speak", filter, err
-                    else
-                        @setData "phrases", result, filter
+                tasks.push (cb) =>
+                    @apiRequest id, "speak", {phrase: filter.phrase}, (err, result) =>
+                        if err?
+                            @logError "Ubi.speak", filter, err
+                        else
+                            @setData "speak", result, filter
 
-                    callback err, result if hasCallback
+                        cb err, result
+
+        # Sensor data will be fetched in parallel.
+        async.parallelLimit tasks, settings.general.parallelTasksLimit, (err, results) =>
+            if err?
+                @logError "Ubi.speak", filter, err
+
+            callback err, results if hasCallback
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

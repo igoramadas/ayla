@@ -1,18 +1,47 @@
 extends layout
 
 block contents
-    #system-jobs
-        table
-            thead
-                tr
-                    td.id ID
-                    td.description Description
-                    td.lastRun Last Run
-                    td.nextRun Next run
-            tbody
-                each job in jobs
-                    tr
-                        td.id #{job.id}
-                        td.description #{job.description}
-                        td.lastRun #{job.lastRun}
-                        td.nextRun #{job.nextRun}
+    #system
+        h1 System
+        ul.maingrid.small-block-grid-1
+            li
+                dl.tabs(data-tab)
+                    dd
+                        a(href="#settings", title="Module's settings") all settings
+                    dd
+                        a(href="#jobs", title="OAuth parameters") all jobs
+                    dd
+                        a(href="#hardware", title="Errors triggered by this module") hardware
+
+                .tabs-content
+                    #settings.content.panel
+                        h5 settings
+                        .inner-panel
+                            .data-table !{JSON.stringify(settings)}
+
+                    #jobs.content.panel
+                        table
+                            thead
+                                th Job
+                                th Schedule
+                                th Last run
+                            tbody
+                                for job in jobs
+                                    tr
+                                        td
+                                            span #{job.id}
+                                        td
+                                            if isNaN(job.schedule)
+                                                span #{job.schedule.join(", ")}
+                                            else
+                                                span every #{job.schedule} seconds
+                                        td
+                                            if job.endTime.year() > 2000
+                                                span #{job.endTime.format("lll")}
+                                            else
+                                                span Never
+
+                    #hardware.content.panel
+                        h5 Hardware
+                        .inner-panel
+                            .data-table !{JSON.stringify(server)}
