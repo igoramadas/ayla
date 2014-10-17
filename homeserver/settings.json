@@ -6,9 +6,12 @@
 // you'll have to create a settings.private.json file.
 
 {
-    // Web app defaults, please note that for SSL to work you'll need
-    // to have a ssl.key and ssl.cer files.
+    // Web app defaults, please note that for SSL to work you'll need to have
+    // a ssl.key and ssl.cer files. The `cookieTokenExpireDays` defines how
+    // many days a token will be saved as cookie when user access the app
+    // with a token and passing savecookie=1.
     "app": {
+        "cookieTokenExpireDays": 30,
         "port": 8443,
         "ssl": {
             "enabled": true,

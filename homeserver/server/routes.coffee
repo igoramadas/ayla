@@ -198,22 +198,30 @@ class Routes
         ipRouter = settings.network.router.ip
 
         # Grant access for localhost.
-        return true if ipClient is "127.0.0.1"
+        if ipClient is "127.0.0.1"
+            return true
 
         # Get router and client subnet.
         clientSubnet = ipClient.substring(0, ipClient.lastIndexOf ".")
         routerSubnet = ipRouter.substring(0, ipRouter.lastIndexOf ".")
 
         # Same subnet? Grant access.
-        return true if clientSubnet is routerSubnet
+        if clientSubnet is routerSubnet
+            return true
 
         # Valid token? Grant access.
+        # Also check if a token cookie should be set for this particular client.
         token = req.query.token
-        return true if token? and settings.accessTokens[token]?
+        if token? and settings.accessTokens[token]?
+            if req.query.savecookie is "1"
+                expires = {expires: moment().add(settings.app.cookieTokenExpireDays, "d").toDate()}
+                res.cookie "token", token, expires
+            return true
 
         # Check if token is present as a cookie.
-        cookie = req.cookie?.token
-        return true if cookie? and settings.accessTokens[cookie]?
+        cookie = req.cookies?.token
+        if cookie? and settings.accessTokens[cookie]?
+            return true
 
         # Oops, access denied.
         logger.warn "Routes.checkSecurity", req.url, ipClient
