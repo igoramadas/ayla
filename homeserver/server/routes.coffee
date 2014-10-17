@@ -60,6 +60,7 @@ class Routes
 
         # API page, commander and status routes.
         app.get "/api", apiPage
+        app.get "/system", systemPage
         app.get "/commander/:cmd", commanderPage
         app.post "/commander/:cmd", commanderPage
         app.get "/status", statusPage
@@ -100,6 +101,11 @@ class Routes
     apiPage = (req, res) ->
         options = {title: "API Modules", apiModules: api.modules, disabledApiModules: api.disabledModules}
         renderPage req, res, "api", options
+
+    # The system config page.
+    systemPage = (req, res) ->
+        options = {title: "System", apiModules: api.modules, settings: settings, jobs: cron.jobs, server: utils.getServerInfo()}
+        renderPage req, res, "system", options
 
     # The commander processor.
     commanderPage = (req, res) ->

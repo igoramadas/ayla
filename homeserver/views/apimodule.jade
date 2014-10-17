@@ -29,7 +29,8 @@ block contents
 
                     #settings.content.panel
                         h5 settings.#{title.toLowerCase()}
-                        .data-table !{JSON.stringify(settings[title.toLowerCase()])}
+                        .inner-panel
+                            .data-table !{JSON.stringify(settings[title.toLowerCase()])}
 
                     if oauth
                         #oauth.content.panel
@@ -91,7 +92,6 @@ block contents
                     for value, key in data
                         .content.panel.data(id="data-#{key}")
                             for a in value
-                                table
-                                    thead
-                                        th !{JSON.stringify(a.filter, null, 2)} #{moment(a.timestamp * 1000).format("lll")}
-                                .data-table !{JSON.stringify(a.value)}
+                                h5 !{JSON.stringify(a.filter, null, 2)} #{moment(a.timestamp * 1000).format("lll")}
+                                .inner-panel
+                                    .data-table !{JSON.stringify(a.value)}
