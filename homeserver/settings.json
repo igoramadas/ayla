@@ -12,10 +12,9 @@
     // with a token and passing savecookie=1.
     "app": {
         "cookieTokenExpireDays": 30,
-        "port": 8443,
+        "port": 8080,
         "ssl": {
-            "enabled": true,
-            "redirectorPort": 8080
+            "enabled": false
         }
     },
     // Camera date format while saving snaps, and max age of snaps before

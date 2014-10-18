@@ -42,6 +42,25 @@ block contents
                                                 span Never
 
                     #hardware.content.panel
-                        h5 Hardware
                         .inner-panel
-                            .data-table !{JSON.stringify(server)}
+                            div
+                                span.info Hostname
+                                span #{server.hostname}
+                            div
+                                span.info Memory
+                                span #{server.memoryUsage}% (#{server.memoryTotal})
+                            div
+                                span.info CPU Load
+                                span #{server.loadAvg}
+                            div
+                                span.info IP(s)
+                                span #{server.ips.join(", ")}
+                            div
+                                span.info Process ID
+                                span #{server.process.pid}
+                            div
+                                span.info Process Memory
+                                span #{server.process.memoryUsage}
+                            div
+                                span.info Uptime
+                                span #{server.uptime}
