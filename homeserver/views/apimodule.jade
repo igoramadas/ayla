@@ -18,7 +18,7 @@ block contents
                     dd
                         a(href="#jobs", title="Scheduled jobs") jobs
                     for value, key in data
-                        dd
+                        dd.data
                             a(href="#data-#{key}", title="Data: #{key}") #{key}
 
                 .tabs-content
@@ -55,9 +55,7 @@ block contents
                         if Object.keys(errors).length > 0
                             for err, key in errors
                                 for e in err
-                                    table
-                                        thead
-                                            th #{moment(e.timestamp * 1000).format("YYYY-MM-DD HH:mm:ss")} #{e.data[0]}
+                                    h5 #{moment(e.timestamp * 1000).format("YYYY-MM-DD HH:mm:ss")} #{e.data[0]}
                                     .inner-panel.error-details
                                         span #{JSON.stringify(e.data.slice(1), null, 2)}
                         else
