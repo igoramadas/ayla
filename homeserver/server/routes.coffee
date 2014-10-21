@@ -153,17 +153,6 @@ class Routes
         options.moment = moment
         options.settings = settings
 
-        # Set base file name.
-        baseName = filename.replace ".jade",""
-
-        # Check if current view has an external JS to be loaded.
-        jsPath = path.resolve __dirname, "../", "assets/js/views/#{baseName}.coffee"
-        options.loadJs.push "views/#{baseName}.js" if fs.existsSync jsPath
-
-        # Check if current view has an external CSS to be loaded.
-        cssPath = path.resolve __dirname, "../", "assets/css/#{baseName}.styl"
-        options.loadCss.push "#{baseName}.css" if fs.existsSync cssPath
-
         # Append managers to the output.
         options.managers = manager.modules
 

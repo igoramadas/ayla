@@ -18,21 +18,16 @@ class BaseView
         @setData()
         @bindSockets()
 
-        # Start foundation.
-        $(document).foundation()
-
         # Create announcements queue.
         @announcementsQueue = []
         @announcing = false
 
-        # Set default chart options.
-        Chart.defaults.global.responsive = true
-
         # Call view `onReady` but only if present.
         @onReady() if @onReady?
 
-        # Knockout.js bindings.
-        ko.applyBindings @data if @data?
+        # Knockout.js bindings and pager routing.
+        pager.extendWithPage @data
+        ko.applyBindings @data
 
     # This will iterate over the `elements` property to create the dom cache
     # and set the main wrapper based on the `viewId` property. The list
@@ -152,4 +147,3 @@ class BaseView
 # BIND BASE VIEW AND OPTIONS TO WINDOW
 # --------------------------------------------------------------------------
 window.ayla.BaseView = BaseView
-window.ayla.optsDataDTables = {bAutoWidth: true, bInfo: false}

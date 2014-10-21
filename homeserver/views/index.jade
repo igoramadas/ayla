@@ -1,4 +1,60 @@
-extends layout
+doctype html
+html.no-js(lang="en")
+    head
+        title Ayla
+        meta(charset="utf-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no")
+        meta(name="mobile-web-app-capable", content="yes")
+        link(rel="icon", type="image/x-icon", href="/favicon.ico")
 
-block contents
-    div
+        script(src="/socket.io/socket.io.js")
+        script. window.ayla = {};
+
+        != css("styles")
+        for c in loadCss
+            != css(c)
+
+        != js("scripts")
+        for j in loadJs
+            != js(j)
+    body
+        #wrapper
+            #bg
+            .sticky
+                nav#header.top-bar(data-topbar)
+                    ul.title-area
+                        li.name
+                            h1
+                                a(href="#home") Ayla
+                        li.toggle-topbar.menu-icon
+                            a(href="#") Menu
+                    section.top-bar-section
+                        ul.left
+                            for m, key in managers
+                                li(class="#{m.title.toLowerCase()}")
+                                    a(href="##{m.title.toLowerCase()}")
+                                        i(class="fa #{m.icon}")
+                                        span #{m.title}
+                            li.api
+                                a(href="#api")
+                                    i.fa.fa-cubes
+                                    span API Modules
+                            li.system
+                                a(href="#system")
+                                    i.fa.fa-cogs
+                                    span System
+            #contents
+
+            .page(data-bind="page: {id: 'start', title: 'Start'}")
+                include ./start.jade
+
+            .page(data-bind="page: {id: 'users', title: 'Users', withOnShow: bindPage('Users')}")
+                include ./users.jade
+
+            .page(data-bind="page: {id: 'weather', title: 'Weather', withOnShow: bindPage('Weather')}")
+                include ./weather.jade
+
+            #announcements(style="display: none")
+                div
+                    span.message
+                    span.details

@@ -151,4 +151,4 @@ class WeatherView extends ayla.BaseView
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.currentView = new WeatherView()
+window.ayla.WeatherView = WeatherView
