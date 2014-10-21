@@ -20,7 +20,7 @@
                             th.humidity Humidity
                             th.co2 CO2
                     tbody(data-bind="foreach: rooms")
-                        tr.room(data-bind="css: $root[id]().conditionCss, with: $root[id]")
+                        tr.room(data-bind="css: $parent[id]().conditionCss, with: $parent[id]")
                             td.title(data-bind="text: title", nowrap)
                             td.temperature(data-bind="text: climate.temperature != undefined ? climate.temperature + '°C' : '-'")
                             td.humidity(data-bind="text: climate.humidity != undefined ? climate.humidity + '%' : '-'")

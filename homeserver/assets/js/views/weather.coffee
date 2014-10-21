@@ -2,16 +2,8 @@
 # --------------------------------------------------------------------------
 class WeatherView extends ayla.BaseView
 
-    viewId: "Weather"
-
-    # MAIN METHODS
-    # ----------------------------------------------------------------------
-
     # Init the Weather view.
     onReady: =>
-        @dataProcessor @data
-
-        # Add a click handler to swap the outside view.
         $(".outside .panel").click @toggleChart
 
     # Parse and process data coming from the server. Weather data will be appended

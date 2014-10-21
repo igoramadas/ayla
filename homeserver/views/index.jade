@@ -8,7 +8,7 @@ html.no-js(lang="en")
         link(rel="icon", type="image/x-icon", href="/favicon.ico")
 
         script(src="/socket.io/socket.io.js")
-        script. window.ayla = {};
+        script window.ayla = {};
 
         != css("styles")
         for c in loadCss
@@ -43,7 +43,6 @@ html.no-js(lang="en")
                                 a(href="#system")
                                     i.fa.fa-cogs
                                     span System
-            #contents
 
             .page(data-bind="page: {id: 'start', title: 'Start'}")
                 include ./start.jade

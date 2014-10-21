@@ -2,14 +2,13 @@
 # --------------------------------------------------------------------------
 class UsersView extends ayla.BaseView
 
-    viewId: "users"
-
-    # MAIN METHODS
-    # ----------------------------------------------------------------------
-
-    # Init the Users view.
+    # Init the Weather view.
     onReady: =>
-        @dataProcessor @data
+        $(".outside .panel").click @toggleChart
+
+    # When user opens another page.
+    onDispose: =>
+        $(".outside .panel").unbind "click", @toggleChart
 
     # Parse and process data coming from the server.
     dataProcessor: (key, data) =>

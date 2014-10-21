@@ -14,6 +14,7 @@
 #= require lib/crel.js
 #= require lib/jsonhuman.js
 #= require sockets.coffee
+#= require views/index.coffee
 #= require views/baseview.coffee
 #= require views/users.coffee
 #= require views/weather.coffee
@@ -24,22 +25,7 @@ window.logger = ->
 
 # Start the app when document is ready and apply knockout bindings.
 onReady = ->
-    ayla.MainView = {
-        bindPage: (viewId) ->
-            ayla.currentView = new ayla[viewId + "View"]()
-    }
-
-    ayla.sockets.init() if ayla.sockets?
-
-    # Start foundation.
-    $(document).foundation()
-
-    # Set default chart options.
-    Chart.defaults.global.responsive = true
-
-    # Knockout.js bindings and pager routing.
-    ko.applyBindings ayla.MainView
-    pager.start ayla.MainView
+    ayla.indexView.init()
 
 # Hey ho let's go!
 $(document).ready onReady
