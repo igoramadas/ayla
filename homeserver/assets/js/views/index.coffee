@@ -24,6 +24,7 @@ class IndexView
         $(document).foundation()
         Chart.defaults.global.responsive = true
 
+        # Init sockets.
         ayla.sockets.init()
 
         pager.extendWithPage this

@@ -1,16 +1,12 @@
-# API LIST VIEW
+# API VIEW
 # --------------------------------------------------------------------------
 class ApiView extends ayla.BaseView
 
-    viewId: "api"
-    elements: [".module"]
-
-    # MAIN METHODS
-    # ----------------------------------------------------------------------
-
-    # Init the API data table.
+    # Init the API modules list view.
     onReady: =>
-        @dom["module"].click @onModuleClick
+        logger "Loaded API View"
+
+        $(".module").click @onModuleClick
 
     # When user clicks or taps on a module, open the module page.
     onModuleClick: (e) =>

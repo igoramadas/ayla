@@ -2,15 +2,9 @@
 # --------------------------------------------------------------------------
 class FitnessView extends ayla.BaseView
 
-    viewId: "fitness"
-    elements: [".weight", ".fat", ".sleep"]
-
-    # MAIN METHODS
-    # ----------------------------------------------------------------------
-
-    # Init the System Jobs view.
+    # Init the Fitness view.
     onReady: =>
-        @dataProcessor @data
+        logger "Loaded Email View"
 
     # Parse and process data coming from the server.
     dataProcessor: (data) =>

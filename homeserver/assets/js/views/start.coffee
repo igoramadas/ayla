@@ -2,8 +2,10 @@
 # --------------------------------------------------------------------------
 class StartView extends ayla.BaseView
 
-    viewId: "start"
+    # Init the Start view.
+    onReady: =>
+        logger "Loaded Start View"
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.currentView = new StartView()
+window.ayla.StartView = StartView

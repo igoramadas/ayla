@@ -1,14 +1,11 @@
-# API VIEW
+# API MODULE VIEW
 # --------------------------------------------------------------------------
 class ApiModuleView extends ayla.BaseView
 
-    viewId: "apimodule"
-
-    # MAIN METHODS
-    # ----------------------------------------------------------------------
-
-    # Init the API data table.
+    # Init the API detailed module view..
     onReady: =>
+        logger "Loaded API Module View"
+
         containers = $ ".data-table"
 
         # Iterate all data tables and transform JSON to readable tables.

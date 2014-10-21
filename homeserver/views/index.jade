@@ -47,6 +47,9 @@ html.no-js(lang="en")
             .page(data-bind="page: {id: 'start', title: 'Start'}")
                 include ./start.jade
 
+            .page(data-bind="page: {id: 'email', title: 'Email', withOnShow: bindPage('Email')}")
+                include ./email.jade
+
             .page(data-bind="page: {id: 'users', title: 'Users', withOnShow: bindPage('Users')}")
                 include ./users.jade
 

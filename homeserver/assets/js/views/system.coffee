@@ -2,13 +2,10 @@
 # --------------------------------------------------------------------------
 class SystemView extends ayla.BaseView
 
-    viewId: "system"
-
-    # MAIN METHODS
-    # ----------------------------------------------------------------------
-
     # Init the System view.
     onReady: =>
+        logger "Loaded System View"
+
         containers = $ ".data-table"
 
         # Iterate all data tables and transform JSON to readable tables.
@@ -26,4 +23,4 @@ class SystemView extends ayla.BaseView
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.currentView = new SystemView()
+window.ayla.SystemView = SystemView

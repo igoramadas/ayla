@@ -4,6 +4,8 @@ class WeatherView extends ayla.BaseView
 
     # Init the Weather view.
     onReady: =>
+        logger "Loaded Weather View"
+
         $(".outside .panel").click @toggleChart
 
     # Parse and process data coming from the server. Weather data will be appended

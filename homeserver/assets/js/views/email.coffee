@@ -2,15 +2,9 @@
 # --------------------------------------------------------------------------
 class EmailView extends ayla.BaseView
 
-    viewId: "email"
-
-    # MAIN METHODS
-    # ----------------------------------------------------------------------
-
-    # Init the System Jobs view.
+    # Init the Email view.
     onReady: =>
-        console.warn 1
-
+        logger "Loaded Email View"
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------

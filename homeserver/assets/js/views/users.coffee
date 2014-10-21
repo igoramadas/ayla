@@ -2,8 +2,10 @@
 # --------------------------------------------------------------------------
 class UsersView extends ayla.BaseView
 
-    # Init the Weather view.
+    # Init the Users view.
     onReady: =>
+        logger "Loaded Users View"
+
         $(".outside .panel").click @toggleChart
 
     # When user opens another page.
