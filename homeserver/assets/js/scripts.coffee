@@ -9,6 +9,7 @@
 #= require lib/placeholder.js
 #= require lib/fastclick.js
 #= require lib/foundation.js
+#= require lib/pager.js
 #= require lib/chart.js
 #= require lib/crel.js
 #= require lib/jsonhuman.js
