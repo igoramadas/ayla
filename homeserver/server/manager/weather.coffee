@@ -15,7 +15,7 @@ class WeatherManager extends (require "./basemanager.coffee")
     sockets = expresser.sockets
 
     title: "Weather"
-    icon: "fa-sun-o"
+    icon: "fa-cloud"
 
     # INIT
     # -------------------------------------------------------------------------

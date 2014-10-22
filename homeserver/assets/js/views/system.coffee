@@ -2,6 +2,8 @@
 # --------------------------------------------------------------------------
 class SystemView extends ayla.BaseView
 
+    viewId: "System"
+
     # Init the System view.
     onReady: =>
         logger "Loaded System View"
