@@ -2,6 +2,8 @@
 # --------------------------------------------------------------------------
 class StartView extends ayla.BaseView
 
+    viewId: "Start"
+
     # Init the Start view.
     onReady: =>
         logger "Loaded Start View"

@@ -14,8 +14,17 @@
 #= require lib/crel.js
 #= require lib/jsonhuman.js
 #= require sockets.coffee
-#= require views/index.coffee
+#= require indexview.coffee
 #= require views/baseview.coffee
+#= require views/api.coffee
+#= require views/apimodule.coffee
+#= require views/email.coffee
+#= require views/fitness.coffee
+#= require views/lights.coffee
+#= require views/money.coffee
+#= require views/network.coffee
+#= require views/start.coffee
+#= require views/system.coffee
 #= require views/users.coffee
 #= require views/weather.coffee
 

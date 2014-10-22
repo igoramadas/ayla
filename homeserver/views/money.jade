@@ -1,61 +1,58 @@
-extends layout
+#money
+    ul.maingrid.small-block-grid-1.medium-block-grid-2
 
-block contents
-    #money
-        ul.maingrid.small-block-grid-1.medium-block-grid-2
+        li.expenses
+            div(data-bind="with: recentExpenses")
+                div.summary.negative
+                    h2 Expenses
+                    span.total(data-bind="text: total.toFixed(2)")
 
-            li.expenses
-                div(data-bind="with: recentExpenses")
-                    div.summary.negative
-                        h2 Expenses
-                        span.total(data-bind="text: total.toFixed(2)")
+                .panel
+                    table
+                        thead
+                            tr
+                                th.tag Top tags
+                                th.last3 3 days
+                                th.last10 10 days
+                                th.last30 30 days
+                        tbody(data-bind="foreach: topTags")
+                            tr
+                                td.tag(data-bind="text: tag")
+                                td.last3(data-bind="text: last3.toFixed(2)")
+                                td.last10(data-bind="text: last10.toFixed(2)")
+                                td.last30(data-bind="text: total.toFixed(2)")
 
-                    .panel
-                        table
-                            thead
-                                tr
-                                    th.tag Top tags
-                                    th.last3 3 days
-                                    th.last10 10 days
-                                    th.last30 30 days
-                            tbody(data-bind="foreach: topTags")
-                                tr
-                                    td.tag(data-bind="text: tag")
-                                    td.last3(data-bind="text: last3.toFixed(2)")
-                                    td.last10(data-bind="text: last10.toFixed(2)")
-                                    td.last30(data-bind="text: total.toFixed(2)")
+                div.chart
+                    canvas.tags
+
+        li.incomes
+            div(data-bind="with: recentIncomes")
+                div.summary.positive
+                    h2 Incomes
+                    span.total(data-bind="text: total.toFixed(2)")
+
+                .panel
+                    table
+                        thead
+                            tr
+                                th.tag Top tags
+                                th.last3 3 days
+                                th.last10 10 days
+                                th.last30 30 days
+                        tbody(data-bind="foreach: topTags")
+                            tr
+                                td.tag(data-bind="text: tag")
+                                td.last3(data-bind="text: last3.toFixed(2)")
+                                td.last10(data-bind="text: last10.toFixed(2)")
+                                td.last30(data-bind="text: total.toFixed(2)")
 
                     div.chart
                         canvas.tags
 
-            li.incomes
-                div(data-bind="with: recentIncomes")
-                    div.summary.positive
-                        h2 Incomes
-                        span.total(data-bind="text: total.toFixed(2)")
-
-                    .panel
-                        table
-                            thead
-                                tr
-                                    th.tag Top tags
-                                    th.last3 3 days
-                                    th.last10 10 days
-                                    th.last30 30 days
-                            tbody(data-bind="foreach: topTags")
-                                tr
-                                    td.tag(data-bind="text: tag")
-                                    td.last3(data-bind="text: last3.toFixed(2)")
-                                    td.last10(data-bind="text: last10.toFixed(2)")
-                                    td.last30(data-bind="text: total.toFixed(2)")
-
-                        div.chart
-                            canvas.tags
-
-            li.balance
+        li.balance
+            div
+                div.summary(data-bind="css: balanceCss")
+                    h2 Balance
+                    span.total(data-bind="text: (recentIncomes().total - recentExpenses().total).toFixed(2)")
                 div
-                    div.summary(data-bind="css: balanceCss")
-                        h2 Balance
-                        span.total(data-bind="text: (recentIncomes().total - recentExpenses().total).toFixed(2)")
-                    div
-                        canvas(height="316").balance
+                    canvas(height="316").balance

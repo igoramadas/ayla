@@ -12,7 +12,7 @@
                             th.status Home
                             th.location Last location
                     tbody(data-bind="foreach: {data: users, as: 'username'}")
-                        tr.user(data-bind="with: $root[username]")
+                        tr.user(data-bind="with: $parent[username]")
                             td.title(data-bind="text: name")
                             td.email(data-bind="text: email")
                             td.status(data-bind="css: onlineCss")

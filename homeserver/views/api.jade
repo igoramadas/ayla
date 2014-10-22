@@ -1,29 +1,26 @@
-extends layout
-
-block contents
-    #api
-        ul.maingrid.small-block-grid-1.medium-block-grid-4
-            for m, key in apiModules
-                li
-                    .panel.module
-                        h5
-                            a(href="/#{m.moduleNameLower}") #{m.moduleName}
-                        .inner-panel
-                            div
-                                span #{Object.keys(m.data).length} data,
-                                span #{m.getScheduledJobs().length} jobs,
-                                span #{Object.keys(m.errors).length} errors
-                            div
-                                span OAuth:
-                                if m.oauth != undefined
-                                    if m.oauth.authenticated
-                                        span.valid Authenticated
-                                    else
-                                        span.invalid Not authenticated
+#api
+    ul.maingrid.small-block-grid-1.medium-block-grid-4
+        for m, key in apiModules
+            li
+                .panel.module
+                    h5
+                        a(href="/#{m.moduleNameLower}") #{m.moduleName}
+                    .inner-panel
+                        div
+                            span #{Object.keys(m.data).length} data,
+                            span #{m.getScheduledJobs().length} jobs,
+                            span #{Object.keys(m.errors).length} errors
+                        div
+                            span OAuth:
+                            if m.oauth != undefined
+                                if m.oauth.authenticated
+                                    span.valid Authenticated
                                 else
-                                    span None
-        .panel
-            h5.translucent.invalid Disabled modules
-            .inner-panel.disabled-modules
-                for m, key in disabledApiModules
-                    span #{m}
+                                    span.invalid Not authenticated
+                            else
+                                span None
+    .panel
+        h5.translucent.invalid Disabled modules
+        .inner-panel.disabled-modules
+            for m, key in disabledApiModules
+                span #{m}

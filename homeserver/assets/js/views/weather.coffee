@@ -2,6 +2,8 @@
 # --------------------------------------------------------------------------
 class WeatherView extends ayla.BaseView
 
+    viewId: "Weather"
+
     # Init the Weather view.
     onReady: =>
         logger "Loaded Weather View"

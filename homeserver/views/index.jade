@@ -44,7 +44,7 @@ html.no-js(lang="en")
                                     i.fa.fa-cogs
                                     span System
 
-            .page(data-bind="page: {id: 'start', title: 'Start'}")
+            .page(data-bind="page: {id: 'start', title: 'Start', withOnShow: bindPage('Start')}")
                 include ./start.jade
 
             .page(data-bind="page: {id: 'email', title: 'Email', withOnShow: bindPage('Email')}")

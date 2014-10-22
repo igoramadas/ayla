@@ -2,6 +2,8 @@
 # --------------------------------------------------------------------------
 class UsersView extends ayla.BaseView
 
+    viewId: "Users"
+
     # Init the Users view.
     onReady: =>
         logger "Loaded Users View"

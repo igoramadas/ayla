@@ -1,19 +1,16 @@
-extends layout
-
-block contents
-    #system-network
-        table
-            thead
-                tr
-                    td.id ID
-                    td.description Description
-                    td.addresses Addresses
-                    td.online Online
-            tbody
-                each s in status
-                    each device in s.devices
-                        tr
-                            td.id #{device.id}
-                            td.description #{device.description}
-                            td.addresses #{device.addresses.join(",")}
-                            td.online #{device.up}
+#network
+    table
+        thead
+            tr
+                td.id ID
+                td.description Description
+                td.addresses Addresses
+                td.online Online
+        tbody
+            each s in status
+                each device in s.devices
+                    tr
+                        td.id #{device.id}
+                        td.description #{device.description}
+                        td.addresses #{device.addresses.join(",")}
+                        td.online #{device.up}

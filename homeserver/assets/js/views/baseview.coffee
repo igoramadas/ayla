@@ -7,7 +7,6 @@ class BaseView
 
     # Init the view and set elements.
     init: (callback) =>
-        @viewId = @__proto__.constructor.name.toString().replace "View", ""
         @data= {}
 
         @setHeader()

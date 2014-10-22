@@ -1,95 +1,92 @@
-extends layout
+#api
+    h1= title
+    ul.maingrid.small-block-grid-1
+        li
+            dl.tabs(data-tab)
+                dd
+                    a(href="#about", title="About this module") about
+                dd
+                    a(href="#settings", title="Module's settings") settings
+                if oauth
+                    dd
+                        a(href="#oauth", title="OAuth parameters") oauth
+                dd
+                    a(href="#errors", title="Errors triggered by this module") errors
+                dd
+                    a(href="#jobs", title="Scheduled jobs") jobs
+                for value, key in data
+                    dd.data
+                        a(href="#data-#{key}", title="Data: #{key}") #{key}
 
-block contents
-    #api
-        h1= title
-        ul.maingrid.small-block-grid-1
-            li
-                dl.tabs(data-tab)
-                    dd
-                        a(href="#about", title="About this module") about
-                    dd
-                        a(href="#settings", title="Module's settings") settings
-                    if oauth
-                        dd
-                            a(href="#oauth", title="OAuth parameters") oauth
-                    dd
-                        a(href="#errors", title="Errors triggered by this module") errors
-                    dd
-                        a(href="#jobs", title="Scheduled jobs") jobs
-                    for value, key in data
-                        dd.data
-                            a(href="#data-#{key}", title="Data: #{key}") #{key}
+            .tabs-content
+                #about.content.panel
+                    .inner-panel !{description}
+                    .inner-panel
+                        a(href="https://ayla.codeplex.com/wikipage?title=API:%20#{title}", target="AylaDocs") View online documentation
 
-                .tabs-content
-                    #about.content.panel
-                        .inner-panel !{description}
+                #settings.content.panel
+                    h5 settings.#{title.toLowerCase()}
+                    .inner-panel
+                        .data-table !{JSON.stringify(settings[title.toLowerCase()])}
+
+                if oauth
+                    #oauth.content.panel
+                        .inner-panel.auth
+                            div
+                                span.info Authenticated:
+                                span #{oauth.authenticated}
+                            if oauth.authenticated
+                                div.clip
+                                    span.info Token:
+                                    span #{(oauth.data.token || oauth.data.accessToken)}
+                                    br
+                                    span.info Expires:
+                                    if oauth.data.expires > 0
+                                        span #{moment(oauth.data.expires * 1000).format("lll")}
+                                    else
+                                        span No expiration date set
+                            div
+                                a.button(href="/#{title.toLowerCase()}/auth") Trigger authentication
+
+                #errors.content.panel
+                    if Object.keys(errors).length > 0
+                        for err, key in errors
+                            for e in err
+                                h5 #{moment(e.timestamp * 1000).format("YYYY-MM-DD HH:mm:ss")} #{e.data[0]}
+                                .inner-panel.error-details
+                                    span #{JSON.stringify(e.data.slice(1), null, 2)}
+                    else
                         .inner-panel
-                            a(href="https://ayla.codeplex.com/wikipage?title=API:%20#{title}", target="AylaDocs") View online documentation
+                            span No errors found.
 
-                    #settings.content.panel
-                        h5 settings.#{title.toLowerCase()}
-                        .inner-panel
-                            .data-table !{JSON.stringify(settings[title.toLowerCase()])}
+                #jobs.content.panel
+                    if jobs.length > 0
+                        table
+                            thead
+                                th Job
+                                th Schedule
+                                th Last run
+                            tbody
+                                for job in jobs
+                                    tr
+                                        td
+                                            span #{job.id.replace(title.toLowerCase() + ".coffee.", "")}
+                                        td
+                                            if isNaN(job.schedule)
+                                                span #{job.schedule.join(", ")}
+                                            else
+                                                span every #{job.schedule} seconds
+                                        td
+                                            if job.endTime.year() > 2000
+                                                span #{job.endTime.format("lll")}
+                                            else
+                                                span Never
+                    else
+                        .inner-panel No scheduled jobs.
 
-                    if oauth
-                        #oauth.content.panel
-                            .inner-panel.auth
-                                div
-                                    span.info Authenticated:
-                                    span #{oauth.authenticated}
-                                if oauth.authenticated
-                                    div.clip
-                                        span.info Token:
-                                        span #{(oauth.data.token || oauth.data.accessToken)}
-                                        br
-                                        span.info Expires:
-                                        if oauth.data.expires > 0
-                                            span #{moment(oauth.data.expires * 1000).format("lll")}
-                                        else
-                                            span No expiration date set
-                                div
-                                    a.button(href="/#{title.toLowerCase()}/auth") Trigger authentication
-
-                    #errors.content.panel
-                        if Object.keys(errors).length > 0
-                            for err, key in errors
-                                for e in err
-                                    h5 #{moment(e.timestamp * 1000).format("YYYY-MM-DD HH:mm:ss")} #{e.data[0]}
-                                    .inner-panel.error-details
-                                        span #{JSON.stringify(e.data.slice(1), null, 2)}
-                        else
+                for value, key in data
+                    .content.panel.data(id="data-#{key}")
+                        for a in value
+                            h5 !{JSON.stringify(a.filter, null, 2)} #{moment(a.timestamp * 1000).format("lll")}
                             .inner-panel
-                                span No errors found.
-
-                    #jobs.content.panel
-                        if jobs.length > 0
-                            table
-                                thead
-                                    th Job
-                                    th Schedule
-                                    th Last run
-                                tbody
-                                    for job in jobs
-                                        tr
-                                            td
-                                                span #{job.id.replace(title.toLowerCase() + ".coffee.", "")}
-                                            td
-                                                if isNaN(job.schedule)
-                                                    span #{job.schedule.join(", ")}
-                                                else
-                                                    span every #{job.schedule} seconds
-                                            td
-                                                if job.endTime.year() > 2000
-                                                    span #{job.endTime.format("lll")}
-                                                else
-                                                    span Never
-                        else
-                            .inner-panel No scheduled jobs.
-
-                    for value, key in data
-                        .content.panel.data(id="data-#{key}")
-                            for a in value
-                                h5 !{JSON.stringify(a.filter, null, 2)} #{moment(a.timestamp * 1000).format("lll")}
-                                .inner-panel
-                                    .data-table !{JSON.stringify(a.value)}
+                                .data-table !{JSON.stringify(a.value)}
