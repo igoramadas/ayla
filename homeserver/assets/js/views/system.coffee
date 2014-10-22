@@ -20,7 +20,6 @@ class SystemView extends ayla.BaseView
 
         $("dd a").eq(0).click()
 
-
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
 window.ayla.SystemView = SystemView

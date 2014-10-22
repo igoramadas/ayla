@@ -4,8 +4,9 @@ class LightsView extends ayla.BaseView
 
     viewId: "lights"
 
-    # LIGHT CONTROL
-    # ----------------------------------------------------------------------
+    # Init the Lights view.
+    onReady: =>
+        logger "Loaded Lights View"
 
     # Change hue light color.
     hueLightColor: (light, e) =>
@@ -35,4 +36,4 @@ class LightsView extends ayla.BaseView
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.currentView = new LightsView()
+window.ayla.LightsView = LightsView

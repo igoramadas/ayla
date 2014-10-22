@@ -44,17 +44,14 @@ html.no-js(lang="en")
                                     i.fa.fa-cogs
                                     span System
 
-            .page(data-bind="page: {id: 'start', title: 'Start', withOnShow: bindPage('Start')}")
-                include ./start.jade
-
-            .page(data-bind="page: {id: 'email', title: 'Email', withOnShow: bindPage('Email')}")
-                include ./email.jade
-
-            .page(data-bind="page: {id: 'users', title: 'Users', withOnShow: bindPage('Users')}")
-                include ./users.jade
-
-            .page(data-bind="page: {id: 'weather', title: 'Weather', withOnShow: bindPage('Weather')}")
-                include ./weather.jade
+            include ./start.jade
+            include ./email.jade
+            include ./money.jade
+            include ./fitness.jade
+            include ./users.jade
+            include ./weather.jade
+            include ./api.jade
+            include ./system.jade
 
             #announcements(style="display: none")
                 div

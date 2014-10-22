@@ -29,12 +29,10 @@
 #= require views/weather.coffee
 
 # Bind helper to log to console.
-window.logger = ->
-    console.log.apply console, arguments
+window.logger = -> console.log.apply console, arguments
 
 # Start the app when document is ready and apply knockout bindings.
-onReady = ->
-    ayla.indexView.init()
+onReady = -> ayla.indexView.init()
 
 # Hey ho let's go!
 $(document).ready onReady

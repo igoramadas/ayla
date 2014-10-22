@@ -1,4 +1,4 @@
-#api
+#api.page(data-bind="page: {id: 'apimodule', title: 'API Module', withOnShow: bindPage('ApiModule')}")
     h1= title
     ul.maingrid.small-block-grid-1
         li
@@ -7,16 +7,17 @@
                     a(href="#about", title="About this module") about
                 dd
                     a(href="#settings", title="Module's settings") settings
-                if oauth
-                    dd
-                        a(href="#oauth", title="OAuth parameters") oauth
+                dd(data-bind="if: oauth")
+                    a(href="#oauth", title="OAuth parameters") oauth
                 dd
                     a(href="#errors", title="Errors triggered by this module") errors
                 dd
                     a(href="#jobs", title="Scheduled jobs") jobs
-                for value, key in data
-                    dd.data
-                        a(href="#data-#{key}", title="Data: #{key}") #{key}
+
+                // ko foreach: Object.keys(data)
+                dd.data
+                    a(data-bind="text: $data, attr: {href: '#data' + $data}")
+                // /ko
 
             .tabs-content
                 #about.content.panel
@@ -29,24 +30,20 @@
                     .inner-panel
                         .data-table !{JSON.stringify(settings[title.toLowerCase()])}
 
-                if oauth
-                    #oauth.content.panel
-                        .inner-panel.auth
-                            div
-                                span.info Authenticated:
-                                span #{oauth.authenticated}
-                            if oauth.authenticated
-                                div.clip
-                                    span.info Token:
-                                    span #{(oauth.data.token || oauth.data.accessToken)}
-                                    br
-                                    span.info Expires:
-                                    if oauth.data.expires > 0
-                                        span #{moment(oauth.data.expires * 1000).format("lll")}
-                                    else
-                                        span No expiration date set
-                            div
-                                a.button(href="/#{title.toLowerCase()}/auth") Trigger authentication
+                #oauth.content.panel(data-bind="if: oauth")
+                    .inner-panel.auth
+                        div
+                            span.info Authenticated:
+                            span(data-bind="text: oauth.authenticated")
+                        div.clip(data-bind="if: oauth.authenticated, with: oauth")
+                            span.info Token:
+                            span(data-bind="text: data.token || data.accessToken")
+                            br
+                            span.info Expires:
+                            span(data-bind="if: oauth.data.expires > 0, text: moment(data.expires * 1000).format('lll')")
+                            span(data-bind="if: oauth.data.expires < 1") No expiration date set
+                        div
+                            a.button(href="/auth") Trigger authentication
 
                 #errors.content.panel
                     if Object.keys(errors).length > 0

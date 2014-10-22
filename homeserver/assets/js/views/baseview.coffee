@@ -26,6 +26,14 @@ class BaseView
 
             callback @data
 
+    # Dispose the view, unbind events.
+    dispose: =>
+        ayla.sockets.off @socketsName + ".error", (err) => @announce err
+        ayla.sockets.off @socketsName + ".result", (result) => @announce result
+        ayla.sockets.off @socketsName + ".data", (obj) => @onData obj
+
+        @onDispose() if @onDispose?
+
     # Set active navigation and header properties.
     setHeader: =>
         currentPath = location.pathname.substring 1

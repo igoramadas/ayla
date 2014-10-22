@@ -13,7 +13,7 @@ class IndexView
 
     # Bind a page to the main view.
     bindPage: (viewId) =>
-        ayla.currentView.onDispose() if ayla.currentView?.onDispose?
+        ayla.currentView.dispose() if ayla.currentView?
 
         return (callback) ->
             ayla.currentView = new ayla[viewId + "View"]()

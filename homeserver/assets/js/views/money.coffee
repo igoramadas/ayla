@@ -2,21 +2,16 @@
 # --------------------------------------------------------------------------
 class MoneyView extends ayla.BaseView
 
-    viewId: "money"
-
-    # MAIN METHODS
-    # ----------------------------------------------------------------------
+    viewId: "Money"
 
     # Init the Money view.
     onReady: =>
-        @dataProcessor @data
-
-        # Add balance css property.
-        @data.balanceCss = ko.computed =>
-            if @data.recentExpenses?.total > @data.recentIncomes?.total
-                return "negative"
-            else
-                return "positive"
+        if not @data.balanceCss?
+            @data.balanceCss = ko.computed =>
+                if @data.recentExpenses?.total > @data.recentIncomes?.total
+                    return "negative"
+                else
+                    return "positive"
 
         # Create balance chart.
         @createBalanceChart()
@@ -112,4 +107,4 @@ class MoneyView extends ayla.BaseView
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.currentView = new MoneyView()
+window.ayla.MoneyView = MoneyView

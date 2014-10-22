@@ -22,4 +22,4 @@ class ApiModuleView extends ayla.BaseView
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.currentView = new ApiModuleView()
+window.ayla.ApiModuleView = ApiModuleView

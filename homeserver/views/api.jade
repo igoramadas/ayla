@@ -1,26 +1,24 @@
-#api
+#api.page(data-bind="page: {id: 'api', title: 'API Modules', withOnShow: bindPage('Api')}")
     ul.maingrid.small-block-grid-1.medium-block-grid-4
-        for m, key in apiModules
-            li
-                .panel.module
-                    h5
-                        a(href="/#{m.moduleNameLower}") #{m.moduleName}
-                    .inner-panel
-                        div
-                            span #{Object.keys(m.data).length} data,
-                            span #{m.getScheduledJobs().length} jobs,
-                            span #{Object.keys(m.errors).length} errors
-                        div
-                            span OAuth:
-                            if m.oauth != undefined
-                                if m.oauth.authenticated
-                                    span.valid Authenticated
-                                else
-                                    span.invalid Not authenticated
-                            else
-                                span None
+        // ko foreach: apiModules
+        li
+            .panel.module
+                h5
+                    a(data-bind="text: moduleName, attr: {href: '#api/' + moduleNameLower}")
+                .inner-panel
+                    div
+                        span(data-bind="text: dataCount + ' data, '")
+                        span(data-bind="text: scheduledJobsCount + ' jobs, '")
+                        span(data-bind="text: errorCount + ' errors'")
+                    div
+                        span OAuth:
+                        span.valid(data-bind="if: oauth && oauth.authenticated") Authenticated
+                        span.invalid(data-bind="if: oauth && !oauth.authenticated") Not authenticated
+                        span.invalid(data-bind="if: !oauth") None
+        // /ko
     .panel
         h5.translucent.invalid Disabled modules
         .inner-panel.disabled-modules
-            for m, key in disabledApiModules
-                span #{m}
+            // ko foreach: disabledApiModules
+            span(data-bind="text: $data")
+            // /ko

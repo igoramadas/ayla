@@ -10,6 +10,10 @@ class WeatherView extends ayla.BaseView
 
         $(".outside .panel").click @toggleChart
 
+    # When user opens another page.
+    onDispose: =>
+        $(".outside .panel").unbind "click", @toggleChart
+
     # Parse and process data coming from the server. Weather data will be appended
     # directly to the rooms object. If only one argument is passed, assume it's the data.
     dataProcessor: (key, data) =>

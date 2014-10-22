@@ -2,17 +2,12 @@
 # --------------------------------------------------------------------------
 class NetworkView extends ayla.BaseView
 
-    viewId: "network"
-    elements: ["table"]
-
-    # MAIN METHODS
-    # ----------------------------------------------------------------------
+    viewId: "Network"
 
     # Init the Network view.
     onReady: =>
-        @dom.table.dataTable ayla.optsDataDTables
-
+        logger "Loaded Network View"
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.currentView = new NetworkView()
+window.ayla.NetworkView = NetworkView

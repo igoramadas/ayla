@@ -8,12 +8,6 @@ class UsersView extends ayla.BaseView
     onReady: =>
         logger "Loaded Users View"
 
-        $(".outside .panel").click @toggleChart
-
-    # When user opens another page.
-    onDispose: =>
-        $(".outside .panel").unbind "click", @toggleChart
-
     # Parse and process data coming from the server.
     dataProcessor: (key, data) =>
         if not data?

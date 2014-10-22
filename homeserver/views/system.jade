@@ -1,4 +1,4 @@
-#system
+#system.page(data-bind="page: {id: 'system', title: 'System', withOnShow: bindPage('System')}")
     h1 System
     ul.maingrid.small-block-grid-1
         li
@@ -23,41 +23,38 @@
                             th Schedule
                             th Last run
                         tbody
-                            for job in jobs
-                                tr
-                                    td
-                                        span #{job.id}
-                                    td
-                                        if isNaN(job.schedule)
-                                            span #{job.schedule.join(", ")}
-                                        else
-                                            span every #{job.schedule} seconds
-                                    td
-                                        if job.endTime.year() > 2000
-                                            span #{job.endTime.format("lll")}
-                                        else
-                                            span Never
+                            // ko foreach: jobs
+                            tr
+                                td
+                                    span(data-bind="text: id")
+                                td
+                                    span(data-bind="if: isNaN(schedule), text: schedule.join(', ')")
+                                    span(data-bind="if: !isNaN(schedule), text: 'every ' + schedule + ' seconds'")
+                                td
+                                    span(data-bind="if: endTime.year() > 2000, text: endTime.format('lll')")
+                                    span(data-bind="if: endTime.year() <= 2000") Never
+                            // /ko
 
                 #hardware.content.panel
                     .inner-panel
                         div
                             span.info Hostname
-                            span #{server.hostname}
+                            span(data-bind="text: server.hostname")
                         div
                             span.info Memory
-                            span #{server.memoryUsage}% (#{server.memoryTotal})
+                            span(data-bind="text: server.memoryUsage + '% (' + server.memoryTotal + ')'")
                         div
                             span.info CPU Load
-                            span #{server.loadAvg}
+                            span(data-bind="text: server.loadAvg")
                         div
                             span.info IP(s)
-                            span #{server.ips.join(", ")}
+                            span(data-bind="text: server.ips.join(', ')")
                         div
                             span.info Process ID
-                            span #{server.process.pid}
+                            span(data-bind="text: server.process.pid")
                         div
                             span.info Process Memory
-                            span #{server.process.memoryUsage}
+                            span(data-bind="text: server.process.memoryUsage")
                         div
                             span.info Uptime
-                            span #{server.uptime}
+                            span(data-bind="text: server.uptime")
