@@ -9,7 +9,7 @@ class SystemView extends ayla.BaseView
         logger "Loaded System View"
 
         $("#api .module").click @onModuleClick
-        $(".tabs dd a").eq(0).click()
+        $("#api .tabs dd a").eq(0).click()
 
     # Dispose the System view.
     onDispose: =>

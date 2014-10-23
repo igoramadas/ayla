@@ -45,6 +45,12 @@ class IndexView
         ayla.currentView = new ayla[page.currentId + "View"]()
         ayla.currentView.init callback
 
+    # Highlight tab when clicked or tapped.
+    setPageTab: (e) =>
+        src = $ ".tab-#{e.page.currentId}"
+        src.parent().find("dd").removeClass "active"
+        src.addClass "active"
+
     # ANNOUNCEMENTS
     # ----------------------------------------------------------------------
 

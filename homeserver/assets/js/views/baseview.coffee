@@ -11,7 +11,6 @@ class BaseView
         @data= {}
 
         @setHeader()
-        @setTabs()
         @bindSockets()
 
         # Call view `onReady` but only if present.
@@ -30,8 +29,6 @@ class BaseView
         ayla.sockets.off @socketsName + ".result", (result) => @announce result
         ayla.sockets.off @socketsName + ".data", (obj) => @onData obj
 
-        $("#" + @viewIdLower + " .tabs dd a").unbind "click", @tabClick
-
         @onDispose() if @onDispose?
 
     # Set active navigation and header properties.
@@ -40,17 +37,6 @@ class BaseView
 
         if currentPath isnt "/" and currentPath isnt ""
             $("#header").find(".#{currentPath}").addClass "active"
-
-    # Emulate Foundation tabs.
-    setTabs: =>
-        $("#" + @viewIdLower + " .tabs dd a").click @tabClick
-
-    # Highlight tab when clicked or tapped.
-    tabClick: (e) =>
-        console.warn e
-        src = $(e.target)
-        src.parents("dl").removeClass "active"
-        src.parent().addClass "active"
 
     # DATA UPDATES
     # ----------------------------------------------------------------------
