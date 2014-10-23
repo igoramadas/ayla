@@ -1,7 +1,8 @@
 # SERVER: API
 # -----------------------------------------------------------------------------
-# Wrapper for all server API modules. An "api" is responsible for getting
-# and sending data from / to a specific online service.
+# Wrapper for all server API modules. Each API module is responsible for getting
+# and sending data to a specific service or device, and interacting with
+# relevant managers (see manager.coffee).
 class Api
 
     expresser = require "expresser"
@@ -16,14 +17,15 @@ class Api
     lodash = expresser.libs.lodash
     path = require "path"
 
-    # Modules will be populated on init.
+    # Modules and timers will be set on init.
     modules: {}
     disabledModules: {}
+    timers: {}
 
     # INIT
     # -------------------------------------------------------------------------
 
-    # Init Ayla API.
+    # Init all API modules.
     init: (callback) =>
         rootPath = path.join __dirname, "../"
         cronPath = rootPath + "cron.api.json"
@@ -54,12 +56,27 @@ class Api
         m.start() for k, m of @modules
         cron.load cronPath, {basePath: apiPath} if settings.cron.enabled
 
+        # Emit modules data to clients every few minutes.
+        @emitModules()
+        @timers["modules"] = setInterval @emitModules, settings.modules.socketsEmitIntervalMinutes
+
         # Proceed with callback?
         callback() if callback?
 
-    # Dispatch settings and modules info to clients.
-    emitSockets: =>
-        sockets.emit "server.api", @modules, @disabledModules
+    # Stop all API modules and clear timers.
+    stop: (callback) =>
+        for k, m of @modules
+            m.stop()
+
+        for k, t of @timers
+            clearInterval @timers[k]
+            delete timers[k]
+
+        callback() if callback?
+
+    # Dispatch modules info to clients.
+    emitModules: =>
+        sockets.emit "server.api.modules", @modules, @disabledModules
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

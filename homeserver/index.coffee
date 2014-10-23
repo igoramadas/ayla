@@ -3,11 +3,9 @@
 
 # Note on exit.
 process.on "exit", (code) -> console.warn "Ayla process exit", code
-process.env.AVAHI_COMPAT_NOWARN = 1
 
 # Require Expresser.
 expresser = require "expresser"
-database = expresser.database
 logger = expresser.logger
 settings = expresser.settings
 
@@ -22,8 +20,10 @@ api = require "./server/api.coffee"
 manager = require "./server/manager.coffee"
 routes = require "./server/routes.coffee"
 
-# Init Expresser and main modules.
+# Init Expresser.
 expresser.init()
+
+# Init API modules, managers and finally routes.
 api.init -> manager.init -> routes.init()
 
 # Automatically update settings when settings.json gets updated.

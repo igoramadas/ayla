@@ -1,7 +1,7 @@
 # SERVER: MANAGER
 # -----------------------------------------------------------------------------
 # Wrapper for all managers. A "manager" is responsible for automated actions
-# based on data processed by relevant API modules.
+# based on data processed by API modules.
 class Manager
 
     expresser = require "expresser"
@@ -16,13 +16,14 @@ class Manager
     lodash = expresser.libs.lodash
     path = require "path"
 
-    # Modules will be populated on init.
+    # Modules and timers will be set on init.
     modules: {}
+    timers: {}
 
     # INIT
     # -------------------------------------------------------------------------
 
-    # Init Ayla API.
+    # Init all managers.
     init: (callback) =>
         rootPath = path.join __dirname, "../"
         managerPath = rootPath + "server/manager/"
@@ -41,13 +42,33 @@ class Manager
         # Start all managers.
         m.start() for k, m of @modules
 
+        # Emit settings and modules data to clients every few minutes.
+        @emitSettings()
+        @emitModules()
+        @timers["settings"] = setInterval @emitSettings, settings.modules.socketsEmitIntervalMinutes
+        @timers["modules"] = setInterval @emitModules, settings.modules.socketsEmitIntervalMinutes
+
         # Proceed with callback?
         callback() if callback?
 
-    # Dispatch settings and modules info to clients.
-    emitSockets: =>
+    # Stop all managers and clear timers.
+    stop: (callback) =>
+        for k, m of @modules
+            m.stop()
+
+        for k, t of @timers
+            clearInterval @timers[k]
+            delete timers[k]
+
+        callback() if callback?
+
+    # Dispatch settings to clients.
+    emitSettings: =>
         sockets.emit "server.settings", settings
-        sockets.emit "server.manager", @modules
+
+    # Dispatch modules to clients.
+    emitModules: =>
+        sockets.emit "server.manager.modules", @modules
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

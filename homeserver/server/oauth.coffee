@@ -280,7 +280,7 @@ class OAuth
             return
 
         # Abort if token is already being refreshed.
-        minRefreshTime = moment().add(settings.modules.minRefreshTokenInterval * -1, "s").unix()
+        minRefreshTime = moment().subtract(settings.modules.minRefreshTokenIntervalSeconds, "s").unix()
         return if @lastRefresh? and @lastRefresh > minRefreshTime
 
         @authenticated = false

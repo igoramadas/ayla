@@ -108,10 +108,12 @@
         "maxAuthTokenAgeDays": 7,
         // How long before trying to refresh an OAuth token again, in seconds.
         // Default represents 5 minutes.
-        "minRefreshTokenInterval": 300,
+        "minRefreshTokenIntervalSeconds": 300,
         // The `notifyExpireMinutes` is used to avoid sending repeated notifications.
         // By default it won't resend the same notification if last was sent less than 60 minutes ago.
         "notifyExpireMinutes": 60,
+        // Default value used by sockets to emit settings and modules data to clients, in seconds.
+        "socketsEmitIntervalMinutes": 10,
         // Call the module's `stop` method automatically if the same error
         // happens 10 times in less than 48 hours.
         "stopOnErrorCount": 10
