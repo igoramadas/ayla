@@ -23,7 +23,7 @@
                             th Schedule
                             th Last run
                         tbody
-                            // ko foreach: jobs
+                            // ko foreach: jobs()
                             tr
                                 td
                                     span(data-bind="text: id")
@@ -36,25 +36,25 @@
                             // /ko
 
                 #hardware.content.panel
-                    .inner-panel
+                    .inner-panel(data-bind="with: server()")
                         div
                             span.info Hostname
-                            span(data-bind="text: server.hostname")
+                            span(data-bind="text: hostname")
                         div
                             span.info Memory
-                            span(data-bind="text: server.memoryUsage + '% (' + server.memoryTotal + ')'")
+                            span(data-bind="text: memoryUsage + '% (' + memoryTotal + ')'")
                         div
                             span.info CPU Load
-                            span(data-bind="text: server.loadAvg")
+                            span(data-bind="text: loadAvg")
                         div
                             span.info IP(s)
-                            span(data-bind="text: server.ips.join(', ')")
+                            span(data-bind="text: ips.join(', ')")
                         div
                             span.info Process ID
-                            span(data-bind="text: server.process.pid")
+                            span(data-bind="text: process.pid")
                         div
                             span.info Process Memory
-                            span(data-bind="text: server.process.memoryUsage")
+                            span(data-bind="text: process.memoryUsage")
                         div
                             span.info Uptime
-                            span(data-bind="text: server.uptime")
+                            span(data-bind="text: uptime")

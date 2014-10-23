@@ -33,7 +33,6 @@ class Routes
                 link = m.title.toLowerCase()
 
                 # Set default manager routes (/managerId and /managerId/data).
-                app.get "/#{link}", (req, res) -> renderPage req, res, link, {pageTitle: m.title, data: m.data}
                 app.get "/#{link}/data", (req, res) -> renderJson req, res, m.data
 
                 # Bind manager specific routes.
@@ -45,8 +44,7 @@ class Routes
                 link = m.moduleNameLower
 
                 # Set default module route (/apiModuleId).
-                app.get "/#{link}", (req, res) -> renderApiModulePage req, res, m
-                app.get "/#{link}/data", -> renderJson req, res, m.data
+                app.get "/api/#{link}/data", -> renderJson req, res, m.data
 
                 # Has OAuth bindings? If so, set OAuth routes.
                 if m.oauth?
@@ -59,8 +57,6 @@ class Routes
                 bindModuleRoutes m
 
         # API page, commander and status routes.
-        app.get "/api", apiPage
-        app.get "/system", systemPage
         app.get "/commander/:cmd", commanderPage
         app.post "/commander/:cmd", commanderPage
         app.get "/status", statusPage
@@ -93,19 +89,6 @@ class Routes
     # The index homepage.
     indexPage = (req, res) ->
         renderPage req, res, "index"
-
-    # API, COMMANDER AND STATUS ROUTES
-    # -------------------------------------------------------------------------
-
-    # The API modules listing.
-    apiPage = (req, res) ->
-        options = {title: "API Modules", apiModules: api.modules, disabledApiModules: api.disabledModules}
-        renderPage req, res, "api", options
-
-    # The system config page.
-    systemPage = (req, res) ->
-        options = {title: "System", apiModules: api.modules, settings: settings, jobs: cron.jobs, server: utils.getServerInfo()}
-        renderPage req, res, "system", options
 
     # The commander processor.
     commanderPage = (req, res) ->

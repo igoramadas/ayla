@@ -11,14 +11,6 @@ class IndexView
     # MAIN METHODS
     # ----------------------------------------------------------------------
 
-    # Bind a page to the main view.
-    bindPage: (viewId) =>
-        ayla.currentView.dispose() if ayla.currentView?
-
-        return (callback) ->
-            ayla.currentView = new ayla[viewId + "View"]()
-            ayla.currentView.init callback
-
     # Init the view and set elements.
     init: =>
         $(document).foundation()
@@ -26,10 +18,29 @@ class IndexView
 
         # Init sockets.
         ayla.sockets.init()
+        @bindSockets()
 
         pager.extendWithPage this
         ko.applyBindings this
         pager.start this
+
+    # Listen to main sockets (server, settings, modules etc).
+    bindSockets: =>
+        ayla.sockets.on "server.settings", (settings) =>
+            ayla.server.settings = settings
+        ayla.sockets.on "server.result", (modules, disabledModules) =>
+            ayla.server.apiModules = modules
+            ayla.server.apiDisabledModules = disabledModules
+        ayla.sockets.on "server.manager", (modules) =>
+            ayla.server.managerModules = modules
+
+    # Bind a page to the main view.
+    bindPage: (viewId) =>
+        ayla.currentView.dispose() if ayla.currentView?
+
+        return (callback) ->
+            ayla.currentView = new ayla[viewId + "View"]()
+            ayla.currentView.init callback
 
     # ANNOUNCEMENTS
     # ----------------------------------------------------------------------

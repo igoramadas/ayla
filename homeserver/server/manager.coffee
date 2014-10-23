@@ -8,6 +8,7 @@ class Manager
     events = expresser.events
     logger = expresser.logger
     settings = expresser.settings
+    sockets = expresser.sockets
 
     commander = require "./commander.coffee"
     fs = require "fs"
@@ -42,6 +43,11 @@ class Manager
 
         # Proceed with callback?
         callback() if callback?
+
+    # Dispatch settings and modules info to clients.
+    emitSockets: =>
+        sockets.emit "server.settings", settings
+        sockets.emit "server.manager", @modules
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

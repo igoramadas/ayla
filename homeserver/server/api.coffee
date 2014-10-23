@@ -10,6 +10,7 @@ class Api
     events = expresser.events
     logger = expresser.logger
     settings = expresser.settings
+    sockets = expresser.sockets
 
     fs = require "fs"
     lodash = expresser.libs.lodash
@@ -55,6 +56,10 @@ class Api
 
         # Proceed with callback?
         callback() if callback?
+
+    # Dispatch settings and modules info to clients.
+    emitSockets: =>
+        sockets.emit "server.api", @modules, @disabledModules
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------
