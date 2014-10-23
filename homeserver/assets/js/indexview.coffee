@@ -20,27 +20,30 @@ class IndexView
         ayla.sockets.init()
         @bindSockets()
 
+        # Create announcements queue.
+        @announcementsQueue = []
+        @announcing = false
+
         pager.extendWithPage this
         ko.applyBindings this
-        pager.start this
+        pager.start()
 
     # Listen to main sockets (server, settings, modules etc).
     bindSockets: =>
         ayla.sockets.on "server.settings", (settings) =>
             ayla.server.settings = settings
         ayla.sockets.on "server.result", (modules, disabledModules) =>
-            ayla.server.apiModules = modules
-            ayla.server.apiDisabledModules = disabledModules
+            ayla.server.api.modules = modules
+            ayla.server.api.disabledModules = disabledModules
         ayla.sockets.on "server.manager", (modules) =>
-            ayla.server.managerModules = modules
+            ayla.server.manager.modules = modules
 
     # Bind a page to the main view.
-    bindPage: (viewId) =>
+    bindPage: (callback, page) =>
         ayla.currentView.dispose() if ayla.currentView?
 
-        return (callback) ->
-            ayla.currentView = new ayla[viewId + "View"]()
-            ayla.currentView.init callback
+        ayla.currentView = new ayla[page.currentId + "View"]()
+        ayla.currentView.init callback
 
     # ANNOUNCEMENTS
     # ----------------------------------------------------------------------

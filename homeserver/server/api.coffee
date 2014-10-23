@@ -6,21 +6,20 @@
 class Api
 
     expresser = require "expresser"
+
     cron = expresser.cron
     database = expresser.database
     events = expresser.events
+    fs = require "fs"
+    lodash = expresser.libs.lodash
     logger = expresser.logger
+    path = require "path"
     settings = expresser.settings
     sockets = expresser.sockets
 
-    fs = require "fs"
-    lodash = expresser.libs.lodash
-    path = require "path"
-
-    # Modules and timers will be set on init.
+    # Modules will be set on init.
     modules: {}
     disabledModules: {}
-    timers: {}
 
     # INIT
     # -------------------------------------------------------------------------
@@ -56,27 +55,14 @@ class Api
         m.start() for k, m of @modules
         cron.load cronPath, {basePath: apiPath} if settings.cron.enabled
 
-        # Emit modules data to clients every few minutes.
-        @emitModules()
-        @timers["modules"] = setInterval @emitModules, settings.modules.socketsEmitIntervalMinutes
-
         # Proceed with callback?
         callback() if callback?
 
     # Stop all API modules and clear timers.
     stop: (callback) =>
-        for k, m of @modules
-            m.stop()
-
-        for k, t of @timers
-            clearInterval @timers[k]
-            delete timers[k]
+        m.stop() for k, m of @modules
 
         callback() if callback?
-
-    # Dispatch modules info to clients.
-    emitModules: =>
-        sockets.emit "server.api.modules", @modules, @disabledModules
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

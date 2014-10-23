@@ -5,6 +5,7 @@ class SystemManager extends (require "./basemanager.coffee")
 
     expresser = require "expresser"
 
+    api = require "../api.coffee"
     cron = expresser.cron
     events = expresser.events
     lodash = expresser.libs.lodash
@@ -16,9 +17,8 @@ class SystemManager extends (require "./basemanager.coffee")
     title: "System"
     icon: "fa-cogs"
 
-    # Server status will be updated every minute.
-    timerServerInfo = null
-    timerJobs = null
+    # Timers to emit data to clients.
+    timers: {}
 
     # INIT
     # -------------------------------------------------------------------------
@@ -31,33 +31,42 @@ class SystemManager extends (require "./basemanager.coffee")
 
     # Start the System manager and listen to data updates / events.
     start: =>
-        @getServerStatus()
+        @getApiModules()
         @getJobs()
+        @getServerInfo()
+        @getSettings()
 
-        timerServerInfo = setInterval @getServerStatus, 60001
-        timerJobs = setInterval @getJobs, 60002
+        @timers["apimodules"] = setInterval @getApiModules, 90000
+        @timers["jobs"] = setInterval @getJobs, 30000
+        @timers["serverinfo"] = setInterval @getServerInfo, 60000
+        @timers["settings"] = setInterval @getSettings, 30000
 
         @baseStart()
 
     # Stop the System manager.
     stop: =>
-        clearInterval timerServerInfo
-        clearInterval timerJobs
-
-        timerServerInfo = null
-        timerJobs = null
+        for k, t of @timers
+            clearInterval @timers[k]
+            delete @timers[k]
 
         @baseStop()
 
     # SERVER GENERAL INFO
     # -------------------------------------------------------------------------
 
-    # Get current server status (CPU, memory etc).
-    getServerStatus: =>
-        @data.server = utils.getServerInfo()
-        @dataUpdated "server"
+    # Get API modules information.
+    getApiModules: =>
+        modules = []
+        modules.push(getModuleInfo m) for k, m of api.modules
+        disabledModules = api.disabledModules
 
-    # Get schedulded jobs.
+        @data.apiModules = modules
+        @dataUpdated "apiModules"
+
+        @data.disabledModules = disabledModules
+        @dataUpdated "apiDisabledModules"
+
+    # Get scheduled jobs.
     getJobs: =>
         @data.jobs = []
 
@@ -66,6 +75,41 @@ class SystemManager extends (require "./basemanager.coffee")
             @data.jobs.push job
 
         @dataUpdated "jobs"
+
+    # Get current server status (CPU, memory etc).
+    getServerInfo: =>
+        @data.server = utils.getServerInfo()
+        @dataUpdated "server"
+
+    # Get current server status (CPU, memory etc).
+    getSettings: =>
+        @data.settings = settings
+        @dataUpdated "settings"
+
+    # HELPERS
+    # -------------------------------------------------------------------------
+
+    # Helper to get relevant module info to be sent to clients.
+    # Return as string.
+    getModuleInfo = (module) ->
+        result = {methods: []}
+
+        # Iterate module to get its properties. Functions will be merged
+        # onto the `methods` property.
+        for prop in lodash.keys module
+            v = module[prop]
+
+            if lodash.isFunction(v)
+                result.methods.push prop
+            else if prop is "oauth"
+                result.oauth = {authenticated: v.authenticated, data: v.data}
+            else
+                result[prop] = v
+
+        # Set OAuth as false if it doesn't exist.
+        result.oauth = false if not result.oauth?
+
+        return result
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

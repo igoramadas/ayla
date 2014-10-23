@@ -8,4 +8,4 @@ class EmailView extends ayla.BaseView
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.EmailView = EmailView
+window.ayla.emailView = EmailView

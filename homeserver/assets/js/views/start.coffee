@@ -10,4 +10,4 @@ class StartView extends ayla.BaseView
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.StartView = StartView
+window.ayla.startView = StartView

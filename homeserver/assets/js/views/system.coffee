@@ -8,20 +8,24 @@ class SystemView extends ayla.BaseView
     onReady: =>
         logger "Loaded System View"
 
-        containers = $ ".data-table"
+        $("#api .module").click @onModuleClick
+        $(".tabs dd a").eq(0).click()
 
-        # Iterate all data tables and transform JSON to readable tables.
-        $.each containers, (i, d) ->
-            try
-                div = $ d
-                html = div.html()
-                json = JSON.parse html
-                div.html JsonHuman.format json
-            catch ex
-                console.warn "Could not parse JSON.", html
+    # Dispose the System view.
+    onDispose: =>
+        $("#api .module").unbind "click", @onModuleClick
 
-        $("dd a").eq(0).click()
+    # Process data, set endTime as moment instead of a number.
+    dataProcessor: (key, data) =>
+        if key is "jobs"
+            for job in data
+                job.endTime = moment(job.endTime)
+
+    # When user clicks or taps on a module, open the module page.
+    onModuleClick: (e) =>
+        src = $ e.currentTarget
+        document.location.href = src.find("a").attr "href"
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.SystemView = SystemView
+window.ayla.systemView = SystemView

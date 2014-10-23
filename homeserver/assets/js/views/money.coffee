@@ -107,4 +107,4 @@ class MoneyView extends ayla.BaseView
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.MoneyView = MoneyView
+window.ayla.moneyView = MoneyView

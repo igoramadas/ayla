@@ -5,21 +5,19 @@
 class Manager
 
     expresser = require "expresser"
-    events = expresser.events
-    logger = expresser.logger
-    settings = expresser.settings
-    sockets = expresser.sockets
 
     commander = require "./commander.coffee"
+    events = expresser.events
     fs = require "fs"
     jsonPath = require "./jsonpath.coffee"
     lodash = expresser.libs.lodash
+    logger = expresser.logger
     path = require "path"
+    settings = expresser.settings
+    sockets = expresser.sockets
 
-    # Modules and timers will be set on init.
+    # Modules will be set on init.
     modules: {}
-    timers: {}
-
     # INIT
     # -------------------------------------------------------------------------
 
@@ -42,33 +40,14 @@ class Manager
         # Start all managers.
         m.start() for k, m of @modules
 
-        # Emit settings and modules data to clients every few minutes.
-        @emitSettings()
-        @emitModules()
-        @timers["settings"] = setInterval @emitSettings, settings.modules.socketsEmitIntervalMinutes
-        @timers["modules"] = setInterval @emitModules, settings.modules.socketsEmitIntervalMinutes
-
         # Proceed with callback?
         callback() if callback?
 
     # Stop all managers and clear timers.
     stop: (callback) =>
-        for k, m of @modules
-            m.stop()
-
-        for k, t of @timers
-            clearInterval @timers[k]
-            delete timers[k]
+        m.stop() for k, m of @modules
 
         callback() if callback?
-
-    # Dispatch settings to clients.
-    emitSettings: =>
-        sockets.emit "server.settings", settings
-
-    # Dispatch modules to clients.
-    emitModules: =>
-        sockets.emit "server.manager.modules", @modules
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

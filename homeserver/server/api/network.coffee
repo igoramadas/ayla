@@ -30,7 +30,7 @@ class Network extends (require "./baseapi.coffee")
     # -------------------------------------------------------------------------
 
     # Local network discovery.
-    mdnsBrowser: null
+    mdnsBrowser = null
 
     # Server information cache.
     serverInfo: {}
@@ -61,12 +61,12 @@ class Network extends (require "./baseapi.coffee")
         @serverInfo = utils.getServerInfo()
         @serverInfo.platform = @serverInfo.platform.toLowerCase()
 
-        @mdnsBrowser = mdns.createBrowser mdns.tcp "http"
+        mdnsBrowser = mdns.createBrowser mdns.tcp "http"
 
         if settings.network.autoDiscovery
-            @mdnsBrowser.on "serviceUp", @onServiceUp
-            @mdnsBrowser.on "serviceDown", @onServiceDown
-            @mdnsBrowser.start()
+            mdnsBrowser.on "serviceUp", @onServiceUp
+            mdnsBrowser.on "serviceDown", @onServiceDown
+            mdnsBrowser.start()
 
         # Probe network.
         @probeDevices()
@@ -80,9 +80,9 @@ class Network extends (require "./baseapi.coffee")
         events.off "Network.wol", @wol
 
         if settings.network.autoDiscovery
-            @mdnsBrowser.off "serviceUp", @onServiceUp
-            @mdnsBrowser.off "serviceDown", @onServiceDown
-            @mdnsBrowser.stop()
+            mdnsBrowser.off "serviceUp", @onServiceUp
+            mdnsBrowser.off "serviceDown", @onServiceDown
+            mdnsBrowser.stop()
 
         @baseStop()
 

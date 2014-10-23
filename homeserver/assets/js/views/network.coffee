@@ -10,4 +10,4 @@ class NetworkView extends ayla.BaseView
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.NetworkView = NetworkView
+window.ayla.networkView = NetworkView

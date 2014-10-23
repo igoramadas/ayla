@@ -26,4 +26,4 @@ class UsersView extends ayla.BaseView
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.UsersView = UsersView
+window.ayla.usersView = UsersView

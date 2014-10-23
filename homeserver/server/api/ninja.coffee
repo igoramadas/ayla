@@ -13,9 +13,8 @@ class Ninja extends (require "./baseapi.coffee")
     ninjablocks = require "ninja-blocks"
     settings = expresser.settings
 
-    # Cached Ninja api and RF433 objects.
-    ninjaApi: null
-    rf433: null
+    # Cached Ninja api object.
+    ninjaApi = null
 
     # INIT
     # -------------------------------------------------------------------------
@@ -33,7 +32,7 @@ class Ninja extends (require "./baseapi.coffee")
 
             events.on "Ninja.actuate433", @actuate433
 
-            @ninjaApi = ninjablocks.app {user_access_token: settings.ninja.api.userToken}
+            ninjaApi = ninjablocks.app {user_access_token: settings.ninja.api.userToken}
 
             @getDevices()
 
@@ -50,12 +49,12 @@ class Ninja extends (require "./baseapi.coffee")
     getDevices: (callback) =>
         hasCallback = lodash.isFunction callback
 
-        if not @ninjaApi?
+        if not ninjaApi?
             logger.warn "Ninja.getDevices", "Ninja API client not started (probably missing settings). Abort!"
             return
 
         # Get all devices from Ninja Blocks.
-        @ninjaApi.devices (err, result) =>
+        ninjaApi.devices (err, result) =>
             if err?
                 @logError "getDevices", err
             else
@@ -116,7 +115,7 @@ class Ninja extends (require "./baseapi.coffee")
         hasCallback = lodash.isFunction callback
         rf433data = @data.rf433?[0].value
 
-        if not @isRunning [@ninjaApi]
+        if not @isRunning [ninjaApi]
             callback "Ninja API client not running. Please check Ninja API settings." if hasCallback
             return
         else if not rf433data?
@@ -142,7 +141,7 @@ class Ninja extends (require "./baseapi.coffee")
         # Iterate and send command to subdevices twice to make sure it'll work.
         for a in actuators
             do (a) =>
-                actuate = => @ninjaApi.device(rf433data.guid).actuate a.data
+                actuate = => ninjaApi.device(rf433data.guid).actuate a.data
                 setTimeout actuate, 1
                 setTimeout actuate, 300
 

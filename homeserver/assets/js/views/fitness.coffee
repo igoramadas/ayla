@@ -8,4 +8,4 @@ class FitnessView extends ayla.BaseView
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.FitnessView = FitnessView
+window.ayla.fitnessView = FitnessView

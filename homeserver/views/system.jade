@@ -1,41 +1,68 @@
-#system.page(data-bind="page: {id: 'system', title: 'System', withOnShow: bindPage('System')}")
+#system.page(data-bind="page: {id: 'system', title: 'System', withOnShow: bindPage}")
     h1 System
     ul.maingrid.small-block-grid-1
         li
-            dl.tabs(data-tab)
+            dl.tabs
                 dd
-                    a(href="#settings", title="Module's settings") all settings
+                    a(href="#system/api", title="API Modules") api modules
                 dd
-                    a(href="#jobs", title="OAuth parameters") all jobs
+                    a(href="#system/settings", title="Server settings") all settings
                 dd
-                    a(href="#hardware", title="Errors triggered by this module") hardware
+                    a(href="#system/jobs", title="Scheduled jobs") all jobs
+                dd
+                    a(href="#system/hardware", title="Hardware info") hardware
 
             .tabs-content
-                #settings.content.panel
-                    h5 settings
+                #api.content.panel(data-bind="page: {id: 'api'}")
                     .inner-panel
-                        .data-table !{JSON.stringify(settings)}
+                        ul.maingrid.small-block-grid-1.medium-block-grid-4
+                            // ko foreach: apiModules
+                            li
+                                .module
+                                    h5
+                                        a(data-bind="text: moduleName, attr: {href: '#system/api/' + moduleNameLower}")
+                                    .inner-panel
+                                        div
+                                            span(data-bind="text: Object.keys(data).length + ' data, '")
+                                            span(data-bind="text: ' jobs, '")
+                                            span(data-bind="text: Object.keys(errors).length + ' errors'")
+                                            span.valid(data-bind="if: oauth && oauth.authenticated") oauth
+                                            span.invalid(data-bind="if: oauth && !oauth.authenticated") oauth
+                            // /ko
 
-                #jobs.content.panel
+                #settings.content.panel(data-bind="page: {id: 'settings'}")
+                    h5 Current server settings
+                    .inner-panel
+                        .data-table(data-bind="html: JsonHuman.format(settings()).innerHTML")
+
+                #jobs.content.panel(data-bind="page: {id: 'jobs'}")
                     table
                         thead
                             th Job
                             th Schedule
                             th Last run
                         tbody
-                            // ko foreach: jobs()
+                            // ko foreach: jobs
                             tr
                                 td
                                     span(data-bind="text: id")
                                 td
-                                    span(data-bind="if: isNaN(schedule), text: schedule.join(', ')")
-                                    span(data-bind="if: !isNaN(schedule), text: 'every ' + schedule + ' seconds'")
+                                    // ko if: isNaN(schedule)
+                                    span(data-bind=" text: schedule.join(', ')")
+                                    // /ko
+                                    // ko if: !isNaN(schedule)
+                                    span(data-bind="text: 'every ' + schedule + ' seconds'")
+                                    // /ko
                                 td
-                                    span(data-bind="if: endTime.year() > 2000, text: endTime.format('lll')")
+                                    // ko if: endTime.year() > 2000
+                                    span(data-bind="text: endTime.format('lll')")
+                                    // /ko
+                                    // ko if: endTime.year() > 2000
                                     span(data-bind="if: endTime.year() <= 2000") Never
+                                    // /ko
                             // /ko
 
-                #hardware.content.panel
+                #hardware.content.panel(data-bind="page: {id: 'hardware'}")
                     .inner-panel(data-bind="with: server()")
                         div
                             span.info Hostname

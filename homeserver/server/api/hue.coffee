@@ -71,7 +71,7 @@ class Hue extends (require "./baseapi.coffee")
             return
 
         # Get correct URL depending on home or remote location.
-        if datastore.NetworkApi?.isHome
+        if datastore.Network?.isHome
             baseUrl = "http://#{device.ip}:#{device.localPort}/api/#{settings.hue.api.user}/"
         else
             baseUrl = "http://#{settings.network.router.remoteHost}:#{device.remotePort}/api/#{settings.hue.api.user}/"

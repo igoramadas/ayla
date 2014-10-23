@@ -36,4 +36,4 @@ class LightsView extends ayla.BaseView
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.LightsView = LightsView
+window.ayla.lightsView = LightsView

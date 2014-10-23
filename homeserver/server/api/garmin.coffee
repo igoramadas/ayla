@@ -19,8 +19,8 @@ class Garmin extends (require "./baseapi.coffee")
     zombie = require "zombie"
 
     # Zombie browser state objects.
-    zombieBrowser: null
-    cookie: {data: null, timestamp: 0}
+    zombieBrowser = null
+    cookie = {data: null, timestamp: 0}
 
     # INIT
     # -------------------------------------------------------------------------
@@ -49,23 +49,23 @@ class Garmin extends (require "./baseapi.coffee")
 
     # Helper to login and get the session token.
     login: (callback) =>
-        if not @zombieBrowser?
+        if not zombieBrowser?
             zombie.debug() if settings.general.debug
-            @zombieBrowser = zombie.create {maxRedirects: 10}
-            @zombieBrowser.resources.mock "https://www.google-analytics.com/analytics.js", {}
+            zombieBrowser = zombie.create {maxRedirects: 10}
+            zombieBrowser.resources.mock "https://www.google-analytics.com/analytics.js", {}
 
         try
-            @zombieBrowser.visit settings.garmin.api.loginUrl, (err) =>
+            zombieBrowser.visit settings.garmin.api.loginUrl, (err) =>
                 if err?
                     @logError "Garmin.login", "Could not fetch sigin page.", err
                     return callback err
 
-                @zombieBrowser.fill "#username", settings.garmin.api.username
-                @zombieBrowser.fill "#password", settings.garmin.api.password
+                zombieBrowser.fill "#username", settings.garmin.api.username
+                zombieBrowser.fill "#password", settings.garmin.api.password
 
-                @zombieBrowser.pressButton "#login-btn-signin", (err) =>
-                    @cookie.data = @zombieBrowser.cookies
-                    @cookie.timestamp = moment().unix()
+                zombieBrowser.pressButton "#login-btn-signin", (err) =>
+                    cookie.data = zombieBrowser.cookies
+                    cookie.timestamp = moment().unix()
 
                     callback null
         catch ex
@@ -91,7 +91,7 @@ class Garmin extends (require "./baseapi.coffee")
         # Set request options.
         options = {headers: {"Accept": "application/json"}}
 
-        @zombieBrowser.resources.request "GET", reqUrl, options, (err, result) =>
+        zombieBrowser.resources.request "GET", reqUrl, options, (err, result) =>
             if result?.body?
                 try
                     result = result.body.toString "utf8"

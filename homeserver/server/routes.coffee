@@ -134,10 +134,7 @@ class Routes
         options.loadJs = [] if not options.loadJs?
         options.loadCss = [] if not options.loadCss?
         options.moment = moment
-        options.settings = settings
-
-        # Append managers to the output.
-        options.managers = manager.modules
+        options.manager = {modules: manager.modules}
 
         # Force .jade extension.
         filename += ".jade" if filename.indexOf(".jade") < 0

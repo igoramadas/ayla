@@ -8,7 +8,7 @@ html.no-js(lang="en")
         link(rel="icon", type="image/x-icon", href="/favicon.ico")
 
         script(src="/socket.io/socket.io.js")
-        script window.ayla = {server: {}};
+        script window.ayla = {server: {api: {}, manager: {}}};
 
         != css("styles")
         for c in loadCss
@@ -30,7 +30,7 @@ html.no-js(lang="en")
                             a(href="#") Menu
                     section.top-bar-section
                         ul.left
-                            for m, key in managers
+                            for m, key in manager.modules
                                 li(class="#{m.title.toLowerCase()}")
                                     a(href="##{m.title.toLowerCase()}")
                                         i(class="fa #{m.icon}")
@@ -50,7 +50,6 @@ html.no-js(lang="en")
             include ./fitness.jade
             include ./users.jade
             include ./weather.jade
-            include ./api.jade
             include ./system.jade
 
             #announcements(style="display: none")
