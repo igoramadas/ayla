@@ -6,10 +6,13 @@ ko.bindingHandlers.smartPage = {
             return result;
         };
 
-        var page = new pager.Page(element, customValueAccessor, allBindingsAccessor, viewModel, bindingContext);
-        page.init();
-    },
+        var customAllBindingsAccessor = function() {
+            var result = allBindingsAccessor();
+            result.smartPage.withOnShow = viewModel.bindPage;
+            return result;
+        };
 
-    update:function () {
+        var page = new pager.Page(element, customValueAccessor, customAllBindingsAccessor, viewModel, bindingContext);
+        return page.init();
     }
 };
