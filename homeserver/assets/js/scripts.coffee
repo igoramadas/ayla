@@ -4,7 +4,6 @@
 #= require lib/jquery.colorpicker.js
 #= require lib/lodash.js
 #= require lib/knockout.js
-#= require lib/ko.colorpicker.js
 #= require lib/moment.js
 #= require lib/placeholder.js
 #= require lib/fastclick.js
@@ -13,6 +12,8 @@
 #= require lib/chart.js
 #= require lib/crel.js
 #= require lib/jsonhuman.js
+#= require lib/ko.colorpicker.js
+#= require lib/ko.smartpage.js
 #= require sockets.coffee
 #= require indexview.coffee
 #= require views/baseview.coffee

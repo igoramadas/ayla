@@ -1,4 +1,4 @@
-#system.page(data-bind="page: {id: 'system', title: 'System', withOnShow: bindPage}")
+#system.page(data-bind="smartPage: {id: 'system', title: 'System'}")
     h1 System
     ul.maingrid.small-block-grid-1
         li
@@ -13,7 +13,7 @@
                     a(href="#system/hardware", title="Hardware info") hardware
 
             .tabs-content
-                #api.content.panel(data-bind="page: {id: 'api', afterShow: ayla.indexView.setPageTab}")
+                #api.content.panel(data-bind="smartPage: {id: 'api', afterShow: ayla.indexView.setPageTab}")
                     .inner-panel
                         ul.maingrid.small-block-grid-1.medium-block-grid-4
                             // ko foreach: apiModules
@@ -30,12 +30,12 @@
                                             span.invalid(data-bind="if: oauth && !oauth.authenticated") oauth
                             // /ko
 
-                #settings.content.panel(data-bind="page: {id: 'settings', afterShow: ayla.indexView.setPageTab}")
+                #settings.content.panel(data-bind="smartPage: {id: 'settings', afterShow: ayla.indexView.setPageTab}")
                     h5 Current server settings
                     .inner-panel
                         .data-table(data-bind="html: JsonHuman.format(settings()).innerHTML")
 
-                #jobs.content.panel(data-bind="page: {id: 'jobs', afterShow: ayla.indexView.setPageTab}")
+                #jobs.content.panel(data-bind="smartPage: {id: 'jobs', afterShow: ayla.indexView.setPageTab}")
                     table
                         thead
                             th Job
@@ -62,7 +62,7 @@
                                     // /ko
                             // /ko
 
-                #hardware.content.panel(data-bind="page: {id: 'hardware', afterShow: ayla.indexView.setPageTab}")
+                #hardware.content.panel(data-bind="smartPage: {id: 'hardware', afterShow: ayla.indexView.setPageTab}")
                     .inner-panel(data-bind="with: server()")
                         div
                             span.info Hostname
