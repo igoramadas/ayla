@@ -139,7 +139,7 @@ class OAuth
         else
             callbackUrl = "http://localhost:#{settings.app.port}/"
 
-        callbackUrl += service + "/auth/callback"
+        callbackUrl += "api/#{service}/auth/callback"
 
         # Create OAuth 2.0 or 1.0 client depending on parameters.
         if version is "2.0"
@@ -257,7 +257,7 @@ class OAuth
                 opts["state"] = settings[@service].api.oauthState
 
             if settings[@service].api.oauthPassRedirect
-                opts["redirect_uri"] = settings.general.appUrl + @service + "/auth/callback"
+                opts["redirect_uri"] = settings.general.appUrl + "api/#{@service}/auth/callback"
 
             # Get authorization code from querystring.
             qCode = qs?.code

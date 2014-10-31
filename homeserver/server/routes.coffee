@@ -44,14 +44,14 @@ class Routes
                 link = m.moduleNameLower
 
                 # Set default module route (/apiModuleId).
-                app.get "/api/#{link}/data", -> renderJson req, res, m.data
+                app.get "/api/#{link}/data", (req, res) -> renderJson req, res, m.data
 
                 # Has OAuth bindings? If so, set OAuth routes.
                 if m.oauth?
                     oauthProcess = (req, res) -> m.oauth.process req, res
-                    app.get "/#{link}/auth", oauthProcess
-                    app.get "/#{link}/auth/callback", oauthProcess
-                    app.post "/#{link}/auth/callback", oauthProcess
+                    app.get "/api/#{link}/auth", oauthProcess
+                    app.get "/api/#{link}/auth/callback", oauthProcess
+                    app.post "/api/#{link}/auth/callback", oauthProcess
 
                 # Bind API module specific routes.
                 bindModuleRoutes m

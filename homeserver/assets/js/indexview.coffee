@@ -43,7 +43,7 @@ class IndexView
         ayla.currentView.dispose() if ayla.currentView?
 
         ayla.currentView = new ayla[page.currentId + "View"]()
-        ayla.currentView.init callback
+        ayla.currentView.init page.pageRoute.params, callback
 
     # Highlight tab when clicked or tapped.
     setPageTab: (e) =>

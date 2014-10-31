@@ -2,7 +2,7 @@
 # --------------------------------------------------------------------------
 class LightsView extends ayla.BaseView
 
-    viewId: "lights"
+    viewId: "Lights"
 
     # Init the Lights view.
     onReady: =>

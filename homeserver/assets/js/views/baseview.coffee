@@ -6,7 +6,7 @@ class BaseView
     # ----------------------------------------------------------------------
 
     # Init the view and set elements.
-    init: (callback) =>
+    init: (params, callback) =>
         @viewIdLower = @viewId.toLowerCase()
         @data= {}
 
@@ -16,7 +16,13 @@ class BaseView
         # Call view `onReady` but only if present.
         @onReady() if @onReady?
 
-        $.getJSON "/#{@viewIdLower}/data", (data) =>
+        # Properly set URL depending on parameters.
+        if params?.id?
+            jsonUrl = "/#{@viewIdLower}/#{params.id}/data"
+        else
+            jsonUrl = "/#{@viewIdLower}/data"
+
+        $.getJSON jsonUrl, (data) =>
             for k, v of data
                 @dataProcessor k, v if @dataProcessor?
                 @data[k] = ko.observable v

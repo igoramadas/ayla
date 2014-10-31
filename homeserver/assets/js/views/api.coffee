@@ -1,6 +1,8 @@
 # API MODULE VIEW
 # --------------------------------------------------------------------------
-class ApiModuleView extends ayla.BaseView
+class ApiView extends ayla.BaseView
+
+    viewId: "Api"
 
     # Init the API detailed module view..
     onReady: =>
@@ -22,4 +24,4 @@ class ApiModuleView extends ayla.BaseView
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.ApiModuleView = ApiModuleView
+window.ayla.apiView = ApiView
