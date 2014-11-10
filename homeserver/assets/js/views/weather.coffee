@@ -21,7 +21,7 @@ class WeatherView extends ayla.BaseView
             data = key
             key = null
 
-        @data.indoorAvg = ko.observable() if not @data.indoorAvg?
+        @model.indoorAvg = ko.observable() if not @model.indoorAvg?
 
         # Incoming data has condition property? If so, set its css computed value.
         if data.condition?
@@ -37,7 +37,7 @@ class WeatherView extends ayla.BaseView
             $("#wrapper").removeClass()
             $("#wrapper").addClass data.icon
 
-        return if not @data.rooms?
+        return if not @model.rooms?
 
         # Indoor average variables.
         temp = 0
@@ -48,8 +48,8 @@ class WeatherView extends ayla.BaseView
         co2Count = 0
 
         # Iterate rooms and update indoor average readings.
-        for roomInfo in @data.rooms()
-            room = @data[roomInfo.id]
+        for roomInfo in @model.rooms()
+            room = @model[roomInfo.id]
 
             if room?
                 room = room()
@@ -75,7 +75,7 @@ class WeatherView extends ayla.BaseView
             temp = (temp / tempCount).toFixed 1
             humidity = (humidity / humidityCount).toFixed 0
             co2 = (co2 / co2Count).toFixed 0
-            @data.indoorAvg {temperature: temp, humidity: humidity, co2: co2}
+            @model.indoorAvg {temperature: temp, humidity: humidity, co2: co2}
 
     # Create a chart representing the next days forecast.
     createChart: (data) =>

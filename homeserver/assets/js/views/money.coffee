@@ -6,9 +6,9 @@ class MoneyView extends ayla.BaseView
 
     # Init the Money view.
     onReady: =>
-        if not @data.balanceCss?
-            @data.balanceCss = ko.computed =>
-                if @data.recentExpenses?.total > @data.recentIncomes?.total
+        if not @model.balanceCss?
+            @model.balanceCss = ko.computed =>
+                if @model.recentExpenses?.total > @model.recentIncomes?.total
                     return "negative"
                 else
                     return "positive"
@@ -33,7 +33,7 @@ class MoneyView extends ayla.BaseView
 
     # Create a balance line chart with expenses and incomes.
     createBalanceChart: =>
-        months = @data.months()
+        months = @model.months()
 
         labels = _.pluck months, "shortDate"
         labels.reverse()
@@ -75,8 +75,8 @@ class MoneyView extends ayla.BaseView
         canvas = $("canvas.balance").get(0).getContext "2d"
         chart = new Chart(canvas).Line chartData, lineOptions
 
-        @createTagsChart @data.recentExpenses().tags, dsExpenses
-        @createTagsChart @data.recentIncomes().tags, dsIncomes
+        @createTagsChart @model.recentExpenses().tags, dsExpenses
+        @createTagsChart @model.recentIncomes().tags, dsIncomes
 
     # Create a radar chart with most used tags.
     createTagsChart: (data, dataset) =>

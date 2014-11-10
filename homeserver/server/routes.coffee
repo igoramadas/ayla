@@ -43,8 +43,22 @@ class Routes
             do (m) ->
                 link = m.moduleNameLower
 
-                # Set default module route (/apiModuleId).
-                app.get "/api/#{link}/data", (req, res) -> renderJson req, res, m.data
+                # Set APi module data route.
+                app.get "/api/#{link}/data", (req, res) ->
+                    obj = {}
+                    obj.settings = settings[m.moduleNameLower]
+                    obj.moduleName = m.moduleName
+                    obj.data = m.data
+                    obj.errors = m.errors
+                    obj.oauth = m.oauth
+                    obj.jobs = []
+
+                    jobs = lodash.where cron.jobs, {module: m.moduleNameLower + ".coffee"}
+
+                    for job in jobs
+                        obj.jobs.push {id: job.id, schedule: job.schedule, endTime: job.endTime}
+
+                    renderJson req, res, obj
 
                 # Has OAuth bindings? If so, set OAuth routes.
                 if m.oauth?

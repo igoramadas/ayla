@@ -81,9 +81,20 @@ class SystemManager extends (require "./basemanager.coffee")
         @data.server = utils.getServerInfo()
         @dataUpdated "server"
 
-    # Get current server status (CPU, memory etc).
+    # Get current server settings. Clean settings before sending to clients.
     getSettings: =>
-        @data.settings = settings
+        result = lodash.cloneDeep settings
+
+        cleanSettings = (obj, level) ->
+            for key, value of obj
+                if lodash.isFunction value
+                    delete obj[key]
+                else if level < 3 and lodash.isObject value
+                    cleanSettings obj, level + 1
+
+        cleanSettings result, 0
+
+        @data.settings = result
         @dataUpdated "settings"
 
     # HELPERS

@@ -1,5 +1,5 @@
 #api.page(data-bind="smartPage: {id: 'api', title: 'API Module', params: ['id']}")
-    h1(data-biond="text: title")
+    h1(data-biond="text: 'API: ' + moduleName")
     ul.maingrid.small-block-grid-1
         li
             dl.tabs(data-tab)
@@ -14,9 +14,9 @@
                 dd
                     a(href="#jobs", title="Scheduled jobs") jobs
 
-                // ko foreach: Object.keys(data)
+                // ko foreach: _.keys(data)
                 dd.data
-                    a(data-bind="text: $data, attr: {href: '#data' + $data}")
+                    a(data-bind="text: $data, attr: {href: '#data-' + $data}")
                 // /ko
 
             .tabs-content
@@ -35,13 +35,15 @@
                         div
                             span.info Authenticated:
                             span(data-bind="text: oauth.authenticated")
-                        div.clip(data-bind="if: oauth.authenticated, with: oauth")
+                        // ko if: oauth.authenticated
+                        div.clip(data-bind="with: oauth")
                             span.info Token:
                             span(data-bind="text: data.token || data.accessToken")
                             br
                             span.info Expires:
                             span(data-bind="if: oauth.data.expires > 0, text: moment(data.expires * 1000).format('lll')")
                             span(data-bind="if: oauth.data.expires < 1") No expiration date set
+                        // /ko
                         div
                             a.button(href="/auth") Trigger authentication
 
@@ -85,9 +87,9 @@
 
                     .inner-panel(data-bind="if: jobs.length < 1") No scheduled jobs.
 
-                // ko foreach: data
-                .content.panel.data(data-bind="attr: {id: 'data-#' + id}")
-                    // ko foreach: value
+                // ko foreach: _.keys(data)
+                .content.panel.data(data-bind="attr: {id: 'data-' + $data}")
+                    // ko foreach: data[$data]
                     h5(data-bind="text: JSON.stringify(filter, null, 2) + ' ' + moment(timestamp * 1000).format('lll')")
                     .inner-panel
                         .data-table(data-bind="html: JsonHuman.format(JSON.stringify(value)).innerHTML")

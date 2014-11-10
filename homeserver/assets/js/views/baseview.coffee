@@ -8,7 +8,7 @@ class BaseView
     # Init the view and set elements.
     init: (params, callback) =>
         @viewIdLower = @viewId.toLowerCase()
-        @data= {}
+        @model= {}
 
         @setHeader()
         @bindSockets()
@@ -25,9 +25,9 @@ class BaseView
         $.getJSON jsonUrl, (data) =>
             for k, v of data
                 @dataProcessor k, v if @dataProcessor?
-                @data[k] = ko.observable v
+                @model[k] = ko.observable v
 
-            callback @data
+            callback @model
 
     # Dispose the view, unbind events.
     dispose: =>
@@ -59,13 +59,13 @@ class BaseView
 
     # Create a KO compatible object based on the original `serverData` property.
     setData: (obj) =>
-        @data = {} if not @data?
-        @dataProcessor obj.key, obj.data if @dataProcessor?
+        @model = {} if not @model?
+        @modelProcessor obj.key, obj.data if @modelProcessor?
 
-        if @data[obj.key]?
-            @data[obj.key] obj.data
+        if @model[obj.key]?
+            @model[obj.key] obj.data
         else
-            @data[obj.key] = ko.observable obj.data
+            @model[obj.key] = ko.observable obj.data
 
     # Updates data sent by the server.
     onData: (key, data) =>
