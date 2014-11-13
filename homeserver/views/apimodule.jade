@@ -2,36 +2,36 @@
     h1(data-biond="text: 'API: ' + moduleName")
     ul.maingrid.small-block-grid-1
         li
-            dl.tabs(data-tab)
+            dl.tabs
                 dd
-                    a(href="#about", title="About this module") about
+                    a(data-bind="attr: {href: '#api/about?id=' + id()}", title="About this module") about
                 dd
-                    a(href="#settings", title="Module's settings") settings
+                    a(data-bind="attr: {href: '#api/settings?id=' + id()}", title="Module's settings") settings
                 dd(data-bind="if: oauth")
-                    a(href="#oauth", title="OAuth parameters") oauth
+                    a(data-bind="attr: {href: '#api/oauth?id=' + id()}", title="OAuth parameters") oauth
                 dd
-                    a(href="#errors", title="Errors triggered by this module") errors
+                    a(data-bind="attr: {href: '#api/errors?id=' + id()}", title="Errors triggered by this module") errors
                 dd
-                    a(href="#jobs", title="Scheduled jobs") jobs
+                    a(data-bind="attr: {href: '#api/jobs?id=' + id()}", title="Scheduled jobs") jobs
 
-                // ko foreach: _.keys(data)
+                // ko foreach: _.keys(data())
                 dd.data
-                    a(data-bind="text: $data, attr: {href: '#data-' + $data}")
+                    a(data-bind="text: $data, attr: {href: '#api/data-' + $data + '?id=' + $parent.id()}")
                 // /ko
 
             .tabs-content
-                #about.content.panel
+                #about.content.panel(data-bind="smartPage: {id: 'about', afterShow: ayla.indexView.setPageTab, params: ['id']}")
                     .inner-panel !{description}
                     .inner-panel
                         a(data-bind="attr: {href: 'https://ayla.codeplex.com/wikipage?title=API:%20#' + name}", target="AylaDocs") View online documentation
 
-                #settings.content.panel
+                #settings.content.panel(data-bind="smartPage: {id: 'settings', afterShow: ayla.indexView.setPageTab, params: ['id']}")
                     h5 settings.#{title.toLowerCase()}
                     .inner-panel
                         .data-table !{JSON.stringify(settings[title.toLowerCase()])}
 
-                #oauth.content.panel(data-bind="if: oauth")
-                    .inner-panel.auth
+                #oauth.content.panel(data-bind="smartPage: {id: 'oauth', afterShow: ayla.indexView.setPageTab, params: ['id']}")
+                    .inner-panel.auth(data-bind="if: oauth")
                         div
                             span.info Authenticated:
                             span(data-bind="text: oauth.authenticated")
@@ -46,8 +46,11 @@
                         // /ko
                         div
                             a.button(href="/auth") Trigger authentication
+                    .inner-panel.auth(data-bind="if: !oauth")
+                        div
+                            span No oauth set for this module.
 
-                #errors.content.panel
+                #errors.content.panel(data-bind="smartPage: {id: 'errors', afterShow: ayla.indexView.setPageTab, params: ['id']}")
                     div(data-bind="if: errors.length > 0")
                         // ko foreach: errors
                         h5(data-bind="text: moment(timestamp).format('YYYY-MM-DD HH:mm:ss') + ': ' + data[0]")
@@ -58,7 +61,7 @@
                     .inner-panel(data-bind="if: errors.length < 1")
                         span No errors found.
 
-                #jobs.content.panel
+                #jobs.content.panel(data-bind="smartPage: {id: 'jobs', afterShow: ayla.indexView.setPageTab, params: ['id']}")
                     table(data-bind="if: jobs.length > 0")
                         thead
                             th Job
@@ -87,9 +90,9 @@
 
                     .inner-panel(data-bind="if: jobs.length < 1") No scheduled jobs.
 
-                // ko foreach: _.keys(data)
-                .content.panel.data(data-bind="attr: {id: 'data-' + $data}")
-                    // ko foreach: data[$data]
+                // ko foreach: _.keys(data())
+                .content.panel.data(data-bind="attr: {id: 'data-' + $data}, smartPage: {id: 'data-' + $data, afterShow: ayla.indexView.setPageTab}")
+                    // ko foreach: $parent[$data]
                     h5(data-bind="text: JSON.stringify(filter, null, 2) + ' ' + moment(timestamp * 1000).format('lll')")
                     .inner-panel
                         .data-table(data-bind="html: JsonHuman.format(JSON.stringify(value)).innerHTML")

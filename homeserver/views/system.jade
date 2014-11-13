@@ -54,10 +54,10 @@
                                     span(data-bind="text: 'every ' + schedule + ' seconds'")
                                     // /ko
                                 td
-                                    // ko if: endTime.year() > 2000
+                                    // ko if: endTime && endTime.year() > 2000
                                     span(data-bind="text: endTime.format('lll')")
                                     // /ko
-                                    // ko if: endTime.year() > 2000
+                                    // ko if: endTime && endTime.year() > 2000
                                     span(data-bind="if: endTime.year() <= 2000") Never
                                     // /ko
                             // /ko
