@@ -9,7 +9,7 @@ class UsersView extends ayla.BaseView
         logger "Loaded Users View"
 
     # Parse and process data coming from the server.
-    dataProcessor: (key, data) =>
+    modelProcessor: (key, data) =>
         if not data?
             data = key
             key = null

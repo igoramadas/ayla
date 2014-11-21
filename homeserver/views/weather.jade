@@ -16,7 +16,7 @@
                     thead
                         tr
                             th.title Room
-                            th.temperature Temp
+                            th.temperature Temp.
                             th.humidity Humidity
                             th.co2 CO2
                     tbody(data-bind="foreach: rooms")
@@ -34,10 +34,10 @@
                 i(class="wi wi-smoke")
                 span.humidity(data-bind="text: outside().humidity != undefined ? outside().humidity + '%' : '-'")
                 i(class="wi wi-sprinkles")
-                span.precp(data-bind="text: outside().precp != undefined ? outside().precp + 'mm' : '0mm'")
+                span.precp(data-bind="text: outside().precp != undefined ? outside().precp + 'mm' : '-mm'")
 
             .panel
-                table(style="display: none")
+                table.forecast(style="display: none")
                     thead
                         tr
                             th.title Forecast
@@ -64,4 +64,4 @@
                         // /ko
 
                 div.chart
-                    canvas(height="204")
+                    canvas(height="198")

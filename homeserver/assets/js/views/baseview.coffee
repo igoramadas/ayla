@@ -15,9 +15,6 @@ class BaseView
         @setHeader()
         @bindSockets()
 
-        # Call view `onReady` but only if present.
-        @onReady() if @onReady?
-
         # Properly set URL depending on parameters.
         if params?.id?
             jsonUrl = "/#{@viewIdLower}/#{params.id}/data"
@@ -26,10 +23,13 @@ class BaseView
 
         $.getJSON jsonUrl, (data) =>
             for k, v of data
-                @dataProcessor k, v if @dataProcessor?
+                @modelProcessor k, v if @modelProcessor?
                 @model[k] = ko.observable v
 
             callback @model
+
+            # Call view `onReady` but only if present.
+            @onReady() if @onReady?
 
     # Dispose the view, unbind events.
     dispose: =>

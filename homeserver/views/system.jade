@@ -57,8 +57,8 @@
                                     // ko if: endTime && endTime.year() > 2000
                                     span(data-bind="text: endTime.format('lll')")
                                     // /ko
-                                    // ko if: endTime && endTime.year() > 2000
-                                    span(data-bind="if: endTime.year() <= 2000") Never
+                                    // ko if: !endTime || endTime.year() <= 2000
+                                    span Never
                                     // /ko
                             // /ko
 

@@ -10,13 +10,20 @@ class WeatherView extends ayla.BaseView
 
         $(".outside .panel").click @toggleChart
 
+        # If real time outside readings are not available, set it to the current readings from Wunderground.
+        @model.outside().temperature = @model.forecastCurrent().temperature if not @model.outside?().temperature?
+        @model.outside().humidity = @model.forecastCurrent().humidity if not @model.outside?().humidity?
+        @model.outside().precp = 0 if not @model.outside?().precp?
+
+        @model.outside @model.outside()
+
     # When user opens another page.
     onDispose: =>
         $(".outside .panel").unbind "click", @toggleChart
 
     # Parse and process data coming from the server. Weather data will be appended
     # directly to the rooms object. If only one argument is passed, assume it's the data.
-    dataProcessor: (key, data) =>
+    modelProcessor: (key, data) =>
         if not data?
             data = key
             key = null
@@ -28,9 +35,9 @@ class WeatherView extends ayla.BaseView
             condition = if _.isFunction data.condition then data.condition() else data.condition
             data.conditionCss = ko.computed -> return condition.toLowerCase().replace(/\s/g, "-").replace(",-", " ")
 
-        # Create chart for forecast.
+        # Create chart for forecast. Delayed so it has time to render and properly calculate chart width.
         if key is "forecastDays"
-            @createChart data
+            _.delay @createChart, 300, data
 
         # Set background image for current conditions.
         if key is "forecastCurrent"
@@ -128,19 +135,18 @@ class WeatherView extends ayla.BaseView
 
         # Resize canvas.
         canvas = $ ".outside canvas"
-        cWidth = canvas.parent().innerWidth() - 18
+        cWidth = canvas.parent().innerWidth() - 22
         canvas.prop {width: cWidth}
 
         # Create chart.
-        Chart.defaults.global.scaleFontColor = "rgb(252, 252, 252)"
         chartData = {labels: labels, datasets: [dsTemperatureHigh, dsTemperatureLow, dsWind, dsRain]}
         canvas = canvas.get(0).getContext "2d"
         chart = new Chart(canvas).Line chartData, lineOptions
 
     # Swap outside view between grid and chart.
     toggleChart: =>
-        table = $ ".outside table"
-        canvas = $ ".outside canvas"
+        table = $ ".outside .forecast"
+        canvas = $ ".outside .chart"
 
         if table.is ":visible"
             table.hide()

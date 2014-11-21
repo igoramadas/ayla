@@ -16,7 +16,7 @@ class SystemView extends ayla.BaseView
         $("#api .module").unbind "click", @onModuleClick
 
     # Process data, set endTime as moment instead of a number.
-    dataProcessor: (key, data) =>
+    modelProcessor: (key, data) =>
         if key is "jobs"
             for job in data
                 job.endTime = moment(job.endTime)
