@@ -7,6 +7,8 @@ class BaseView
 
     # Init the view and set elements.
     init: (params, callback) =>
+        ayla.indexView.pageInteraction()
+
         @viewIdLower = @viewId.toLowerCase()
         @model= {}
 

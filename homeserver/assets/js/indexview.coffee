@@ -5,8 +5,9 @@ class IndexView
     # PROPERTIES
     # ----------------------------------------------------------------------
 
-    # Holds view data.
+    # Holds main view data.
     data: {}
+    lastUserInteraction: moment().unix()
 
     # MAIN METHODS
     # ----------------------------------------------------------------------
@@ -24,6 +25,11 @@ class IndexView
         @announcementsQueue = []
         @announcing = false
 
+        # Add timeout to refresh window after one day (also dependant on mouse movement).
+        setTimeout @pageRefresh, 86400
+        $(document).mousemove @globalMouseMove
+
+        # Init pager.js and knockout.js.
         pager.extendWithPage this
         ko.applyBindings this
         pager.start()
@@ -50,6 +56,18 @@ class IndexView
         src = $ ".tab-#{e.page.currentId}"
         src.parent().find("dd").removeClass "active"
         src.addClass "active"
+
+    # Helper to refresh the page once a day, after there has been no user interaction for at
+    # least 30 minutes. Quick and dirty hack to clear memory leaks.
+    pageRefresh: =>
+        if moment().unix() - @lastUserInteraction > 1800
+            document.location.reload()
+        else
+            setTimeout @pageRefresh, 300
+
+    # Helper to set the lastUserInteraction timestamp.
+    pageInteraction: =>
+        @lastUserInteraction = moment().unix()
 
     # ANNOUNCEMENTS
     # ----------------------------------------------------------------------
