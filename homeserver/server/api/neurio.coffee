@@ -1,8 +1,8 @@
-# GITHUB API
+# NEURIO API
 # -----------------------------------------------------------------------------
-# NOT READY YET! Get and post programming related data to GitHub.
-# More info at https://developer.github.com/v3.
-class GitHub extends (require "./baseapi.coffee")
+# NOT READY YET! Get and post programming related data to Neurio.
+# More info at http://neur.io
+class Neurio extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
 
@@ -12,23 +12,23 @@ class GitHub extends (require "./baseapi.coffee")
     # INIT
     # -------------------------------------------------------------------------
 
-    # Init the GitHub module.
+    # Init the Neurio module.
     init: =>
         @baseInit()
 
-    # Start collecting data from GitHub.
+    # Start collecting data from Neurio.
     start: =>
         @baseStart()
 
-    # Stop collecting data from GitHub.
+    # Stop collecting data from Neurio.
     stop: =>
         @baseStop()
 
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------
-GitHub.getInstance = ->
-    @instance = new GitHub() if not @instance?
+Neurio.getInstance = ->
+    @instance = new Neurio() if not @instance?
     return @instance
 
-module.exports = exports = GitHub.getInstance()
+module.exports = exports = Neurio.getInstance()

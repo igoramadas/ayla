@@ -1,0 +1,8 @@
+[
+        {
+            "callback": "turnLightsOff",
+            "description": "Turn all lights off daily at 3AM.",
+            "schedule": ["03:00:00"],
+            "enabled": true
+        }
+]
