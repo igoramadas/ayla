@@ -120,6 +120,18 @@ class Commander
     # HOME LIGHTS
     # -------------------------------------------------------------------------
 
+    # Turn the specified house lights on.
+    turnLightsOn: (options, callback) =>
+        logger.info "Commander.turnLightsOn", options
+
+        events.emit "Hue.switchGroupLights", true, (err, result) =>
+            callback err, result if callback?
+
+        options.nameContains = "light on"
+
+        events.emit "Ninja.actuate433", options, (err, result) =>
+            callback err, result if callback?
+
     # Turn the specified house lights off.
     turnLightsOff: (options, callback) =>
         logger.info "Commander.turnLightsOff", options
@@ -127,11 +139,30 @@ class Commander
         events.emit "Hue.switchGroupLights", false, (err, result) =>
             callback err, result if callback?
 
-    # Turn the specified house lights on.
-    turnLightsOn: (options, callback) =>
-        logger.info "Commander.turnLightsOn", options
+        options.nameContains = "light off"
 
-        events.emit "Hue.switchGroupLights", true, (err, result) =>
+        events.emit "Ninja.actuate433", options, (err, result) =>
+            callback err, result if callback?
+
+    # HOME APPLIANCES
+    # -------------------------------------------------------------------------
+
+    # Turn specified ventilators on.
+    turnVentilatorsOn: (options, callback) =>
+        logger.info "Commander.turnVentilatorsOn", options
+
+        options.nameContains = "ventilator on"
+
+        events.emit "Ninja.actuate433", options, (err, result) =>
+            callback err, result if callback?
+
+    # Turn specified ventilators off.
+    turnVentilatorsOff: (options, callback) =>
+        logger.info "Commander.turnVentilatorsOff", options
+
+        options.nameContains = "ventilator off"
+
+        events.emit "Ninja.actuate433", options, (err, result) =>
             callback err, result if callback?
 
 # Singleton implementation.

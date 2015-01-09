@@ -5,16 +5,28 @@
         "start movie",
         "watch movie"
     ],
+    "turnLightsOn": [
+        "turn lights on",
+        "all lights on",
+        "lights on please",
+        "there be light"
+    ],
     "turnLightsOff": [
         "turn lights off",
         "all lights off",
         "lights off please",
         "darkness please"
     ],
-    "turnLightsOn": [
-        "turn lights on",
-        "all lights on",
-        "lights on please",
-        "there be light"
+    "turnVentilatorsOn": [
+        "turn ventilators on",
+        "all ventilators on",
+        "ventilators on please",
+        "it's too hot"
+    ],
+    "turnVentilatorsOff": [
+        "turn ventilators off",
+        "all ventilators off",
+        "ventilators off please",
+        "it's too cold"
     ]
 }

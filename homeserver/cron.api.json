@@ -77,6 +77,12 @@
             "description": "Get Strava profile twice a day.",
             "schedule": ["10:21:00", "21:21:00"],
             "enabled": true
+        },
+        {
+            "callback": "getRecentActivities",
+            "description": "Get recent Strava activities list twice a day.",
+            "schedule": ["10:22:00", "21:22:00"],
+            "enabled": true
         }
     ],
     "toshl.coffee": [

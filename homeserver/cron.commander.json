@@ -4,5 +4,11 @@
             "description": "Turn all lights off daily at 3AM.",
             "schedule": ["03:00:00"],
             "enabled": true
+        },
+        {
+          "callback": "turnVentilatorsOff",
+          "description": "Turn all ventilators off daily at 4AM",
+          "schedule": ["04:00:00"],
+          "enabled": true
         }
 ]
