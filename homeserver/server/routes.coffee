@@ -215,7 +215,7 @@ class Routes
         # Oops, access denied.
         logger.warn "Routes.checkSecurity", req.url, ipClient
         res.status 401
-        res.send "Access denied or invalid token."
+        res.send "Access denied or invalid token for #{ipClient}."
         return false
 
     # HELPER METHODS

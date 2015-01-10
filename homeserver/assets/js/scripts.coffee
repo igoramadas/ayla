@@ -17,7 +17,6 @@
 #= require sockets.coffee
 #= require indexview.coffee
 #= require views/baseview.coffee
-#= require views/api.coffee
 #= require views/email.coffee
 #= require views/fitness.coffee
 #= require views/lights.coffee
