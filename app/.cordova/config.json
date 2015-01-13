@@ -1,9 +1,9 @@
 {
     "lib": {
         "www": {
-            "id": "com.phonegap.hello-world",
+            "id": "pw.ayla.app",
             "version": "master",
-            "uri": "https://github.com/phonegap/phonegap-app-hello-world/archive/master.tar.gz",
+            "uri": "https://github.com/igoramadas/ayla/archive/master.tar.gz",
             "link": false
         }
     }
