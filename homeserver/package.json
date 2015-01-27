@@ -1,5 +1,5 @@
 {
-    "name": "ayla",
+    "name": "ayla-homeserver",
     "version": "0.4.2",
     "description": "Ayla at your service.",
     "homepage": "http://ayla.codeplex.com",
@@ -15,7 +15,7 @@
         "start": "node index.js"
     },
     "bin": {
-        "ayla": "./bin/ayla"
+        "ayla": "./bin/ayla-homeserver"
     },
     "engines": {
         "node": "*"
@@ -47,10 +47,7 @@
         "ai",
         "automation",
         "ayla",
-        "cortana",
         "devv",
-        "ayla",
-        "jarvis",
         "ninja",
         "siri",
         "smarthome"

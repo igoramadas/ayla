@@ -1,0 +1,42 @@
+{
+    "name": "ayla-app",
+    "version": "0.0.1",
+    "description": "Ayla at your service.",
+    "homepage": "http://ayla.codeplex.com",
+    "author": "Igor Ramadas <igor@devv.com>",
+    "license": "MIT",
+    "subdomain": "ayla",
+    "domains": [
+        "ayla.codeplex.com"
+    ],
+    "scripts": {
+        "publish": "node publish.js",
+        "start": "node index.js"
+    },
+    "engines": {
+        "node": "*"
+    },
+    "devDependencies": {
+        "grunt": "*",
+        "grunt-contrib-concat": "*",
+        "grunt-contrib-coffee": "*",
+        "grunt-contrib-stylus": "*",
+        "grunt-contrib-watch": "*",
+        "grunt-concurrent": "*"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://git01.codeplex.com/ayla"
+    },
+    "keywords": [
+        "ai",
+        "app",
+        "automation",
+        "ayla",
+        "cortana",
+        "devv",
+        "jarvis",
+        "ninja",
+        "siri"
+    ]
+}
