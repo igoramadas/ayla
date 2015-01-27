@@ -217,7 +217,7 @@ class OAuth
             # Save oauth details to DB and redirect user to service page.
             oauthData = lodash.defaults {token: oauth_token, tokenSecret: oauth_token_secret}, additionalParameters
             @saveToken oauthData
-            res?.redirect "/#{@service}"
+            res?.redirect "/#api?id=#{@service}"
 
         # Helper function to get the access token using OAUth 2.x.
         getAccessToken2 = (err, oauth_access_token, oauth_refresh_token, results) =>

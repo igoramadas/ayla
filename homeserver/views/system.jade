@@ -85,3 +85,105 @@
                         div
                             span.info Uptime
                             span(data-bind="text: uptime")
+
+
+    #apimodule.page(data-bind="smartPage: {id: 'api', title: 'API Module'")
+        h1(data-bind="text: 'API: ' + moduleName()")
+        ul.maingrid.small-block-grid-1
+            li
+                dl.tabs
+                    dd
+                        a(data-bind="attr: {href: '#api/about?id=' + id()}", title="About this module") about
+                    dd
+                        a(data-bind="attr: {href: '#api/settings?id=' + id()}", title="Module's settings") settings
+                    dd(data-bind="if: oauth")
+                        a(data-bind="attr: {href: '#api/oauth?id=' + id()}", title="OAuth parameters") oauth
+                    dd
+                        a(data-bind="attr: {href: '#api/errors?id=' + id()}", title="Errors triggered by this module") errors
+                    dd
+                        a(data-bind="attr: {href: '#api/jobs?id=' + id()}", title="Scheduled jobs") jobs
+
+                    // ko foreach: _.keys(data())
+                    dd.data
+                        a(data-bind="text: $data, attr: {href: '#api/data-' + $data + '?id=' + $parent.id()}")
+                    // /ko
+
+                .tabs-content
+                    #about.content.panel(data-bind="smartPage: {id: 'about', afterShow: ayla.indexView.setPageTab, params: ['id']}")
+                        .inner-panel !{description}
+                        .inner-panel
+                            a(data-bind="attr: {href: 'https://ayla.codeplex.com/wikipage?title=API:%20#' + name}", target="AylaDocs") View online documentation
+
+                    #settings.content.panel(data-bind="smartPage: {id: 'settings', afterShow: ayla.indexView.setPageTab, params: ['id']}")
+                        h5 settings.#{title.toLowerCase()}
+                        .inner-panel
+                            .data-table !{JSON.stringify(settings[title.toLowerCase()])}
+
+                    #oauth.content.panel(data-bind="smartPage: {id: 'oauth', afterShow: ayla.indexView.setPageTab, params: ['id']}")
+                        .inner-panel.auth(data-bind="if: oauth")
+                            div
+                                span.info Authenticated:
+                                span(data-bind="text: oauth.authenticated")
+                            // ko if: oauth.authenticated
+                            div.clip(data-bind="with: oauth")
+                                span.info Token:
+                                span(data-bind="text: data.token || data.accessToken")
+                                br
+                                span.info Expires:
+                                span(data-bind="if: oauth.data.expires > 0, text: moment(data.expires * 1000).format('lll')")
+                                span(data-bind="if: oauth.data.expires < 1") No expiration date set
+                            // /ko
+                            div
+                                a.button(href="/auth") Trigger authentication
+                        .inner-panel.auth(data-bind="if: !oauth")
+                            div
+                                span No oauth set for this module.
+
+                    #errors.content.panel(data-bind="smartPage: {id: 'errors', afterShow: ayla.indexView.setPageTab, params: ['id']}")
+                        div(data-bind="if: errors.length > 0")
+                            // ko foreach: errors
+                            h5(data-bind="text: moment(timestamp).format('YYYY-MM-DD HH:mm:ss') + ': ' + data[0]")
+                            .inner-panel.error-details
+                                span(data-bind="data.join(', ')")
+                            // /ko
+
+                        .inner-panel(data-bind="if: errors.length < 1")
+                            span No errors found.
+
+                    #jobs.content.panel(data-bind="smartPage: {id: 'jobs', afterShow: ayla.indexView.setPageTab, params: ['id']}")
+                        table(data-bind="if: jobs.length > 0")
+                            thead
+                                th Job
+                                th Schedule
+                                th Last run
+                            tbody
+                                // ko foreach: jobs
+                                tr
+                                    td
+                                        span(data-bind="text: id")
+                                    td
+                                        // ko if: isNaN(schedule)
+                                        span(data-bind=" text: schedule.join(', ')")
+                                        // /ko
+                                        // ko if: !isNaN(schedule)
+                                        span(data-bind="text: 'every ' + schedule + ' seconds'")
+                                        // /ko
+                                    td
+                                        // ko if: endTime.year() > 2000
+                                        span(data-bind="text: endTime.format('lll')")
+                                        // /ko
+                                        // ko if: endTime.year() > 2000
+                                        span(data-bind="if: endTime.year() <= 2000") Never
+                                        // /ko
+                                // /ko
+
+                        .inner-panel(data-bind="if: jobs.length < 1") No scheduled jobs.
+
+                    // ko foreach: _.keys(data())
+                    .content.panel.data(data-bind="attr: {id: 'data-' + $data}, smartPage: {id: 'data-' + $data, afterShow: ayla.indexView.setPageTab}")
+                        // ko foreach: $parent[$data]
+                        h5(data-bind="text: JSON.stringify(filter, null, 2) + ' ' + moment(timestamp * 1000).format('lll')")
+                        .inner-panel
+                            .data-table(data-bind="html: JsonHuman.format(JSON.stringify(value)).innerHTML")
+                        // /ko
+                    // /ko

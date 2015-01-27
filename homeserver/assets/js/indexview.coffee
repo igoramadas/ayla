@@ -54,7 +54,6 @@ class IndexView
 
     # Highlight tab when clicked or tapped.
     setPageTab: (e) =>
-        console.warn e.page
         src = $ ".tab-#{e.page.currentId}"
         src.parent().find("dd").removeClass "active"
         src.addClass "active"
