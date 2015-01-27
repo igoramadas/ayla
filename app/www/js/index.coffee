@@ -1,6 +1,5 @@
 # INDEX CONTROLLER
 app =
-
     initialize: ->
         @bindEvents()
         return

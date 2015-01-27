@@ -11,23 +11,26 @@ module.exports = (grunt) ->
                 dest: "www/app_lib.css"
 
         coffee:
-            files:
-                "www/app.js": ["www/js/*.coffee"]
-            options:
-                join: true
+            compileJoined:
+                files:
+                    "www/app.js": ["www/js/*.coffee"]
+                options:
+                    join: true
 
         stylus:
-            files:
-                "www/app.css": ["www/css/*.styl"]
-            options:
-                compress: true
+            compile:
+                files:
+                    "www/app.css": ["www/css/*.styl"]
+                options:
+                    compress: true
 
         jade:
-            files:
-                "www/app.html": ["www/html/index.jade"]
-            options:
-                data:
-                    debug: true
+            compile:
+                files:
+                    "www/app.html": ["www/html/index.jade"]
+                options:
+                    data:
+                        debug: true
 
         watch:
             coffee:
