@@ -19,6 +19,9 @@
     <feature name="LocalStorage">
         <param name="ios-package" value="CDVLocalStorage" />
     </feature>
+    <feature name="NativePageTransitions">
+        <param name="ios-package" value="NativePageTransitions" />
+    </feature>
     <name>Ayla</name>
     <description>
         Ayla at your service!
@@ -26,7 +29,7 @@
     <author email="igor@devv.com" href="http://aboutigor.com">
         Igor Ramadas
     </author>
-    <content src="index.html" />
+    <content src="app.html" />
     <preference name="permissions" value="none" />
     <preference name="phonegap-version" value="3.5.0" />
     <preference name="orientation" value="default" />
