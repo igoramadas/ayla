@@ -1,6 +1,6 @@
 # SETTINGS PAGE
-class SettingsView
-    el: $ "#settings"
+class HomeView
+    el: $ "#home"
 
     init: =>
         @el.find("input.host").focus()
@@ -8,4 +8,4 @@ class SettingsView
     dispose: =>
         app.debug @el, "Disposed"
 
-window.settingsView = new SettingsView()
+window.homeView = new HomeView()

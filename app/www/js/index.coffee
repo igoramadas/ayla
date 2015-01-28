@@ -1,5 +1,5 @@
 # MAIN APP CONTROLLER
-window.app =
+class App
     currentView: null
 
     debug: =>
@@ -7,6 +7,7 @@ window.app =
 
     init: =>
         @bindEvents()
+        @bindNavigation()
         return true
 
     bindEvents: =>
@@ -15,13 +16,18 @@ window.app =
         document.addEventListener "online", @onOnline, false
         document.addEventListener "offline", @onOffline, false
 
+    bindNavigation: =>
+        $(".icon-bar a").click (e) =>
+            src = $(e.target)
+            @navigate src.data("view")
+
     onLoad: =>
         @debug "Event: load"
 
     onDeviceReady: =>
         @debug "Event: deviceReady"
 
-        if not localStorage.getItem("homeserver.host")?
+        if not localStorage.getItem("homeserver_url")?
             @navigate "settings"
         else
             @navigate "home"
@@ -32,11 +38,13 @@ window.app =
     onOffline: =>
         @debug "Event: offline"
 
-    navigate: (id, back) =>
-        @currentView.dispose() if @currentView?
+    navigate: (id, callback) =>
+        if @currentView?
+            @currentView.dispose()
+            @currentView.el.hide()
 
-        direction = if back then "right" else "left"
+        @currentView = window["#{id}View"]
+        @currentView.el.show()
+        @currentView.init()
 
-        window.plugins.nativepagetransitions.slide {direction: direction, href: "#" + id}, =>
-            @currentView = window["#{id}View"]
-            @currentView.init()
+window.app = new App()

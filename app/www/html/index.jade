@@ -14,22 +14,21 @@ html
     body
         .app
             .icon-bar.five-up
-                a.item
+                a.item(data-view="home")
                     img(src="images/icons/home.svg")
                     label Home
-                a.item
+                a.item(data-view="weather")
                     img(src="images/icons/weather-cloudy.svg")
                     label Weather
-                a.item
-                    img(src="images/icons/bike.svg")
+                a.item(data-view="fitness")
+                    img(src="images/icons/fitness.svg")
                     label Fitness
-                a.item
-                    img(src="images/icons/finances.svg")
+                a.item(data-view="money")
+                    img(src="images/icons/money.svg")
                     label Money
-                a.item
+                a.item(data-view="settings")
                     img(src="images/icons/settings.svg")
                     label Settings
-
 
             include ./home.jade
             include ./settings.jade

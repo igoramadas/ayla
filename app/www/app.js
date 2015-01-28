@@ -1,119 +1,128 @@
 (function() {
-  var Sockets;
+  var App, HomeView, SettingsView,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  window.app = {
-    currentView: null,
-    debug: (function(_this) {
-      return function() {
-        return console.log(arguments);
-      };
-    })(this),
-    init: (function(_this) {
-      return function() {
-        _this.bindEvents();
-        return true;
-      };
-    })(this),
-    bindEvents: (function(_this) {
-      return function() {
-        document.addEventListener("load", _this.onLoad, false);
-        document.addEventListener("deviceready", _this.onDeviceReady, false);
-        document.addEventListener("online", _this.onOnline, false);
-        return document.addEventListener("offline", _this.onOffline, false);
-      };
-    })(this),
-    onLoad: (function(_this) {
-      return function() {
-        return _this.debug("Event: load");
-      };
-    })(this),
-    onDeviceReady: (function(_this) {
-      return function() {
-        _this.debug("Event: deviceReady");
-        if (localStorage.getItem("homeserver.host") == null) {
-          return _this.navigate("settings");
-        } else {
-          return _this.navigate("home");
-        }
-      };
-    })(this),
-    onOnline: (function(_this) {
-      return function() {
-        return _this.debug("Event: online");
-      };
-    })(this),
-    onOffline: (function(_this) {
-      return function() {
-        return _this.debug("Event: offline");
-      };
-    })(this),
-    navigate: (function(_this) {
-      return function(id, back) {
-        var direction;
-        if (_this.currentView != null) {
-          _this.currentView.dispose();
-        }
-        direction = back ? "right" : "left";
-        return window.plugins.nativepagetransitions.slide({
-          direction: direction,
-          href: "#" + id
-        }, function() {
-          _this.currentView = window["" + id + "View"];
-          return _this.currentView.init();
-        });
-      };
-    })(this)
-  };
+  App = (function() {
+    function App() {
+      this.navigate = __bind(this.navigate, this);
+      this.onOffline = __bind(this.onOffline, this);
+      this.onOnline = __bind(this.onOnline, this);
+      this.onDeviceReady = __bind(this.onDeviceReady, this);
+      this.onLoad = __bind(this.onLoad, this);
+      this.bindNavigation = __bind(this.bindNavigation, this);
+      this.bindEvents = __bind(this.bindEvents, this);
+      this.init = __bind(this.init, this);
+      this.debug = __bind(this.debug, this);
+    }
 
-  Sockets = (function() {
-    var conn;
+    App.prototype.currentView = null;
 
-    function Sockets() {}
+    App.prototype.debug = function() {
+      return console.log(arguments);
+    };
 
-    conn = null;
+    App.prototype.init = function() {
+      this.bindEvents();
+      this.bindNavigation();
+      return true;
+    };
 
-    Sockets.prototype.init = function() {
-      var url;
-      if (conn == null) {
-        url = window.location;
-        return conn = io.connect("" + url.protocol + "//" + url.hostname + ":" + url.port);
+    App.prototype.bindEvents = function() {
+      document.addEventListener("load", this.onLoad, false);
+      document.addEventListener("deviceready", this.onDeviceReady, false);
+      document.addEventListener("online", this.onOnline, false);
+      return document.addEventListener("offline", this.onOffline, false);
+    };
+
+    App.prototype.bindNavigation = function() {
+      return $(".icon-bar a").click((function(_this) {
+        return function(e) {
+          var src;
+          src = $(e.target);
+          return _this.navigate(src.data("view"));
+        };
+      })(this));
+    };
+
+    App.prototype.onLoad = function() {
+      return this.debug("Event: load");
+    };
+
+    App.prototype.onDeviceReady = function() {
+      this.debug("Event: deviceReady");
+      if (localStorage.getItem("homeserver_url") == null) {
+        return this.navigate("settings");
+      } else {
+        return this.navigate("home");
       }
     };
 
-    Sockets.prototype.stop = function() {
-      return conn.off();
+    App.prototype.onOnline = function() {
+      return this.debug("Event: online");
     };
 
-    Sockets.prototype.on = function(event, callback) {
-      return conn.on(event, callback);
+    App.prototype.onOffline = function() {
+      return this.debug("Event: offline");
     };
 
-    Sockets.prototype.off = function(event, callback) {
-      return conn.off(event, callback);
+    App.prototype.navigate = function(id, callback) {
+      if (this.currentView != null) {
+        this.currentView.dispose();
+        this.currentView.el.hide();
+      }
+      this.currentView = window["" + id + "View"];
+      this.currentView.el.show();
+      return this.currentView.init();
     };
 
-    Sockets.prototype.emit = function(event, data) {
-      return conn.emit(event, data);
-    };
-
-    return Sockets;
+    return App;
 
   })();
 
-  window.ayla.sockets = new Sockets();
+  window.app = new App();
 
-  window.settingsView = {
-    el: "#settings",
-    init: (function(_this) {
-      return function() {
-        return _this.el.find("input.host").focus();
-      };
-    })(this),
-    dispose: (function(_this) {
-      return function() {
-        return app.debug(_this.el, "Disposed");
-      };
-    })(this)
-  };
+  HomeView = (function() {
+    function HomeView() {
+      this.dispose = __bind(this.dispose, this);
+      this.init = __bind(this.init, this);
+    }
+
+    HomeView.prototype.el = $("#home");
+
+    HomeView.prototype.init = function() {
+      return this.el.find("input.host").focus();
+    };
+
+    HomeView.prototype.dispose = function() {
+      return app.debug(this.el, "Disposed");
+    };
+
+    return HomeView;
+
+  })();
+
+  window.homeView = new HomeView();
+
+  SettingsView = (function() {
+    function SettingsView() {
+      this.dispose = __bind(this.dispose, this);
+      this.init = __bind(this.init, this);
+    }
+
+    SettingsView.prototype.el = $("#settings");
+
+    SettingsView.prototype.init = function() {
+      return this.el.find("input.host").focus();
+    };
+
+    SettingsView.prototype.dispose = function() {
+      return app.debug(this.el, "Disposed");
+    };
+
+    return SettingsView;
+
+  })();
+
+  window.settingsView = new SettingsView();
 
 }).call(this);

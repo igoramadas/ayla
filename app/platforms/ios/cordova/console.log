@@ -166,3 +166,199 @@ To disable web storage backup to iCloud, set the BackupWebStorage preference to 
 
 2015-01-28 16:43:25.378 Ayla[5498:782827] Resetting plugins due to page load.
 2015-01-28 16:43:25.562 Ayla[5498:782827] Finished load of: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Bundle/Application/20A3613F-9153-405F-96AA-85EE7B08C18C/Ayla.app/www/app.html
+2015-01-28 17:04:42.073 Ayla[5760:853037] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Data/Application/704EF5C2-9F4D-41AB-A661-220BD626CA5A/Library/Cookies/Cookies.binarycookies
+2015-01-28 17:04:42.187 Ayla[5760:853037] Apache Cordova native platform version 3.7.0 is starting.
+2015-01-28 17:04:42.188 Ayla[5760:853037] Multi-tasking -> Device: YES, App: YES
+2015-01-28 17:04:42.189 Ayla[5760:853037] Unlimited access to network resources
+2015-01-28 17:04:42.192 Ayla[5760:853037] 
+
+Started backup to iCloud! Please be careful.
+Your application might be rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines" at:
+https://developer.apple.com/icloud/documentation/data-storage/
+To disable web storage backup to iCloud, set the BackupWebStorage preference to "local" in the Cordova config.xml file
+
+2015-01-28 17:04:42.486 Ayla[5760:853037] Resetting plugins due to page load.
+2015-01-28 17:04:42.654 Ayla[5760:853037] Finished load of: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Bundle/Application/52CBB3DB-0E42-49B2-9FDF-5A23C917FF49/Ayla.app/www/app.html
+2015-01-28 17:09:09.681 Ayla[5995:869246] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Data/Application/C22021EC-753D-4B45-BB84-EF68A1FA271D/Library/Cookies/Cookies.binarycookies
+2015-01-28 17:09:09.797 Ayla[5995:869246] Apache Cordova native platform version 3.7.0 is starting.
+2015-01-28 17:09:09.798 Ayla[5995:869246] Multi-tasking -> Device: YES, App: YES
+2015-01-28 17:09:09.799 Ayla[5995:869246] Unlimited access to network resources
+2015-01-28 17:09:09.802 Ayla[5995:869246] 
+
+Started backup to iCloud! Please be careful.
+Your application might be rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines" at:
+https://developer.apple.com/icloud/documentation/data-storage/
+To disable web storage backup to iCloud, set the BackupWebStorage preference to "local" in the Cordova config.xml file
+
+2015-01-28 17:09:10.098 Ayla[5995:869246] Resetting plugins due to page load.
+2015-01-28 17:09:10.263 Ayla[5995:869246] Finished load of: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Bundle/Application/DD4D9F7F-ED1B-4771-9608-733B698D40E5/Ayla.app/www/app.html
+2015-01-28 17:11:16.027 Ayla[6200:876337] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Data/Application/193F00EA-76F7-458D-BBAB-4DC8C8EB1BEA/Library/Cookies/Cookies.binarycookies
+2015-01-28 17:11:16.143 Ayla[6200:876337] Apache Cordova native platform version 3.7.0 is starting.
+2015-01-28 17:11:16.144 Ayla[6200:876337] Multi-tasking -> Device: YES, App: YES
+2015-01-28 17:11:16.145 Ayla[6200:876337] Unlimited access to network resources
+2015-01-28 17:11:16.150 Ayla[6200:876337] 
+
+Started backup to iCloud! Please be careful.
+Your application might be rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines" at:
+https://developer.apple.com/icloud/documentation/data-storage/
+To disable web storage backup to iCloud, set the BackupWebStorage preference to "local" in the Cordova config.xml file
+
+2015-01-28 17:11:16.465 Ayla[6200:876337] Resetting plugins due to page load.
+2015-01-28 17:11:16.669 Ayla[6200:876337] Finished load of: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Bundle/Application/AB4A6DC1-CBED-4E61-9E82-1F77C93B30C2/Ayla.app/www/app.html
+2015-01-28 17:12:57.229 Ayla[6413:886574] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Data/Application/77C05082-0316-4DE1-9934-DB9E86712AB6/Library/Cookies/Cookies.binarycookies
+2015-01-28 17:12:57.346 Ayla[6413:886574] Apache Cordova native platform version 3.7.0 is starting.
+2015-01-28 17:12:57.346 Ayla[6413:886574] Multi-tasking -> Device: YES, App: YES
+2015-01-28 17:12:57.348 Ayla[6413:886574] Unlimited access to network resources
+2015-01-28 17:12:57.351 Ayla[6413:886574] 
+
+Started backup to iCloud! Please be careful.
+Your application might be rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines" at:
+https://developer.apple.com/icloud/documentation/data-storage/
+To disable web storage backup to iCloud, set the BackupWebStorage preference to "local" in the Cordova config.xml file
+
+2015-01-28 17:12:57.639 Ayla[6413:886574] Resetting plugins due to page load.
+2015-01-28 17:12:57.820 Ayla[6413:886574] Finished load of: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Bundle/Application/50B0AF52-899F-4F42-A3D0-94555633BAE2/Ayla.app/www/app.html
+2015-01-28 17:13:37.618 Ayla[6611:890447] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Data/Application/4D2F767F-6F4F-41B7-B9CF-A999C927307B/Library/Cookies/Cookies.binarycookies
+2015-01-28 17:13:37.728 Ayla[6611:890447] Apache Cordova native platform version 3.7.0 is starting.
+2015-01-28 17:13:37.728 Ayla[6611:890447] Multi-tasking -> Device: YES, App: YES
+2015-01-28 17:13:37.730 Ayla[6611:890447] Unlimited access to network resources
+2015-01-28 17:13:37.732 Ayla[6611:890447] 
+
+Started backup to iCloud! Please be careful.
+Your application might be rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines" at:
+https://developer.apple.com/icloud/documentation/data-storage/
+To disable web storage backup to iCloud, set the BackupWebStorage preference to "local" in the Cordova config.xml file
+
+2015-01-28 17:13:38.010 Ayla[6611:890447] Resetting plugins due to page load.
+2015-01-28 17:13:38.160 Ayla[6611:890447] Finished load of: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Bundle/Application/D03313F4-0D35-4A27-9B49-95AD435CDBA3/Ayla.app/www/app.html
+2015-01-28 17:14:56.362 Ayla[6808:896839] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Data/Application/3194A1B1-9F95-4F55-9C73-9CBD202EB3A3/Library/Cookies/Cookies.binarycookies
+2015-01-28 17:14:56.474 Ayla[6808:896839] Apache Cordova native platform version 3.7.0 is starting.
+2015-01-28 17:14:56.475 Ayla[6808:896839] Multi-tasking -> Device: YES, App: YES
+2015-01-28 17:14:56.476 Ayla[6808:896839] Unlimited access to network resources
+2015-01-28 17:14:56.479 Ayla[6808:896839] 
+
+Started backup to iCloud! Please be careful.
+Your application might be rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines" at:
+https://developer.apple.com/icloud/documentation/data-storage/
+To disable web storage backup to iCloud, set the BackupWebStorage preference to "local" in the Cordova config.xml file
+
+2015-01-28 17:14:56.859 Ayla[6808:896839] Resetting plugins due to page load.
+2015-01-28 17:14:57.036 Ayla[6808:896839] Finished load of: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Bundle/Application/01F96297-637D-474B-B6CA-FC7FDEB785B2/Ayla.app/www/app.html
+2015-01-28 17:16:13.788 Ayla[7003:901848] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Data/Application/C99CBFFE-B3DF-4085-B322-A5249B8A7285/Library/Cookies/Cookies.binarycookies
+2015-01-28 17:16:13.913 Ayla[7003:901848] Apache Cordova native platform version 3.7.0 is starting.
+2015-01-28 17:16:13.914 Ayla[7003:901848] Multi-tasking -> Device: YES, App: YES
+2015-01-28 17:16:13.916 Ayla[7003:901848] Unlimited access to network resources
+2015-01-28 17:16:13.919 Ayla[7003:901848] 
+
+Started backup to iCloud! Please be careful.
+Your application might be rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines" at:
+https://developer.apple.com/icloud/documentation/data-storage/
+To disable web storage backup to iCloud, set the BackupWebStorage preference to "local" in the Cordova config.xml file
+
+2015-01-28 17:16:14.272 Ayla[7003:901848] Resetting plugins due to page load.
+2015-01-28 17:16:14.460 Ayla[7003:901848] Finished load of: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Bundle/Application/3760C2F5-9213-4B0B-9343-059E70E07D69/Ayla.app/www/app.html
+2015-01-28 17:22:28.533 Ayla[7239:932114] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Data/Application/2D00C299-FAA6-4731-AC60-28973590FE89/Library/Cookies/Cookies.binarycookies
+2015-01-28 17:22:28.648 Ayla[7239:932114] Apache Cordova native platform version 3.7.0 is starting.
+2015-01-28 17:22:28.648 Ayla[7239:932114] Multi-tasking -> Device: YES, App: YES
+2015-01-28 17:22:28.650 Ayla[7239:932114] Unlimited access to network resources
+2015-01-28 17:22:28.653 Ayla[7239:932114] 
+
+Started backup to iCloud! Please be careful.
+Your application might be rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines" at:
+https://developer.apple.com/icloud/documentation/data-storage/
+To disable web storage backup to iCloud, set the BackupWebStorage preference to "local" in the Cordova config.xml file
+
+2015-01-28 17:22:29.000 Ayla[7239:932114] Resetting plugins due to page load.
+2015-01-28 17:22:29.186 Ayla[7239:932114] Finished load of: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Bundle/Application/B2B129FD-4C19-48A5-ADD2-EDDC820066AE/Ayla.app/www/app.html
+2015-01-28 17:45:08.692 Ayla[7473:1016807] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Data/Application/F11D4359-DEA3-4B3D-942B-D4F2690C8E5B/Library/Cookies/Cookies.binarycookies
+2015-01-28 17:45:08.787 Ayla[7473:1016807] Apache Cordova native platform version 3.7.0 is starting.
+2015-01-28 17:45:08.787 Ayla[7473:1016807] Multi-tasking -> Device: YES, App: YES
+2015-01-28 17:45:08.789 Ayla[7473:1016807] Unlimited access to network resources
+2015-01-28 17:45:08.791 Ayla[7473:1016807] 
+
+Started backup to iCloud! Please be careful.
+Your application might be rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines" at:
+https://developer.apple.com/icloud/documentation/data-storage/
+To disable web storage backup to iCloud, set the BackupWebStorage preference to "local" in the Cordova config.xml file
+
+2015-01-28 17:45:09.104 Ayla[7473:1016807] Resetting plugins due to page load.
+2015-01-28 17:45:09.262 Ayla[7473:1016807] Finished load of: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Bundle/Application/8C68F93A-53BD-4F83-84A0-8D1E8E92CA7D/Ayla.app/www/app.html
+2015-01-28 17:48:07.591 Ayla[7674:1027333] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Data/Application/AC841760-3158-4F79-B080-CFA04F42CCFC/Library/Cookies/Cookies.binarycookies
+2015-01-28 17:48:07.705 Ayla[7674:1027333] Apache Cordova native platform version 3.7.0 is starting.
+2015-01-28 17:48:07.705 Ayla[7674:1027333] Multi-tasking -> Device: YES, App: YES
+2015-01-28 17:48:07.707 Ayla[7674:1027333] Unlimited access to network resources
+2015-01-28 17:48:07.709 Ayla[7674:1027333] 
+
+Started backup to iCloud! Please be careful.
+Your application might be rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines" at:
+https://developer.apple.com/icloud/documentation/data-storage/
+To disable web storage backup to iCloud, set the BackupWebStorage preference to "local" in the Cordova config.xml file
+
+2015-01-28 17:48:08.032 Ayla[7674:1027333] Resetting plugins due to page load.
+2015-01-28 17:48:08.223 Ayla[7674:1027333] Finished load of: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Bundle/Application/5548BAC9-ED80-4232-B61C-CF61DE2A6C37/Ayla.app/www/app.html
+2015-01-28 17:49:13.339 Ayla[7876:1033112] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Data/Application/B71583C3-2AD4-4EE6-86E7-B23185E17954/Library/Cookies/Cookies.binarycookies
+2015-01-28 17:49:13.450 Ayla[7876:1033112] Apache Cordova native platform version 3.7.0 is starting.
+2015-01-28 17:49:13.451 Ayla[7876:1033112] Multi-tasking -> Device: YES, App: YES
+2015-01-28 17:49:13.453 Ayla[7876:1033112] Unlimited access to network resources
+2015-01-28 17:49:13.456 Ayla[7876:1033112] 
+
+Started backup to iCloud! Please be careful.
+Your application might be rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines" at:
+https://developer.apple.com/icloud/documentation/data-storage/
+To disable web storage backup to iCloud, set the BackupWebStorage preference to "local" in the Cordova config.xml file
+
+2015-01-28 17:49:13.807 Ayla[7876:1033112] Resetting plugins due to page load.
+2015-01-28 17:49:13.954 Ayla[7876:1033112] Finished load of: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Bundle/Application/B149FFF4-0761-426B-9A18-EE4211F2DDE1/Ayla.app/www/app.html
+2015-01-28 17:49:57.895 Ayla[8071:1035114] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Data/Application/BB254111-52E7-4740-9372-315C04E2CB60/Library/Cookies/Cookies.binarycookies
+2015-01-28 17:49:58.003 Ayla[8071:1035114] Apache Cordova native platform version 3.7.0 is starting.
+2015-01-28 17:49:58.003 Ayla[8071:1035114] Multi-tasking -> Device: YES, App: YES
+2015-01-28 17:49:58.005 Ayla[8071:1035114] Unlimited access to network resources
+2015-01-28 17:49:58.008 Ayla[8071:1035114] 
+
+Started backup to iCloud! Please be careful.
+Your application might be rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines" at:
+https://developer.apple.com/icloud/documentation/data-storage/
+To disable web storage backup to iCloud, set the BackupWebStorage preference to "local" in the Cordova config.xml file
+
+2015-01-28 17:49:58.331 Ayla[8071:1035114] Resetting plugins due to page load.
+2015-01-28 17:49:58.490 Ayla[8071:1035114] Finished load of: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Bundle/Application/29702699-B1F8-4F58-BC1E-FBC018BB9A58/Ayla.app/www/app.html
+2015-01-28 17:51:25.539 Ayla[8276:1041543] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Data/Application/481F5B72-CC0F-43D6-A0FC-23E1E1E57FE6/Library/Cookies/Cookies.binarycookies
+2015-01-28 17:51:25.661 Ayla[8276:1041543] Apache Cordova native platform version 3.7.0 is starting.
+2015-01-28 17:51:25.662 Ayla[8276:1041543] Multi-tasking -> Device: YES, App: YES
+2015-01-28 17:51:25.664 Ayla[8276:1041543] Unlimited access to network resources
+2015-01-28 17:51:25.666 Ayla[8276:1041543] 
+
+Started backup to iCloud! Please be careful.
+Your application might be rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines" at:
+https://developer.apple.com/icloud/documentation/data-storage/
+To disable web storage backup to iCloud, set the BackupWebStorage preference to "local" in the Cordova config.xml file
+
+2015-01-28 17:51:26.108 Ayla[8276:1041543] Resetting plugins due to page load.
+2015-01-28 17:51:26.271 Ayla[8276:1041543] Finished load of: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Bundle/Application/5E264F20-846C-4692-BF85-834F7204F9C0/Ayla.app/www/app.html
+2015-01-28 17:52:17.815 Ayla[8473:1046503] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Data/Application/94F20637-E82D-4F68-AD2D-A9650CFF60EB/Library/Cookies/Cookies.binarycookies
+2015-01-28 17:52:17.927 Ayla[8473:1046503] Apache Cordova native platform version 3.7.0 is starting.
+2015-01-28 17:52:17.927 Ayla[8473:1046503] Multi-tasking -> Device: YES, App: YES
+2015-01-28 17:52:17.929 Ayla[8473:1046503] Unlimited access to network resources
+2015-01-28 17:52:17.932 Ayla[8473:1046503] 
+
+Started backup to iCloud! Please be careful.
+Your application might be rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines" at:
+https://developer.apple.com/icloud/documentation/data-storage/
+To disable web storage backup to iCloud, set the BackupWebStorage preference to "local" in the Cordova config.xml file
+
+2015-01-28 17:52:18.272 Ayla[8473:1046503] Resetting plugins due to page load.
+2015-01-28 17:52:18.432 Ayla[8473:1046503] Finished load of: file:///Users/iramadas/Library/Developer/CoreSimulator/Devices/2BF7D127-D905-4E4B-85BE-B09D614413E0/data/Containers/Bundle/Application/BAF6EB19-1678-4399-87AC-9D12CA974B3D/Ayla.app/www/app.html
