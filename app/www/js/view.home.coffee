@@ -1,10 +1,11 @@
 # HOME PAGE
 # -----------------------------------------------------------------------------
 class HomeView
+    dataFields: ["weather", "lights", "ventilation"]
 
     # Init the Settings View.
     init: =>
-        @el.find("input.host").focus()
+        sockets.emit "data.get", arr
 
     # Dispose the Settings View.
     dispose: =>

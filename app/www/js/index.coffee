@@ -81,5 +81,12 @@ class App
         @currentView.el.show()
         @currentView.init()
 
+    # PAGE NOTIFICATIONS
+    # -------------------------------------------------------------------------
+
+    # Show a page notification.
+    notify: (message) =>
+        @debug "Notify", message
+
 # BIND APP TO WINDOW
 window.app = new App()
