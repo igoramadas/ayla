@@ -69,6 +69,9 @@ class App
     navigate: (id, callback) =>
         @debug "Navigate: " + id
 
+        $("a.item").removeClass "active"
+        $("a.item.#{id}").addClass "active"
+
         if @currentView?
             @currentView.el.hide()
             @currentView.dispose()

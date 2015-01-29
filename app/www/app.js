@@ -74,6 +74,8 @@
 
     App.prototype.navigate = function(id, callback) {
       this.debug("Navigate: " + id);
+      $("a.item").removeClass("active");
+      $("a.item." + id).addClass("active");
       if (this.currentView != null) {
         this.currentView.el.hide();
         this.currentView.dispose();

@@ -3614,34 +3614,6 @@ t,G);!x.ic&&k&&(k(x.sa,x.$,x.Na),x.ic=!0)}m(h.beforeRemove,e);m(h.afterMove,A);m
 function(){if(!w||!w.tmpl)return 0;try{if(0<=w.tmpl.tag.tmpl.open.toString().indexOf("__"))return 2}catch(a){}return 1}();this.renderTemplateSource=function(b,e,g){g=g||{};if(2>a)throw Error("Your version of jQuery.tmpl is too old. Please upgrade to jQuery.tmpl 1.0.0pre or later.");var h=b.data("precompiled");h||(h=b.text()||"",h=w.template(null,"{{ko_with $item.koBindingContext}}"+h+"{{/ko_with}}"),b.data("precompiled",h));b=[e.$data];e=w.extend({koBindingContext:e},g.templateOptions);e=w.tmpl(h,
 b,e);e.appendTo(v.createElement("div"));w.fragments={};return e};this.createJavaScriptEvaluatorBlock=function(a){return"{{ko_code ((function() { return "+a+" })()) }}"};this.addTemplate=function(a,b){v.write("<script type='text/html' id='"+a+"'>"+b+"\x3c/script>")};0<a&&(w.tmpl.tag.ko_code={open:"__.push($1 || '');"},w.tmpl.tag.ko_with={open:"with($1) {",close:"} "})};a.Sa.prototype=new a.H;var b=new a.Sa;0<b.kc&&a.ab(b);a.b("jqueryTmplTemplateEngine",a.Sa)})()})})();})();
 
-ko.bindingHandlers.smartPage = {
-    init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-        var customValueAccessor = function() {
-            var result = valueAccessor();
-            result.withOnShow = viewModel.bindPage;
-            return result;
-        };
-
-        var customAllBindingsAccessor = function() {
-            var result = allBindingsAccessor();
-            result.smartPage.withOnShow = viewModel.bindPage;
-            return result;
-        };
-
-        var page = new pager.Page(element, customValueAccessor, customAllBindingsAccessor, viewModel, bindingContext);
-        return page.init();
-    }
-};
-
-ko.bindingHandlers.colorPicker = {
-    init: function(el, va, ab) {
-
-    },
-    update: function(el, va, ab) {
-        $(el).colorPicker();
-    }
-};
-
 (function (window) {
 
     var pagerJsModule = function ($, ko) {
@@ -5199,3 +5171,31 @@ ko.bindingHandlers.colorPicker = {
 
 
 }(window));
+
+ko.bindingHandlers.smartPage = {
+    init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+        var customValueAccessor = function() {
+            var result = valueAccessor();
+            result.withOnShow = viewModel.bindPage;
+            return result;
+        };
+
+        var customAllBindingsAccessor = function() {
+            var result = allBindingsAccessor();
+            result.smartPage.withOnShow = viewModel.bindPage;
+            return result;
+        };
+
+        var page = new pager.Page(element, customValueAccessor, customAllBindingsAccessor, viewModel, bindingContext);
+        return page.init();
+    }
+};
+
+ko.bindingHandlers.colorPicker = {
+    init: function(el, va, ab) {
+
+    },
+    update: function(el, va, ab) {
+        $(el).colorPicker();
+    }
+};
