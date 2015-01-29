@@ -2,9 +2,11 @@ module.exports = (grunt) ->
     grunt.initConfig
         concat:
             js:
-                src: ["www/js/lib/jquery.js", "www/js/lib/jquery.cookie.js", "www/js/lib/lodash.js",
-                      "www/js/lib/moment.js", "www/js/lib/modernizr.js", "www/js/lib/placeholder.js",
-                      "www/js/lib/fastclick.js", "www/js/lib/foundation.js"]
+                src: ["www/js/lib/jquery.js", "www/js/lib/jquery.cookie.js", "www/js/lib/jquery.colorpicker.js",
+                      "www/js/lib/lodash.js", "www/js/lib/moment.js", "www/js/lib/modernizr.js",
+                      "www/js/lib/placeholder.js", "www/js/lib/fastclick.js", "www/js/lib/foundation.js",
+                      "www/js/lib/crel.js", "www/js/lib/chart.js", "www/js/lib/knockout.js",
+                      "www/js/lib/ko.smartpage.js", "www/js/lib/ko.colorpicker.js", "www/js/lib/pager.js"]
                 dest: "www/app_lib.js"
             css:
                 src: ["www/css/lib/*.*"]

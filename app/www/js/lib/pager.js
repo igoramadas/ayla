@@ -3,6 +3,7 @@
     var pagerJsModule = function ($, ko) {
 
         "use strict";
+
         /**
          * @module pager
          * @readme README.md
@@ -23,7 +24,6 @@
             };
         };
 
-
         var pager = {};
 
         pager.page = null;
@@ -35,7 +35,6 @@
                 return Date.now();
             }
         };
-
 
         /**
          * @method extendWithPage

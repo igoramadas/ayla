@@ -54,10 +54,14 @@
     App.prototype.onDeviceReady = function() {
       this.debug("Event: deviceReady");
       if (localStorage.getItem("homeserver_url") != null) {
-        return this.navigate("home");
+        this.navigate("home");
       } else {
-        return this.navigate("settings");
+        this.navigate("settings");
       }
+      $(document).foundation();
+      pager.extendWithPage(this);
+      ko.applyBindings(this);
+      return pager.start();
     };
 
     App.prototype.onOnline = function() {
