@@ -8,17 +8,19 @@ class App
     init: =>
         @bindEvents()
         @bindNavigation()
-        return true
 
     bindEvents: =>
-        document.addEventListener "load", @onLoad, false
-        document.addEventListener "deviceready", @onDeviceReady, false
-        document.addEventListener "online", @onOnline, false
-        document.addEventListener "offline", @onOffline, false
+        if document.URL.indexOf("http://") < 0
+            document.addEventListener "load", @onLoad, false
+            document.addEventListener "deviceready", @onDeviceReady, false
+            document.addEventListener "online", @onOnline, false
+            document.addEventListener "offline", @onOffline, false
+        else
+            @onDeviceReady()
 
     bindNavigation: =>
         $(".icon-bar a").click (e) =>
-            src = $(e.target)
+            src = $(e.currentTarget)
             @navigate src.data("view")
 
     onLoad: =>
@@ -27,10 +29,10 @@ class App
     onDeviceReady: =>
         @debug "Event: deviceReady"
 
-        if not localStorage.getItem("homeserver_url")?
-            @navigate "settings"
-        else
+        if localStorage.getItem("homeserver_url")?
             @navigate "home"
+        else
+            @navigate "settings"
 
     onOnline: =>
         @debug "Event: online"
@@ -39,11 +41,14 @@ class App
         @debug "Event: offline"
 
     navigate: (id, callback) =>
+        @debug "Navigate: " + id
+
         if @currentView?
-            @currentView.dispose()
             @currentView.el.hide()
+            @currentView.dispose()
 
         @currentView = window["#{id}View"]
+        @currentView.el = $ "#" + id
         @currentView.el.show()
         @currentView.init()
 

@@ -1,6 +1,14 @@
 #settings.page
     h1 Settings
-    .panel
-        input.host(type="text")
-    .panel
-        button(value="Save")
+    .row
+        .small-12.column
+            span Please enter the hostname and port of your home server:
+    .row
+        .small-8.column
+            input.host(type="text", placeholder="home server hostname")
+        .small-4.column
+            input.port(type="text", placeholder="port")
+    .row
+
+    .row
+        button.save Save

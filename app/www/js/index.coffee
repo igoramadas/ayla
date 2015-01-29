@@ -1,5 +1,7 @@
 # MAIN APP CONTROLLER
+# --------------------------------------------------------------------------
 class App
+
     currentView: null
 
     debug: =>
@@ -52,4 +54,5 @@ class App
         @currentView.el.show()
         @currentView.init()
 
+# BIND APP TO WINDOW
 window.app = new App()

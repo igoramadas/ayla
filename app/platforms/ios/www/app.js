@@ -23,22 +23,25 @@
 
     App.prototype.init = function() {
       this.bindEvents();
-      this.bindNavigation();
-      return true;
+      return this.bindNavigation();
     };
 
     App.prototype.bindEvents = function() {
-      document.addEventListener("load", this.onLoad, false);
-      document.addEventListener("deviceready", this.onDeviceReady, false);
-      document.addEventListener("online", this.onOnline, false);
-      return document.addEventListener("offline", this.onOffline, false);
+      if (document.URL.indexOf("http://") < 0) {
+        document.addEventListener("load", this.onLoad, false);
+        document.addEventListener("deviceready", this.onDeviceReady, false);
+        document.addEventListener("online", this.onOnline, false);
+        return document.addEventListener("offline", this.onOffline, false);
+      } else {
+        return this.onDeviceReady();
+      }
     };
 
     App.prototype.bindNavigation = function() {
       return $(".icon-bar a").click((function(_this) {
         return function(e) {
           var src;
-          src = $(e.target);
+          src = $(e.currentTarget);
           return _this.navigate(src.data("view"));
         };
       })(this));
@@ -50,10 +53,10 @@
 
     App.prototype.onDeviceReady = function() {
       this.debug("Event: deviceReady");
-      if (localStorage.getItem("homeserver_url") == null) {
-        return this.navigate("settings");
-      } else {
+      if (localStorage.getItem("homeserver_url") != null) {
         return this.navigate("home");
+      } else {
+        return this.navigate("settings");
       }
     };
 
@@ -66,11 +69,13 @@
     };
 
     App.prototype.navigate = function(id, callback) {
+      this.debug("Navigate: " + id);
       if (this.currentView != null) {
-        this.currentView.dispose();
         this.currentView.el.hide();
+        this.currentView.dispose();
       }
       this.currentView = window["" + id + "View"];
+      this.currentView.el = $("#" + id);
       this.currentView.el.show();
       return this.currentView.init();
     };
@@ -87,15 +92,11 @@
       this.init = __bind(this.init, this);
     }
 
-    HomeView.prototype.el = $("#home");
-
     HomeView.prototype.init = function() {
       return this.el.find("input.host").focus();
     };
 
-    HomeView.prototype.dispose = function() {
-      return app.debug(this.el, "Disposed");
-    };
+    HomeView.prototype.dispose = function() {};
 
     return HomeView;
 
@@ -109,15 +110,11 @@
       this.init = __bind(this.init, this);
     }
 
-    SettingsView.prototype.el = $("#settings");
-
     SettingsView.prototype.init = function() {
       return this.el.find("input.host").focus();
     };
 
-    SettingsView.prototype.dispose = function() {
-      return app.debug(this.el, "Disposed");
-    };
+    SettingsView.prototype.dispose = function() {};
 
     return SettingsView;
 

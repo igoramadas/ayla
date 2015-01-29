@@ -1,5 +1,5 @@
 (function() {
-  var App, HomeView, SettingsView,
+  var App, HomeView, SettingsView, Sockets,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   App = (function() {
@@ -86,6 +86,43 @@
 
   window.app = new App();
 
+  Sockets = (function() {
+    var conn;
+
+    function Sockets() {}
+
+    conn = null;
+
+    Sockets.prototype.init = function() {
+      var url;
+      url = localStorage.getItem("homeserver_url");
+      if (url != null) {
+        return conn = io.connect("" + url.protocol + "//" + url.hostname + ":" + url.port);
+      }
+    };
+
+    Sockets.prototype.stop = function() {
+      return conn.off();
+    };
+
+    Sockets.prototype.on = function(event, callback) {
+      return conn.on(event, callback);
+    };
+
+    Sockets.prototype.off = function(event, callback) {
+      return conn.off(event, callback);
+    };
+
+    Sockets.prototype.emit = function(event, data) {
+      return conn.emit(event, data);
+    };
+
+    return Sockets;
+
+  })();
+
+  window.sockets = new Sockets();
+
   HomeView = (function() {
     function HomeView() {
       this.dispose = __bind(this.dispose, this);
@@ -106,15 +143,25 @@
 
   SettingsView = (function() {
     function SettingsView() {
+      this.saveClick = __bind(this.saveClick, this);
       this.dispose = __bind(this.dispose, this);
       this.init = __bind(this.init, this);
     }
 
     SettingsView.prototype.init = function() {
-      return this.el.find("input.host").focus();
+      return this.el.find("button.save").click;
     };
 
     SettingsView.prototype.dispose = function() {};
+
+    SettingsView.prototype.saveClick = function(e) {
+      var host, port, token;
+      host = this.el.find("input.host").val();
+      port = this.el.find("input.port").val();
+      token = this.el.find("input.token").val();
+      localStorage.setItem("homeserver_url", "https://" + host + ":" + port + "/");
+      return localStorage.setItem("homeserver_token", token);
+    };
 
     return SettingsView;
 
