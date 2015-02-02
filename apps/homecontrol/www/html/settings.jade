@@ -2,7 +2,7 @@
     h1 Settings
     .row
         .small-12.column
-            span Hostname and port of your home server:
+            span Hostname and port of the home server:
     .row
         .small-8.column
             input.host(type="text", placeholder="home server hostname")
@@ -14,7 +14,13 @@
     .row
         .small-12.column
             input.token(type="text", placeholder="your personal token")
-
+    .row
+        .small-12.column
+            input#chk-notify-door.notify-door(type="checkbox")
+            label(for="chk-notify-door") When doors open
+        .small-12.column
+            input#chk-notify-server.notify-server(type="checkbox")
+            label(for="chk-notify-server") Server events (restart, critical errors etc)
     .row
         .small-6.column
             button.save Save
