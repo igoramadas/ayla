@@ -1,8 +1,8 @@
 #settings.page
-    h1 Settings
+    h2 Server and user settings
     .row
         .small-12.column
-            span Hostname and port of the home server:
+            span Hostname and port of the home server
     .row
         .small-8.column
             input.host(type="text", placeholder="home server hostname")
@@ -10,17 +10,16 @@
             input.port(type="text", placeholder="port")
     .row
         .small-12.column
-            span Your access token:
+            span Your access token
     .row
         .small-12.column
             input.token(type="text", placeholder="your personal token")
     .row
         .small-12.column
-            input#chk-notify-door.notify-door(type="checkbox")
-            label(for="chk-notify-door") When doors open
+            span Your name
+    .row
         .small-12.column
-            input#chk-notify-server.notify-server(type="checkbox")
-            label(for="chk-notify-server") Server events (restart, critical errors etc)
+            input.token(type="text", placeholder="your name or nickname")
     .row
         .small-6.column
             button.save Save

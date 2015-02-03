@@ -13,7 +13,7 @@ html
         title Ayla
     body
         #app
-            #topmenu.icon-bar.five-up
+            #topmenu.icon-bar.four-up
                 a.item.dashboard(data-view="dashboard")
                     img(src="images/icons/dashboard.svg")
                     label Dashboard
@@ -26,14 +26,12 @@ html
                 a.item.media(data-view="media")
                     img(src="images/icons/media.svg")
                     label Media
-                a.item.settings(data-view="settings")
-                    img(src="images/icons/settings.svg")
-                    label Settings
 
             include dashboard
             include weather
             include lights
             include media
+
             include settings
 
         script(type="text/javascript").
