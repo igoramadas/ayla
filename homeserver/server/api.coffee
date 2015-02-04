@@ -36,11 +36,11 @@ class Api
         for f in files
             if f isnt "baseapi.coffee" and f.indexOf(".coffee") > 0
                 filename = f.replace ".coffee", ""
-                enabled = lodash.contains settings.modules.enable, filename
+                enabled = lodash.contains settings.modules.api, filename
 
-                # Only add if not on the disabled modules setting.
+                # Only add if set on enabled modules setting.
                 if not enabled
-                    logger.debug "Api.init", f, "Module is not enabled and won't be instantiated."
+                    logger.debug "Api.init", f, "API Module is not enabled and won't be instantiated."
                     @disabledModules[filename] = filename
                 else
                     module = require "./api/#{f}"

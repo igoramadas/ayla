@@ -18,6 +18,8 @@ class Manager
 
     # Modules will be set on init.
     modules: {}
+    disabledModules: {}
+
     # INIT
     # -------------------------------------------------------------------------
 
@@ -32,10 +34,18 @@ class Manager
         # Init modules.
         files = fs.readdirSync managerPath
         for f in files
-            if f.indexOf("basemanager.coffee") < 0 and f.indexOf(".coffee") > 0
-                module = require "./manager/#{f}"
-                module.init()
-                @modules[module.moduleNameLower] = module
+            if f isnt "basemanager.coffee" and f.indexOf(".coffee") > 0
+                filename = f.replace ".coffee", ""
+                enabled = lodash.contains settings.modules.managers, filename
+
+                # Only add if set on enabled managers setting.
+                if not enabled
+                    logger.debug "Manager.init", f, "Manager is not enabled and won't be instantiated."
+                    @disabledModules[filename] = filename
+                else
+                    module = require "./manager/#{f}"
+                    module.init()
+                    @modules[module.moduleNameLower] = module
 
         # Start all managers.
         m.start() for k, m of @modules
