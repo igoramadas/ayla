@@ -5,6 +5,7 @@ class Routes
 
     expresser = require "expresser"
     cron = expresser.cron
+    database = expresser.database
     logger = expresser.logger
     moment = expresser.libs.moment
     settings = expresser.settings
@@ -17,6 +18,9 @@ class Routes
     manager = require "./manager.coffee"
     path = require "path"
 
+    # Holds a list of all valid access tokens.
+    tokens: {}
+
     # INIT
     # -------------------------------------------------------------------------
 
@@ -26,6 +30,11 @@ class Routes
 
         # Main route.
         app.get "/", indexPage
+
+        # Used by clients to get or renew an access token. This is mainly used
+        # via NFC tags, for example an NFC tag on the entrance door that
+        # publishes this URL to the mobile app / browser.
+        app.get "/tokenrequest", tokenRequestPage
 
         # Manager routes.
         for key, m of manager.modules
@@ -75,6 +84,11 @@ class Routes
         app.post "/commander/:cmd", commanderPage
         app.get "/status", statusPage
 
+        # Init the access tokens collection.
+        for token, value of settings.accessTokens
+            @tokens[token] = value
+            @tokens[token].permanent = true
+
         callback() if callback?
 
     # Helper to bind module routes.
@@ -103,6 +117,10 @@ class Routes
     # The index homepage.
     indexPage = (req, res) ->
         renderPage req, res, "index"
+
+    # The token request page.
+    tokenRequestPage = (req, res) ->
+        renderPage req, res, "tokenrequest"
 
     # The commander processor.
     commanderPage = (req, res) ->
@@ -186,17 +204,12 @@ class Routes
         ipClient = req.headers['X-Forwarded-For'] or req.connection.remoteAddress or req.socket?.remoteAddress
         ipRouter = settings.network.router.ip
 
-        # Grant access for localhost.
-        if ipClient is "127.0.0.1"
-            return true
-
         # Get router and client subnet.
         clientSubnet = ipClient.substring(0, ipClient.lastIndexOf ".")
         routerSubnet = ipRouter.substring(0, ipRouter.lastIndexOf ".")
 
         # Same subnet? Grant access.
-        if clientSubnet is routerSubnet
-            return true
+        return true if clientSubnet is routerSubnet
 
         # Valid token? Grant access.
         # Also check if a token cookie should be set for this particular client.
