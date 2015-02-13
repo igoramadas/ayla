@@ -18,7 +18,6 @@ class Network extends (require "./baseapi.coffee")
     http = require "http"
     lodash = expresser.libs.lodash
     logger = expresser.logger
-    mdns = require "mdns2"
     moment = expresser.libs.moment
     querystring = require "querystring"
     path = require "path"
@@ -28,6 +27,14 @@ class Network extends (require "./baseapi.coffee")
 
     # PROPERTIES
     # -------------------------------------------------------------------------
+
+    # MDNS might be unavailable in some systems.
+    mdns = null
+
+    try
+        mdns = require "mdns2"
+    catch ex
+        logger.info "Network.MDNS", "MDNS module is not available."
 
     # Local network discovery.
     mdnsBrowser = null
@@ -61,9 +68,10 @@ class Network extends (require "./baseapi.coffee")
         @serverInfo = utils.getServerInfo()
         @serverInfo.platform = @serverInfo.platform.toLowerCase()
 
-        mdnsBrowser = mdns.createBrowser mdns.tcp "http"
+        if mdns?
+            mdnsBrowser = mdns.createBrowser mdns.tcp "http"
 
-        if settings.network.autoDiscovery
+        if mdnsBrowser? and settings.network.autoDiscovery
             mdnsBrowser.on "serviceUp", @onServiceUp
             mdnsBrowser.on "serviceDown", @onServiceDown
             mdnsBrowser.start()
@@ -79,7 +87,7 @@ class Network extends (require "./baseapi.coffee")
         events.off "Network.probeBluetoothUsers", @probeBluetoothUsers
         events.off "Network.wol", @wol
 
-        if settings.network.autoDiscovery
+        if mdnsBrowser? and settings.network.autoDiscovery
             mdnsBrowser.off "serviceUp", @onServiceUp
             mdnsBrowser.off "serviceDown", @onServiceDown
             mdnsBrowser.stop()

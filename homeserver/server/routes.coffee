@@ -50,19 +50,19 @@ class Routes
         # API modules routes.
         for key, m of api.modules
             do (m) ->
-                link = m.moduleNameLower
+                link = m.moduleName
 
                 # Set APi module data route.
                 app.get "/api/#{link}/data", (req, res) ->
                     obj = {}
-                    obj.settings = settings[m.moduleNameLower]
+                    obj.settings = settings[m.moduleName]
                     obj.moduleName = m.moduleName
                     obj.data = m.data
                     obj.errors = m.errors
                     obj.oauth = m.oauth
                     obj.jobs = []
 
-                    jobs = lodash.where cron.jobs, {module: m.moduleNameLower + ".coffee"}
+                    jobs = lodash.where cron.jobs, {module: m.moduleName + ".coffee"}
 
                     for job in jobs
                         obj.jobs.push {id: job.id, schedule: job.schedule, endTime: job.endTime}
@@ -101,7 +101,7 @@ class Routes
             method = route.method.toLowerCase()
 
             # Get or post? Available render types are page, json and image.
-            app[method] "/#{m.moduleNameLower}/#{route.path}", (req, res) ->
+            app[method] "/#{m.moduleName}/#{route.path}", (req, res) ->
                 if route.render is "json"
                     renderFn = renderJson
                 else if route.render is "image"
@@ -141,7 +141,7 @@ class Routes
     renderApiModulePage = (req, res, module) ->
         jobs = module.getScheduledJobs()
 
-        fs.readFile "#{__dirname}/api/#{module.moduleNameLower}.coffee", {encoding: settings.general.encoding}, (err, data) ->
+        fs.readFile "#{__dirname}/api/#{module.moduleName}.coffee", {encoding: settings.general.encoding}, (err, data) ->
             lines = data.split "\n"
             lines.splice 0, 2
             description = ""
@@ -215,9 +215,8 @@ class Routes
         # Also check if a token cookie should be set for this particular client.
         token = req.query.token
         if token? and settings.accessTokens[token]?
-            if req.query.savecookie is "1"
-                expires = {expires: moment().add(settings.app.cookieTokenExpireDays, "d").toDate()}
-                res.cookie "token", token, expires
+            expires = {expires: moment().add(settings.app.cookieTokenExpireDays, "d").toDate()}
+            res.cookie "token", token, expires
             return true
 
         # Check if token is present as a cookie.

@@ -111,7 +111,7 @@ class BaseApi extends (require "../basemodule.coffee")
 
     # Helper to get the list of scheduled jobs related to this API module.
     getScheduledJobs: =>
-        return lodash.where cron.jobs, {module: @moduleNameLower + ".coffee"}
+        return lodash.where cron.jobs, {module: @moduleName + ".coffee"}
 
     # Helper to get filter from a job. Used by most of API modules to properly handle
     # the filter argument (which can be passed directly or via the `args` property

@@ -45,7 +45,7 @@ class Api
                 else
                     module = require "./api/#{f}"
                     module.init()
-                    @modules[module.moduleNameLower] = module
+                    @modules[module.moduleName] = module
 
                     # Create database TTL index.
                     expires = settings.database.dataCacheExpireHours * 3600

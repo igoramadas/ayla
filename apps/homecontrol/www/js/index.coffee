@@ -73,6 +73,8 @@ class App
         $("a.item.#{id}").addClass "active"
 
         if @currentView?
+            if @currentView.processData?
+                sockets.off "#{id}Manager.data", @currentView.processData
             @currentView.el.hide()
             @currentView.dispose()
 
@@ -80,6 +82,10 @@ class App
         @currentView.el = $ "#" + id
         @currentView.el.show()
         @currentView.init()
+
+        # Process data from server when received via sockets.
+        if @currentView.processData?
+            sockets.on "#{id}Manager.data", @currentView.processData
 
     # PAGE NOTIFICATIONS
     # -------------------------------------------------------------------------

@@ -1,13 +1,11 @@
 # HOME PAGE
 # -----------------------------------------------------------------------------
 class HomeView
-    dataFields: ["weather", "lights", "ventilation"]
 
-    # Init the Settings View.
+    # Init the Home View.
     init: =>
-        sockets.emit "data.get", arr
 
-    # Dispose the Settings View.
+    # Dispose the Home View.
     dispose: =>
 
 # BIND HOME VIEW TO WINDOW

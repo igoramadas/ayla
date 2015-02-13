@@ -45,7 +45,7 @@ class Manager
                 else
                     module = require "./manager/#{f}"
                     module.init()
-                    @modules[module.moduleNameLower] = module
+                    @modules[module.moduleName] = module
 
         # Start all managers.
         m.start() for k, m of @modules

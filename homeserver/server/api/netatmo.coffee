@@ -103,7 +103,7 @@ class Netatmo extends (require "./baseapi.coffee")
         params["date_begin"] = filter.date_begin if filter.date_begin?
         params["date_end"] = filter.endDate or filter.date_end or "last"
         params["scale"] = filter.scale or "30min"
-        params["module_id"] = filter.moduleId if filter.moduleId?
+        params["module_id"] = filter.moduleName if filter.moduleName?
         params["module_id"] = filter.module_id if filter.module_id?
         params["device_id"] = filter.deviceId or filter.device_id or @data.devices[0].value[0]["_id"]
 
@@ -134,7 +134,7 @@ class Netatmo extends (require "./baseapi.coffee")
     # OUTDOOR WEATHER DATA
     # -------------------------------------------------------------------------
 
-    # Get outdoor readings from Netatmo. A moduleId must be set on the filter.
+    # Get outdoor readings from Netatmo. A moduleName must be set on the filter.
     getOutdoor: (filter, callback) =>
         if lodash.isFunction filter
             callback = filter
@@ -150,7 +150,7 @@ class Netatmo extends (require "./baseapi.coffee")
 
         # Module ID is mandatory!
         if not params["module_id"]?
-            callback "A valid outdoor moduleId is mandatory." if hasCallback
+            callback "A valid outdoor moduleName is mandatory." if hasCallback
             return
 
         # Make the request for outdoor readings.
