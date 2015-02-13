@@ -6,6 +6,7 @@
     function App() {
       this.notify = __bind(this.notify, this);
       this.navigate = __bind(this.navigate, this);
+      this.bindPage = __bind(this.bindPage, this);
       this.onOffline = __bind(this.onOffline, this);
       this.onOnline = __bind(this.onOnline, this);
       this.onDeviceReady = __bind(this.onDeviceReady, this);
@@ -60,9 +61,7 @@
         this.navigate("settings");
       }
       $(document).foundation();
-      pager.extendWithPage(this);
-      ko.applyBindings(this);
-      return pager.start();
+      return ko.applyBindings(this);
     };
 
     App.prototype.onOnline = function() {
@@ -71,6 +70,14 @@
 
     App.prototype.onOffline = function() {
       return this.debug("Event: offline");
+    };
+
+    App.prototype.bindPage = function(callback, page) {
+      if (ayla.currentView != null) {
+        ayla.currentView.dispose();
+      }
+      ayla.currentView = new ayla[page.currentId + "View"]();
+      return ayla.currentView.init(page.pageRoute.params, callback);
     };
 
     App.prototype.navigate = function(id, callback) {
