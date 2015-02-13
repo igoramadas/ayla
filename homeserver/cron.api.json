@@ -3,142 +3,129 @@
         {
             "callback": "takeAllSnaps",
             "description": "Save a snap of enabled cameras to the data folder every 10 minutes.",
-            "schedule": 600,
-            "enabled": true
+            "schedule": 600
         },
         {
             "callback": "cleanSnaps",
             "description": "Delete old camera snaps twice a day.",
-            "schedule": ["06:03:00", "18:03:00"],
-            "enabled": true
+            "schedule": ["06:03:00", "18:03:00"]
         }
     ],
     "electricimp.coffee": [
         {
             "callback": "getDeviceData",
             "description": "Probe Electric Imp device sensors every 5 minutes.",
-            "schedule": 300,
-            "enabled": true
+            "schedule": 300
+        }
+    ],
+    "fitbit.coffee": [
+        {
+            "callback": "getSleep",
+            "description": "Get sleep data from Fitbit every day.",
+            "schedule": ["11:02:00"]
         }
     ],
     "hue.coffee": [
         {
             "callback": "jobRefreshHub",
             "description": "Refresh Philips Hue hub data every minute.",
-            "schedule": 60,
-            "enabled": true
+            "schedule": 60
         }
     ],
     "netatmo.coffee": [
         {
             "callback": "getDevices",
             "description": "Get Netatmo device list twice a day.",
-            "schedule": ["08:04:00", "18:04:00"],
-            "enabled": true
+            "schedule": ["08:04:00", "18:04:00"]
         },
         {
             "callback": "getAllOutdoor",
             "description": "Probe outdoor Netatmo conditions every 5 minutes.",
-            "schedule": 300,
-            "enabled": true
+            "schedule": 300
         },
         {
             "callback": "getAllIndoor",
             "description": "Probe indoor Netatmo conditions every 5 minutes.",
-            "schedule": 300,
-            "enabled": true
+            "schedule": 300
         }
     ],
     "network.coffee": [
         {
             "callback": "probeDevices",
             "description": "Probe network devices and update their statuses every minute.",
-            "schedule": 60,
-            "enabled": true
+            "schedule": 60
         },
         {
             "callback": "probeBluetooth",
             "description": "Probe discoverable bluetooth devices every 5 minutes.",
-            "schedule": 300,
-            "enabled": true
+            "schedule": 300
         }
     ],
     "ninja.coffee": [
         {
             "callback": "getDevices",
             "description": "Probe Ninja Blocks device list every 20 minutes.",
-            "schedule": 1200,
-            "enabled": true
+            "schedule": 1200
         }
     ],
     "strava.coffee": [
         {
             "callback": "getProfile",
             "description": "Get Strava profile twice a day.",
-            "schedule": ["10:21:00", "21:21:00"],
-            "enabled": true
+            "schedule": ["10:21:00", "21:21:00"]
         },
         {
             "callback": "getRecentActivities",
             "description": "Get recent Strava activities list twice a day.",
-            "schedule": ["10:22:00", "21:22:00"],
-            "enabled": true
+            "schedule": ["10:22:00", "21:22:00"]
         }
     ],
     "toshl.coffee": [
         {
             "callback": "getMonths",
             "description": "Probe Toshl to get months data daily.",
-            "schedule": ["06:17:00"],
-            "enabled": true
+            "schedule": ["06:17:00"]
         },
         {
             "callback": "getRecentExpenses",
             "description": "Probe Toshl to get recent expenses four times a day.",
-            "schedule": ["08:16:00", "12:16:00", "16:16:00", "20:16:00"],
-            "enabled": true
+            "schedule": ["08:16:00", "12:16:00", "16:16:00", "20:16:00"]
         },
         {
             "callback": "getRecentIncomes",
             "description": "Probe Toshl to get recent income three times a day.",
-            "schedule": ["08:18:00", "14:18:00", "20:18:00"],
-            "enabled": true
+            "schedule": ["08:18:00", "14:18:00", "20:18:00"]
         }
     ],
     "ubi.coffee": [
         {
             "callback": "getSensorData",
             "description": "Get sensor readings from Ubi every 5 minutes.",
-            "schedule": 300,
-            "enabled": true
+            "schedule": 300
         }
     ],
     "withings.coffee": [
         {
             "callback": "getRecentBodyMeasures",
             "description": "Get recent body measures for the last month twice a day.",
-            "schedule": ["10:02:00", "19:02:00"],
-            "enabled": true
+            "schedule": ["10:02:00", "19:02:00"]
         }
     ],
     "wunderground.coffee": [
         {
             "callback": "getConditions",
             "description": "Get updated weather information every 10 minutes.",
-            "schedule": 600,
-            "enabled": true
+            "schedule": 600
         },
         {
             "callback": "getForecast",
             "description": "Get updated weather forecast three times a day.",
-            "schedule": ["08:07:00", "14:07:00", "20:07:00"],
-            "enabled": true
+            "schedule": ["08:07:00", "14:07:00", "20:07:00"]
         },
         {
             "callback": "getAstronomy",
             "description": "Get updated astronomy (sunrise, sunset, moon) twice a day.",
-            "schedule": ["02:01:00", "14:01:00"],
-            "enabled": true
+            "schedule": ["02:01:00", "14:01:00"]
         }
     ]
 }
