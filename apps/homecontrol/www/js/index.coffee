@@ -69,12 +69,14 @@ class App
     navigate: (id, callback) =>
         @debug "Navigate: " + id
 
+        socketsId = id.charAt(0).toUpperCase() + id.slice(1) + "Manager.data"
+
         $("a.item").removeClass "active"
         $("a.item.#{id}").addClass "active"
 
         if @currentView?
             if @currentView.processData?
-                sockets.off "#{id}Manager.data", @currentView.processData
+                sockets.off "#{socketsId}", @currentView.processData
             @currentView.el.hide()
             @currentView.dispose()
 
@@ -85,7 +87,7 @@ class App
 
         # Process data from server when received via sockets.
         if @currentView.processData?
-            sockets.on "#{id}Manager.data", @currentView.processData
+            sockets.on "#{socketsId}", @currentView.processData
 
     # PAGE NOTIFICATIONS
     # -------------------------------------------------------------------------

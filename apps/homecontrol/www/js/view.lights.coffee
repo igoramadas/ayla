@@ -12,7 +12,7 @@ class LightsView
     hueLightColor: (light, e) =>
         data = {lightId: light.id, title: light.title, colorHex: $(e.target).val()}
 
-        sockets.emit "lightsmanager.hue.color", data
+        sockets.emit "LightsManager.Hue.color", data
 
         return true
 
@@ -21,7 +21,7 @@ class LightsView
         light.state = $(e.target).is ":checked"
         data = {lightId: light.id, title: light.title, state: light.state}
 
-        sockets.emit "lightsmanager.hue.toggle", data
+        sockets.emit "LightsManager.Hue.toggle", data
 
         return true
 
@@ -30,7 +30,7 @@ class LightsView
         code = if $(e.target).hasClass("success") then light.codeOn else light.codeOff
         data = {title: light.title, code: code}
 
-        sockets.emit "lightsmanager.ninja.toggle", data
+        sockets.emit "LightsManager.Ninja.toggle", data
 
         return true
 

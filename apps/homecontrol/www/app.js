@@ -74,12 +74,14 @@
     };
 
     App.prototype.navigate = function(id, callback) {
+      var socketsId;
       this.debug("Navigate: " + id);
+      socketsId = id.charAt(0).toUpperCase() + id.slice(1) + "Manager.data";
       $("a.item").removeClass("active");
       $("a.item." + id).addClass("active");
       if (this.currentView != null) {
         if (this.currentView.processData != null) {
-          sockets.off("" + id + "Manager.data", this.currentView.processData);
+          sockets.off("" + socketsId, this.currentView.processData);
         }
         this.currentView.el.hide();
         this.currentView.dispose();
@@ -89,7 +91,7 @@
       this.currentView.el.show();
       this.currentView.init();
       if (this.currentView.processData != null) {
-        return sockets.on("" + id + "Manager.data", this.currentView.processData);
+        return sockets.on("" + socketsId, this.currentView.processData);
       }
     };
 
@@ -176,7 +178,7 @@
         title: light.title,
         colorHex: $(e.target).val()
       };
-      sockets.emit("lightsmanager.hue.color", data);
+      sockets.emit("LightsManager.Hue.color", data);
       return true;
     };
 
@@ -188,7 +190,7 @@
         title: light.title,
         state: light.state
       };
-      sockets.emit("lightsmanager.hue.toggle", data);
+      sockets.emit("LightsManager.Hue.toggle", data);
       return true;
     };
 
@@ -199,7 +201,7 @@
         title: light.title,
         code: code
       };
-      sockets.emit("lightsmanager.ninja.toggle", data);
+      sockets.emit("LightsManager.Ninja.toggle", data);
       return true;
     };
 
