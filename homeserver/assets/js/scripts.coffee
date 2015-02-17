@@ -19,7 +19,6 @@
 #= require views/baseview.coffee
 #= require views/email.coffee
 #= require views/fitness.coffee
-#= require views/lights.coffee
 #= require views/money.coffee
 #= require views/network.coffee
 #= require views/start.coffee

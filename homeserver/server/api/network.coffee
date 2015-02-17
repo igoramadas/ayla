@@ -34,7 +34,7 @@ class Network extends (require "./baseapi.coffee")
     try
         mdns = require "mdns2"
     catch ex
-        logger.info "Network.MDNS", "MDNS module is not available."
+        logger.warn "Network.MDNS", "MDNS module is not available."
 
     # Local network discovery.
     mdnsBrowser = null

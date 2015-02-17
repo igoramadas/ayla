@@ -114,6 +114,31 @@ class Strava extends (require "./baseapi.coffee")
             @setData "recentActivities", result if result?
             callback err, result if hasCallback
 
+    # Get detailed info about an activity.
+    getActivity: (filter, callback) =>
+        if lodash.isFunction filter
+            callback = filter
+            filter = null
+        else
+            filter = @getJobArgs filter
+
+        hasCallback = lodash.isFunction callback
+
+        # Activity ID is mandatory!
+        if not filter?.id?
+            callback "The activity ID is mandatory (filter.id)." if hasCallback
+            return
+
+        @apiRequest "activities/#{filter.id}", (err, result, resp) =>
+            console.warn result
+
+            if err?
+                @logError "Strava.getActivity", filter, err
+            else
+                @setData "activity", result, filter
+
+            callback err, result if hasCallback
+
 # Singleton implementation.
 # -----------------------------------------------------------------------------
 Strava.getInstance = ->

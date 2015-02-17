@@ -145,20 +145,20 @@ class Netatmo extends (require "./baseapi.coffee")
         hasCallback = lodash.isFunction callback
 
         # Set outdoor parameters.
-        params = @getParams filter
-        params["type"] = "Temperature,Humidity,Rain"
+        filter = @getParams filter
+        filter["type"] = "Temperature,Humidity,Rain"
 
         # Module ID is mandatory!
         if not params["module_id"]?
-            callback "A valid outdoor moduleName is mandatory." if hasCallback
+            callback "A valid outdoor module ID (filter.module_id) is mandatory." if hasCallback
             return
 
         # Make the request for outdoor readings.
-        @apiRequest "getmeasure", params, (err, result) =>
+        @apiRequest "getmeasure", filter, (err, result) =>
             if err?
                 @logError "Netatmo.getOutdoor", filter, err
             else
-                body = getResultBody result, params
+                body = getResultBody result, filter
                 @setData "outdoor", body, filter
                 logger.info "Netatmo.getOutdoor", filter, body
 
