@@ -1,25 +1,26 @@
 #settings.page
     h2 Server and user settings
-    .row
-        .small-12.column
-            span Hostname and port of the home server
-    .row
-        .small-8.column
-            input.host(type="text", placeholder="home server hostname")
-        .small-4.column
-            input.port(type="text", placeholder="port")
-    .row
-        .small-12.column
-            span Your access token
-    .row
-        .small-12.column
-            input.token(type="text", placeholder="your personal token")
-    .row
-        .small-12.column
-            span Your name
-    .row
-        .small-12.column
-            input.token(type="text", placeholder="your name or nickname")
-    .row
-        .small-6.column
-            button.save Save
+    form(data-abide)
+        .row.spaced
+            .small-12.column
+                span Hostname and port of the home server
+        .row
+            .small-8.column
+                input.host(type="text", placeholder="home server hostname", pattern="domain", required)
+                small.error Invalid hostname
+            .small-4.column
+                input.port(type="text", placeholder="port", pattern="number", required)
+                small.error Invalid port
+        .row.spaced
+            .small-12.column
+                span Your access token
+        .row
+            .small-12.column
+                input.token(type="text", placeholder="your personal token", pattern="alpha_numeric", required)
+                small.error Access token must be alphanumeric
+        .row.spaced
+            .small-12.column
+                span Your name
+        .row
+            .small-6.column
+                button.save(type="submit") Save

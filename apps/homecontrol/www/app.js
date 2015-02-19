@@ -54,14 +54,14 @@
     };
 
     App.prototype.onDeviceReady = function() {
+      var _ref;
       this.debug("Event: deviceReady");
-      if (localStorage.getItem("homeserver_url") != null) {
+      if (((_ref = localStorage.getItem("homeserver_url")) != null ? _ref.toString().length : void 0) > 11) {
         this.navigate("home");
       } else {
         this.navigate("settings");
       }
-      $(document).foundation();
-      return ko.applyBindings(this);
+      return $(document).foundation();
     };
 
     App.prototype.onOnline = function() {
@@ -226,18 +226,24 @@
     }
 
     SettingsView.prototype.init = function() {
-      return this.el.find("button.save").click;
+      return this.el.find("button.save").click(this.saveClick);
     };
 
     SettingsView.prototype.dispose = function() {};
 
     SettingsView.prototype.saveClick = function(e) {
-      var host, port, token;
+      var host, port, token, url;
       host = this.el.find("input.host").val();
       port = this.el.find("input.port").val();
       token = this.el.find("input.token").val();
-      localStorage.setItem("homeserver_url", "https://" + host + ":" + port + "/");
-      return localStorage.setItem("homeserver_token", token);
+      url = "https://" + host + ":" + port + "/tokenrequest?token=" + token;
+      return $.getJSON(url, (function(_this) {
+        return function(data) {
+          console.warn(data);
+          localStorage.setItem("homeserver_url", "https://" + host + ":" + port + "/");
+          return localStorage.setItem("homeserver_token", token);
+        };
+      })(this));
     };
 
     return SettingsView;

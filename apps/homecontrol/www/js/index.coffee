@@ -41,7 +41,7 @@ class App
     onDeviceReady: =>
         @debug "Event: deviceReady"
 
-        if localStorage.getItem("homeserver_url")?
+        if localStorage.getItem("homeserver_url")?.toString().length > 11
             @navigate "home"
         else
             @navigate "settings"
@@ -50,7 +50,7 @@ class App
         $(document).foundation()
 
         # Init knockout.js.
-        ko.applyBindings this
+        # ko.applyBindings this
 
     # Called when app is online.
     onOnline: =>
