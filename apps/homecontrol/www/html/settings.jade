@@ -1,12 +1,12 @@
 #settings.page
     h2 Server and user settings
-    form(data-abide)
+    form(data-abide="ajax")
         .row.spaced
             .small-12.column
                 span Hostname and port of the home server
         .row
             .small-8.column
-                input.host(type="text", placeholder="home server hostname", pattern="domain", required)
+                input.host(type="text", placeholder="home server hostname", pattern="alpha_numeric", required)
                 small.error Invalid hostname
             .small-4.column
                 input.port(type="text", placeholder="port", pattern="number", required)

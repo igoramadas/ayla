@@ -226,7 +226,7 @@
     }
 
     SettingsView.prototype.init = function() {
-      return this.el.find("button.save").click(this.saveClick);
+      return this.el.find("form").on("valid.fndtn.abide", this.saveClick);
     };
 
     SettingsView.prototype.dispose = function() {};
@@ -237,6 +237,7 @@
       port = this.el.find("input.port").val();
       token = this.el.find("input.token").val();
       url = "https://" + host + ":" + port + "/tokenrequest?token=" + token;
+      console.warn(url);
       return $.getJSON(url, (function(_this) {
         return function(data) {
           console.warn(data);
