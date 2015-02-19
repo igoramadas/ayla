@@ -4,7 +4,7 @@ class SettingsView
 
     # Init the Settings View.
     init: =>
-        @el.find("button.save").click
+        @el.find("form").on "valid.fndtn.abide", @saveClick
 
     # Dispose the Settings View.
     dispose: =>
@@ -15,8 +15,16 @@ class SettingsView
         port = @el.find("input.port").val()
         token = @el.find("input.token").val()
 
-        localStorage.setItem "homeserver_url", "https://#{host}:#{port}/"
-        localStorage.setItem "homeserver_token", token
+        url = "https://#{host}:#{port}/tokenrequest?token=#{token}"
+
+        console.warn url
+
+        $.getJSON url, (data) =>
+
+            console.warn data
+
+            localStorage.setItem "homeserver_url", "https://#{host}:#{port}/"
+            localStorage.setItem "homeserver_token", token
 
 # BIND SETTINGS VIEW TO WINDOW
 window.settingsView = new SettingsView()

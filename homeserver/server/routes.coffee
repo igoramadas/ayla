@@ -120,7 +120,8 @@ class Routes
 
     # The token request page.
     tokenRequestPage = (req, res) ->
-        renderPage req, res, "tokenrequest"
+        result = {token: req.params.token}
+        renderJson req, res, {result: result}
 
     # The commander processor.
     commanderPage = (req, res) ->

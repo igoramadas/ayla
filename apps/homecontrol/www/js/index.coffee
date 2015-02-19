@@ -41,7 +41,7 @@ class App
     onDeviceReady: =>
         @debug "Event: deviceReady"
 
-        if localStorage.getItem("homeserver_url")?
+        if localStorage.getItem("homeserver_url")?.toString().length > 11
             @navigate "home"
         else
             @navigate "settings"
@@ -49,10 +49,8 @@ class App
         # Init foundation.
         $(document).foundation()
 
-        # Init pager.js and knockout.js.
-        pager.extendWithPage this
-        ko.applyBindings this
-        pager.start()
+        # Init knockout.js.
+        # ko.applyBindings this
 
     # Called when app is online.
     onOnline: =>
@@ -64,6 +62,13 @@ class App
 
     # NAVIGATION
     # -------------------------------------------------------------------------
+
+    # Bind a page to the main view.
+    bindPage: (callback, page) =>
+        ayla.currentView.dispose() if ayla.currentView?
+
+        ayla.currentView = new ayla[page.currentId + "View"]()
+        ayla.currentView.init page.pageRoute.params, callback
 
     # Navigate to the specified page.
     navigate: (id, callback) =>

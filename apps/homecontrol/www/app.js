@@ -6,6 +6,7 @@
     function App() {
       this.notify = __bind(this.notify, this);
       this.navigate = __bind(this.navigate, this);
+      this.bindPage = __bind(this.bindPage, this);
       this.onOffline = __bind(this.onOffline, this);
       this.onOnline = __bind(this.onOnline, this);
       this.onDeviceReady = __bind(this.onDeviceReady, this);
@@ -53,16 +54,14 @@
     };
 
     App.prototype.onDeviceReady = function() {
+      var _ref;
       this.debug("Event: deviceReady");
-      if (localStorage.getItem("homeserver_url") != null) {
+      if (((_ref = localStorage.getItem("homeserver_url")) != null ? _ref.toString().length : void 0) > 11) {
         this.navigate("home");
       } else {
         this.navigate("settings");
       }
-      $(document).foundation();
-      pager.extendWithPage(this);
-      ko.applyBindings(this);
-      return pager.start();
+      return $(document).foundation();
     };
 
     App.prototype.onOnline = function() {
@@ -71,6 +70,14 @@
 
     App.prototype.onOffline = function() {
       return this.debug("Event: offline");
+    };
+
+    App.prototype.bindPage = function(callback, page) {
+      if (ayla.currentView != null) {
+        ayla.currentView.dispose();
+      }
+      ayla.currentView = new ayla[page.currentId + "View"]();
+      return ayla.currentView.init(page.pageRoute.params, callback);
     };
 
     App.prototype.navigate = function(id, callback) {
@@ -219,18 +226,25 @@
     }
 
     SettingsView.prototype.init = function() {
-      return this.el.find("button.save").click;
+      return this.el.find("form").on("valid.fndtn.abide", this.saveClick);
     };
 
     SettingsView.prototype.dispose = function() {};
 
     SettingsView.prototype.saveClick = function(e) {
-      var host, port, token;
+      var host, port, token, url;
       host = this.el.find("input.host").val();
       port = this.el.find("input.port").val();
       token = this.el.find("input.token").val();
-      localStorage.setItem("homeserver_url", "https://" + host + ":" + port + "/");
-      return localStorage.setItem("homeserver_token", token);
+      url = "https://" + host + ":" + port + "/tokenrequest?token=" + token;
+      console.warn(url);
+      return $.getJSON(url, (function(_this) {
+        return function(data) {
+          console.warn(data);
+          localStorage.setItem("homeserver_url", "https://" + host + ":" + port + "/");
+          return localStorage.setItem("homeserver_token", token);
+        };
+      })(this));
     };
 
     return SettingsView;
