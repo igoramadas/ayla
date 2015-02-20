@@ -27,7 +27,8 @@ html.no-js(lang="en")
                             h1
                                 a(href="#home") Ayla
                         li.toggle-topbar.menu-icon
-                            a(href="#") Menu
+                            a(href="#")
+                                span Menu
                     section.top-bar-section
                         ul.left
                             for m, key in manager.modules
@@ -36,13 +37,9 @@ html.no-js(lang="en")
                                         i(class="fa #{m.icon}")
                                         span #{m.title}
 
-            include ./start.jade
             include ./email.jade
-            include ./fitness.jade
-            include ./money.jade
-            include ./users.jade
-            include ./weather.jade
             include ./system.jade
+            include ./users.jade
 
             #announcements(style="display: none")
                 div

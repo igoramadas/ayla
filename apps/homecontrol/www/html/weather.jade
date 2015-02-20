@@ -1,2 +1,67 @@
-#weather.page
-    h1 Weather
+#weather.page(data-bind="smartPage: {id: 'weather', title: 'Weather and Climate'}")
+    ul.maingrid.small-block-grid-1.medium-block-grid-2
+
+        li.inside
+            h2 Inside
+            .summary(data-bind="with: indoorAvg")
+                i.wi.wi-thermometer
+                span.temperature(data-bind="text: temperature + '°C'")
+                i.wi.wi-smoke
+                span.humidity(data-bind="text: humidity + '%'")
+                i.fa.fa-leaf
+                span.co2(data-bind="text: co2 + 'ppm'")
+
+            .panel
+                table
+                    thead
+                        tr
+                            th.title Room
+                            th.temperature Temp.
+                            th.humidity Humidity
+                            th.co2 CO2
+                    tbody(data-bind="foreach: rooms")
+                        tr.room(data-bind="css: $parent[id]().conditionCss, with: $parent[id]")
+                            td.title(data-bind="text: title", nowrap)
+                            td.temperature(data-bind="text: climate.temperature != undefined ? climate.temperature + '°C' : '-'")
+                            td.humidity(data-bind="text: climate.humidity != undefined ? climate.humidity + '%' : '-'")
+                            td.co2(data-bind="text: climate.co2 != undefined ? climate.co2 + ' ppm' : '-'")
+
+        li.outside
+            h2 Outside
+            .summary
+                i(class="wi wi-thermometer")
+                span.temperature(data-bind="text: outside().temperature != undefined ? outside().temperature + '°C' : '-'")
+                i(class="wi wi-smoke")
+                span.humidity(data-bind="text: outside().humidity != undefined ? outside().humidity + '%' : '-'")
+                i(class="wi wi-sprinkles")
+                span.precp(data-bind="text: outside().precp != undefined ? outside().precp + 'mm' : '-mm'")
+
+            .panel
+                table.forecast(style="display: none")
+                    thead
+                        tr
+                            th.title Forecast
+                            th.icon
+                            th.temperature Temp.
+                            th.precp Precp.
+                            th.wind Wind
+                    tbody
+                        tr(data-bind="with: forecastCurrent")
+                            td.date Current
+                            td.icon
+                                i(class="wi", data-bind="css:'wi-' + icon")
+                            td.temperature(data-bind="text: temperature + '°C'", nowrap)
+                            td.humidity(data-bind="text: precpChance + '%'")
+                            td.wind(data-bind="text: windSpeed + 'kph'", nowrap)
+                        // ko foreach: forecastDays
+                        tr
+                            td.date(data-bind="text: dateString")
+                            td.icon
+                                i(class="wi", data-bind="css: 'wi-' + icon")
+                            td.min(data-bind="text: temperatureHigh + ' / ' + temperatureLow + '°C'", nowrap)
+                            td.humidity(data-bind="text: precpChance + '%'")
+                            td.wind(data-bind="text: windSpeed + 'kph'", nowrap)
+                        // /ko
+
+                div.chart
+                    canvas(height="198")

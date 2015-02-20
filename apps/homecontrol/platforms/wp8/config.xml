@@ -1,5 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="pw.ayla.app" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
+    <feature name="NativePageTransitions">
+        <param name="wp-package" value="NativePageTransitions" />
+        <param name="onload" value="true" />
+    </feature>
     <name>Ayla</name>
     <description>
         Ayla at your service!
@@ -7,7 +11,7 @@
     <author email="igor@devv.com" href="http://aboutigor.com">
         Igor Ramadas
     </author>
-    <content src="index.html" />
+    <content src="app.html" />
     <preference name="permissions" value="none" />
     <preference name="phonegap-version" value="3.5.0" />
     <preference name="orientation" value="default" />
@@ -68,8 +72,4 @@
     <gap:splash gap:platform="ios" height="768" src="www/res/screen/ios/screen-ipad-landscape.png" width="1024" />
     <gap:splash gap:platform="winphone" src="www/res/screen/windows-phone/screen-portrait.jpg" />
     <access origin="*" />
-    <feature name="NativePageTransitions">
-        <param name="wp-package" value="NativePageTransitions" />
-        <param name="onload" value="true" />
-    </feature>
 </widget>

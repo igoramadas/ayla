@@ -1,6 +1,19 @@
 #system.page(data-bind="smartPage: {id: 'system', title: 'System'}")
     h1 System
     ul.maingrid.small-block-grid-1
+        div
+            span.server-info OS:
+            span(data-bind="text: server().platform")
+        div
+            span.server-info CPU:
+            span(data-bind="text: server().loadAvg")
+        div
+            span.server-info RAM:
+            span(data-bind="text: server().memoryTotal + ' (' + server().memoryUsage + '% used)'")
+        div
+            span.server-info Uptime:
+            span(data-bind="text: server().uptime")
+
         li
             dl.tabs
                 dd.tab-api

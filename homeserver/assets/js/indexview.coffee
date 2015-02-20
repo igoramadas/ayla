@@ -15,8 +15,6 @@ class IndexView
     # Init the view and set elements.
     init: =>
         $(document).foundation()
-        Chart.defaults.global.responsive = true
-        Chart.defaults.global.scaleFontColor = "rgb(252, 252, 252)"
 
         # Init sockets.
         ayla.sockets.init()
@@ -28,7 +26,6 @@ class IndexView
 
         # Add timeout to refresh window after one day (also dependant on mouse movement).
         setTimeout @pageRefresh, 86400
-        $(document).mousemove @globalMouseMove
 
         # Init pager.js and knockout.js.
         pager.extendWithPage this
@@ -48,6 +45,8 @@ class IndexView
     # Bind a page to the main view.
     bindPage: (callback, page) =>
         ayla.currentView.dispose() if ayla.currentView?
+
+        page.currentId = "system" if page.currentId is ""
 
         ayla.currentView = new ayla[page.currentId + "View"]()
         ayla.currentView.init page.pageRoute.params, callback

@@ -43,14 +43,26 @@ class ClimateModel extends (require "./basemodel.coffee")
         # Property format temperature.
         if @temperature?
             @temperature = parseFloat(@temperature).toFixed 1
-            @temperature = parseFloat @temperature
+
+            # Sometimes Ninja Blocks will return absurd temperatures, so
+            # check if value is below 0 and discard it.
+            if data.indoor and @temperature < 0
+                @temperature = null
+            else
+                @temperature = parseFloat @temperature
 
         # Properly format humidity.
         if @humidity?
             @humidity = parseFloat(@humidity.toString().replace("%", "")).toFixed 0
-            @humidity = parseFloat @humidity
-            @humidity = 100 if @humidity > 100
-            @humidity = 0 if @humidity < 0
+
+            # Sometimes Ninja Blocks will return absurd humidities, so
+            # check if value is below 5 and discard it.
+            if data.indoor and @humidity < 5
+                @humidity = null
+            else
+                @humidity = parseFloat @humidity
+                @humidity = 100 if @humidity > 100
+                @humidity = 0 if @humidity < 0
 
         # Set indoor specific properties.
         if data.indoor
