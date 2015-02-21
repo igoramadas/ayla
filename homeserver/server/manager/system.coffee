@@ -38,7 +38,7 @@ class SystemManager extends (require "./basemanager.coffee")
 
         @timers["apimodules"] = setInterval @getApiModules, 90000
         @timers["jobs"] = setInterval @getJobs, 30000
-        @timers["serverinfo"] = setInterval @getServerInfo, 60000
+        @timers["serverinfo"] = setInterval @getServerInfo, 10000
         @timers["settings"] = setInterval @getSettings, 30000
 
         @baseStart()

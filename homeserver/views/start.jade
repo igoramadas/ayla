@@ -1,0 +1,18 @@
+extends ./index.jade
+
+#start.page
+    h1 System
+    ul.maingrid.small-block-grid-1
+        li
+            div
+                span.server-info OS:
+                span(data-bind="text: server().platform")
+            div
+                span.server-info Uptime:
+                span(data-bind="text: server().uptime")
+            div
+                span.server-info CPU Load:
+                span(data-bind="text: server().loadAvg + '% (' + server().cpuCores + ' cores)'")
+            div
+                span.server-info RAM Usage:
+                span(data-bind="text: server().memoryUsage + '% (' + server().memoryTotal + ')'")

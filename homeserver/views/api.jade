@@ -1,4 +1,6 @@
-#apimodule.page(data-bind="smartPage: {id: 'api', title: 'API Module', params: ['id']}")
+extends ./index.jade
+
+#api.page
     h1(data-bind="text: 'API: ' + moduleName()")
     ul.maingrid.small-block-grid-1
         li

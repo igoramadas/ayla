@@ -8,6 +8,7 @@
 #= require lib/fastclick.js
 #= require lib/foundation.js
 #= require lib/pager.js
+#= require lib/crel.js
 #= require lib/jsonhuman.js
 #= require lib/ko.smartpage.js
 #= require sockets.coffee
