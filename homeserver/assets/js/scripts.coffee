@@ -7,23 +7,25 @@
 #= require lib/placeholder.js
 #= require lib/fastclick.js
 #= require lib/foundation.js
-#= require lib/pager.js
 #= require lib/crel.js
 #= require lib/jsonhuman.js
-#= require lib/ko.smartpage.js
 #= require sockets.coffee
-#= require indexview.coffee
 #= require views/baseview.coffee
-#= require views/email.coffee
-#= require views/network.coffee
-#= require views/system.coffee
-#= require views/users.coffee
+#= require views/api.coffee
+#= require views/manager.coffee
+#= require views/start.coffee
 
 # Bind helper to log to console.
 window.logger = -> console.log.apply console, arguments
 
-# Start the app when document is ready and apply knockout bindings.
-onReady = -> ayla.indexView.init()
-
 # Hey ho let's go!
-$(document).ready onReady
+$(document).ready ->
+    viewId = location.pathname.substr 1
+
+    if viewId is ""
+        viewId = "start"
+    else if viewId.indexOf("/") > 0
+        viewId = viewId.substr(0, viewId.indexOf("/"))
+
+    ayla.currentView = new ayla[viewId + "View"]
+    ayla.currentView.init()

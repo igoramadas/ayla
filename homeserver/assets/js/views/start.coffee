@@ -1,7 +1,6 @@
 # SYSTEM VIEW
 # --------------------------------------------------------------------------
 class StartView extends ayla.BaseView
-
     viewId: "Start"
 
     # Init the Start view.

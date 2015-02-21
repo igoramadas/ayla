@@ -29,7 +29,7 @@ class Routes
         app = expresser.app.server
 
         # Main route.
-        app.get "/", indexPage
+        app.get "/", startPage
 
         # Used by clients to get or renew an access token. This is mainly used
         # via NFC tags, for example an NFC tag on the entrance door that
@@ -42,6 +42,7 @@ class Routes
                 link = m.title.toLowerCase()
 
                 # Set default manager routes (/managerId and /managerId/data).
+                app.get "/#{link}", managerPage
                 app.get "/#{link}/data", (req, res) -> renderJson req, res, m.data
 
                 # Bind manager specific routes.
@@ -52,7 +53,10 @@ class Routes
             do (m) ->
                 link = m.moduleName
 
-                # Set APi module data route.
+                # Set API module page.
+                app.get "/api/#{link}", apiPage
+
+                # Set API module data route.
                 app.get "/api/#{link}/data", (req, res) ->
                     obj = {}
                     obj.settings = settings[m.moduleName]
@@ -79,7 +83,7 @@ class Routes
                 # Bind API module specific routes.
                 bindModuleRoutes m
 
-        # API page, commander and status routes.
+        # Commander and status routes.
         app.get "/commander/:cmd", commanderPage
         app.post "/commander/:cmd", commanderPage
         app.get "/status", statusPage
@@ -115,13 +119,70 @@ class Routes
     # -------------------------------------------------------------------------
 
     # The index homepage.
-    indexPage = (req, res) ->
-        renderPage req, res, "index"
+    startPage = (req, res) ->
+        renderPage req, res, "start", {pageTitle: "Status"}
 
     # The token request page.
     tokenRequestPage = (req, res) ->
-        result = {token: req.params.token}
-        renderJson req, res, {result: result}
+        ipClient = req.headers['X-Forwarded-For'] or req.connection.remoteAddress or req.socket?.remoteAddress
+        ipRouter = settings.network.router.ip
+
+        # Check if client is connected to home network.
+        clientSubnet = ipClient.substring(0, ipClient.lastIndexOf ".")
+        routerSubnet = ipRouter.substring(0, ipRouter.lastIndexOf ".")
+
+        if clientSubnet isnt routerSubnet
+            return sendAccessDenied req, res, ipClient
+
+        # Create a temporary token and send to client.
+        chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+        token = ""
+        i = 0
+        while i < 5
+            token += chars.charAt Math.floor(Math.random() * chars.length)
+            i++
+
+        # Add temp token to cache and send back to client.
+        @tokens[token] = {device: req.params.device, expires: moment().add 5, "d"}
+        renderJson req, res, {result: @tokens[token]}
+
+    # The manager overview page.
+    managerPage = (req, res) ->
+        jobs = module.getScheduledJobs()
+
+        fs.readFile "#{__dirname}/api/#{module.moduleName}.coffee", {encoding: settings.general.encoding}, (err, data) ->
+            lines = data.split "\n"
+            lines.splice 0, 2
+            description = ""
+
+            # Iterate first lines of the module code to get its description.
+            for i in lines
+                if i.substring(0, 1) is "#"
+                    description += i.replace("#", "") + "\n"
+                else
+                    options = {title: module.moduleName, description: description, jobs: jobs, errors: module.errors, data: module.data}
+                    options.oauth = module.oauth if module.oauth?
+
+                    return renderPage req, res, "manager", options
+
+    # The API module overview page.
+    apiPage = (req, res) ->
+        jobs = module.getScheduledJobs()
+
+        fs.readFile "#{__dirname}/api/#{module.moduleName}.coffee", {encoding: settings.general.encoding}, (err, data) ->
+                        lines = data.split "\n"
+            lines.splice 0, 2
+            description = ""
+
+            # Iterate first lines of the module code to get its description.
+            for i in lines
+                if i.substring(0, 1) is "#"
+                    description += i.replace("#", "") + "\n"
+                else
+                    options = {title: module.moduleName, description: description, jobs: jobs, errors: module.errors, data: module.data}
+                    options.oauth = module.oauth if module.oauth?
+
+                    return renderPage req, res, "api", options
 
     # The commander processor.
     commanderPage = (req, res) ->
@@ -138,25 +199,6 @@ class Routes
     # RENDER METHODS
     # -------------------------------------------------------------------------
 
-    # Helper to show an overview about the specified API module.
-    renderApiModulePage = (req, res, module) ->
-        jobs = module.getScheduledJobs()
-
-        fs.readFile "#{__dirname}/api/#{module.moduleName}.coffee", {encoding: settings.general.encoding}, (err, data) ->
-            lines = data.split "\n"
-            lines.splice 0, 2
-            description = ""
-
-            # Iterate first lines of the module code to get its description.
-            for i in lines
-                if i.substring(0, 1) is "#"
-                    description += i.replace("#", "") + "\n"
-                else
-                    options = {title: module.moduleName, description: description, jobs: jobs, errors: module.errors, data: module.data}
-                    options.oauth = module.oauth if module.oauth?
-
-                    return renderPage req, res, "apimodule", options
-
     # Helper to render pages.
     renderPage = (req, res, filename, options) ->
         return if not checkSecurity req, res
@@ -167,6 +209,7 @@ class Routes
         options.loadJs = [] if not options.loadJs?
         options.loadCss = [] if not options.loadCss?
         options.moment = moment
+        options.server = utils.getServerInfo()
         options.manager = {modules: manager.modules}
 
         # Force .jade extension.
@@ -203,14 +246,6 @@ class Routes
     # IP is calculated based on the `settings.network.router.ip` value.
     checkSecurity = (req, res) ->
         ipClient = req.headers['X-Forwarded-For'] or req.connection.remoteAddress or req.socket?.remoteAddress
-        ipRouter = settings.network.router.ip
-
-        # Get router and client subnet.
-        clientSubnet = ipClient.substring(0, ipClient.lastIndexOf ".")
-        routerSubnet = ipRouter.substring(0, ipRouter.lastIndexOf ".")
-
-        # Same subnet? Grant access.
-        return true if clientSubnet is routerSubnet
 
         # Valid token? Grant access.
         # Also check if a token cookie should be set for this particular client.
@@ -226,21 +261,27 @@ class Routes
             return true
 
         # Oops, access denied.
-        logger.warn "Routes.checkSecurity", req.url, ipClient
-        res.status 401
-        res.send "Access denied or invalid token for #{ipClient}."
+        sendAccessDenied req, res, ipClient
         return false
 
     # HELPER METHODS
     # -------------------------------------------------------------------------
 
+    # Send access denied / not authorized response.
+    sendAccessDenied = (req, res, ipClient) ->
+        logger.warn "Routes.sendAccessDenied", req.url, ipClient
+
+        res.status 401
+        res.send "Access denied or invalid token for #{ipClient}."
+
     # When the server can't return a valid result,
     # send an error response with status code 500.
-    sendErrorResponse = (res, method, message) ->
-        message = JSON.stringify message
-        res.statusCode = 500
-        res.send "Error: #{method} - #{message}"
+    sendErrorResponse = (req, res, method, message) ->
         logger.error "HTTP Error", method, message
+
+        message = JSON.stringify message
+        res.status 500
+        res.send "Error: #{method} - #{message}"
 
     # Log the request to the console if `debug` is true.
     logRequest = (method, params) ->

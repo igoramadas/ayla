@@ -1,14 +1,14 @@
 doctype html
 html.no-js(lang="en")
     head
-        title Ayla Home Server
+        title #{pageTitle} - Ayla Home Server
         meta(charset="utf-8")
         meta(name="viewport", content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no")
         meta(name="mobile-web-app-capable", content="yes")
         link(rel="icon", type="image/x-icon", href="/favicon.ico")
 
         script(src="/socket.io/socket.io.js")
-        script window.ayla = {server: {api: {}, manager: {}}};
+        script window.ayla = {};
 
         != css("styles")
         for c in loadCss
