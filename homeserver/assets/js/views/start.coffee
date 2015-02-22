@@ -2,6 +2,7 @@
 # --------------------------------------------------------------------------
 class StartView extends ayla.BaseView
     viewId: "Start"
+    socketNames: []
 
     # Init the Start view.
     onReady: =>
@@ -27,4 +28,4 @@ class StartView extends ayla.BaseView
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.systemView = StartView
+window.ayla.startView = StartView

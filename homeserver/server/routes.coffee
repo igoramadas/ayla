@@ -29,7 +29,11 @@ class Routes
         app = expresser.app.server
 
         # Main route.
-        app.get "/", startPage
+        app.get "/", indexPage
+
+        # Start routes.
+        app.get "/start", startPage
+        app.get "/start/data", startDataPage
 
         # Used by clients to get or renew an access token. This is mainly used
         # via NFC tags, for example an NFC tag on the entrance door that
@@ -118,9 +122,18 @@ class Routes
     # MAIN ROUTES
     # -------------------------------------------------------------------------
 
+    # Main route will mostly redirect to start page.
+    indexPage = (req, res) ->
+        res.redirect "/start"
+
     # The index homepage.
     startPage = (req, res) ->
-        renderPage req, res, "start", {pageTitle: "Status"}
+        renderPage req, res, "start", {pageTitle: "Start"}
+
+    # Data returned on the start page.
+    startDataPage = (req, res) ->
+        result = {key: "server", data: utils.getServerInfo()}
+        renderJson req, res, result
 
     # The token request page.
     tokenRequestPage = (req, res) ->
