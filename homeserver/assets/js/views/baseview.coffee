@@ -55,9 +55,13 @@ class BaseView
     # DATA UPDATES
     # ----------------------------------------------------------------------
 
-    # Create a KO compatible object based on the original `serverData` property.
+    # Parse and append data from the server to the local model.
     setModel: (obj) =>
-        @model = {} if not @model?
+        if lodash.isArray obj
+            @setModel b for b in obj
+            return
+
+        # Run model processor, if there's one.
         @modelProcessor obj.key, obj.data if @modelProcessor?
 
         if @model[obj.key]?

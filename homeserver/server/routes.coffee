@@ -132,7 +132,13 @@ class Routes
 
     # Data returned on the start page.
     startDataPage = (req, res) ->
-        result = {key: "server", data: utils.getServerInfo()}
+        result = []
+        result.push {key: "server", data: utils.getServerInfo()}
+        result.push {key: "apiModules", data: lodash.keys api.modules}
+        result.push {key: "disabledApiModules", data: lodash.keys api.disabledModules}
+        result.push {key: "managerModules", data: lodash.keys manager.modules}
+        result.push {key: "disabledManagerModules", data: lodash.keys manager.disabledModules}
+
         renderJson req, res, result
 
     # The token request page.
@@ -223,7 +229,7 @@ class Routes
         options.loadCss = [] if not options.loadCss?
         options.moment = moment
         options.server = utils.getServerInfo()
-        options.manager = {modules: manager.modules}
+        options.managerModules = manager.modules
 
         # Force .jade extension.
         filename += ".jade" if filename.indexOf(".jade") < 0
@@ -235,6 +241,18 @@ class Routes
     renderJson = (req, res, data) ->
         return if not checkSecurity req, res
 
+        # Remove methods from JSON before rendering.
+        cleanJson = (obj) ->
+            if lodash.isArray obj
+                cleanJson i for i in obj
+            else if lodash.isObject obj
+                for k, v of obj
+                    if lodash.isFunction v
+                        delete obj[k]
+                    else
+                        cleanJson v
+
+        cleanJson data
         res.json data
 
     # Render response as image.

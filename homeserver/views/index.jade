@@ -31,7 +31,7 @@ html.no-js(lang="en")
                                 span Menu
                     section.top-bar-section
                         ul.left
-                            for m, key in manager.modules
+                            for m, key in managerModules
                                 li(class="#{m.title.toLowerCase()}")
                                     a(href="##{m.title.toLowerCase()}")
                                         i(class="fa #{m.icon}")
