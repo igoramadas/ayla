@@ -17,3 +17,10 @@ block contents
                 div
                     span.server-info RAM Usage:
                     span(data-bind="text: server().memoryUsage + '% (' + server().memoryTotal + ')'")
+            li
+                h4 Managers
+                div
+                    span(data-bind="text: managerModules().join(', ')")
+                h4 API Modules
+                div
+                    span(data-bind="text: apiModules().join(', ')")

@@ -40,57 +40,20 @@ class Routes
         # publishes this URL to the mobile app / browser.
         app.get "/tokenrequest", tokenRequestPage
 
-        # Manager routes.
-        for key, m of manager.modules
-            do (m) ->
-                link = m.title.toLowerCase()
-
-                # Set default manager routes (/managerId and /managerId/data).
-                app.get "/#{link}", managerPage
-                app.get "/#{link}/data", (req, res) -> renderJson req, res, m.data
-
-                # Bind manager specific routes.
-                bindModuleRoutes m
-
-        # API modules routes.
-        for key, m of api.modules
-            do (m) ->
-                link = m.moduleName
-
-                # Set API module page.
-                app.get "/api/#{link}", apiPage
-
-                # Set API module data route.
-                app.get "/api/#{link}/data", (req, res) ->
-                    obj = {}
-                    obj.settings = settings[m.moduleName]
-                    obj.moduleName = m.moduleName
-                    obj.data = m.data
-                    obj.errors = m.errors
-                    obj.oauth = m.oauth
-                    obj.jobs = []
-
-                    jobs = lodash.where cron.jobs, {module: m.moduleName + ".coffee"}
-
-                    for job in jobs
-                        obj.jobs.push {id: job.id, schedule: job.schedule, endTime: job.endTime}
-
-                    renderJson req, res, obj
-
-                # Has OAuth bindings? If so, set OAuth routes.
-                if m.oauth?
-                    oauthProcess = (req, res) -> m.oauth.process req, res
-                    app.get "/api/#{link}/auth", oauthProcess
-                    app.get "/api/#{link}/auth/callback", oauthProcess
-                    app.post "/api/#{link}/auth/callback", oauthProcess
-
-                # Bind API module specific routes.
-                bindModuleRoutes m
-
         # Commander and status routes.
         app.get "/commander/:cmd", commanderPage
         app.post "/commander/:cmd", commanderPage
-        app.get "/status", statusPage
+
+        # Bind API module routes.
+        app.get "/api/:id", apiPage
+        app.get "/api/:id/data", apiDataPage
+        app.get "/api/:id/auth", apiAuthPage
+        bindModuleRoutes m for key, m of api.modules
+
+        # Bind manager routes. These must be the last routes to be set!
+        app.get "/:id", managerPage
+        app.get "/:id/data", managerDataPage
+        bindModuleRoutes m for key, m of manager.modules
 
         # Init the access tokens collection.
         for token, value of settings.accessTokens
@@ -165,11 +128,27 @@ class Routes
         @tokens[token] = {device: req.params.device, expires: moment().add 5, "d"}
         renderJson req, res, {result: @tokens[token]}
 
-    # The manager overview page.
-    managerPage = (req, res) ->
-        jobs = module.getScheduledJobs()
+    # The commander processor.
+    commanderPage = (req, res) ->
+        commander.execute req.params.cmd, req.body, (err, result) ->
+            if err?
+                sendErrorResponse req, res, "commanderPage", err
+            else
+                renderJson req, res, result
 
-        fs.readFile "#{__dirname}/api/#{module.moduleName}.coffee", {encoding: settings.general.encoding}, (err, data) ->
+    # The API module overview page.
+    apiPage = (req, res) ->
+        id = req.params.id
+        m = api.modules[id]
+
+        # Check if API module is enabled and running.
+        if not m?
+            sendErrorResponse req, res, "apiPage", "API module not found or not active."
+            return
+
+        jobs = m.getScheduledJobs()
+
+        fs.readFile "#{__dirname}/api/#{m.moduleName}.coffee", {encoding: settings.general.encoding}, (err, data) ->
             lines = data.split "\n"
             lines.splice 0, 2
             description = ""
@@ -179,17 +158,63 @@ class Routes
                 if i.substring(0, 1) is "#"
                     description += i.replace("#", "") + "\n"
                 else
-                    options = {title: module.moduleName, description: description, jobs: jobs, errors: module.errors, data: module.data}
-                    options.oauth = module.oauth if module.oauth?
+                    options = {title: m.moduleName, description: description, jobs: jobs, errors: m.errors, data: m.data}
+                    options.oauth = m.oauth if m.oauth?
 
-                    return renderPage req, res, "manager", options
+                    return renderPage req, res, "api", options
 
-    # The API module overview page.
-    apiPage = (req, res) ->
-        jobs = module.getScheduledJobs()
+    # Returns data from the API module.
+    apiDataPage = (req, res) ->
+        id = req.params.id
+        m = api.modules[id]
 
-        fs.readFile "#{__dirname}/api/#{module.moduleName}.coffee", {encoding: settings.general.encoding}, (err, data) ->
-                        lines = data.split "\n"
+        # Check if API module is enabled and running.
+        if not m?
+            sendErrorResponse req, res, "apiDataPage", "API module not found or not active."
+            return
+
+        # Create options object.
+        options = {}
+        options.settings = settings[m.moduleName]
+        options.moduleName = m.moduleName
+        options.data = m.data
+        options.errors = m.errors
+        options.oauth = m.oauth
+        options.jobs = []
+
+        jobs = lodash.where cron.jobs, {module: m.moduleName + ".coffee"}
+
+        for job in jobs
+            options.jobs.push {id: job.id, schedule: job.schedule, endTime: job.endTime}
+
+        renderJson req, res, options
+
+    # Handles authentication for API modules.
+    apiAuthPage = (req, res) ->
+        id = req.params.id
+        m = api.modules[id]
+
+        if not m?
+            sendErrorResponse req, res, "apiAuthPage", "API module not found or not active."
+        else if not m?.oauth?
+            sendErrorResponse req, res, "apiAuthPage", "API module has no OAuth handlers."
+        else
+            m.oauth.process req, res
+
+    # The manager overview page.
+    managerPage = (req, res) ->
+        id = req.params.id
+        m = manager.modules[id]
+
+        # Check if manager is enabled and running.
+        if not m?
+            sendErrorResponse req, res, "managerPage", "Manager not found or not active."
+            return
+
+        jobs = m.getScheduledJobs()
+
+        fs.readFile "#{__dirname}/api/#{m.moduleName}.coffee", {encoding: settings.general.encoding}, (err, data) ->
+            lines = data.split "\n"
             lines.splice 0, 2
             description = ""
 
@@ -198,22 +223,28 @@ class Routes
                 if i.substring(0, 1) is "#"
                     description += i.replace("#", "") + "\n"
                 else
-                    options = {title: module.moduleName, description: description, jobs: jobs, errors: module.errors, data: module.data}
-                    options.oauth = module.oauth if module.oauth?
+                    options = {title: m.moduleName, description: description, jobs: jobs, errors: m.errors, data: m.data}
 
                     return renderPage req, res, "api", options
 
-    # The commander processor.
-    commanderPage = (req, res) ->
-        commander.execute req.params.cmd, req.body, (err, result) ->
-            if err?
-                renderJson req, res, {error: err}
-            else
-                renderJson req, res, result
+    # Returns data from the manager.
+    managerDataPage = (req, res) ->
+        id = req.params.id
+        m = manager.modules[id]
 
-    # Main status page.
-    statusPage = (req, res) ->
-        renderJson req, res, utils.getServerInfo()
+        # Check if API module is enabled and running.
+        if not m?
+            sendErrorResponse req, res, "managerDataPage", "Manager not found or not active."
+            return
+
+        # Create options object.
+        options = {}
+        options.settings = settings[m.moduleName]
+        options.moduleName = m.moduleName
+        options.data = m.data
+        options.errors = m.errors
+
+        renderJson req, res, options
 
     # RENDER METHODS
     # -------------------------------------------------------------------------
@@ -221,6 +252,8 @@ class Routes
     # Helper to render pages.
     renderPage = (req, res, filename, options) ->
         return if not checkSecurity req, res
+
+        logger.info "Routes.renderPage", req.path, filename
 
         options = {} if not options?
         options.pageTitle = filename if not options.pageTitle?
@@ -240,6 +273,8 @@ class Routes
     # Render response as JSON data.
     renderJson = (req, res, data) ->
         return if not checkSecurity req, res
+
+        logger.info "Routes.renderJson", req.path
 
         # Remove methods from JSON before rendering.
         cleanJson = (obj) ->
@@ -303,7 +338,7 @@ class Routes
         logger.warn "Routes.sendAccessDenied", req.url, ipClient
 
         res.status 401
-        res.send "Access denied or invalid token for #{ipClient}."
+        res.json {error: "Access denied or invalid token for #{ipClient}."}
 
     # When the server can't return a valid result,
     # send an error response with status code 500.
@@ -312,7 +347,7 @@ class Routes
 
         message = JSON.stringify message
         res.status 500
-        res.send "Error: #{method} - #{message}"
+        res.json {error: message, method: method}
 
     # Log the request to the console if `debug` is true.
     logRequest = (method, params) ->

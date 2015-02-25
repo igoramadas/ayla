@@ -8,8 +8,6 @@ class ApiView extends ayla.BaseView
     onReady: =>
         logger "Loaded API Module View"
 
-        $("dd a").eq(0).click()
-
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
 window.ayla.apiView = ApiView

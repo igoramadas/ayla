@@ -27,6 +27,8 @@ class BaseView
             @setModel data
             ko.applyBindings @model
 
+            @onReady()
+
     # Create announcements queue.
     setAnnouncements: =>
         @announcementsQueue = []
@@ -57,7 +59,7 @@ class BaseView
 
     # Parse and append data from the server to the local model.
     setModel: (obj) =>
-        if lodash.isArray obj
+        if _.isArray obj
             @setModel b for b in obj
             return
 
@@ -72,10 +74,6 @@ class BaseView
     # Updates data sent by the server.
     onData: (key, data) =>
         @setModel key, data
-
-    # Listen to main sockets (server, settings, modules etc).
-    bindSockets: =>
-
 
     # ANNOUNCEMENTS
     # ----------------------------------------------------------------------
