@@ -27,7 +27,7 @@
     ],
     "hue.coffee": [
         {
-            "callback": "jobRefreshHub",
+            "callback": "refreshHub",
             "description": "Refresh Philips Hue hub data every minute.",
             "schedule": 60
         }

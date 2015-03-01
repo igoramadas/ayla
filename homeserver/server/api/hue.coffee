@@ -181,15 +181,6 @@ class Hue extends (require "./baseapi.coffee")
 
         @setLightState {lightId: id}, {on: turnOn}, callback
 
-    # JOBS
-    # -------------------------------------------------------------------------
-
-    # Scheduled job to refresh the hub data.
-    jobRefreshHub: =>
-        logger.info "Hue.jobRefreshHub"
-
-        @refreshHub()
-
 # Singleton implementation.
 # -----------------------------------------------------------------------------
 Hue.getInstance = ->

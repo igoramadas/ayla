@@ -32,7 +32,7 @@ class Network extends (require "./baseapi.coffee")
     mdns = null
 
     try
-        mdns = require "mdns2"
+        mdns = require "mdns"
     catch ex
         logger.warn "Network.MDNS", "MDNS module is not available."
 
@@ -231,8 +231,11 @@ class Network extends (require "./baseapi.coffee")
             ip = "255.255.255.255"
 
         # The mac address is mandatory!
-        if not mac?
-            throw new Error "A valid MAC address must be specified."
+        if not mac? or not mac.match /[^a-fA-F0-9]/
+            errMsg = "The specified MAC address #{mac} is not valid."
+            @logError "Network.wol", errMsg
+            callback errMsg
+            return
 
         # Set default options (IP, number of packets, interval and port).
         numPackets = 3

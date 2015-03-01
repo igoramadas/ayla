@@ -3,6 +3,7 @@
 class StartView extends ayla.BaseView
 
     viewId: "Start"
+    socketNames: []
 
     # Init the Start view.
     onReady: =>

@@ -18,9 +18,23 @@ block contents
                     span.server-info RAM Usage:
                     span(data-bind="text: server().memoryUsage + '% (' + server().memoryTotal + ')'")
             li
-                h4 Managers
-                div
-                    span(data-bind="text: managerModules().join(', ')")
-                h4 API Modules
-                div
-                    span(data-bind="text: apiModules().join(', ')")
+                h3 Managers
+                ul.small-block-grid-3
+                    // ko foreach: managerModules()
+                    li
+                        .panel
+                            a(data-bind="text: $data")
+                    // /ko
+            li
+                h3 API Modules
+                ul.small-block-grid-2
+                    // ko foreach: apiModules()
+                    li
+                        .panel
+                            h4(data-bind="text: moduleName")
+                            div.jobs
+                                h5 Jobs
+                                // ko foreach: jobs
+                                div(data-bind="text: callback")
+                                // /ko
+                    // /ko

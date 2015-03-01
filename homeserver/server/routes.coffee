@@ -50,9 +50,9 @@ class Routes
         app.get "/api/:id/auth", apiAuthPage
         bindModuleRoutes m for key, m of api.modules
 
-        # Bind manager routes. These must be the last routes to be set!
-        app.get "/:id", managerPage
-        app.get "/:id/data", managerDataPage
+        # Bind manager routes.
+        app.get "/manager/:id", managerPage
+        app.get "/manager/:id/data", managerDataPage
         bindModuleRoutes m for key, m of manager.modules
 
         # Init the access tokens collection.
@@ -96,11 +96,35 @@ class Routes
     # Data returned on the start page.
     startDataPage = (req, res) ->
         result = []
+        managerModules = []
+        apiModules = []
+        jobs = []
+
+        # Get details for managers..
+        for key, m of manager.modules
+            managerModules.push {id: key, moduleName: m.moduleName, errors: m.errors}
+
+        # Get details for API modules.
+        for key, m of api.modules
+            apiModules.push {id: key, moduleName: m.moduleName, errors: m.errors, jobs: []}
+
+        # Get cron jobs.
+        for job in cron.jobs
+            obj = { description: job.description, schedule: job.schedule, startTime: job.startTime, endTime: job.endTime}
+            obj.callback = job.id.replace(job.module, "").replace(".", "")
+            jobs.push obj
+
+            # Also add jobs to list of jobs in API modules.
+            aModule = lodash.find apiModules, {id: job.module.replace ".coffee", ""}
+            aModule.jobs.push obj if aModule?
+
+        # Add everything to the result.
         result.push {key: "server", data: utils.getServerInfo()}
-        result.push {key: "apiModules", data: lodash.keys api.modules}
-        result.push {key: "disabledApiModules", data: lodash.keys api.disabledModules}
-        result.push {key: "managerModules", data: lodash.keys manager.modules}
+        result.push {key: "managerModules", data: managerModules}
         result.push {key: "disabledManagerModules", data: lodash.keys manager.disabledModules}
+        result.push {key: "apiModules", data: apiModules}
+        result.push {key: "disabledApiModules", data: lodash.keys api.disabledModules}
+        result.push {key: "jobs", data: jobs}
 
         renderJson req, res, result
 
@@ -348,14 +372,6 @@ class Routes
         message = JSON.stringify message
         res.status 500
         res.json {error: message, method: method}
-
-    # Log the request to the console if `debug` is true.
-    logRequest = (method, params) ->
-        if settings.general.debug
-            if params?
-                console.log "Request", method, params
-            else
-                console.log "Request", method
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

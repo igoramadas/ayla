@@ -10,7 +10,6 @@
     color transparent
     width 22px
     @media only screen and (min-width: 40.063em)
-        margin-right 6px
         width auto !important
 .top-bar a:hover i
     color textColor
@@ -53,27 +52,3 @@
 
     .inner-panel
         padding 10px
-
-// Make tabs smaller
-.tabs
-    dd, .tab-title
-        a
-            background-color translucentLightBgColor
-            padding 9px 16px 9px 16px
-
-    dd.active, .tabs .tab-title.active
-        a
-            background-color rgba(255, 255, 255, 0.9)
-
-// JSON transformed to tables
-.tabs-content .data-table
-    table
-        width 99%
-        th
-            white-space nowrap
-            width 15%
-        th, td, span
-            overflow hidden
-            text-overflow ellipsis
-    .depth-0
-        margin 0
