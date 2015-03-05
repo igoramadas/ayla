@@ -11,13 +11,6 @@
             "schedule": ["06:03:00", "18:03:00"]
         }
     ],
-    "electricimp.coffee": [
-        {
-            "callback": "getDeviceData",
-            "description": "Probe Electric Imp device sensors every 5 minutes.",
-            "schedule": 300
-        }
-    ],
     "fitbit.coffee": [
         {
             "callback": "getSleep",
@@ -78,30 +71,6 @@
             "callback": "getRecentActivities",
             "description": "Get recent Strava activities list twice a day.",
             "schedule": ["10:22:00", "21:22:00"]
-        }
-    ],
-    "toshl.coffee": [
-        {
-            "callback": "getMonths",
-            "description": "Probe Toshl to get months data daily.",
-            "schedule": ["06:17:00"]
-        },
-        {
-            "callback": "getRecentExpenses",
-            "description": "Probe Toshl to get recent expenses four times a day.",
-            "schedule": ["08:16:00", "12:16:00", "16:16:00", "20:16:00"]
-        },
-        {
-            "callback": "getRecentIncomes",
-            "description": "Probe Toshl to get recent income three times a day.",
-            "schedule": ["08:18:00", "14:18:00", "20:18:00"]
-        }
-    ],
-    "ubi.coffee": [
-        {
-            "callback": "getSensorData",
-            "description": "Get sensor readings from Ubi every 5 minutes.",
-            "schedule": 300
         }
     ],
     "withings.coffee": [

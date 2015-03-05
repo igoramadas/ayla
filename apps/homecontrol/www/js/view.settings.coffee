@@ -17,8 +17,6 @@ class SettingsView
 
         url = "https://#{host}:#{port}/tokenrequest?token=#{token}"
 
-        console.warn url
-
         $.getJSON url, (data) =>
 
             console.warn data
