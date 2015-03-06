@@ -3,18 +3,15 @@
 // Variables
 textShadow = 0 0 6px rgb(22, 22, 22)
 textColor = rgb(255, 255, 255)
-textDarkColor = rgb(10, 10, 10)
+textFadedColor = rgb(220, 220, 220)
 formTextColor = rgb(30, 30, 30)
-linkColor = rgb(120, 210, 240)
-lightBgColor = rgb(245, 250, 255)
-lightHoverColor = rgb(220, 230, 250)
+linkColor = rgb(240, 200, 250)
 gridBlockMargin = 5px
 gridBlockPadding = 5px
 validColor = rgb(60, 240, 60)
 invalidColor = rgb(255, 150, 140)
 invalidBgColor = rgba(250, 110, 90, 0.45)
-translucentBgColor = rgba(0, 0, 0, 0.35)
-translucentLightBgColor = rgba(250, 250, 250, 0.75)
+translucentBgColor = rgba(15, 15, 15, 0.8)
 
 // Import css libs
 @import normalize
@@ -23,11 +20,6 @@ translucentLightBgColor = rgba(250, 250, 250, 0.75)
 @import fontawesome
 @import weathericons
 @import jsonhuman
-
-// Import manager page styles
-@import email
-@import system
-@import users
 
 // FONTS
 // ----------------------------------------------------------------------------
@@ -58,13 +50,24 @@ html
 
 // Body main styles
 body
-    background rgb(0, 0, 0)
+    background rgb(0, 0, 0) url(../images/bg.jpg) no-repeat fixed top
+    background-size cover
     font-family OpenSansLight, sans-serif
     overflow-x hidden
 
 // Special font for headers
 h1, h2, h3, h4, h5, h6, nav
     font-family OpenSans, sans-serif
+
+// Top title
+.top-bar h2
+    color linkColor
+    font-size 1.0625rem
+    position fixed
+    left 60px
+    top 8px
+.top-bar.expanded h2
+    opacity 0.3
 
 // Force transparent and border-less tables
 table, table tr
@@ -107,21 +110,27 @@ h5.invalid
 // Text shadow for text-on-backgrounds
 .shadow
     text-shadow textShadow
-li div h2
-    text-shadow textShadow
-li div .summary
-    text-shadow textShadow
 
 // Clip contents
 .clip
     overflow hidden
-    text-overflow: ellipsis
+    text-overflow ellipsis
+
+// Datestamp on panels.
+.panel .timestamp
+    color textFadedColor
+    font-size 0.8rem
+
+// Right spaced span
+span.spaced
+    margin-right 10px
 
 // ANNOUNCEMENTS
 // ----------------------------------------------------------------------------
 
 #announcements
-    background rgba(60, 60, 60, 0.9)
+    background-color rgba(60, 60, 60, 0.9)
+    background-size 100% 100%
     bottom 0
     color rgb(255, 255, 255)
     left 0

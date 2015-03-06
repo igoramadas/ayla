@@ -19,12 +19,13 @@ html.no-js(lang="en")
             != js(j)
     body
         #wrapper
-            .sticky
-                nav#header.top-bar(data-topbar)
+            .fixed
+                nav#header.top-bar(data-topbar, role="navigation")
                     ul.title-area
                         li.name
                             h1
                                 a Ayla
+                            h2 System
                         li.toggle-topbar.menu-icon
                             a(href="#")
                                 span Menu

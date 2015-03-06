@@ -2,39 +2,54 @@ extends ./index.jade
 
 block contents
     #start.page
-        h1 System
         ul.maingrid.small-block-grid-1
             li
-                div
-                    span.server-info OS:
-                    span(data-bind="text: server().platform")
-                div
-                    span.server-info Uptime:
-                    span(data-bind="text: server().uptime")
-                div
-                    span.server-info CPU Load:
-                    span(data-bind="text: server().loadAvg + '% (' + server().cpuCores + ' cores)'")
-                div
-                    span.server-info RAM Usage:
-                    span(data-bind="text: server().memoryUsage + '% (' + server().memoryTotal + ')'")
-            li
-                h3 Managers
-                ul.small-block-grid-3
-                    // ko foreach: managerModules()
-                    li
-                        .panel
-                            a(data-bind="text: $data")
-                    // /ko
+                h3 Server
+                .panel.inner
+                    div
+                        span.spaced OS:
+                        span(data-bind="text: server().platform")
+                    div
+                        span.spaced Uptime:
+                        span(data-bind="text: server().uptime")
+                    div
+                        span.spaced CPU Load:
+                        span(data-bind="text: server().loadAvg + '% (' + server().cpuCores + ' cores)'")
+                    div
+                        span.spaced RAM Usage:
+                        span(data-bind="text: server().memoryUsage + '% (' + server().memoryTotal + ')'")
+
             li
                 h3 API Modules
-                ul.small-block-grid-2
+                ul.small-block-grid-1
                     // ko foreach: apiModules()
                     li
                         .panel
                             h4(data-bind="text: moduleName")
-                            div.jobs
-                                h5 Jobs
-                                // ko foreach: jobs
-                                div(data-bind="text: callback")
+                            .inner
+                                // ko if: data.length > 0
+                                strong Data
+                                ul
+                                    // ko foreach: data
+                                    li
+                                        span.spaced(data-bind="text: key")
+                                        span.timestamp(data-bind="text: lastUpdated")
+                                    // /ko
+                                // /ko
+
+                                // ko if: jobs.length > 0
+                                strong Jobs
+                                ul
+                                    // ko foreach: jobs
+                                    li
+                                        span.spaced(data-bind="text: callback")
+                                        span.timestamp(data-bind="text: lastRun")
+                                    // /ko
                                 // /ko
                     // /ko
+
+            li.disabled-modules
+                h3 Disabled modules
+                .panel.inner
+                    div(data-bind="text: disabledManagerModules().join(', ')")
+                    div(data-bind="text: disabledApiModules().join(', ')")
