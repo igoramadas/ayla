@@ -1,5 +1,5 @@
 #settings.page
-    h2 Server and user settings
+    h2 Server settings
     form(data-abide="ajax")
         .row.spaced
             .small-12.column
@@ -20,7 +20,7 @@
                 small.error Access token must be alphanumeric
         .row.spaced
             .small-12.column
-                span Your name
-        .row
+                span(data-bind="if: username") Not authenticated yet...
+        .row.spaced
             .small-6.column
                 button.save(type="submit") Save
