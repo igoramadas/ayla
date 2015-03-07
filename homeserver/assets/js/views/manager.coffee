@@ -1,31 +1,18 @@
 # SYSTEM VIEW
 # --------------------------------------------------------------------------
-class SystemView extends ayla.BaseView
+class ManagerView extends ayla.BaseView
 
-    viewId: "System"
+    viewId: "Manager"
+    socketNames: []
 
-    # Init the System view.
+    # Init the Manager view.
     onReady: =>
-        logger "Loaded System View"
-
-        $("#api .module").click @onModuleClick
-        $("#system .tabs dd a").eq(0).click()
-
-    # Dispose the System view.
-    onDispose: =>
-        $("#api .module").unbind "click", @onModuleClick
+        logger "Loaded Manager View"
 
     # Process data, set endTime as moment instead of a number.
     modelProcessor: (key, data) =>
-        if key is "jobs"
-            for job in data
-                job.endTime = moment(job.endTime)
-
-    # When user clicks or taps on a module, open the module page.
-    onModuleClick: (e) =>
-        src = $ e.currentTarget
-        document.location.href = src.find("a").attr "href"
+        logger "Received data", key
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------
-window.ayla.systemView = SystemView
+window.ayla.managerView = ManagerView

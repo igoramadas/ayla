@@ -1,6 +1,8 @@
 extends ./index.jade
 
 block contents
+    h2 Overview
+
     #start.page
         ul.maingrid.small-block-grid-1
             li
@@ -51,5 +53,4 @@ block contents
             li.disabled-modules
                 h3 Disabled modules
                 .panel.inner
-                    div(data-bind="text: disabledManagerModules().join(', ')")
-                    div(data-bind="text: disabledApiModules().join(', ')")
+                    div(data-bind="text: disabledManagerModules().join(', ') + ', ' + disabledApiModules().join(', ')")

@@ -1,33 +1,12 @@
 extends ./index.jade
 
 block contents
+    h2= title
+
     #manager.page
-        h1 System
         ul.maingrid.small-block-grid-1
             li
-                div
-                    span.server-info OS:
-                    span(data-bind="text: server().platform")
-                div
-                    span.server-info Uptime:
-                    span(data-bind="text: server().uptime")
-                div
-                    span.server-info CPU Load:
-                    span(data-bind="text: server().loadAvg + '% (' + server().cpuCores + ' cores)'")
-                div
-                    span.server-info RAM Usage:
-                    span(data-bind="text: server().memoryUsage + '% (' + server().memoryTotal + ')'")
-
-            li
-                dl.tabs
-                    dd.tab-api
-                        a(href="#system/api", title="API Modules") api modules
-                    dd.tab-settings
-                        a(href="#system/settings", title="Server settings") all settings
-                    dd.tab-jobs
-                        a(href="#system/jobs", title="Scheduled jobs") all jobs
-                    dd.tab-hardware
-                        a(href="#system/hardware", title="Hardware info") hardware
+                .panel.inner= description
 
                 #api.content.panel(data-bind="smartPage: {id: 'api', afterShow: ayla.indexView.setPageTab}")
                     .inner-panel
@@ -165,35 +144,6 @@ block contents
 
                             .inner-panel(data-bind="if: errors.length < 1")
                                 span No errors found.
-
-                        #jobs.content.panel(data-bind="smartPage: {id: 'jobs', afterShow: ayla.indexView.setPageTab, params: ['id']}")
-                            table(data-bind="if: jobs.length > 0")
-                                thead
-                                    th Job
-                                    th Schedule
-                                    th Last run
-                                tbody
-                                    // ko foreach: jobs
-                                    tr
-                                        td
-                                            span(data-bind="text: id")
-                                        td
-                                            // ko if: isNaN(schedule)
-                                            span(data-bind=" text: schedule.join(', ')")
-                                            // /ko
-                                            // ko if: !isNaN(schedule)
-                                            span(data-bind="text: 'every ' + schedule + ' seconds'")
-                                            // /ko
-                                        td
-                                            // ko if: endTime.year() > 2000
-                                            span(data-bind="text: endTime.format('lll')")
-                                            // /ko
-                                            // ko if: endTime.year() > 2000
-                                            span(data-bind="if: endTime.year() <= 2000") Never
-                                            // /ko
-                                    // /ko
-
-                            .inner-panel(data-bind="if: jobs.length < 1") No scheduled jobs.
 
                         // ko foreach: _.keys(data())
                         .content.panel.data(data-bind="attr: {id: 'data-' + $data}, smartPage: {id: 'data-' + $data, afterShow: ayla.indexView.setPageTab}")
