@@ -19,7 +19,7 @@ class Routes
     path = require "path"
 
     # Holds a list of all valid access tokens.
-    tokens: {}
+    tokenCache = {}
 
     # INIT
     # -------------------------------------------------------------------------
@@ -57,8 +57,8 @@ class Routes
 
         # Init the access tokens collection.
         for token, value of settings.accessTokens
-            @tokens[token] = value
-            @tokens[token].permanent = true
+            tokenCache[token] = value
+            tokenCache[token].permanent = true
 
         callback() if callback?
 
@@ -168,7 +168,7 @@ class Routes
         clientSubnet = ipClient.substring(0, ipClient.lastIndexOf ".")
         routerSubnet = ipRouter.substring(0, ipRouter.lastIndexOf ".")
 
-        if clientSubnet isnt routerSubnet
+        if clientSubnet isnt routerSubnet and not settings.general.debug
             return sendAccessDenied req, res, ipClient
 
         # Create a temporary token and send to client.
@@ -180,8 +180,8 @@ class Routes
             i++
 
         # Add temp token to cache and send back to client.
-        @tokens[token] = {device: req.params.device, expires: moment().add 5, "d"}
-        renderJson req, res, {result: @tokens[token]}
+        tokenCache[token] = {device: req.params.device, expires: moment().add 5, "d"}
+        renderJson req, res, {result: tokenCache[token]}
 
     # The commander processor.
     commanderPage = (req, res) ->
@@ -342,6 +342,12 @@ class Routes
                         cleanJson v
 
         cleanJson data
+
+        # Add Access-Control-Allow-Origin to all when debug is true.
+        if settings.general.debug
+            res.setHeader "Access-Control-Allow-Origin", "*"
+
+        # Send JSON response.
         res.json data
 
     # Render response as image.

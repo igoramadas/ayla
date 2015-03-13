@@ -42,7 +42,7 @@ class App
         @debug "Event: deviceReady"
 
         if localStorage.getItem("homeserver_url")?.toString().length > 11
-            @navigate "home"
+            @navigate "settings"
         else
             @navigate "settings"
 
@@ -62,13 +62,6 @@ class App
 
     # NAVIGATION
     # -------------------------------------------------------------------------
-
-    # Bind a page to the main view.
-    bindPage: (callback, page) =>
-        ayla.currentView.dispose() if ayla.currentView?
-
-        ayla.currentView = new ayla[page.currentId + "View"]()
-        ayla.currentView.init page.pageRoute.params, callback
 
     # Navigate to the specified page.
     navigate: (id, callback) =>

@@ -1,12 +1,11 @@
 (function() {
-  var App, HomeView, LightsView, SettingsView, Sockets,
+  var App, LightsView, SettingsView, Sockets, WeatherView,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   App = (function() {
     function App() {
       this.notify = __bind(this.notify, this);
       this.navigate = __bind(this.navigate, this);
-      this.bindPage = __bind(this.bindPage, this);
       this.onOffline = __bind(this.onOffline, this);
       this.onOnline = __bind(this.onOnline, this);
       this.onDeviceReady = __bind(this.onDeviceReady, this);
@@ -57,7 +56,7 @@
       var _ref;
       this.debug("Event: deviceReady");
       if (((_ref = localStorage.getItem("homeserver_url")) != null ? _ref.toString().length : void 0) > 11) {
-        this.navigate("home");
+        this.navigate("settings");
       } else {
         this.navigate("settings");
       }
@@ -70,14 +69,6 @@
 
     App.prototype.onOffline = function() {
       return this.debug("Event: offline");
-    };
-
-    App.prototype.bindPage = function(callback, page) {
-      if (ayla.currentView != null) {
-        ayla.currentView.dispose();
-      }
-      ayla.currentView = new ayla[page.currentId + "View"]();
-      return ayla.currentView.init(page.pageRoute.params, callback);
     };
 
     App.prototype.navigate = function(id, callback) {
@@ -149,22 +140,6 @@
 
   window.sockets = new Sockets();
 
-  HomeView = (function() {
-    function HomeView() {
-      this.dispose = __bind(this.dispose, this);
-      this.init = __bind(this.init, this);
-    }
-
-    HomeView.prototype.init = function() {};
-
-    HomeView.prototype.dispose = function() {};
-
-    return HomeView;
-
-  })();
-
-  window.homeView = new HomeView();
-
   LightsView = (function() {
     function LightsView() {
       this.ninjaLightToggle = __bind(this.ninjaLightToggle, this);
@@ -226,23 +201,32 @@
     }
 
     SettingsView.prototype.init = function() {
-      return this.el.find("form").on("valid.fndtn.abide", this.saveClick);
+      return this.el.find("form").on("valid", this.saveClick);
     };
 
     SettingsView.prototype.dispose = function() {};
 
     SettingsView.prototype.saveClick = function(e) {
-      var host, port, token, url;
+      var host, port, serverResult, token, url, xhr;
+      serverResult = this.el.find(".server-result");
       host = this.el.find("input.host").val();
       port = this.el.find("input.port").val();
       token = this.el.find("input.token").val();
-      url = "https://" + host + ":" + port + "/tokenrequest?token=" + token;
-      console.warn(url);
-      return $.getJSON(url, (function(_this) {
+      url = "http://" + host + ":" + port + "/tokenrequest?token=" + token;
+      xhr = $.getJSON(url, (function(_this) {
         return function(data) {
-          console.warn(data);
-          localStorage.setItem("homeserver_url", "https://" + host + ":" + port + "/");
-          return localStorage.setItem("homeserver_token", token);
+          if (data.error != null) {
+            return serverResult.html("Invalid token or server details.");
+          } else {
+            localStorage.setItem("homeserver_url", "https://" + host + ":" + port + "/");
+            localStorage.setItem("homeserver_token", token);
+            return serverResult.html("Authenticated till " + data.result.expires);
+          }
+        };
+      })(this));
+      return xhr.fail((function(_this) {
+        return function() {
+          return serverResult.html("Could not contact the specified server.");
         };
       })(this));
     };
@@ -252,5 +236,179 @@
   })();
 
   window.settingsView = new SettingsView();
+
+  WeatherView = (function() {
+    function WeatherView() {
+      this.toggleChart = __bind(this.toggleChart, this);
+      this.createChart = __bind(this.createChart, this);
+      this.modelProcessor = __bind(this.modelProcessor, this);
+      this.onDispose = __bind(this.onDispose, this);
+      this.onReady = __bind(this.onReady, this);
+    }
+
+    WeatherView.prototype.viewId = "Weather";
+
+    WeatherView.prototype.onReady = function() {
+      var _base, _base1, _base2;
+      logger("Loaded Weather View");
+      $(".outside .panel").click(this.toggleChart);
+      if ((typeof (_base = this.model).outside === "function" ? _base.outside().temperature : void 0) == null) {
+        this.model.outside().temperature = this.model.forecastCurrent().temperature;
+      }
+      if ((typeof (_base1 = this.model).outside === "function" ? _base1.outside().humidity : void 0) == null) {
+        this.model.outside().humidity = this.model.forecastCurrent().humidity;
+      }
+      if ((typeof (_base2 = this.model).outside === "function" ? _base2.outside().precp : void 0) == null) {
+        this.model.outside().precp = 0;
+      }
+      return this.model.outside(this.model.outside());
+    };
+
+    WeatherView.prototype.onDispose = function() {
+      return $(".outside .panel").unbind("click", this.toggleChart);
+    };
+
+    WeatherView.prototype.modelProcessor = function(key, data) {
+      var climate, co2, co2Count, condition, humidity, humidityCount, room, roomInfo, temp, tempCount, _i, _len, _ref;
+      if (data == null) {
+        data = key;
+        key = null;
+      }
+      if (this.model.indoorAvg == null) {
+        this.model.indoorAvg = ko.observable();
+      }
+      if (data.condition != null) {
+        condition = _.isFunction(data.condition) ? data.condition() : data.condition;
+        data.conditionCss = ko.computed(function() {
+          return condition.toLowerCase().replace(/\s/g, "-").replace(",-", " ");
+        });
+      }
+      if (key === "forecastDays") {
+        _.delay(this.createChart, 300, data);
+      }
+      if (key === "forecastCurrent") {
+        $("#wrapper").removeClass();
+        $("#wrapper").addClass(data.icon);
+      }
+      if (this.model.rooms == null) {
+        return;
+      }
+      temp = 0;
+      tempCount = 0;
+      humidity = 0;
+      humidityCount = 0;
+      co2 = 0;
+      co2Count = 0;
+      _ref = this.model.rooms();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        roomInfo = _ref[_i];
+        room = this.model[roomInfo.id];
+        if (room != null) {
+          room = room();
+          climate = room.climate;
+          if (climate.temperature != null) {
+            temp += parseFloat(climate.temperature);
+            tempCount++;
+          }
+          if (climate.humidity != null) {
+            humidity += parseFloat(climate.humidity);
+            humidityCount++;
+          }
+          if (climate.co2 != null) {
+            co2 += parseFloat(climate.co2);
+            co2Count++;
+          }
+        }
+      }
+      if (tempCount === 0) {
+        tempCount = 1;
+      }
+      if (humidityCount === 0) {
+        humidityCount = 1;
+      }
+      if (co2Count === 0) {
+        co2Count = 1;
+      }
+      if (tempCount > 0 && humidityCount > 0) {
+        temp = (temp / tempCount).toFixed(1);
+        humidity = (humidity / humidityCount).toFixed(0);
+        co2 = (co2 / co2Count).toFixed(0);
+        return this.model.indoorAvg({
+          temperature: temp,
+          humidity: humidity,
+          co2: co2
+        });
+      }
+    };
+
+    WeatherView.prototype.createChart = function(data) {
+      var cWidth, canvas, chart, chartData, dsRain, dsTemperatureHigh, dsTemperatureLow, dsWind, labels, lineOptions;
+      labels = _.pluck(data, "dateString");
+      dsTemperatureHigh = {
+        label: "Temp High",
+        fillColor: "rgba(240, 65, 36, 0.3)",
+        strokeColor: "rgb(240, 65, 36)",
+        pointColor: "rgb(240, 65, 36)",
+        pointStrokeColor: "rgb(250, 245, 240)",
+        data: _.pluck(data, "temperatureHigh")
+      };
+      dsTemperatureLow = {
+        label: "Temp Low",
+        fillColor: "rgba(255, 255, 255, 0.9)",
+        strokeColor: "rgb(230, 130, 60)",
+        pointColor: "rgb(230, 130, 60)",
+        pointStrokeColor: "rgb(250, 245, 240)",
+        data: _.pluck(data, "temperatureLow")
+      };
+      dsWind = {
+        label: "Wind",
+        fillColor: "Transparent",
+        strokeColor: "rgb(160, 170, 160)",
+        pointColor: "rgb(160, 170, 160)",
+        pointStrokeColor: "rgb(245, 245, 245)",
+        data: _.pluck(data, "windSpeed")
+      };
+      dsRain = {
+        label: "Precp.",
+        fillColor: "Transparent",
+        strokeColor: "rgb(80, 120, 170)",
+        pointColor: "rgb(80, 120, 170)",
+        pointStrokeColor: "rgb(240, 245, 250)",
+        data: _.pluck(data, "precpChance")
+      };
+      lineOptions = {
+        pointDotRadius: 3
+      };
+      canvas = $(".outside canvas");
+      cWidth = canvas.parent().innerWidth() - 22;
+      canvas.prop({
+        width: cWidth
+      });
+      chartData = {
+        labels: labels,
+        datasets: [dsTemperatureHigh, dsTemperatureLow, dsWind, dsRain]
+      };
+      canvas = canvas.get(0).getContext("2d");
+      return chart = new Chart(canvas).Line(chartData, lineOptions);
+    };
+
+    WeatherView.prototype.toggleChart = function() {
+      var canvas, table;
+      table = $(".outside .forecast");
+      canvas = $(".outside .chart");
+      if (table.is(":visible")) {
+        table.hide();
+        return canvas.show();
+      } else {
+        canvas.hide();
+        return table.show();
+      }
+    };
+
+    return WeatherView;
+
+  })();
+
+  window.weatherView = new WeatherView();
 
 }).call(this);
