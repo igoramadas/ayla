@@ -50,7 +50,7 @@ class App
         $(document).foundation()
 
         # Init knockout.js.
-        # ko.applyBindings this
+        ko.applyBindings this
 
     # Called when app is online.
     onOnline: =>
