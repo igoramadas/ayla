@@ -6,6 +6,10 @@ class SettingsView
     init: =>
         @el.find("form").on "valid", @saveClick
 
+        @el.find("input.host").val localStorage.getItem "homeserver_host"
+        @el.find("input.port").val localStorage.getItem "homeserver_port"
+        @el.find("input.token").val localStorage.getItem "homeserver_token"
+
     # Dispose the Settings View.
     dispose: =>
 
@@ -23,9 +27,10 @@ class SettingsView
             if data.error?
                 serverResult.html "Invalid token or server details."
             else
-                localStorage.setItem "homeserver_url", "https://#{host}:#{port}/"
+                localStorage.setItem "homeserver_host", host
+                localStorage.setItem "homeserver_port", port
                 localStorage.setItem "homeserver_token", token
-                serverResult.html "Authenticated till " + data.result.expires
+                serverResult.html "Authenticated till " + moment(data.result.expires).format "lll"
 
         xhr.fail =>
             serverResult.html "Could not contact the specified server."

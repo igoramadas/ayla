@@ -83,9 +83,26 @@ class App
         @currentView.el.show()
         @currentView.init()
 
+        # Apply KO bindings after init.
+        ko.applyBindings @currentView.model, @currentView.el
+
         # Process data from server when received via sockets.
         if @currentView.processData?
-            sockets.on "#{socketsId}", @currentView.processData
+            sockets.on "#{socketsId}", @setViewModel
+
+    # Parse and append data from the server to the local model.
+    setViewModel: (obj, dataProcessor) =>
+        if _.isArray obj
+            @setViewModel b for b in obj
+            return
+
+        # Run model processor, if there's one.
+        @currentView.processData obj.key, obj.data if @currentView.processData?
+
+        if @currentView.model[obj.key]?
+            @currentView.model[obj.key] obj.data
+        else
+            @currentView.model[obj.key] = ko.observable obj.data
 
     # PAGE NOTIFICATIONS
     # -------------------------------------------------------------------------

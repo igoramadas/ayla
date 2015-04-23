@@ -278,7 +278,7 @@ class Routes
                 else
                     options = {title: m.moduleName, description: description, errors: m.errors, data: m.data}
 
-                    return renderPage req, res, "api", options
+                    return renderPage req, res, "manager", options
 
     # Returns data from the manager.
     managerDataPage = (req, res) ->
