@@ -5,6 +5,7 @@
   App = (function() {
     function App() {
       this.notify = __bind(this.notify, this);
+      this.setViewModel = __bind(this.setViewModel, this);
       this.navigate = __bind(this.navigate, this);
       this.onOffline = __bind(this.onOffline, this);
       this.onOnline = __bind(this.onOnline, this);
@@ -60,7 +61,8 @@
       } else {
         this.navigate("settings");
       }
-      return $(document).foundation();
+      $(document).foundation();
+      return ko.applyBindings(this);
     };
 
     App.prototype.onOnline = function() {
@@ -88,8 +90,28 @@
       this.currentView.el = $("#" + id);
       this.currentView.el.show();
       this.currentView.init();
+      ko.applyBindings(this.currentView.model, this.currentView.el);
       if (this.currentView.processData != null) {
-        return sockets.on("" + socketsId, this.currentView.processData);
+        return sockets.on("" + socketsId, this.setViewModel);
+      }
+    };
+
+    App.prototype.setViewModel = function(obj, dataProcessor) {
+      var b, _i, _len;
+      if (_.isArray(obj)) {
+        for (_i = 0, _len = obj.length; _i < _len; _i++) {
+          b = obj[_i];
+          this.setViewModel(b);
+        }
+        return;
+      }
+      if (this.currentView.processData != null) {
+        this.currentView.processData(obj.key, obj.data);
+      }
+      if (this.currentView.model[obj.key] != null) {
+        return this.currentView.model[obj.key](obj.data);
+      } else {
+        return this.currentView.model[obj.key] = ko.observable(obj.data);
       }
     };
 
@@ -201,7 +223,10 @@
     }
 
     SettingsView.prototype.init = function() {
-      return this.el.find("form").on("valid", this.saveClick);
+      this.el.find("form").on("valid", this.saveClick);
+      this.el.find("input.host").val(localStorage.getItem("homeserver_host"));
+      this.el.find("input.port").val(localStorage.getItem("homeserver_port"));
+      return this.el.find("input.token").val(localStorage.getItem("homeserver_token"));
     };
 
     SettingsView.prototype.dispose = function() {};
@@ -218,9 +243,10 @@
           if (data.error != null) {
             return serverResult.html("Invalid token or server details.");
           } else {
-            localStorage.setItem("homeserver_url", "https://" + host + ":" + port + "/");
+            localStorage.setItem("homeserver_host", host);
+            localStorage.setItem("homeserver_port", port);
             localStorage.setItem("homeserver_token", token);
-            return serverResult.html("Authenticated till " + data.result.expires);
+            return serverResult.html("Authenticated till " + moment(data.result.expires).format("lll"));
           }
         };
       })(this));
@@ -241,14 +267,12 @@
     function WeatherView() {
       this.toggleChart = __bind(this.toggleChart, this);
       this.createChart = __bind(this.createChart, this);
-      this.modelProcessor = __bind(this.modelProcessor, this);
-      this.onDispose = __bind(this.onDispose, this);
-      this.onReady = __bind(this.onReady, this);
+      this.processData = __bind(this.processData, this);
+      this.dispose = __bind(this.dispose, this);
+      this.init = __bind(this.init, this);
     }
 
-    WeatherView.prototype.viewId = "Weather";
-
-    WeatherView.prototype.onReady = function() {
+    WeatherView.prototype.init = function() {
       var _base, _base1, _base2;
       logger("Loaded Weather View");
       $(".outside .panel").click(this.toggleChart);
@@ -264,11 +288,11 @@
       return this.model.outside(this.model.outside());
     };
 
-    WeatherView.prototype.onDispose = function() {
+    WeatherView.prototype.dispose = function() {
       return $(".outside .panel").unbind("click", this.toggleChart);
     };
 
-    WeatherView.prototype.modelProcessor = function(key, data) {
+    WeatherView.prototype.processData = function(key, data) {
       var climate, co2, co2Count, condition, humidity, humidityCount, room, roomInfo, temp, tempCount, _i, _len, _ref;
       if (data == null) {
         data = key;

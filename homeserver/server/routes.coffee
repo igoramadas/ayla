@@ -201,7 +201,9 @@ class Routes
             sendErrorResponse req, res, "apiPage", "API module not found or not active."
             return
 
-        fs.readFile "#{__dirname}/api/#{m.moduleName}.coffee", {encoding: settings.general.encoding}, (err, data) ->
+        jobs = m.getScheduledJobs()
+
+        fs.readFile "#{__dirname}/api/#{m.moduleNameLower}.coffee", {encoding: settings.general.encoding}, (err, data) ->
             lines = data.split "\n"
             lines.splice 0, 2
             description = ""
@@ -265,21 +267,18 @@ class Routes
             return
 
         fs.readFile "#{__dirname}/manager/#{m.moduleNameLower.replace("manager", "")}.coffee", {encoding: settings.general.encoding}, (err, data) ->
-            if err?
-                description = null
-            else
-                lines = data.split "\n"
-                lines.splice 0, 2
-                description = ""
+            lines = data.split "\n"
+            lines.splice 0, 2
+            description = ""
 
-                # Iterate first lines of the module code to get its description.
-                for i in lines
-                    if i.substring(0, 1) is "#"
-                        description += i.replace("#", "") + "\n"
-                    else
-                        break
+            # Iterate first lines of the module code to get its description.
+            for i in lines
+                if i.substring(0, 1) is "#"
+                    description += i.replace("#", "") + "\n"
+                else
+                    options = {title: m.moduleName, description: description, errors: m.errors, data: m.data}
 
-            return renderPage req, res, "manager", {title: m.moduleName, description: description}
+                    return renderPage req, res, "manager", options
 
     # Returns data from the manager.
     managerDataPage = (req, res) ->

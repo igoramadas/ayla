@@ -2,10 +2,8 @@
 # --------------------------------------------------------------------------
 class WeatherView
 
-    viewId: "Weather"
-
     # Init the Weather view.
-    onReady: =>
+    init: =>
         logger "Loaded Weather View"
 
         $(".outside .panel").click @toggleChart
@@ -18,12 +16,12 @@ class WeatherView
         @model.outside @model.outside()
 
     # When user opens another page.
-    onDispose: =>
+    dispose: =>
         $(".outside .panel").unbind "click", @toggleChart
 
     # Parse and process data coming from the server. Weather data will be appended
     # directly to the rooms object. If only one argument is passed, assume it's the data.
-    modelProcessor: (key, data) =>
+    processData: (key, data) =>
         if not data?
             data = key
             key = null
