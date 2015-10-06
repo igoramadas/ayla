@@ -37,7 +37,7 @@ class OAuth
     # Get most recent auth tokens from the database and update the `oauth` DB collection.
     # Callback (err, result) is optional.
     loadTokens: (callback) =>
-        database.get "oauth", {service: @service, active: true}, (err, result) =>
+        database.db.mongo.get "oauth", {service: @service, active: true}, (err, result) =>
             if err?
                 logger.critical "OAuth.loadTokens", err
                 callback err, false if callback?
@@ -74,7 +74,7 @@ class OAuth
         filter = {"active": false, "timestamp": {$lt: minTimestamp}}
 
         # Delete old unactive tokens.
-        database.delete "oauth", filter, (err, result) =>
+        database.db.mongo.delete "oauth", filter, (err, result) =>
             if err?
                 logger.error "OAuth.cleanTokens", "Timestamp #{minTimestamp}", err
             else

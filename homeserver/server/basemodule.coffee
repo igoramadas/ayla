@@ -59,7 +59,7 @@ class BaseModule
 
     # Load data from the database and populate the `data` property.
     loadData: =>
-        database.get "data-#{@moduleName}", (err, results) =>
+        database.db.mongo.get "data-#{@moduleName}", (err, results) =>
             if err?
                 logger.error "#{@moduleName}.loadData", err
             else
@@ -101,7 +101,7 @@ class BaseModule
             cleanData dbData.value
 
             # Save clean data to the MongoDB database.
-            database.insert "data-#{@moduleNameLower}", dbData, (err, result) =>
+            database.db.mongo.insert "data-#{@moduleNameLower}", dbData, (err, result) =>
                 if err?
                     @logError "#{@moduleName}.setData", key, err
                 else

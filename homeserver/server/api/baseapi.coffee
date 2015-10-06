@@ -6,7 +6,6 @@ class BaseApi extends (require "../basemodule.coffee")
     expresser = require "expresser"
 
     cron = expresser.cron
-    database = expresser.database
     events = expresser.events
     lodash = expresser.libs.lodash
     logger = expresser.logger

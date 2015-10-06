@@ -15,7 +15,8 @@
         "port": 8080,
         "ssl": {
             "enabled": false
-        }
+        },
+        "title": "Ayla"
     },
     // Camera date format while saving snaps, and max age of snaps before
     // they get deleted (default is 7).
@@ -25,9 +26,11 @@
     },
     // Connect to local MongoDB and delete cached API data after 48 hours by default.
     "database": {
-        "connString": "mongodb://localhost/ayla?auto_reconnect",
-        "dataCacheExpireHours": 48,
-        "normalizeId": false
+        "mongo": {
+            "connString": "mongodb://localhost/ayla?auto_reconnect",
+            "dataCacheExpireHours": 48,
+            "normalizeId": false
+        }
     },
     // Settings to connect to your Electric Imp devices. You must set a devices
     // array with the list of devices to be used.
@@ -65,7 +68,6 @@
     },
     // General app settings. Debug is disabled by default.
     "general": {
-        "appTitle": "Ayla",
         "debug": false,
         // Maximum tasks to execute in parallel using async.
         "parallelTasksLimit": 4
