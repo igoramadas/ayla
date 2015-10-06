@@ -7,7 +7,6 @@ class Camera extends (require "./baseapi.coffee")
     expresser = require "expresser"
 
     datastore = expresser.datastore
-    downloader = expresser.downloader
     events = expresser.events
     fs = require "fs"
     lodash = expresser.libs.lodash
@@ -110,6 +109,8 @@ class Camera extends (require "./baseapi.coffee")
             downloadUrl = "http://#{cam.auth}@#{downloadUrl}"
         else
             downloadUrl = "http://#{downloadUrl}"
+
+        downloader = expresser.downloader
 
         # Save (download) a snap from the camera. Use the camera's host for the data key.
         downloader.download downloadUrl, saveTo, (err, result) =>

@@ -26,6 +26,7 @@
         "expresser": ">= 2.0.0-alpha.4",
         "expresser-cron": ">= 1.0.0-alpha.1",
         "expresser-database-mongo": ">= 1.0.0-alpha.1",
+        "expresser-downloader": ">= 1.0.0-alpha.1",
         "expresser-logger-logentries": ">= 1.0.0-alpha.1",
         "expresser-mailer": ">= 1.0.0-alpha.1",
         "expresser-sockets": ">= 1.0.0-alpha.1",

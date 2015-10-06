@@ -24,6 +24,7 @@
         "dateFormat": "YYYYMMDD-HHmmss",
         "snapsMaxAgeDays": 7
     },
+
     // Connect to local MongoDB and delete cached API data after 48 hours by default.
     "database": {
         "mongo": {
