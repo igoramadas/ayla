@@ -99,9 +99,12 @@
     },
     // Modules (API and managers) settings. You'll need to enable modules individually by
     // creating a `enable` property containing an array of modules to be enabled.
-    // For example to enable only Netatmo and Hue APIs:
+    // For example to enable only Netatmo and Hue APIs and the Email and Weather managers:
     // { "api": ["hue", "netatmo"] }
+    // { "managers": ["email", "weather"] }
     "modules": {
+        "api": ["camera", "electricimp", "hue", "netatmo", "network", "ninja", "strava", "ubi", "withings", "wunderground"],
+        "managers": ["email", "lights", "weather"],
         // By default the app will keep the most recent 5 results of module
         // data having the same key (each key inside the .data property of API modules).
         "dataKeyCacheSize": 5,
