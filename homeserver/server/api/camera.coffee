@@ -14,6 +14,7 @@ class Camera extends (require "./baseapi.coffee")
     moment = expresser.libs.moment
     path = require "path"
     settings = expresser.settings
+    utils = expresser.utils
 
     # Path to a "no camera image"
     nocamPath = __dirname + "../../public/images/nocam.jpg"
@@ -37,8 +38,13 @@ class Camera extends (require "./baseapi.coffee")
             else
                 @snapsPath = settings.path.cameraSnaps
 
-            @baseStart()
-            @takeAllSnaps()
+            # Make sure the camera snaps folder exists!
+            fs.exists @snapsPath, (exists) =>
+                if not exists
+                    utils.mkdirRecursive @snapsPath
+
+                @baseStart()
+                @takeAllSnaps()
 
     # Stop the Camera module.
     stop: =>

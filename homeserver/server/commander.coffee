@@ -6,12 +6,11 @@
 class Commander
 
     expresser = require "expresser"
-
-    database = expresser.database
-    events = expresser.events
-    lodash = expresser.libs.lodash
-    logger = expresser.logger
-    settings = expresser.settings
+    database = null
+    events = null
+    lodash = null
+    logger = null
+    settings = null
 
     # The commands list is loaded on init, from file commands.json.
     commands: null
@@ -21,6 +20,12 @@ class Commander
 
     # Init the commander.
     init: =>
+        database = expresser.database
+        events = expresser.events
+        lodash = expresser.libs.lodash
+        logger = expresser.logger
+        settings = expresser.settings
+
         try
             @commands = require "../commands.json"
         catch ex

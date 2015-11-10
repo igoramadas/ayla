@@ -4,13 +4,12 @@
 class OAuth
 
     expresser = require "expresser"
-
-    database = expresser.database
-    events = expresser.events
-    lodash = expresser.libs.lodash
-    logger = expresser.logger
-    moment = expresser.libs.moment
-    settings = expresser.settings
+    database = null
+    events = null
+    lodash = null
+    logger = null
+    moment = null
+    settings = null
 
     oauthModule = require "oauth"
     url = require "url"
@@ -21,6 +20,13 @@ class OAuth
 
     # Init the OAuth module and refresh auth tokens from the database.
     constructor: (@service) ->
+        database = expresser.database
+        events = expresser.events
+        lodash = expresser.libs.lodash
+        logger = expresser.logger
+        moment = expresser.libs.moment
+        settings = expresser.settings
+
         logger.debug "OAuth", "New for #{@service}"
 
         # Used as a helper callback, triggered when a valid token has been taken

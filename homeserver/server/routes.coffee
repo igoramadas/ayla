@@ -4,17 +4,17 @@
 class Routes
 
     expresser = require "expresser"
-    cron = expresser.cron
-    database = expresser.database
-    logger = expresser.logger
-    moment = expresser.libs.moment
-    settings = expresser.settings
-    utils = expresser.utils
+    cron = null
+    database = null
+    lodash = null
+    logger = null
+    moment = null
+    settings = null
+    utils = null
 
     api = require "./api.coffee"
     commander = require "./commander.coffee"
     fs = require "fs"
-    lodash = expresser.libs.lodash
     manager = require "./manager.coffee"
     path = require "path"
 
@@ -26,6 +26,14 @@ class Routes
 
     # Set most routes on init. The app (from Expresser) must be passed here.
     init: (callback) =>
+        cron = expresser.cron
+        database = expresser.database
+        lodash = expresser.libs.lodash
+        logger = expresser.logger
+        moment = expresser.libs.moment
+        settings = expresser.settings
+        utils = expresser.utils
+
         app = expresser.app.server
 
         # Main route.

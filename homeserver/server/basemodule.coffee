@@ -4,21 +4,29 @@
 class BaseModule
 
     expresser = require "expresser"
-    cron = expresser.cron
-    database = expresser.database
-    events = expresser.events
-    logger = expresser.logger
-    settings = expresser.settings
-    sockets = expresser.sockets
-
-    lodash = expresser.libs.lodash
-    moment = expresser.libs.moment
+    cron = null
+    database = null
+    events = null
+    lodash = null
+    logger = null
+    moment = null
+    settings = null
+    sockets = null
 
     # INIT
     # -------------------------------------------------------------------------
 
     # Called when the module inits.
     baseInit: (initialData) =>
+        cron = expresser.cron
+        database = expresser.database
+        events = expresser.events
+        lodash = expresser.libs.lodash
+        logger = expresser.logger
+        moment = expresser.libs.moment
+        settings = expresser.settings
+        sockets = expresser.sockets
+
         @errors = {}
 
         @moduleName = @__proto__.constructor.name.toString()
@@ -46,6 +54,8 @@ class BaseModule
         # Start cron jobs for that module.
         cron.start {module: "#{@moduleName}.coffee"} if settings.cron.enabled
 
+        logger.debug "#{@moduleName}.baseStart"
+
     # Called when the module stops.
     baseStop: =>
         @running = false
@@ -53,6 +63,8 @@ class BaseModule
 
         # Stop cron jobs for that module.
         cron.stop {module: "#{@moduleName}.coffee"} if settings.cron.enabled
+
+        logger.debug "#{@moduleName}.baseStop"
 
     # DATA HANDLING
     # -------------------------------------------------------------------------

@@ -6,15 +6,15 @@
 class Api
 
     expresser = require "expresser"
+    database = null
+    events = null
+    lodash = null
+    logger = null
+    settings = null
+    sockets = null
 
-    database = expresser.database
-    events = expresser.events
     fs = require "fs"
-    lodash = expresser.libs.lodash
-    logger = expresser.logger
     path = require "path"
-    settings = expresser.settings
-    sockets = expresser.sockets
 
     # Modules will be set on init.
     modules: {}
@@ -26,6 +26,12 @@ class Api
     # Init all API modules.
     init: (callback) =>
         cron = expresser.cron
+        database = expresser.database
+        events = expresser.events
+        lodash = expresser.libs.lodash
+        logger = expresser.logger
+        settings = expresser.settings
+        sockets = expresser.sockets
 
         rootPath = path.join __dirname, "../"
         cronPath = rootPath + "cron.api.json"

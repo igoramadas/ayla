@@ -33,8 +33,6 @@ class BaseApi extends (require "../basemodule.coffee")
 
     # Helper to check if module is running and with necessary settings defined.
     isRunning: (requiredObjects) =>
-        return false if not @running
-
         if lodash.isArray requiredObjects
             for i in requiredObjects
                 if not i?
@@ -96,7 +94,10 @@ class BaseApi extends (require "../basemodule.coffee")
 
                     # Do not parse JSON if parseJson is false or response is not a string.
                     if parseJson and lodash.isString body
-                        body = JSON.parse body
+                        if body.toLowerCase().replace("\n", "") is "not found"
+                            respError = {error: "Resource not found"}
+                        else
+                            body = JSON.parse body
 
                     # Check for error on response.
                     if body.error?
