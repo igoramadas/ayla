@@ -4,7 +4,6 @@
 class OAuth
 
     expresser = require "expresser"
-    database = null
     events = null
     lodash = null
     logger = null
@@ -12,15 +11,17 @@ class OAuth
     settings = null
 
     oauthModule = require "oauth"
+    fs = require "fs"
+    path = require "path"
     url = require "url"
 
+    filename: null
 
     # INIT
     # -------------------------------------------------------------------------
 
-    # Init the OAuth module and refresh auth tokens from the database.
+    # Init the OAuth module and refresh auth tokens from disk.
     constructor: (@service) ->
-        database = expresser.database
         events = expresser.events
         lodash = expresser.libs.lodash
         logger = expresser.logger
@@ -35,38 +36,47 @@ class OAuth
 
         # Set initial variables.
         @authenticated = false
-        @data = {}
+
+        # Credentials received from server.
+        @credentials = {}
+
+        # Set filename.
+        @filename = path.join __dirname, "../data/oauth/#{@service}.json"
 
     # AUTH SYNC
     # -------------------------------------------------------------------------
 
-    # Get most recent auth tokens from the database and update the `oauth` DB collection.
-    # Callback (err, result) is optional.
-    loadTokens: (callback) =>
-        database.db.mongo.get "oauth", {service: @service, active: true}, (err, result) =>
+    # Get most recent auth token from the disk. Callback (err, result) is optional.
+    loadToken: (callback) =>
+        if not fs.existsSync @filename
+            logger.warn "OAuth.loadToken", @service, "No tokens found!"
+
+            if settings[@service].api.token?
+                @credentials.token = settings[@service].api.token
+                @credentials.refreshToken = settings[@service].api.refreshToken
+
+            return
+
+        # Read credentials from /data/oauth.
+        fs.readFile @filename, "utf8", (err, result) =>
             if err?
-                logger.critical "OAuth.loadTokens", err
-                callback err, false if callback?
+                logger.critical "OAuth.loadToken", @service, err
+                callback err, result if callback?
             else
-                logger.debug "OAuth.loadTokens", result
+                logger.debug "OAuth.loadToken", result
 
                 @client = getClient @service
 
                 # Iterate results to create OAuth clients for all users.
-                for t in result
-                    @data = t
+                if result?
+                    @credentials = JSON.parse result
 
                     # Needs refresh?
-                    @refresh() if t.expires? and moment().unix() > t.expires
-
-                # If no tokes are found, check if it was specified on the settings.
-                if result.length < 1 and settings[@service].api.accessToken?
-                    @data.accessToken = settings[@service].api.accessToken
-                    @data.refreshToken = settings[@service].api.refreshToken
-                    result =[{accessToken: settings[@service].api.accessToken}]
+                    if @credentials.expires? and moment().unix() > @credentials.expires
+                        lodash.delay @refresh, 1000
 
                 # Is it authenticated?
-                if @data.token? or @data.accessToken?
+                if @credentials.token?
                     @authenticated = true
                     @onAuthenticated() if @onAuthenticated?
 
@@ -74,60 +84,40 @@ class OAuth
                 if callback?
                     callback null, result
 
-    # Remove old auth tokens from the database.
-    cleanTokens: (callback) =>
-        minTimestamp = moment().unix() - (settings.modules.maxAuthTokenAgeDays * 24 * 60 * 60)
-        filter = {"active": false, "timestamp": {$lt: minTimestamp}}
-
-        # Delete old unactive tokens.
-        database.db.mongo.delete "oauth", filter, (err, result) =>
-            if err?
-                logger.error "OAuth.cleanTokens", "Timestamp #{minTimestamp}", err
-            else
-                logger.info "OAuth.cleanTokens", "Deleted older than #{minTimestamp}."
-
-            if callback?
-                callback err, result
-
-    # Save the specified auth token to the database.
+    # Save the specified auth token to disk.
     saveToken: (params, callback) =>
         if not callback? and lodash.isFunction params
             callback = params
             params = null
 
-        # Get current time and set data.
-        now = moment().unix()
-        @data = lodash.defaults params, {service: @service, active: true, timestamp: now}
-
         # Add extra parameters like timestamp and user ID.
-        @data.timestamp = params.oauth_timestamp if params.oauth_timestamp?
-        @data.userId = params.encoded_user_id if params.encoded_user_id?
-        @data.userId = params.userid if params.userid?
-        @data.userId = params.userId if params.userId?
-        delete @data.encoded_user_id
-        delete @data.userid
+        @credentials.refreshToken = params.refreshToken or params.refresh
+        @credentials.timestamp = params.oauth_timestamp or moment().unix()
+        @credentials.userId = params.encoded_user_id if params.encoded_user_id?
+        @credentials.userId = params.userid if params.userid?
+        @credentials.userId = params.userId if params.userId?
+
+        delete @credentials.refresh
+        delete @credentials.encoded_user_id
+        delete @credentials.userid
 
         # Set and trigger authenticated callback.
         # Mark as authenticated.
         @authenticated = true
         @onAuthenticated() if @onAuthenticated?
 
+        # Clone itself to be saved to disk.
+        data = @getJSON true
+
         # Update oauth collection and set related tokens `active` to false.
-        database.update "oauth", {active: false}, {patch: true, filter: {service: @service}}, (err, result) =>
+        fs.writeFile @filename, JSON.stringify(data), (err, result) =>
             if err?
-                logger.error "OAuth.saveToken", @service, "Set active=false", err
+                logger.error "OAuth.saveToken", data, err
             else
-                logger.debug "OAuth.saveToken", @service, "Set active=false", "OK"
+                logger.debug "OAuth.saveToken", data, "OK"
 
-            # Save to database.
-            database.insert "oauth", @data, (err, result) =>
-                if err?
-                    logger.error "OAuth.saveToken", @service, @data, err
-                else
-                    logger.debug "OAuth.saveToken", @service, @data, "OK"
-
-                if callback?
-                    callback err, result
+            if callback?
+                callback err, result
 
     # PROCESSING AND REQUESTING
     # -------------------------------------------------------------------------
@@ -136,16 +126,7 @@ class OAuth
     getClient = (service) ->
         headers = {"Accept": "*/*", "Connection": "close", "User-Agent": "Ayla OAuth Client"}
         version = settings[service].api.oauthVersion
-
-        # Callback URL is set to localhost in case debug is true.
-        if not settings.general.debug
-            callbackUrl = settings.general.appUrl
-        else if settings.app.ssl.enabled
-            callbackUrl = "https://localhost:#{settings.app.port}/"
-        else
-            callbackUrl = "http://localhost:#{settings.app.port}/"
-
-        callbackUrl += "api/#{service}/auth/callback"
+        callbackUrl = "#{settings.app.url}api/#{service}/auth/callback"
 
         # Create OAuth 2.0 or 1.0 client depending on parameters.
         if version is "2.0"
@@ -176,26 +157,25 @@ class OAuth
 
     # Get an OAuth protected resource.
     get: (reqUrl, callback) =>
-        if not @data?
+        if not @credentials.token?
             callback "No oauth data found. Please authorize first on #{@service}."
             return
 
         # OAuth2 have only an access token, OAuth1 has a token and a secret.
         if settings[@service].api.oauthVersion is "2.0"
-            @client.get reqUrl, @data.accessToken, (err, result) =>
+            @client.get reqUrl, @credentials.token, (err, result) =>
                 if err?
                     description = err.data?.error_description or err.data?.error?.message or null
                     @refresh() if err.statusCode is 401 or err.statusCode is 403 or description?.indexOf("expired") > 0
                 callback err, result
         else
-            @client.get reqUrl, @data.token, @data.tokenSecret, (err, result) =>
+            @client.get reqUrl, @credentials.token, @credentials.tokenSecret, (err, result) =>
                 callback err, result
 
     # Try getting OAuth data for a particular request / response.
     process: (req, res) =>
         if not @client?
             @client = getClient @service
-            @data = {}
 
         # Check if request has token on querystring.
         qs = url.parse(req.url, true).query if req?
@@ -209,7 +189,7 @@ class OAuth
             logger.info "OAuth.process", "getRequestToken1", @service, oauth_token
 
             # Set token secret cache and redirect to authorization URL.
-            @data.tokenSecret = oauth_token_secret
+            @credentials.tokenSecret = oauth_token_secret
             res?.redirect "#{settings[@service].api.oauthUrl}authorize?oauth_token=#{oauth_token}"
 
         # Helper function to get the access token using OAUth 1.x.
@@ -223,7 +203,7 @@ class OAuth
             # Save oauth details to DB and redirect user to service page.
             oauthData = lodash.defaults {token: oauth_token, tokenSecret: oauth_token_secret}, additionalParameters
             @saveToken oauthData
-            res?.redirect "/#api?id=#{@service}"
+            res?.redirect "/api/#{@service}"
 
         # Helper function to get the access token using OAUth 2.x.
         getAccessToken2 = (err, oauth_access_token, oauth_refresh_token, results) =>
@@ -243,9 +223,9 @@ class OAuth
             lodash.delay @refresh, refreshInterval
 
             # Save oauth details to DB and redirect user to service page.
-            oauthData = {accessToken: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add(expires, "s").unix()}
+            oauthData = {token: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add(expires, "s").unix()}
             @saveToken oauthData
-            res?.redirect "/#{@service}"
+            res?.redirect "/api/#{@service}"
 
         # Set correct request handler based on OAUth parameters and query tokens.
         if settings[@service].api.oauthVersion is "2.0"
@@ -263,7 +243,7 @@ class OAuth
                 opts["state"] = settings[@service].api.oauthState
 
             if settings[@service].api.oauthPassRedirect
-                opts["redirect_uri"] = settings.general.appUrl + "api/#{@service}/auth/callback"
+                opts["redirect_uri"] = settings.app.url + "api/#{@service}/auth/callback"
 
             # Get authorization code from querystring.
             qCode = qs?.code
@@ -275,7 +255,7 @@ class OAuth
 
         # Getting an OAuth1 access token?
         else if qs?.oauth_token?
-            @client.getOAuthAccessToken qs.oauth_token, @data.tokenSecret, qs.oauth_verifier, getAccessToken1
+            @client.getOAuthAccessToken qs.oauth_token, @credentials.tokenSecret, qs.oauth_verifier, getAccessToken1
         else
             @client.getOAuthRequestToken {}, getRequestToken1
 
@@ -293,7 +273,7 @@ class OAuth
         @lastRefresh = moment().unix()
 
         # Get oauth object and refresh token and set grant type to refresh_token.
-        refreshToken = @data.refreshToken
+        refreshToken = @credentials.refreshToken
         opts = {"grant_type": "refresh_token"}
 
         logger.info "OAuth.refresh", @service, refreshToken
@@ -318,11 +298,26 @@ class OAuth
             lodash.delay @refresh, refreshInterval
 
             # If no refresh token is returned, keep the last one.
-            oauth_refresh_token = @data.refreshToken if not oauth_refresh_token? or oauth_refresh_token is ""
+            oauth_refresh_token = @credentials.refreshToken if not oauth_refresh_token? or oauth_refresh_token is ""
 
             # Save oauth details to DB and redirect user to service page.
-            oauthData = {accessToken: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add(expires, "s").unix()}
+            oauthData = {token: oauth_access_token, refreshToken: oauth_refresh_token, expires: moment().add(expires, "s").unix()}
             @saveToken oauthData
+
+    # Helper to get JSON representation of the OAuth object.
+    # If safe is true, return only safe values (remove tokens and confidential data).
+    getJSON: (safe) =>
+        data = {}
+
+        for key, value of this
+            if not lodash.isFunction value and key isnt "client"
+                data[key] = lodash.cloneDeep value
+
+        if safe
+            delete data.token
+            delete data.refreshToken
+
+        return data
 
 # Exports OAuth module.
 # -----------------------------------------------------------------------------

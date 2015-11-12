@@ -5,7 +5,6 @@ class Routes
 
     expresser = require "expresser"
     cron = null
-    database = null
     lodash = null
     logger = null
     moment = null
@@ -27,7 +26,6 @@ class Routes
     # Set most routes on init. The app (from Expresser) must be passed here.
     init: (callback) =>
         cron = expresser.cron
-        database = expresser.database
         lodash = expresser.libs.lodash
         logger = expresser.logger
         moment = expresser.libs.moment
@@ -56,6 +54,7 @@ class Routes
         app.get "/api/:id", apiPage
         app.get "/api/:id/data", apiDataPage
         app.get "/api/:id/auth", apiAuthPage
+        app.get "/api/:id/auth/callback", apiAuthPage
         bindModuleRoutes m for key, m of api.modules
 
         # Bind manager routes.
@@ -103,7 +102,7 @@ class Routes
 
     # Data returned on the start page.
     startDataPage = (req, res) ->
-        result = []
+        result = {}
         managerModules = []
         apiModules = []
         jobs = []
@@ -158,12 +157,12 @@ class Routes
             aModule.jobs.push obj if aModule?
 
         # Add everything to the result.
-        result.push {key: "server", data: utils.getServerInfo()}
-        result.push {key: "managerModules", data: managerModules}
-        result.push {key: "disabledManagerModules", data: lodash.keys manager.disabledModules}
-        result.push {key: "apiModules", data: apiModules}
-        result.push {key: "disabledApiModules", data: lodash.keys api.disabledModules}
-        result.push {key: "jobs", data: jobs}
+        result.server = utils.getServerInfo()
+        result.managerModules = managerModules
+        result.disabledManagerModules = lodash.keys manager.disabledModules
+        result.apiModules = apiModules
+        result.disabledApiModules = lodash.keys api.disabledModules
+        result.jobs = jobs
 
         renderJson req, res, result
 
@@ -242,7 +241,7 @@ class Routes
         options.moduleName = m.moduleName
         options.data = m.data
         options.errors = m.errors
-        options.oauth = m.oauth
+        options.oauth = m.oauth.getJSON true
         options.jobs = []
 
         jobs = lodash.where cron.jobs, {module: m.moduleName + ".coffee"}
@@ -318,7 +317,7 @@ class Routes
 
         options = {} if not options?
         options.pageTitle = filename if not options.pageTitle?
-        options.title = settings.general.appTitle if not options.title?
+        options.title = settings.app.title if not options.title?
         options.loadJs = [] if not options.loadJs?
         options.loadCss = [] if not options.loadCss?
         options.moment = moment

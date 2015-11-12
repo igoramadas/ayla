@@ -21,10 +21,11 @@ class BaseView
         @setHeader()
 
         # Get URL for data.
-        jsonUrl = location.pathname.substring(1) + "/data"
+        jsonUrl = location.pathname + "/data"
 
-        $.getJSON jsonUrl, (data) =>
-            @setModel data
+        $.getJSON jsonUrl.replace("//", ""), (data) =>
+            console.warn data
+            @model = ko.mapping.fromJS data
             ko.applyBindings @model
 
             @onReady()
@@ -42,38 +43,17 @@ class BaseView
         ayla.sockets.on "server.info", (info) =>
             ayla.server.info = info
 
-        for s in @socketNames
-            ayla.sockets.on "#{s}.error", (err) => @announce err
-            ayla.sockets.on "#{s}.result", (result) => @announce result
-            ayla.sockets.on "#{s}.data", (obj) => @onData obj
-
     # Set active navigation and header properties.
     setHeader: =>
         currentPath = location.pathname.substring 1
 
+        sepIndex = currentPath.indexOf "/"
+
+        if sepIndex > 0
+            currentPath = currentPath.substring 0, sepIndex
+
         if currentPath isnt "/" and currentPath isnt ""
             $("#header").find(".#{currentPath}").addClass "active"
-
-    # DATA UPDATES
-    # ----------------------------------------------------------------------
-
-    # Parse and append data from the server to the local model.
-    setModel: (obj) =>
-        if _.isArray obj
-            @setModel b for b in obj
-            return
-
-        # Run model processor, if there's one.
-        @modelProcessor obj.key, obj.data if @modelProcessor?
-
-        if @model[obj.key]?
-            @model[obj.key] obj.data
-        else
-            @model[obj.key] = ko.observable obj.data
-
-    # Updates data sent by the server.
-    onData: (key, data) =>
-        @setModel key, data
 
     # ANNOUNCEMENTS
     # ----------------------------------------------------------------------

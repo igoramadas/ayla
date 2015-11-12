@@ -5,19 +5,19 @@ block contents
         ul.maingrid.small-block-grid-1
             li
                 h3 Server
-                .panel.inner
+                .panel.inner(data-bind="with: server")
                     div
                         span.spaced OS:
-                        span(data-bind="text: server().platform")
+                        span(data-bind="text: platform()")
                     div
                         span.spaced Uptime:
-                        span(data-bind="text: server().uptime")
+                        span(data-bind="text: uptime()")
                     div
                         span.spaced CPU Load:
-                        span(data-bind="text: server().loadAvg + '% (' + server().cpuCores + ' cores)'")
+                        span(data-bind="text: loadAvg() + '% (' + cpuCores() + ' cores)'")
                     div
                         span.spaced RAM Usage:
-                        span(data-bind="text: server().memoryUsage + '% (' + server().memoryTotal + ')'")
+                        span(data-bind="text: memoryUsage() + '% (' + memoryTotal() + ')'")
 
             li
                 h3 API Modules
@@ -25,25 +25,25 @@ block contents
                     // ko foreach: apiModules()
                     li
                         .panel
-                            h4(data-bind="text: moduleName")
+                            h4(data-bind="text: moduleName()")
                             .inner
-                                // ko if: data.length > 0
+                                // ko if: data().length > 0
                                 strong Data
                                 ul
                                     // ko foreach: data
                                     li
-                                        span.spaced(data-bind="text: key")
-                                        span.timestamp(data-bind="text: lastUpdated")
+                                        span.spaced(data-bind="text: key()")
+                                        span.timestamp(data-bind="text: lastUpdated()")
                                     // /ko
                                 // /ko
 
-                                // ko if: jobs.length > 0
+                                // ko if: jobs().length > 0
                                 strong Jobs
                                 ul
                                     // ko foreach: jobs
                                     li
-                                        span.spaced(data-bind="text: callback")
-                                        span.timestamp(data-bind="text: lastRun")
+                                        span.spaced(data-bind="text: callback()")
+                                        span.timestamp(data-bind="text: lastRun()")
                                     // /ko
                                 // /ko
                     // /ko

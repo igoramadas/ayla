@@ -5,7 +5,6 @@ class BaseModule
 
     expresser = require "expresser"
     cron = null
-    database = null
     events = null
     lodash = null
     logger = null
@@ -19,7 +18,6 @@ class BaseModule
     # Called when the module inits.
     baseInit: (initialData) =>
         cron = expresser.cron
-        database = expresser.database
         events = expresser.events
         lodash = expresser.libs.lodash
         logger = expresser.logger
@@ -69,21 +67,6 @@ class BaseModule
     # DATA HANDLING
     # -------------------------------------------------------------------------
 
-    # Load data from the database and populate the `data` property.
-    loadData: =>
-        database.db.mongo.get "data-#{@moduleName}", (err, results) =>
-            if err?
-                logger.error "#{@moduleName}.loadData", err
-            else
-                logger.info "#{@moduleName}.loadData", "#{results.length} objects to be loaded."
-
-            # Iterate results.
-            for r in results
-                @data[r.key] = r.data
-
-            # Trigger load event.
-            events.emit "#{@moduleName}.data.load"
-
     # Save module's data for the specified key. The filter is optional and
     # if not passed it will use `default` as filter.
     setData: (key, value, filter) =>
@@ -98,26 +81,6 @@ class BaseModule
             # Emit events to other modules and clients.
             events.emit "#{@moduleName}.data", key, dataObj, filter
             sockets.emit "#{@moduleName}.data", key, dataObj, filter
-
-            # Save the new data to the database.
-            dbData = {key: key, value: value, filter: filter, datestamp: new Date()}
-
-            # Remove unnecessary data before saving to the DB.
-            cleanData = (source) ->
-                for prop, value of source
-                    if lodash.isFunction value
-                        delete source[prop]
-                    else if value?.constructor is Object
-                        cleanData value
-
-            cleanData dbData.value
-
-            # Save clean data to the MongoDB database.
-            database.db.mongo.insert "data-#{@moduleNameLower}", dbData, (err, result) =>
-                if err?
-                    @logError "#{@moduleName}.setData", key, err
-                else
-                    logger.info "#{@moduleName}.setData", key
 
         catch ex
             @logError "#{@moduleName}.setData", key, ex.message, ex.stack

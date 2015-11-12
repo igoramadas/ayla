@@ -6,12 +6,10 @@
 class Api
 
     expresser = require "expresser"
-    database = null
     events = null
     lodash = null
     logger = null
     settings = null
-    sockets = null
 
     fs = require "fs"
     path = require "path"
@@ -26,16 +24,19 @@ class Api
     # Init all API modules.
     init: (callback) =>
         cron = expresser.cron
-        database = expresser.database
         events = expresser.events
         lodash = expresser.libs.lodash
         logger = expresser.logger
         settings = expresser.settings
-        sockets = expresser.sockets
+        utils = expresser.utils
 
         rootPath = path.join __dirname, "../"
         cronPath = rootPath + "cron.api.json"
         apiPath = rootPath + "server/api/"
+
+        # Make sure oauth data path exists.
+        oauthPath = path.join __dirname, "../data/oauth/"
+        utils.mkdirRecursive oauthPath
 
         # Init modules.
         files = fs.readdirSync apiPath
@@ -53,10 +54,6 @@ class Api
                     module = require "./api/#{f}"
                     module.init()
                     @modules[filename] = module
-
-                    # Create database TTL index.
-                    expires = settings.database.mongo.dataCacheExpireHours * 3600
-                    database.db.mongo.connection.collection("data-#{module.dbName}").ensureIndex {"datestamp": 1}, {expireAfterSeconds: expires}, (err) -> console.error err if err?
 
         # Start all API modules and load cron jobs.
         m.start() for k, m of @modules

@@ -1,16 +1,4 @@
 {
-    "camera.coffee": [
-        {
-            "callback": "takeAllSnaps",
-            "description": "Save a snap of enabled cameras to the data folder every 10 minutes.",
-            "schedule": 600
-        },
-        {
-            "callback": "cleanSnaps",
-            "description": "Delete old camera snaps twice a day.",
-            "schedule": ["06:03:00", "18:03:00"]
-        }
-    ],
     "fitbit.coffee": [
         {
             "callback": "getSleep",
@@ -27,19 +15,9 @@
     ],
     "netatmo.coffee": [
         {
-            "callback": "getDevices",
-            "description": "Get Netatmo device list twice a day.",
-            "schedule": ["08:04:00", "18:04:00"]
-        },
-        {
-            "callback": "getAllOutdoor",
-            "description": "Probe outdoor Netatmo conditions every 5 minutes.",
-            "schedule": 300
-        },
-        {
-            "callback": "getAllIndoor",
-            "description": "Probe indoor Netatmo conditions every 5 minutes.",
-            "schedule": 300
+            "callback": "getWeather",
+            "description": "Get Netatmo weather data every 10 minutes.",
+            "schedule": 600
         }
     ],
     "network.coffee": [

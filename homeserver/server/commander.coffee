@@ -6,7 +6,6 @@
 class Commander
 
     expresser = require "expresser"
-    database = null
     events = null
     lodash = null
     logger = null
@@ -20,7 +19,6 @@ class Commander
 
     # Init the commander.
     init: =>
-        database = expresser.database
         events = expresser.events
         lodash = expresser.libs.lodash
         logger = expresser.logger

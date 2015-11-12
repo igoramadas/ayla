@@ -65,7 +65,7 @@ class Ubi extends (require "./baseapi.coffee")
 
         # Set request URL and parameters.
         params = {} if not params?
-        params.access_token = @oauth.data.accessToken
+        params.access_token = @oauth.token
         reqUrl = settings.ubi.api.url + path
         reqUrl = reqUrl + "/#{action}" if action?
         reqUrl = reqUrl + "?" + querystring.stringify params

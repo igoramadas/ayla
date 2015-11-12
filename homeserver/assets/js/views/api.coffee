@@ -6,7 +6,7 @@ class ApiView extends ayla.BaseView
 
     # Init the API detailed module view..
     onReady: =>
-        logger "Loaded API Module View"
+        logger "Loaded API View"
 
 # BIND VIEW TO WINDOW
 # --------------------------------------------------------------------------

@@ -7,7 +7,6 @@ class Fitbit extends (require "./baseapi.coffee")
     expresser = require "expresser"
 
     async = expresser.libs.async
-    database= expresser.database
     events = expresser.events
     lodash = expresser.libs.lodash
     logger = expresser.logger

@@ -5,51 +5,47 @@ block contents
         h1= title
         ul.maingrid.small-block-grid-1
             li
-                dl.tabs
-                    dd
-                        a(data-bind="attr: {href: '#api/about?id=' + id()}", title="About this module") about
-                    dd
-                        a(data-bind="attr: {href: '#api/settings?id=' + id()}", title="Module's settings") settings
-                    dd(data-bind="if: oauth")
-                        a(data-bind="attr: {href: '#api/oauth?id=' + id()}", title="OAuth parameters") oauth
-                    dd
-                        a(data-bind="attr: {href: '#api/errors?id=' + id()}", title="Errors triggered by this module") errors
-                    dd
-                        a(data-bind="attr: {href: '#api/jobs?id=' + id()}", title="Scheduled jobs") jobs
+                ul.tabs(data-tab)
+                    li.tab-title
+                        a(data-bind="attr: {href: '#about'}", title="About this module") about
+                    li.tab-title
+                        a(data-bind="attr: {href: '#settings'}", title="Module's settings") settings
+                    li.tab-title(data-bind="if: oauth")
+                        a(data-bind="attr: {href: '#oauth'}", title="OAuth parameters") oauth
+                    li.tab-title
+                        a(data-bind="attr: {href: '#errors'}", title="Errors triggered by this module") errors
+                    li.tab-title
+                        a(data-bind="attr: {href: '#jobs'}", title="Scheduled jobs") jobs
 
-                    // ko foreach: _.keys(data())
-                    dd.data
-                        a(data-bind="text: $data, attr: {href: '#api/data-' + $data + '?id=' + $parent.id()}")
+                    // ko foreach: _.keys(data)
+                    li.tab-title.data
+                        a(data-bind="text: $data, attr: {href: '#data-' + $data}")
                     // /ko
 
                 .tabs-content
                     #about.content.panel(data-bind="smartPage: {id: 'about', afterShow: ayla.indexView.setPageTab, params: ['id']}")
-                        .inner-panel !{description}
-                        .inner-panel
+                        .inner !{description}
+                        .inner
                             a(data-bind="attr: {href: 'https://ayla.codeplex.com/wikipage?title=API:%20#' + name}", target="AylaDocs") View online documentation
 
                     #settings.content.panel(data-bind="smartPage: {id: 'settings', afterShow: ayla.indexView.setPageTab, params: ['id']}")
                         h5 settings.#{title.toLowerCase()}
-                        .inner-panel
+                        .inner
                             .data-table !{JSON.stringify(settings[title.toLowerCase()])}
 
                     #oauth.content.panel(data-bind="smartPage: {id: 'oauth', afterShow: ayla.indexView.setPageTab, params: ['id']}")
-                        .inner-panel.auth(data-bind="if: oauth")
+                        .inner.auth(data-bind="if: oauth")
                             div
                                 span.info Authenticated:
                                 span(data-bind="text: oauth.authenticated")
                             // ko if: oauth.authenticated
                             div.clip(data-bind="with: oauth")
-                                span.info Token:
-                                span(data-bind="text: data.token || data.accessToken")
-                                br
                                 span.info Expires:
-                                span(data-bind="if: oauth.data.expires > 0, text: moment(data.expires * 1000).format('lll')")
-                                span(data-bind="if: oauth.data.expires < 1") No expiration date set
+                                span(data-bind="text: credentials().expires() > 0 ? moment(credentials().expires() * 1000).format('lll') : 'No expiration date set'")
                             // /ko
                             div
                                 a.button(href="/auth") Trigger authentication
-                        .inner-panel.auth(data-bind="if: !oauth")
+                        .inner.auth(data-bind="if: !oauth")
                             div
                                 span No oauth set for this module.
 
@@ -57,11 +53,11 @@ block contents
                         div(data-bind="if: errors.length > 0")
                             // ko foreach: errors
                             h5(data-bind="text: moment(timestamp).format('YYYY-MM-DD HH:mm:ss') + ': ' + data[0]")
-                            .inner-panel.error-details
+                            .inner.error-details
                                 span(data-bind="data.join(', ')")
                             // /ko
 
-                        .inner-panel(data-bind="if: errors.length < 1")
+                        .inner(data-bind="if: errors.length < 1")
                             span No errors found.
 
                     #jobs.content.panel(data-bind="smartPage: {id: 'jobs', afterShow: ayla.indexView.setPageTab, params: ['id']}")
@@ -91,13 +87,13 @@ block contents
                                         // /ko
                                 // /ko
 
-                        .inner-panel(data-bind="if: jobs.length < 1") No scheduled jobs.
+                        .inner(data-bind="if: jobs.length < 1") No scheduled jobs.
 
-                    // ko foreach: _.keys(data())
+                    // ko foreach: _.keys(data)
                     .content.panel.data(data-bind="attr: {id: 'data-' + $data}, smartPage: {id: 'data-' + $data, afterShow: ayla.indexView.setPageTab}")
-                        // ko foreach: $parent[$data]
-                        h5(data-bind="text: JSON.stringify(filter, null, 2) + ' ' + moment(timestamp * 1000).format('lll')")
-                        .inner-panel
-                            .data-table(data-bind="html: JsonHuman.format(JSON.stringify(value)).innerHTML")
+                        // ko foreach: $root.data[$data]()
+                        h5(data-bind="text: JSON.stringify(filter(), null, 2) + ' ' + moment(timestamp() * 1000).format('lll')")
+                        .inner
+                            .data-table(data-bind="html: JsonHuman.format(JSON.stringify(value())).innerHTML")
                         // /ko
                     // /ko
