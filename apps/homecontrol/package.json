@@ -1,6 +1,6 @@
 {
-    "name": "ayla-app",
-    "version": "0.0.2",
+    "name": "ayla-app-homecontrol",
+    "version": "0.0.3",
     "description": "Ayla at your service.",
     "homepage": "http://ayla.codeplex.com",
     "author": "Igor Ramadas <igor@devv.com>",
@@ -20,6 +20,7 @@
         "grunt": "*",
         "grunt-contrib-concat": "*",
         "grunt-contrib-coffee": "*",
+        "grunt-contrib-jade": "*",
         "grunt-contrib-stylus": "*",
         "grunt-contrib-watch": "*",
         "grunt-concurrent": "*"
