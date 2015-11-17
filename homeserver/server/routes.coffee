@@ -128,7 +128,7 @@ class Routes
 
                 target.push d
 
-        # Get details for managers..
+        # Get details for managers.
         for key, m of manager.modules
             obj = {id: key, moduleName: m.moduleName, errors: m.errors, data: []}
             managerModules.push obj
@@ -136,7 +136,8 @@ class Routes
 
         # Get details for API modules.
         for key, m of api.modules
-            obj = {id: key, moduleName: m.moduleName, errors: m.errors, data: [], jobs: []}
+            oauthObj = m.oauth?.getJSON(true) or null
+            obj = {id: key, moduleName: m.moduleName, errors: m.errors, data: [], jobs: [], oauth: oauthObj}
             apiModules.push obj
             populateData m.data, obj.data
 

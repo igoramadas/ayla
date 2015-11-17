@@ -41,10 +41,7 @@ class EmailManager extends (require "./basemanager.coffee")
         # Set default email if a default user was set, or warn that defaults
         # will be taken from the Expresser Mailer.
         @defaultTo = defaultUser.email if defaultUser?.email?
-        @defaultToMobile = defaultUser.emailMobile if defaultUser?.emailMobile?
-
-        # Set default mobile email to same as email if none was specified!
-        @defaultToMobile = @defaultTo if not @defaultToMobile?
+        @defaultToMobile = defaultUser.emailMobile or @defaultTo
 
         @baseInit {skippedEmails: [], processedEmails: []}
 
@@ -114,9 +111,12 @@ class EmailManager extends (require "./basemanager.coffee")
                     @fetchNewMessages account
                     account.client.on "mail", => @fetchNewMessages account
 
-        # Handle IMAP errors.
+        # Handle IMAP errors. If disconnected because of connection reset, call openBox again.
         account.client.on "error", (err) =>
             @logError "EmailManager.openBox.onError", account.id, err
+
+            if err.code? is "ECONNRESET"
+                lodash.delay @openBox, settings.imap.retryInterval, account, 0
 
         # Connect to the IMAP server.
         account.client.connect()

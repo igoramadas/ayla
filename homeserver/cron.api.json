@@ -2,8 +2,13 @@
     "fitbit.coffee": [
         {
             "callback": "getSleep",
-            "description": "Get sleep data from Fitbit every day.",
-            "schedule": ["11:02:00"]
+            "description": "Get sleep data from Fitbit twice daily.",
+            "schedule": ["10:00:00", "20:00:00"]
+        },
+        {
+            "callback": "getBody",
+            "description": "Get weight data from Fitbit every morning.",
+            "schedule": ["09:00:00"]
         }
     ],
     "hue.coffee": [
@@ -35,27 +40,20 @@
     "ninja.coffee": [
         {
             "callback": "getDevices",
-            "description": "Probe Ninja Blocks device list every 20 minutes.",
-            "schedule": 1200
+            "description": "Probe Ninja Block device list every 15 minutes.",
+            "schedule": 900
         }
     ],
     "strava.coffee": [
         {
             "callback": "getProfile",
             "description": "Get Strava profile twice a day.",
-            "schedule": ["10:21:00", "21:21:00"]
+            "schedule": ["11:00:00", "21:00:00"]
         },
         {
             "callback": "getRecentActivities",
             "description": "Get recent Strava activities list twice a day.",
-            "schedule": ["10:22:00", "21:22:00"]
-        }
-    ],
-    "withings.coffee": [
-        {
-            "callback": "getRecentBodyMeasures",
-            "description": "Get recent body measures for the last month twice a day.",
-            "schedule": ["10:02:00", "19:02:00"]
+            "schedule": ["11:01:00", "21:01:00"]
         }
     ],
     "wunderground.coffee": [
@@ -67,12 +65,12 @@
         {
             "callback": "getForecast",
             "description": "Get updated weather forecast three times a day.",
-            "schedule": ["08:07:00", "14:07:00", "20:07:00"]
+            "schedule": ["07:00:00", "13:00:00", "19:00:00"]
         },
         {
             "callback": "getAstronomy",
             "description": "Get updated astronomy (sunrise, sunset, moon) twice a day.",
-            "schedule": ["02:01:00", "14:01:00"]
+            "schedule": ["02:00:00", "14:00:00"]
         }
     ]
 }

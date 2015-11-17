@@ -7,6 +7,7 @@ class BaseView
 
     # Holds main view data.
     model: {}
+    mappingOptions: {}
     lastUserInteraction: moment().unix()
 
     # MAIN METHODS
@@ -24,9 +25,8 @@ class BaseView
         jsonUrl = location.pathname + "/data"
 
         $.getJSON jsonUrl.replace("//", ""), (data) =>
-            console.warn data
-            @model = ko.mapping.fromJS data
-            ko.applyBindings @model
+            @model = ko.mapping.fromJS data, @mappingOptions
+            ko.applyBindings this
 
             @onReady()
 
