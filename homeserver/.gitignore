@@ -9,5 +9,5 @@ node_modules/
 settings.development.json
 settings.private.json
 settings.production.json
-ssl.cer
-ssl.key
+ayla.crt
+ayla.key

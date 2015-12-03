@@ -20,7 +20,8 @@ class StartView extends ayla.BaseView
 
     # Redirect to API OAuth page.
     apiOAuthRedirect: (obj) =>
-        if obj?.authenticated is false
+        console.warn obj
+        if obj?.oauth?().authenticated is false
             document.location.href = "/api/#{obj.id()}/auth"
         else
             return

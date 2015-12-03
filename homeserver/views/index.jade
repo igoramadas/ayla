@@ -19,21 +19,15 @@ html.no-js(lang="en")
             != js(j)
     body
         #wrapper
-            .fixed.top-wrapper
-                nav#header.top-bar(data-topbar, role="navigation")
-                    ul.title-area
-                        li.name
-                            h1
-                                a(href="/start") Ayla
-                        li.toggle-topbar.menu-icon
-                            a(href="#")
-                                span Menu
-                    section.top-bar-section
-                        ul.left
-                            for m, key in managerModules
-                                li(class="#{m.title.toLowerCase()}")
-                                    a(href="/manager/#{m.title.toLowerCase()}")
-                                        span #{m.title}
+            #header.top-bar(role="navigation")
+                .top-bar-left
+                    ul.menu
+                        li.menu-text
+                            a(href="/start") Ayla
+                        for m, key in managerModules
+                            li(class="#{m.title.toLowerCase()}")
+                                a(href="/manager/#{m.title.toLowerCase()}")
+                                    span #{m.title}
 
             block contents
 

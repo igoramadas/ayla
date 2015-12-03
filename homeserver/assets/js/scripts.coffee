@@ -1,12 +1,10 @@
-#= require lib/modernizr.js
 #= require lib/jquery.js
 #= require lib/jquery.cookie.js
 #= require lib/lodash.js
 #= require lib/knockout.js
 #= require lib/ko.mapping.js
 #= require lib/moment.js
-#= require lib/placeholder.js
-#= require lib/fastclick.js
+#= require lib/what-input.js
 #= require lib/foundation.js
 #= require lib/crel.js
 #= require lib/jsonhuman.js
