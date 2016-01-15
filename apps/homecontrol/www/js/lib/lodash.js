@@ -1,98 +1,3825 @@
 /**
  * @license
- * lodash 3.10.1 (Custom Build) lodash.com/license | Underscore.js 1.8.3 underscorejs.org/LICENSE
- * Build: `lodash modern -o ./lodash.js`
+ * lodash 4.0.0 (Custom Build) <https://lodash.com/>
+ * Build: `lodash core -o ./dist/lodash.core.js`
+ * Copyright 2012-2016 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2016 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <https://lodash.com/license>
  */
-;(function(){function n(n,t){if(n!==t){var r=null===n,e=n===w,u=n===n,o=null===t,i=t===w,f=t===t;if(n>t&&!o||!u||r&&!i&&f||e&&f)return 1;if(n<t&&!r||!f||o&&!e&&u||i&&u)return-1}return 0}function t(n,t,r){for(var e=n.length,u=r?e:-1;r?u--:++u<e;)if(t(n[u],u,n))return u;return-1}function r(n,t,r){if(t!==t)return p(n,r);r-=1;for(var e=n.length;++r<e;)if(n[r]===t)return r;return-1}function e(n){return typeof n=="function"||false}function u(n){return null==n?"":n+""}function o(n,t){for(var r=-1,e=n.length;++r<e&&-1<t.indexOf(n.charAt(r)););
-return r}function i(n,t){for(var r=n.length;r--&&-1<t.indexOf(n.charAt(r)););return r}function f(t,r){return n(t.a,r.a)||t.b-r.b}function a(n){return Nn[n]}function c(n){return Tn[n]}function l(n,t,r){return t?n=Bn[n]:r&&(n=Dn[n]),"\\"+n}function s(n){return"\\"+Dn[n]}function p(n,t,r){var e=n.length;for(t+=r?0:-1;r?t--:++t<e;){var u=n[t];if(u!==u)return t}return-1}function h(n){return!!n&&typeof n=="object"}function _(n){return 160>=n&&9<=n&&13>=n||32==n||160==n||5760==n||6158==n||8192<=n&&(8202>=n||8232==n||8233==n||8239==n||8287==n||12288==n||65279==n);
-}function v(n,t){for(var r=-1,e=n.length,u=-1,o=[];++r<e;)n[r]===t&&(n[r]=z,o[++u]=r);return o}function g(n){for(var t=-1,r=n.length;++t<r&&_(n.charCodeAt(t)););return t}function y(n){for(var t=n.length;t--&&_(n.charCodeAt(t)););return t}function d(n){return Ln[n]}function m(_){function Nn(n){if(h(n)&&!(Oo(n)||n instanceof zn)){if(n instanceof Ln)return n;if(nu.call(n,"__chain__")&&nu.call(n,"__wrapped__"))return Mr(n)}return new Ln(n)}function Tn(){}function Ln(n,t,r){this.__wrapped__=n,this.__actions__=r||[],
-this.__chain__=!!t}function zn(n){this.__wrapped__=n,this.__actions__=[],this.__dir__=1,this.__filtered__=false,this.__iteratees__=[],this.__takeCount__=Ru,this.__views__=[]}function Bn(){this.__data__={}}function Dn(n){var t=n?n.length:0;for(this.data={hash:gu(null),set:new lu};t--;)this.push(n[t])}function Mn(n,t){var r=n.data;return(typeof t=="string"||ge(t)?r.set.has(t):r.hash[t])?0:-1}function qn(n,t){var r=-1,e=n.length;for(t||(t=Be(e));++r<e;)t[r]=n[r];return t}function Pn(n,t){for(var r=-1,e=n.length;++r<e&&false!==t(n[r],r,n););
-return n}function Kn(n,t){for(var r=-1,e=n.length;++r<e;)if(!t(n[r],r,n))return false;return true}function Vn(n,t){for(var r=-1,e=n.length,u=-1,o=[];++r<e;){var i=n[r];t(i,r,n)&&(o[++u]=i)}return o}function Gn(n,t){for(var r=-1,e=n.length,u=Be(e);++r<e;)u[r]=t(n[r],r,n);return u}function Jn(n,t){for(var r=-1,e=t.length,u=n.length;++r<e;)n[u+r]=t[r];return n}function Xn(n,t,r,e){var u=-1,o=n.length;for(e&&o&&(r=n[++u]);++u<o;)r=t(r,n[u],u,n);return r}function Hn(n,t){for(var r=-1,e=n.length;++r<e;)if(t(n[r],r,n))return true;
-return false}function Qn(n,t,r,e){return n!==w&&nu.call(e,r)?n:t}function nt(n,t,r){for(var e=-1,u=zo(t),o=u.length;++e<o;){var i=u[e],f=n[i],a=r(f,t[i],i,n,t);(a===a?a===f:f!==f)&&(f!==w||i in n)||(n[i]=a)}return n}function tt(n,t){return null==t?n:et(t,zo(t),n)}function rt(n,t){for(var r=-1,e=null==n,u=!e&&Er(n),o=u?n.length:0,i=t.length,f=Be(i);++r<i;){var a=t[r];f[r]=u?Cr(a,o)?n[a]:w:e?w:n[a]}return f}function et(n,t,r){r||(r={});for(var e=-1,u=t.length;++e<u;){var o=t[e];r[o]=n[o]}return r}function ut(n,t,r){
-var e=typeof n;return"function"==e?t===w?n:Bt(n,t,r):null==n?Fe:"object"==e?bt(n):t===w?ze(n):xt(n,t)}function ot(n,t,r,e,u,o,i){var f;if(r&&(f=u?r(n,e,u):r(n)),f!==w)return f;if(!ge(n))return n;if(e=Oo(n)){if(f=kr(n),!t)return qn(n,f)}else{var a=ru.call(n),c=a==K;if(a!=Z&&a!=B&&(!c||u))return Fn[a]?Rr(n,a,t):u?n:{};if(f=Ir(c?{}:n),!t)return tt(f,n)}for(o||(o=[]),i||(i=[]),u=o.length;u--;)if(o[u]==n)return i[u];return o.push(n),i.push(f),(e?Pn:_t)(n,function(e,u){f[u]=ot(e,t,r,u,n,o,i)}),f}function it(n,t,r){
-if(typeof n!="function")throw new Ge(L);return su(function(){n.apply(w,r)},t)}function ft(n,t){var e=n?n.length:0,u=[];if(!e)return u;var o=-1,i=xr(),f=i===r,a=f&&t.length>=F&&gu&&lu?new Dn(t):null,c=t.length;a&&(i=Mn,f=false,t=a);n:for(;++o<e;)if(a=n[o],f&&a===a){for(var l=c;l--;)if(t[l]===a)continue n;u.push(a)}else 0>i(t,a,0)&&u.push(a);return u}function at(n,t){var r=true;return Su(n,function(n,e,u){return r=!!t(n,e,u)}),r}function ct(n,t,r,e){var u=e,o=u;return Su(n,function(n,i,f){i=+t(n,i,f),(r(i,u)||i===e&&i===o)&&(u=i,
-o=n)}),o}function lt(n,t){var r=[];return Su(n,function(n,e,u){t(n,e,u)&&r.push(n)}),r}function st(n,t,r,e){var u;return r(n,function(n,r,o){return t(n,r,o)?(u=e?r:n,false):void 0}),u}function pt(n,t,r,e){e||(e=[]);for(var u=-1,o=n.length;++u<o;){var i=n[u];h(i)&&Er(i)&&(r||Oo(i)||pe(i))?t?pt(i,t,r,e):Jn(e,i):r||(e[e.length]=i)}return e}function ht(n,t){Nu(n,t,Re)}function _t(n,t){return Nu(n,t,zo)}function vt(n,t){return Tu(n,t,zo)}function gt(n,t){for(var r=-1,e=t.length,u=-1,o=[];++r<e;){var i=t[r];
-ve(n[i])&&(o[++u]=i)}return o}function yt(n,t,r){if(null!=n){r!==w&&r in Br(n)&&(t=[r]),r=0;for(var e=t.length;null!=n&&r<e;)n=n[t[r++]];return r&&r==e?n:w}}function dt(n,t,r,e,u,o){if(n===t)n=true;else if(null==n||null==t||!ge(n)&&!h(t))n=n!==n&&t!==t;else n:{var i=dt,f=Oo(n),a=Oo(t),c=D,l=D;f||(c=ru.call(n),c==B?c=Z:c!=Z&&(f=xe(n))),a||(l=ru.call(t),l==B?l=Z:l!=Z&&xe(t));var s=c==Z,a=l==Z,l=c==l;if(!l||f||s){if(!e&&(c=s&&nu.call(n,"__wrapped__"),a=a&&nu.call(t,"__wrapped__"),c||a)){n=i(c?n.value():n,a?t.value():t,r,e,u,o);
-break n}if(l){for(u||(u=[]),o||(o=[]),c=u.length;c--;)if(u[c]==n){n=o[c]==t;break n}u.push(n),o.push(t),n=(f?yr:mr)(n,t,i,r,e,u,o),u.pop(),o.pop()}else n=false}else n=dr(n,t,c)}return n}function mt(n,t,r){var e=t.length,u=e,o=!r;if(null==n)return!u;for(n=Br(n);e--;){var i=t[e];if(o&&i[2]?i[1]!==n[i[0]]:!(i[0]in n))return false}for(;++e<u;){var i=t[e],f=i[0],a=n[f],c=i[1];if(o&&i[2]){if(a===w&&!(f in n))return false}else if(i=r?r(a,c,f):w,i===w?!dt(c,a,r,true):!i)return false}return true}function wt(n,t){var r=-1,e=Er(n)?Be(n.length):[];
-return Su(n,function(n,u,o){e[++r]=t(n,u,o)}),e}function bt(n){var t=Ar(n);if(1==t.length&&t[0][2]){var r=t[0][0],e=t[0][1];return function(n){return null==n?false:n[r]===e&&(e!==w||r in Br(n))}}return function(n){return mt(n,t)}}function xt(n,t){var r=Oo(n),e=Wr(n)&&t===t&&!ge(t),u=n+"";return n=Dr(n),function(o){if(null==o)return false;var i=u;if(o=Br(o),!(!r&&e||i in o)){if(o=1==n.length?o:yt(o,Et(n,0,-1)),null==o)return false;i=Zr(n),o=Br(o)}return o[i]===t?t!==w||i in o:dt(t,o[i],w,true)}}function At(n,t,r,e,u){
-if(!ge(n))return n;var o=Er(t)&&(Oo(t)||xe(t)),i=o?w:zo(t);return Pn(i||t,function(f,a){if(i&&(a=f,f=t[a]),h(f)){e||(e=[]),u||(u=[]);n:{for(var c=a,l=e,s=u,p=l.length,_=t[c];p--;)if(l[p]==_){n[c]=s[p];break n}var p=n[c],v=r?r(p,_,c,n,t):w,g=v===w;g&&(v=_,Er(_)&&(Oo(_)||xe(_))?v=Oo(p)?p:Er(p)?qn(p):[]:me(_)||pe(_)?v=pe(p)?ke(p):me(p)?p:{}:g=false),l.push(_),s.push(v),g?n[c]=At(v,_,r,l,s):(v===v?v!==p:p===p)&&(n[c]=v)}}else c=n[a],l=r?r(c,f,a,n,t):w,(s=l===w)&&(l=f),l===w&&(!o||a in n)||!s&&(l===l?l===c:c!==c)||(n[a]=l);
-}),n}function jt(n){return function(t){return null==t?w:t[n]}}function kt(n){var t=n+"";return n=Dr(n),function(r){return yt(r,n,t)}}function It(n,t){for(var r=n?t.length:0;r--;){var e=t[r];if(e!=u&&Cr(e)){var u=e;pu.call(n,e,1)}}}function Rt(n,t){return n+yu(ku()*(t-n+1))}function Ot(n,t,r,e,u){return u(n,function(n,u,o){r=e?(e=false,n):t(r,n,u,o)}),r}function Et(n,t,r){var e=-1,u=n.length;for(t=null==t?0:+t||0,0>t&&(t=-t>u?0:u+t),r=r===w||r>u?u:+r||0,0>r&&(r+=u),u=t>r?0:r-t>>>0,t>>>=0,r=Be(u);++e<u;)r[e]=n[e+t];
-return r}function Ct(n,t){var r;return Su(n,function(n,e,u){return r=t(n,e,u),!r}),!!r}function Ut(n,t){var r=n.length;for(n.sort(t);r--;)n[r]=n[r].c;return n}function Wt(t,r,e){var u=wr(),o=-1;return r=Gn(r,function(n){return u(n)}),t=wt(t,function(n){return{a:Gn(r,function(t){return t(n)}),b:++o,c:n}}),Ut(t,function(t,r){var u;n:{for(var o=-1,i=t.a,f=r.a,a=i.length,c=e.length;++o<a;)if(u=n(i[o],f[o])){if(o>=c)break n;o=e[o],u*="asc"===o||true===o?1:-1;break n}u=t.b-r.b}return u})}function $t(n,t){
-var r=0;return Su(n,function(n,e,u){r+=+t(n,e,u)||0}),r}function St(n,t){var e=-1,u=xr(),o=n.length,i=u===r,f=i&&o>=F,a=f&&gu&&lu?new Dn(void 0):null,c=[];a?(u=Mn,i=false):(f=false,a=t?[]:c);n:for(;++e<o;){var l=n[e],s=t?t(l,e,n):l;if(i&&l===l){for(var p=a.length;p--;)if(a[p]===s)continue n;t&&a.push(s),c.push(l)}else 0>u(a,s,0)&&((t||f)&&a.push(s),c.push(l))}return c}function Ft(n,t){for(var r=-1,e=t.length,u=Be(e);++r<e;)u[r]=n[t[r]];return u}function Nt(n,t,r,e){for(var u=n.length,o=e?u:-1;(e?o--:++o<u)&&t(n[o],o,n););
-return r?Et(n,e?0:o,e?o+1:u):Et(n,e?o+1:0,e?u:o)}function Tt(n,t){var r=n;r instanceof zn&&(r=r.value());for(var e=-1,u=t.length;++e<u;)var o=t[e],r=o.func.apply(o.thisArg,Jn([r],o.args));return r}function Lt(n,t,r){var e=0,u=n?n.length:e;if(typeof t=="number"&&t===t&&u<=Eu){for(;e<u;){var o=e+u>>>1,i=n[o];(r?i<=t:i<t)&&null!==i?e=o+1:u=o}return u}return zt(n,t,Fe,r)}function zt(n,t,r,e){t=r(t);for(var u=0,o=n?n.length:0,i=t!==t,f=null===t,a=t===w;u<o;){var c=yu((u+o)/2),l=r(n[c]),s=l!==w,p=l===l;
-(i?p||e:f?p&&s&&(e||null!=l):a?p&&(e||s):null==l?0:e?l<=t:l<t)?u=c+1:o=c}return xu(o,Ou)}function Bt(n,t,r){if(typeof n!="function")return Fe;if(t===w)return n;switch(r){case 1:return function(r){return n.call(t,r)};case 3:return function(r,e,u){return n.call(t,r,e,u)};case 4:return function(r,e,u,o){return n.call(t,r,e,u,o)};case 5:return function(r,e,u,o,i){return n.call(t,r,e,u,o,i)}}return function(){return n.apply(t,arguments)}}function Dt(n){var t=new ou(n.byteLength);return new hu(t).set(new hu(n)),
-t}function Mt(n,t,r){for(var e=r.length,u=-1,o=bu(n.length-e,0),i=-1,f=t.length,a=Be(f+o);++i<f;)a[i]=t[i];for(;++u<e;)a[r[u]]=n[u];for(;o--;)a[i++]=n[u++];return a}function qt(n,t,r){for(var e=-1,u=r.length,o=-1,i=bu(n.length-u,0),f=-1,a=t.length,c=Be(i+a);++o<i;)c[o]=n[o];for(i=o;++f<a;)c[i+f]=t[f];for(;++e<u;)c[i+r[e]]=n[o++];return c}function Pt(n,t){return function(r,e,u){var o=t?t():{};if(e=wr(e,u,3),Oo(r)){u=-1;for(var i=r.length;++u<i;){var f=r[u];n(o,f,e(f,u,r),r)}}else Su(r,function(t,r,u){
-n(o,t,e(t,r,u),u)});return o}}function Kt(n){return le(function(t,r){var e=-1,u=null==t?0:r.length,o=2<u?r[u-2]:w,i=2<u?r[2]:w,f=1<u?r[u-1]:w;for(typeof o=="function"?(o=Bt(o,f,5),u-=2):(o=typeof f=="function"?f:w,u-=o?1:0),i&&Ur(r[0],r[1],i)&&(o=3>u?w:o,u=1);++e<u;)(i=r[e])&&n(t,i,o);return t})}function Vt(n,t){return function(r,e){var u=r?Bu(r):0;if(!Sr(u))return n(r,e);for(var o=t?u:-1,i=Br(r);(t?o--:++o<u)&&false!==e(i[o],o,i););return r}}function Zt(n){return function(t,r,e){var u=Br(t);e=e(t);for(var o=e.length,i=n?o:-1;n?i--:++i<o;){
-var f=e[i];if(false===r(u[f],f,u))break}return t}}function Yt(n,t){function r(){return(this&&this!==Zn&&this instanceof r?e:n).apply(t,arguments)}var e=Jt(n);return r}function Gt(n){return function(t){var r=-1;t=$e(Ce(t));for(var e=t.length,u="";++r<e;)u=n(u,t[r],r);return u}}function Jt(n){return function(){var t=arguments;switch(t.length){case 0:return new n;case 1:return new n(t[0]);case 2:return new n(t[0],t[1]);case 3:return new n(t[0],t[1],t[2]);case 4:return new n(t[0],t[1],t[2],t[3]);case 5:
-return new n(t[0],t[1],t[2],t[3],t[4]);case 6:return new n(t[0],t[1],t[2],t[3],t[4],t[5]);case 7:return new n(t[0],t[1],t[2],t[3],t[4],t[5],t[6])}var r=$u(n.prototype),t=n.apply(r,t);return ge(t)?t:r}}function Xt(n){function t(r,e,u){return u&&Ur(r,e,u)&&(e=w),r=gr(r,n,w,w,w,w,w,e),r.placeholder=t.placeholder,r}return t}function Ht(n,t){return le(function(r){var e=r[0];return null==e?e:(r.push(t),n.apply(w,r))})}function Qt(n,t){return function(r,e,u){if(u&&Ur(r,e,u)&&(e=w),e=wr(e,u,3),1==e.length){
-u=r=Oo(r)?r:zr(r);for(var o=e,i=-1,f=u.length,a=t,c=a;++i<f;){var l=u[i],s=+o(l);n(s,a)&&(a=s,c=l)}if(u=c,!r.length||u!==t)return u}return ct(r,e,n,t)}}function nr(n,r){return function(e,u,o){return u=wr(u,o,3),Oo(e)?(u=t(e,u,r),-1<u?e[u]:w):st(e,u,n)}}function tr(n){return function(r,e,u){return r&&r.length?(e=wr(e,u,3),t(r,e,n)):-1}}function rr(n){return function(t,r,e){return r=wr(r,e,3),st(t,r,n,true)}}function er(n){return function(){for(var t,r=arguments.length,e=n?r:-1,u=0,o=Be(r);n?e--:++e<r;){
-var i=o[u++]=arguments[e];if(typeof i!="function")throw new Ge(L);!t&&Ln.prototype.thru&&"wrapper"==br(i)&&(t=new Ln([],true))}for(e=t?-1:r;++e<r;){var i=o[e],u=br(i),f="wrapper"==u?zu(i):w;t=f&&$r(f[0])&&f[1]==(E|k|R|C)&&!f[4].length&&1==f[9]?t[br(f[0])].apply(t,f[3]):1==i.length&&$r(i)?t[u]():t.thru(i)}return function(){var n=arguments,e=n[0];if(t&&1==n.length&&Oo(e)&&e.length>=F)return t.plant(e).value();for(var u=0,n=r?o[u].apply(this,n):e;++u<r;)n=o[u].call(this,n);return n}}}function ur(n,t){
-return function(r,e,u){return typeof e=="function"&&u===w&&Oo(r)?n(r,e):t(r,Bt(e,u,3))}}function or(n){return function(t,r,e){return(typeof r!="function"||e!==w)&&(r=Bt(r,e,3)),n(t,r,Re)}}function ir(n){return function(t,r,e){return(typeof r!="function"||e!==w)&&(r=Bt(r,e,3)),n(t,r)}}function fr(n){return function(t,r,e){var u={};return r=wr(r,e,3),_t(t,function(t,e,o){o=r(t,e,o),e=n?o:e,t=n?t:o,u[e]=t}),u}}function ar(n){return function(t,r,e){return t=u(t),(n?t:"")+pr(t,r,e)+(n?"":t)}}function cr(n){
-var t=le(function(r,e){var u=v(e,t.placeholder);return gr(r,n,w,e,u)});return t}function lr(n,t){return function(r,e,u,o){var i=3>arguments.length;return typeof e=="function"&&o===w&&Oo(r)?n(r,e,u,i):Ot(r,wr(e,o,4),u,i,t)}}function sr(n,t,r,e,u,o,i,f,a,c){function l(){for(var m=arguments.length,b=m,j=Be(m);b--;)j[b]=arguments[b];if(e&&(j=Mt(j,e,u)),o&&(j=qt(j,o,i)),_||y){var b=l.placeholder,k=v(j,b),m=m-k.length;if(m<c){var I=f?qn(f):w,m=bu(c-m,0),E=_?k:w,k=_?w:k,C=_?j:w,j=_?w:j;return t|=_?R:O,t&=~(_?O:R),
-g||(t&=~(x|A)),j=[n,t,r,C,E,j,k,I,a,m],I=sr.apply(w,j),$r(n)&&Du(I,j),I.placeholder=b,I}}if(b=p?r:this,I=h?b[n]:n,f)for(m=j.length,E=xu(f.length,m),k=qn(j);E--;)C=f[E],j[E]=Cr(C,m)?k[C]:w;return s&&a<j.length&&(j.length=a),this&&this!==Zn&&this instanceof l&&(I=d||Jt(n)),I.apply(b,j)}var s=t&E,p=t&x,h=t&A,_=t&k,g=t&j,y=t&I,d=h?w:Jt(n);return l}function pr(n,t,r){return n=n.length,t=+t,n<t&&mu(t)?(t-=n,r=null==r?" ":r+"",Ue(r,vu(t/r.length)).slice(0,t)):""}function hr(n,t,r,e){function u(){for(var t=-1,f=arguments.length,a=-1,c=e.length,l=Be(c+f);++a<c;)l[a]=e[a];
-for(;f--;)l[a++]=arguments[++t];return(this&&this!==Zn&&this instanceof u?i:n).apply(o?r:this,l)}var o=t&x,i=Jt(n);return u}function _r(n){var t=Pe[n];return function(n,r){return(r=r===w?0:+r||0)?(r=au(10,r),t(n*r)/r):t(n)}}function vr(n){return function(t,r,e,u){var o=wr(e);return null==e&&o===ut?Lt(t,r,n):zt(t,r,o(e,u,1),n)}}function gr(n,t,r,e,u,o,i,f){var a=t&A;if(!a&&typeof n!="function")throw new Ge(L);var c=e?e.length:0;if(c||(t&=~(R|O),e=u=w),c-=u?u.length:0,t&O){var l=e,s=u;e=u=w}var p=a?w:zu(n);
-return r=[n,t,r,e,u,l,s,o,i,f],p&&(e=r[1],t=p[1],f=e|t,u=t==E&&e==k||t==E&&e==C&&r[7].length<=p[8]||t==(E|C)&&e==k,(f<E||u)&&(t&x&&(r[2]=p[2],f|=e&x?0:j),(e=p[3])&&(u=r[3],r[3]=u?Mt(u,e,p[4]):qn(e),r[4]=u?v(r[3],z):qn(p[4])),(e=p[5])&&(u=r[5],r[5]=u?qt(u,e,p[6]):qn(e),r[6]=u?v(r[5],z):qn(p[6])),(e=p[7])&&(r[7]=qn(e)),t&E&&(r[8]=null==r[8]?p[8]:xu(r[8],p[8])),null==r[9]&&(r[9]=p[9]),r[0]=p[0],r[1]=f),t=r[1],f=r[9]),r[9]=null==f?a?0:n.length:bu(f-c,0)||0,(p?Lu:Du)(t==x?Yt(r[0],r[2]):t!=R&&t!=(x|R)||r[4].length?sr.apply(w,r):hr.apply(w,r),r);
-}function yr(n,t,r,e,u,o,i){var f=-1,a=n.length,c=t.length;if(a!=c&&(!u||c<=a))return false;for(;++f<a;){var l=n[f],c=t[f],s=e?e(u?c:l,u?l:c,f):w;if(s!==w){if(s)continue;return false}if(u){if(!Hn(t,function(n){return l===n||r(l,n,e,u,o,i)}))return false}else if(l!==c&&!r(l,c,e,u,o,i))return false}return true}function dr(n,t,r){switch(r){case M:case q:return+n==+t;case P:return n.name==t.name&&n.message==t.message;case V:return n!=+n?t!=+t:n==+t;case Y:case G:return n==t+""}return false}function mr(n,t,r,e,u,o,i){var f=zo(n),a=f.length,c=zo(t).length;
-if(a!=c&&!u)return false;for(c=a;c--;){var l=f[c];if(!(u?l in t:nu.call(t,l)))return false}for(var s=u;++c<a;){var l=f[c],p=n[l],h=t[l],_=e?e(u?h:p,u?p:h,l):w;if(_===w?!r(p,h,e,u,o,i):!_)return false;s||(s="constructor"==l)}return s||(r=n.constructor,e=t.constructor,!(r!=e&&"constructor"in n&&"constructor"in t)||typeof r=="function"&&r instanceof r&&typeof e=="function"&&e instanceof e)?true:false}function wr(n,t,r){var e=Nn.callback||Se,e=e===Se?ut:e;return r?e(n,t,r):e}function br(n){for(var t=n.name+"",r=Wu[t],e=r?r.length:0;e--;){
-var u=r[e],o=u.func;if(null==o||o==n)return u.name}return t}function xr(n,t,e){var u=Nn.indexOf||Vr,u=u===Vr?r:u;return n?u(n,t,e):u}function Ar(n){n=Oe(n);for(var t=n.length;t--;){var r=n[t][1];n[t][2]=r===r&&!ge(r)}return n}function jr(n,t){var r=null==n?w:n[t];return ye(r)?r:w}function kr(n){var t=n.length,r=new n.constructor(t);return t&&"string"==typeof n[0]&&nu.call(n,"index")&&(r.index=n.index,r.input=n.input),r}function Ir(n){return n=n.constructor,typeof n=="function"&&n instanceof n||(n=Ve),
-new n}function Rr(n,t,r){var e=n.constructor;switch(t){case J:return Dt(n);case M:case q:return new e(+n);case X:case H:case Q:case nn:case tn:case rn:case en:case un:case on:return t=n.buffer,new e(r?Dt(t):t,n.byteOffset,n.length);case V:case G:return new e(n);case Y:var u=new e(n.source,kn.exec(n));u.lastIndex=n.lastIndex}return u}function Or(n,t,r){return null==n||Wr(t,n)||(t=Dr(t),n=1==t.length?n:yt(n,Et(t,0,-1)),t=Zr(t)),t=null==n?n:n[t],null==t?w:t.apply(n,r)}function Er(n){return null!=n&&Sr(Bu(n));
-}function Cr(n,t){return n=typeof n=="number"||On.test(n)?+n:-1,t=null==t?Cu:t,-1<n&&0==n%1&&n<t}function Ur(n,t,r){if(!ge(r))return false;var e=typeof t;return("number"==e?Er(r)&&Cr(t,r.length):"string"==e&&t in r)?(t=r[t],n===n?n===t:t!==t):false}function Wr(n,t){var r=typeof n;return"string"==r&&dn.test(n)||"number"==r?true:Oo(n)?false:!yn.test(n)||null!=t&&n in Br(t)}function $r(n){var t=br(n),r=Nn[t];return typeof r=="function"&&t in zn.prototype?n===r?true:(t=zu(r),!!t&&n===t[0]):false}function Sr(n){return typeof n=="number"&&-1<n&&0==n%1&&n<=Cu;
-}function Fr(n,t){return n===w?t:Eo(n,t,Fr)}function Nr(n,t){n=Br(n);for(var r=-1,e=t.length,u={};++r<e;){var o=t[r];o in n&&(u[o]=n[o])}return u}function Tr(n,t){var r={};return ht(n,function(n,e,u){t(n,e,u)&&(r[e]=n)}),r}function Lr(n){for(var t=Re(n),r=t.length,e=r&&n.length,u=!!e&&Sr(e)&&(Oo(n)||pe(n)),o=-1,i=[];++o<r;){var f=t[o];(u&&Cr(f,e)||nu.call(n,f))&&i.push(f)}return i}function zr(n){return null==n?[]:Er(n)?ge(n)?n:Ve(n):Ee(n)}function Br(n){return ge(n)?n:Ve(n)}function Dr(n){if(Oo(n))return n;
-var t=[];return u(n).replace(mn,function(n,r,e,u){t.push(e?u.replace(An,"$1"):r||n)}),t}function Mr(n){return n instanceof zn?n.clone():new Ln(n.__wrapped__,n.__chain__,qn(n.__actions__))}function qr(n,t,r){return n&&n.length?((r?Ur(n,t,r):null==t)&&(t=1),Et(n,0>t?0:t)):[]}function Pr(n,t,r){var e=n?n.length:0;return e?((r?Ur(n,t,r):null==t)&&(t=1),t=e-(+t||0),Et(n,0,0>t?0:t)):[]}function Kr(n){return n?n[0]:w}function Vr(n,t,e){var u=n?n.length:0;if(!u)return-1;if(typeof e=="number")e=0>e?bu(u+e,0):e;else if(e)return e=Lt(n,t),
-e<u&&(t===t?t===n[e]:n[e]!==n[e])?e:-1;return r(n,t,e||0)}function Zr(n){var t=n?n.length:0;return t?n[t-1]:w}function Yr(n){return qr(n,1)}function Gr(n,t,e,u){if(!n||!n.length)return[];null!=t&&typeof t!="boolean"&&(u=e,e=Ur(n,t,u)?w:t,t=false);var o=wr();if((null!=e||o!==ut)&&(e=o(e,u,3)),t&&xr()===r){t=e;var i;e=-1,u=n.length;for(var o=-1,f=[];++e<u;){var a=n[e],c=t?t(a,e,n):a;e&&i===c||(i=c,f[++o]=a)}n=f}else n=St(n,e);return n}function Jr(n){if(!n||!n.length)return[];var t=-1,r=0;n=Vn(n,function(n){
-return Er(n)?(r=bu(n.length,r),true):void 0});for(var e=Be(r);++t<r;)e[t]=Gn(n,jt(t));return e}function Xr(n,t,r){return n&&n.length?(n=Jr(n),null==t?n:(t=Bt(t,r,4),Gn(n,function(n){return Xn(n,t,w,true)}))):[]}function Hr(n,t){var r=-1,e=n?n.length:0,u={};for(!e||t||Oo(n[0])||(t=[]);++r<e;){var o=n[r];t?u[o]=t[r]:o&&(u[o[0]]=o[1])}return u}function Qr(n){return n=Nn(n),n.__chain__=true,n}function ne(n,t,r){return t.call(r,n)}function te(n,t,r){var e=Oo(n)?Kn:at;return r&&Ur(n,t,r)&&(t=w),(typeof t!="function"||r!==w)&&(t=wr(t,r,3)),
-e(n,t)}function re(n,t,r){var e=Oo(n)?Vn:lt;return t=wr(t,r,3),e(n,t)}function ee(n,t,r,e){var u=n?Bu(n):0;return Sr(u)||(n=Ee(n),u=n.length),r=typeof r!="number"||e&&Ur(t,r,e)?0:0>r?bu(u+r,0):r||0,typeof n=="string"||!Oo(n)&&be(n)?r<=u&&-1<n.indexOf(t,r):!!u&&-1<xr(n,t,r)}function ue(n,t,r){var e=Oo(n)?Gn:wt;return t=wr(t,r,3),e(n,t)}function oe(n,t,r){if(r?Ur(n,t,r):null==t){n=zr(n);var e=n.length;return 0<e?n[Rt(0,e-1)]:w}r=-1,n=je(n);var e=n.length,u=e-1;for(t=xu(0>t?0:+t||0,e);++r<t;){var e=Rt(r,u),o=n[e];
-n[e]=n[r],n[r]=o}return n.length=t,n}function ie(n,t,r){var e=Oo(n)?Hn:Ct;return r&&Ur(n,t,r)&&(t=w),(typeof t!="function"||r!==w)&&(t=wr(t,r,3)),e(n,t)}function fe(n,t){var r;if(typeof t!="function"){if(typeof n!="function")throw new Ge(L);var e=n;n=t,t=e}return function(){return 0<--n&&(r=t.apply(this,arguments)),1>=n&&(t=w),r}}function ae(n,t,r){function e(t,r){r&&iu(r),a=p=h=w,t&&(_=ho(),c=n.apply(s,f),p||a||(f=s=w))}function u(){var n=t-(ho()-l);0>=n||n>t?e(h,a):p=su(u,n)}function o(){e(g,p);
-}function i(){if(f=arguments,l=ho(),s=this,h=g&&(p||!y),false===v)var r=y&&!p;else{a||y||(_=l);var e=v-(l-_),i=0>=e||e>v;i?(a&&(a=iu(a)),_=l,c=n.apply(s,f)):a||(a=su(o,e))}return i&&p?p=iu(p):p||t===v||(p=su(u,t)),r&&(i=true,c=n.apply(s,f)),!i||p||a||(f=s=w),c}var f,a,c,l,s,p,h,_=0,v=false,g=true;if(typeof n!="function")throw new Ge(L);if(t=0>t?0:+t||0,true===r)var y=true,g=false;else ge(r)&&(y=!!r.leading,v="maxWait"in r&&bu(+r.maxWait||0,t),g="trailing"in r?!!r.trailing:g);return i.cancel=function(){p&&iu(p),a&&iu(a),
-_=0,a=p=h=w},i}function ce(n,t){function r(){var e=arguments,u=t?t.apply(this,e):e[0],o=r.cache;return o.has(u)?o.get(u):(e=n.apply(this,e),r.cache=o.set(u,e),e)}if(typeof n!="function"||t&&typeof t!="function")throw new Ge(L);return r.cache=new ce.Cache,r}function le(n,t){if(typeof n!="function")throw new Ge(L);return t=bu(t===w?n.length-1:+t||0,0),function(){for(var r=arguments,e=-1,u=bu(r.length-t,0),o=Be(u);++e<u;)o[e]=r[t+e];switch(t){case 0:return n.call(this,o);case 1:return n.call(this,r[0],o);
-case 2:return n.call(this,r[0],r[1],o)}for(u=Be(t+1),e=-1;++e<t;)u[e]=r[e];return u[t]=o,n.apply(this,u)}}function se(n,t){return n>t}function pe(n){return h(n)&&Er(n)&&nu.call(n,"callee")&&!cu.call(n,"callee")}function he(n,t,r,e){return e=(r=typeof r=="function"?Bt(r,e,3):w)?r(n,t):w,e===w?dt(n,t,r):!!e}function _e(n){return h(n)&&typeof n.message=="string"&&ru.call(n)==P}function ve(n){return ge(n)&&ru.call(n)==K}function ge(n){var t=typeof n;return!!n&&("object"==t||"function"==t)}function ye(n){
-return null==n?false:ve(n)?uu.test(Qe.call(n)):h(n)&&Rn.test(n)}function de(n){return typeof n=="number"||h(n)&&ru.call(n)==V}function me(n){var t;if(!h(n)||ru.call(n)!=Z||pe(n)||!(nu.call(n,"constructor")||(t=n.constructor,typeof t!="function"||t instanceof t)))return false;var r;return ht(n,function(n,t){r=t}),r===w||nu.call(n,r)}function we(n){return ge(n)&&ru.call(n)==Y}function be(n){return typeof n=="string"||h(n)&&ru.call(n)==G}function xe(n){return h(n)&&Sr(n.length)&&!!Sn[ru.call(n)]}function Ae(n,t){
-return n<t}function je(n){var t=n?Bu(n):0;return Sr(t)?t?qn(n):[]:Ee(n)}function ke(n){return et(n,Re(n))}function Ie(n){return gt(n,Re(n))}function Re(n){if(null==n)return[];ge(n)||(n=Ve(n));for(var t=n.length,t=t&&Sr(t)&&(Oo(n)||pe(n))&&t||0,r=n.constructor,e=-1,r=typeof r=="function"&&r.prototype===n,u=Be(t),o=0<t;++e<t;)u[e]=e+"";for(var i in n)o&&Cr(i,t)||"constructor"==i&&(r||!nu.call(n,i))||u.push(i);return u}function Oe(n){n=Br(n);for(var t=-1,r=zo(n),e=r.length,u=Be(e);++t<e;){var o=r[t];
-u[t]=[o,n[o]]}return u}function Ee(n){return Ft(n,zo(n))}function Ce(n){return(n=u(n))&&n.replace(En,a).replace(xn,"")}function Ue(n,t){var r="";if(n=u(n),t=+t,1>t||!n||!mu(t))return r;do t%2&&(r+=n),t=yu(t/2),n+=n;while(t);return r}function We(n,t,r){var e=n;return(n=u(n))?(r?Ur(e,t,r):null==t)?n.slice(g(n),y(n)+1):(t+="",n.slice(o(n,t),i(n,t)+1)):n}function $e(n,t,r){return r&&Ur(n,t,r)&&(t=w),n=u(n),n.match(t||Wn)||[]}function Se(n,t,r){return r&&Ur(n,t,r)&&(t=w),h(n)?Ne(n):ut(n,t)}function Fe(n){
-return n}function Ne(n){return bt(ot(n,true))}function Te(n,t,r){if(null==r){var e=ge(t),u=e?zo(t):w;((u=u&&u.length?gt(t,u):w)?u.length:e)||(u=false,r=t,t=n,n=this)}u||(u=gt(t,zo(t)));var o=true,e=-1,i=ve(n),f=u.length;false===r?o=false:ge(r)&&"chain"in r&&(o=r.chain);for(;++e<f;){r=u[e];var a=t[r];n[r]=a,i&&(n.prototype[r]=function(t){return function(){var r=this.__chain__;if(o||r){var e=n(this.__wrapped__);return(e.__actions__=qn(this.__actions__)).push({func:t,args:arguments,thisArg:n}),e.__chain__=r,e}return t.apply(n,Jn([this.value()],arguments));
-}}(a))}return n}function Le(){}function ze(n){return Wr(n)?jt(n):kt(n)}_=_?Yn.defaults(Zn.Object(),_,Yn.pick(Zn,$n)):Zn;var Be=_.Array,De=_.Date,Me=_.Error,qe=_.Function,Pe=_.Math,Ke=_.Number,Ve=_.Object,Ze=_.RegExp,Ye=_.String,Ge=_.TypeError,Je=Be.prototype,Xe=Ve.prototype,He=Ye.prototype,Qe=qe.prototype.toString,nu=Xe.hasOwnProperty,tu=0,ru=Xe.toString,eu=Zn._,uu=Ze("^"+Qe.call(nu).replace(/[\\^$.*+?()[\]{}|]/g,"\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g,"$1.*?")+"$"),ou=_.ArrayBuffer,iu=_.clearTimeout,fu=_.parseFloat,au=Pe.pow,cu=Xe.propertyIsEnumerable,lu=jr(_,"Set"),su=_.setTimeout,pu=Je.splice,hu=_.Uint8Array,_u=jr(_,"WeakMap"),vu=Pe.ceil,gu=jr(Ve,"create"),yu=Pe.floor,du=jr(Be,"isArray"),mu=_.isFinite,wu=jr(Ve,"keys"),bu=Pe.max,xu=Pe.min,Au=jr(De,"now"),ju=_.parseInt,ku=Pe.random,Iu=Ke.NEGATIVE_INFINITY,Ru=Ke.POSITIVE_INFINITY,Ou=4294967294,Eu=2147483647,Cu=9007199254740991,Uu=_u&&new _u,Wu={};
-Nn.support={},Nn.templateSettings={escape:_n,evaluate:vn,interpolate:gn,variable:"",imports:{_:Nn}};var $u=function(){function n(){}return function(t){if(ge(t)){n.prototype=t;var r=new n;n.prototype=w}return r||{}}}(),Su=Vt(_t),Fu=Vt(vt,true),Nu=Zt(),Tu=Zt(true),Lu=Uu?function(n,t){return Uu.set(n,t),n}:Fe,zu=Uu?function(n){return Uu.get(n)}:Le,Bu=jt("length"),Du=function(){var n=0,t=0;return function(r,e){var u=ho(),o=S-(u-t);if(t=u,0<o){if(++n>=$)return r}else n=0;return Lu(r,e)}}(),Mu=le(function(n,t){
-return h(n)&&Er(n)?ft(n,pt(t,false,true)):[]}),qu=tr(),Pu=tr(true),Ku=le(function(n){for(var t=n.length,e=t,u=Be(l),o=xr(),i=o===r,f=[];e--;){var a=n[e]=Er(a=n[e])?a:[];u[e]=i&&120<=a.length&&gu&&lu?new Dn(e&&a):null}var i=n[0],c=-1,l=i?i.length:0,s=u[0];n:for(;++c<l;)if(a=i[c],0>(s?Mn(s,a):o(f,a,0))){for(e=t;--e;){var p=u[e];if(0>(p?Mn(p,a):o(n[e],a,0)))continue n}s&&s.push(a),f.push(a)}return f}),Vu=le(function(t,r){r=pt(r);var e=rt(t,r);return It(t,r.sort(n)),e}),Zu=vr(),Yu=vr(true),Gu=le(function(n){return St(pt(n,false,true));
-}),Ju=le(function(n,t){return Er(n)?ft(n,t):[]}),Xu=le(Jr),Hu=le(function(n){var t=n.length,r=2<t?n[t-2]:w,e=1<t?n[t-1]:w;return 2<t&&typeof r=="function"?t-=2:(r=1<t&&typeof e=="function"?(--t,e):w,e=w),n.length=t,Xr(n,r,e)}),Qu=le(function(n){return n=pt(n),this.thru(function(t){t=Oo(t)?t:[Br(t)];for(var r=n,e=-1,u=t.length,o=-1,i=r.length,f=Be(u+i);++e<u;)f[e]=t[e];for(;++o<i;)f[e++]=r[o];return f})}),no=le(function(n,t){return rt(n,pt(t))}),to=Pt(function(n,t,r){nu.call(n,r)?++n[r]:n[r]=1}),ro=nr(Su),eo=nr(Fu,true),uo=ur(Pn,Su),oo=ur(function(n,t){
-for(var r=n.length;r--&&false!==t(n[r],r,n););return n},Fu),io=Pt(function(n,t,r){nu.call(n,r)?n[r].push(t):n[r]=[t]}),fo=Pt(function(n,t,r){n[r]=t}),ao=le(function(n,t,r){var e=-1,u=typeof t=="function",o=Wr(t),i=Er(n)?Be(n.length):[];return Su(n,function(n){var f=u?t:o&&null!=n?n[t]:w;i[++e]=f?f.apply(n,r):Or(n,t,r)}),i}),co=Pt(function(n,t,r){n[r?0:1].push(t)},function(){return[[],[]]}),lo=lr(Xn,Su),so=lr(function(n,t,r,e){var u=n.length;for(e&&u&&(r=n[--u]);u--;)r=t(r,n[u],u,n);return r},Fu),po=le(function(n,t){
-if(null==n)return[];var r=t[2];return r&&Ur(t[0],t[1],r)&&(t.length=1),Wt(n,pt(t),[])}),ho=Au||function(){return(new De).getTime()},_o=le(function(n,t,r){var e=x;if(r.length)var u=v(r,_o.placeholder),e=e|R;return gr(n,e,t,r,u)}),vo=le(function(n,t){t=t.length?pt(t):Ie(n);for(var r=-1,e=t.length;++r<e;){var u=t[r];n[u]=gr(n[u],x,n)}return n}),go=le(function(n,t,r){var e=x|A;if(r.length)var u=v(r,go.placeholder),e=e|R;return gr(t,e,n,r,u)}),yo=Xt(k),mo=Xt(I),wo=le(function(n,t){return it(n,1,t)}),bo=le(function(n,t,r){
-return it(n,t,r)}),xo=er(),Ao=er(true),jo=le(function(n,t){if(t=pt(t),typeof n!="function"||!Kn(t,e))throw new Ge(L);var r=t.length;return le(function(e){for(var u=xu(e.length,r);u--;)e[u]=t[u](e[u]);return n.apply(this,e)})}),ko=cr(R),Io=cr(O),Ro=le(function(n,t){return gr(n,C,w,w,w,pt(t))}),Oo=du||function(n){return h(n)&&Sr(n.length)&&ru.call(n)==D},Eo=Kt(At),Co=Kt(function(n,t,r){return r?nt(n,t,r):tt(n,t)}),Uo=Ht(Co,function(n,t){return n===w?t:n}),Wo=Ht(Eo,Fr),$o=rr(_t),So=rr(vt),Fo=or(Nu),No=or(Tu),To=ir(_t),Lo=ir(vt),zo=wu?function(n){
-var t=null==n?w:n.constructor;return typeof t=="function"&&t.prototype===n||typeof n!="function"&&Er(n)?Lr(n):ge(n)?wu(n):[]}:Lr,Bo=fr(true),Do=fr(),Mo=le(function(n,t){if(null==n)return{};if("function"!=typeof t[0])return t=Gn(pt(t),Ye),Nr(n,ft(Re(n),t));var r=Bt(t[0],t[1],3);return Tr(n,function(n,t,e){return!r(n,t,e)})}),qo=le(function(n,t){return null==n?{}:"function"==typeof t[0]?Tr(n,Bt(t[0],t[1],3)):Nr(n,pt(t))}),Po=Gt(function(n,t,r){return t=t.toLowerCase(),n+(r?t.charAt(0).toUpperCase()+t.slice(1):t);
-}),Ko=Gt(function(n,t,r){return n+(r?"-":"")+t.toLowerCase()}),Vo=ar(),Zo=ar(true),Yo=Gt(function(n,t,r){return n+(r?"_":"")+t.toLowerCase()}),Go=Gt(function(n,t,r){return n+(r?" ":"")+(t.charAt(0).toUpperCase()+t.slice(1))}),Jo=le(function(n,t){try{return n.apply(w,t)}catch(r){return _e(r)?r:new Me(r)}}),Xo=le(function(n,t){return function(r){return Or(r,n,t)}}),Ho=le(function(n,t){return function(r){return Or(n,r,t)}}),Qo=_r("ceil"),ni=_r("floor"),ti=Qt(se,Iu),ri=Qt(Ae,Ru),ei=_r("round");return Nn.prototype=Tn.prototype,
-Ln.prototype=$u(Tn.prototype),Ln.prototype.constructor=Ln,zn.prototype=$u(Tn.prototype),zn.prototype.constructor=zn,Bn.prototype["delete"]=function(n){return this.has(n)&&delete this.__data__[n]},Bn.prototype.get=function(n){return"__proto__"==n?w:this.__data__[n]},Bn.prototype.has=function(n){return"__proto__"!=n&&nu.call(this.__data__,n)},Bn.prototype.set=function(n,t){return"__proto__"!=n&&(this.__data__[n]=t),this},Dn.prototype.push=function(n){var t=this.data;typeof n=="string"||ge(n)?t.set.add(n):t.hash[n]=true;
-},ce.Cache=Bn,Nn.after=function(n,t){if(typeof t!="function"){if(typeof n!="function")throw new Ge(L);var r=n;n=t,t=r}return n=mu(n=+n)?n:0,function(){return 1>--n?t.apply(this,arguments):void 0}},Nn.ary=function(n,t,r){return r&&Ur(n,t,r)&&(t=w),t=n&&null==t?n.length:bu(+t||0,0),gr(n,E,w,w,w,w,t)},Nn.assign=Co,Nn.at=no,Nn.before=fe,Nn.bind=_o,Nn.bindAll=vo,Nn.bindKey=go,Nn.callback=Se,Nn.chain=Qr,Nn.chunk=function(n,t,r){t=(r?Ur(n,t,r):null==t)?1:bu(yu(t)||1,1),r=0;for(var e=n?n.length:0,u=-1,o=Be(vu(e/t));r<e;)o[++u]=Et(n,r,r+=t);
-return o},Nn.compact=function(n){for(var t=-1,r=n?n.length:0,e=-1,u=[];++t<r;){var o=n[t];o&&(u[++e]=o)}return u},Nn.constant=function(n){return function(){return n}},Nn.countBy=to,Nn.create=function(n,t,r){var e=$u(n);return r&&Ur(n,t,r)&&(t=w),t?tt(e,t):e},Nn.curry=yo,Nn.curryRight=mo,Nn.debounce=ae,Nn.defaults=Uo,Nn.defaultsDeep=Wo,Nn.defer=wo,Nn.delay=bo,Nn.difference=Mu,Nn.drop=qr,Nn.dropRight=Pr,Nn.dropRightWhile=function(n,t,r){return n&&n.length?Nt(n,wr(t,r,3),true,true):[]},Nn.dropWhile=function(n,t,r){
-return n&&n.length?Nt(n,wr(t,r,3),true):[]},Nn.fill=function(n,t,r,e){var u=n?n.length:0;if(!u)return[];for(r&&typeof r!="number"&&Ur(n,t,r)&&(r=0,e=u),u=n.length,r=null==r?0:+r||0,0>r&&(r=-r>u?0:u+r),e=e===w||e>u?u:+e||0,0>e&&(e+=u),u=r>e?0:e>>>0,r>>>=0;r<u;)n[r++]=t;return n},Nn.filter=re,Nn.flatten=function(n,t,r){var e=n?n.length:0;return r&&Ur(n,t,r)&&(t=false),e?pt(n,t):[]},Nn.flattenDeep=function(n){return n&&n.length?pt(n,true):[]},Nn.flow=xo,Nn.flowRight=Ao,Nn.forEach=uo,Nn.forEachRight=oo,Nn.forIn=Fo,
-Nn.forInRight=No,Nn.forOwn=To,Nn.forOwnRight=Lo,Nn.functions=Ie,Nn.groupBy=io,Nn.indexBy=fo,Nn.initial=function(n){return Pr(n,1)},Nn.intersection=Ku,Nn.invert=function(n,t,r){r&&Ur(n,t,r)&&(t=w),r=-1;for(var e=zo(n),u=e.length,o={};++r<u;){var i=e[r],f=n[i];t?nu.call(o,f)?o[f].push(i):o[f]=[i]:o[f]=i}return o},Nn.invoke=ao,Nn.keys=zo,Nn.keysIn=Re,Nn.map=ue,Nn.mapKeys=Bo,Nn.mapValues=Do,Nn.matches=Ne,Nn.matchesProperty=function(n,t){return xt(n,ot(t,true))},Nn.memoize=ce,Nn.merge=Eo,Nn.method=Xo,Nn.methodOf=Ho,
-Nn.mixin=Te,Nn.modArgs=jo,Nn.negate=function(n){if(typeof n!="function")throw new Ge(L);return function(){return!n.apply(this,arguments)}},Nn.omit=Mo,Nn.once=function(n){return fe(2,n)},Nn.pairs=Oe,Nn.partial=ko,Nn.partialRight=Io,Nn.partition=co,Nn.pick=qo,Nn.pluck=function(n,t){return ue(n,ze(t))},Nn.property=ze,Nn.propertyOf=function(n){return function(t){return yt(n,Dr(t),t+"")}},Nn.pull=function(){var n=arguments,t=n[0];if(!t||!t.length)return t;for(var r=0,e=xr(),u=n.length;++r<u;)for(var o=0,i=n[r];-1<(o=e(t,i,o));)pu.call(t,o,1);
-return t},Nn.pullAt=Vu,Nn.range=function(n,t,r){r&&Ur(n,t,r)&&(t=r=w),n=+n||0,r=null==r?1:+r||0,null==t?(t=n,n=0):t=+t||0;var e=-1;t=bu(vu((t-n)/(r||1)),0);for(var u=Be(t);++e<t;)u[e]=n,n+=r;return u},Nn.rearg=Ro,Nn.reject=function(n,t,r){var e=Oo(n)?Vn:lt;return t=wr(t,r,3),e(n,function(n,r,e){return!t(n,r,e)})},Nn.remove=function(n,t,r){var e=[];if(!n||!n.length)return e;var u=-1,o=[],i=n.length;for(t=wr(t,r,3);++u<i;)r=n[u],t(r,u,n)&&(e.push(r),o.push(u));return It(n,o),e},Nn.rest=Yr,Nn.restParam=le,
-Nn.set=function(n,t,r){if(null==n)return n;var e=t+"";t=null!=n[e]||Wr(t,n)?[e]:Dr(t);for(var e=-1,u=t.length,o=u-1,i=n;null!=i&&++e<u;){var f=t[e];ge(i)&&(e==o?i[f]=r:null==i[f]&&(i[f]=Cr(t[e+1])?[]:{})),i=i[f]}return n},Nn.shuffle=function(n){return oe(n,Ru)},Nn.slice=function(n,t,r){var e=n?n.length:0;return e?(r&&typeof r!="number"&&Ur(n,t,r)&&(t=0,r=e),Et(n,t,r)):[]},Nn.sortBy=function(n,t,r){if(null==n)return[];r&&Ur(n,t,r)&&(t=w);var e=-1;return t=wr(t,r,3),n=wt(n,function(n,r,u){return{a:t(n,r,u),
-b:++e,c:n}}),Ut(n,f)},Nn.sortByAll=po,Nn.sortByOrder=function(n,t,r,e){return null==n?[]:(e&&Ur(t,r,e)&&(r=w),Oo(t)||(t=null==t?[]:[t]),Oo(r)||(r=null==r?[]:[r]),Wt(n,t,r))},Nn.spread=function(n){if(typeof n!="function")throw new Ge(L);return function(t){return n.apply(this,t)}},Nn.take=function(n,t,r){return n&&n.length?((r?Ur(n,t,r):null==t)&&(t=1),Et(n,0,0>t?0:t)):[]},Nn.takeRight=function(n,t,r){var e=n?n.length:0;return e?((r?Ur(n,t,r):null==t)&&(t=1),t=e-(+t||0),Et(n,0>t?0:t)):[]},Nn.takeRightWhile=function(n,t,r){
-return n&&n.length?Nt(n,wr(t,r,3),false,true):[]},Nn.takeWhile=function(n,t,r){return n&&n.length?Nt(n,wr(t,r,3)):[]},Nn.tap=function(n,t,r){return t.call(r,n),n},Nn.throttle=function(n,t,r){var e=true,u=true;if(typeof n!="function")throw new Ge(L);return false===r?e=false:ge(r)&&(e="leading"in r?!!r.leading:e,u="trailing"in r?!!r.trailing:u),ae(n,t,{leading:e,maxWait:+t,trailing:u})},Nn.thru=ne,Nn.times=function(n,t,r){if(n=yu(n),1>n||!mu(n))return[];var e=-1,u=Be(xu(n,4294967295));for(t=Bt(t,r,1);++e<n;)4294967295>e?u[e]=t(e):t(e);
-return u},Nn.toArray=je,Nn.toPlainObject=ke,Nn.transform=function(n,t,r,e){var u=Oo(n)||xe(n);return t=wr(t,e,4),null==r&&(u||ge(n)?(e=n.constructor,r=u?Oo(n)?new e:[]:$u(ve(e)?e.prototype:w)):r={}),(u?Pn:_t)(n,function(n,e,u){return t(r,n,e,u)}),r},Nn.union=Gu,Nn.uniq=Gr,Nn.unzip=Jr,Nn.unzipWith=Xr,Nn.values=Ee,Nn.valuesIn=function(n){return Ft(n,Re(n))},Nn.where=function(n,t){return re(n,bt(t))},Nn.without=Ju,Nn.wrap=function(n,t){return t=null==t?Fe:t,gr(t,R,w,[n],[])},Nn.xor=function(){for(var n=-1,t=arguments.length;++n<t;){
-var r=arguments[n];if(Er(r))var e=e?Jn(ft(e,r),ft(r,e)):r}return e?St(e):[]},Nn.zip=Xu,Nn.zipObject=Hr,Nn.zipWith=Hu,Nn.backflow=Ao,Nn.collect=ue,Nn.compose=Ao,Nn.each=uo,Nn.eachRight=oo,Nn.extend=Co,Nn.iteratee=Se,Nn.methods=Ie,Nn.object=Hr,Nn.select=re,Nn.tail=Yr,Nn.unique=Gr,Te(Nn,Nn),Nn.add=function(n,t){return(+n||0)+(+t||0)},Nn.attempt=Jo,Nn.camelCase=Po,Nn.capitalize=function(n){return(n=u(n))&&n.charAt(0).toUpperCase()+n.slice(1)},Nn.ceil=Qo,Nn.clone=function(n,t,r,e){return t&&typeof t!="boolean"&&Ur(n,t,r)?t=false:typeof t=="function"&&(e=r,
-r=t,t=false),typeof r=="function"?ot(n,t,Bt(r,e,3)):ot(n,t)},Nn.cloneDeep=function(n,t,r){return typeof t=="function"?ot(n,true,Bt(t,r,3)):ot(n,true)},Nn.deburr=Ce,Nn.endsWith=function(n,t,r){n=u(n),t+="";var e=n.length;return r=r===w?e:xu(0>r?0:+r||0,e),r-=t.length,0<=r&&n.indexOf(t,r)==r},Nn.escape=function(n){return(n=u(n))&&hn.test(n)?n.replace(sn,c):n},Nn.escapeRegExp=function(n){return(n=u(n))&&bn.test(n)?n.replace(wn,l):n||"(?:)"},Nn.every=te,Nn.find=ro,Nn.findIndex=qu,Nn.findKey=$o,Nn.findLast=eo,
-Nn.findLastIndex=Pu,Nn.findLastKey=So,Nn.findWhere=function(n,t){return ro(n,bt(t))},Nn.first=Kr,Nn.floor=ni,Nn.get=function(n,t,r){return n=null==n?w:yt(n,Dr(t),t+""),n===w?r:n},Nn.gt=se,Nn.gte=function(n,t){return n>=t},Nn.has=function(n,t){if(null==n)return false;var r=nu.call(n,t);if(!r&&!Wr(t)){if(t=Dr(t),n=1==t.length?n:yt(n,Et(t,0,-1)),null==n)return false;t=Zr(t),r=nu.call(n,t)}return r||Sr(n.length)&&Cr(t,n.length)&&(Oo(n)||pe(n))},Nn.identity=Fe,Nn.includes=ee,Nn.indexOf=Vr,Nn.inRange=function(n,t,r){
-return t=+t||0,r===w?(r=t,t=0):r=+r||0,n>=xu(t,r)&&n<bu(t,r)},Nn.isArguments=pe,Nn.isArray=Oo,Nn.isBoolean=function(n){return true===n||false===n||h(n)&&ru.call(n)==M},Nn.isDate=function(n){return h(n)&&ru.call(n)==q},Nn.isElement=function(n){return!!n&&1===n.nodeType&&h(n)&&!me(n)},Nn.isEmpty=function(n){return null==n?true:Er(n)&&(Oo(n)||be(n)||pe(n)||h(n)&&ve(n.splice))?!n.length:!zo(n).length},Nn.isEqual=he,Nn.isError=_e,Nn.isFinite=function(n){return typeof n=="number"&&mu(n)},Nn.isFunction=ve,Nn.isMatch=function(n,t,r,e){
-return r=typeof r=="function"?Bt(r,e,3):w,mt(n,Ar(t),r)},Nn.isNaN=function(n){return de(n)&&n!=+n},Nn.isNative=ye,Nn.isNull=function(n){return null===n},Nn.isNumber=de,Nn.isObject=ge,Nn.isPlainObject=me,Nn.isRegExp=we,Nn.isString=be,Nn.isTypedArray=xe,Nn.isUndefined=function(n){return n===w},Nn.kebabCase=Ko,Nn.last=Zr,Nn.lastIndexOf=function(n,t,r){var e=n?n.length:0;if(!e)return-1;var u=e;if(typeof r=="number")u=(0>r?bu(e+r,0):xu(r||0,e-1))+1;else if(r)return u=Lt(n,t,true)-1,n=n[u],(t===t?t===n:n!==n)?u:-1;
-if(t!==t)return p(n,u,true);for(;u--;)if(n[u]===t)return u;return-1},Nn.lt=Ae,Nn.lte=function(n,t){return n<=t},Nn.max=ti,Nn.min=ri,Nn.noConflict=function(){return Zn._=eu,this},Nn.noop=Le,Nn.now=ho,Nn.pad=function(n,t,r){n=u(n),t=+t;var e=n.length;return e<t&&mu(t)?(e=(t-e)/2,t=yu(e),e=vu(e),r=pr("",e,r),r.slice(0,t)+n+r):n},Nn.padLeft=Vo,Nn.padRight=Zo,Nn.parseInt=function(n,t,r){return(r?Ur(n,t,r):null==t)?t=0:t&&(t=+t),n=We(n),ju(n,t||(In.test(n)?16:10))},Nn.random=function(n,t,r){r&&Ur(n,t,r)&&(t=r=w);
-var e=null==n,u=null==t;return null==r&&(u&&typeof n=="boolean"?(r=n,n=1):typeof t=="boolean"&&(r=t,u=true)),e&&u&&(t=1,u=false),n=+n||0,u?(t=n,n=0):t=+t||0,r||n%1||t%1?(r=ku(),xu(n+r*(t-n+fu("1e-"+((r+"").length-1))),t)):Rt(n,t)},Nn.reduce=lo,Nn.reduceRight=so,Nn.repeat=Ue,Nn.result=function(n,t,r){var e=null==n?w:n[t];return e===w&&(null==n||Wr(t,n)||(t=Dr(t),n=1==t.length?n:yt(n,Et(t,0,-1)),e=null==n?w:n[Zr(t)]),e=e===w?r:e),ve(e)?e.call(n):e},Nn.round=ei,Nn.runInContext=m,Nn.size=function(n){var t=n?Bu(n):0;
-return Sr(t)?t:zo(n).length},Nn.snakeCase=Yo,Nn.some=ie,Nn.sortedIndex=Zu,Nn.sortedLastIndex=Yu,Nn.startCase=Go,Nn.startsWith=function(n,t,r){return n=u(n),r=null==r?0:xu(0>r?0:+r||0,n.length),n.lastIndexOf(t,r)==r},Nn.sum=function(n,t,r){if(r&&Ur(n,t,r)&&(t=w),t=wr(t,r,3),1==t.length){n=Oo(n)?n:zr(n),r=n.length;for(var e=0;r--;)e+=+t(n[r])||0;n=e}else n=$t(n,t);return n},Nn.template=function(n,t,r){var e=Nn.templateSettings;r&&Ur(n,t,r)&&(t=r=w),n=u(n),t=nt(tt({},r||t),e,Qn),r=nt(tt({},t.imports),e.imports,Qn);
-var o,i,f=zo(r),a=Ft(r,f),c=0;r=t.interpolate||Cn;var l="__p+='";r=Ze((t.escape||Cn).source+"|"+r.source+"|"+(r===gn?jn:Cn).source+"|"+(t.evaluate||Cn).source+"|$","g");var p="sourceURL"in t?"//# sourceURL="+t.sourceURL+"\n":"";if(n.replace(r,function(t,r,e,u,f,a){return e||(e=u),l+=n.slice(c,a).replace(Un,s),r&&(o=true,l+="'+__e("+r+")+'"),f&&(i=true,l+="';"+f+";\n__p+='"),e&&(l+="'+((__t=("+e+"))==null?'':__t)+'"),c=a+t.length,t}),l+="';",(t=t.variable)||(l="with(obj){"+l+"}"),l=(i?l.replace(fn,""):l).replace(an,"$1").replace(cn,"$1;"),
-l="function("+(t||"obj")+"){"+(t?"":"obj||(obj={});")+"var __t,__p=''"+(o?",__e=_.escape":"")+(i?",__j=Array.prototype.join;function print(){__p+=__j.call(arguments,'')}":";")+l+"return __p}",t=Jo(function(){return qe(f,p+"return "+l).apply(w,a)}),t.source=l,_e(t))throw t;return t},Nn.trim=We,Nn.trimLeft=function(n,t,r){var e=n;return(n=u(n))?n.slice((r?Ur(e,t,r):null==t)?g(n):o(n,t+"")):n},Nn.trimRight=function(n,t,r){var e=n;return(n=u(n))?(r?Ur(e,t,r):null==t)?n.slice(0,y(n)+1):n.slice(0,i(n,t+"")+1):n;
-},Nn.trunc=function(n,t,r){r&&Ur(n,t,r)&&(t=w);var e=U;if(r=W,null!=t)if(ge(t)){var o="separator"in t?t.separator:o,e="length"in t?+t.length||0:e;r="omission"in t?u(t.omission):r}else e=+t||0;if(n=u(n),e>=n.length)return n;if(e-=r.length,1>e)return r;if(t=n.slice(0,e),null==o)return t+r;if(we(o)){if(n.slice(e).search(o)){var i,f=n.slice(0,e);for(o.global||(o=Ze(o.source,(kn.exec(o)||"")+"g")),o.lastIndex=0;n=o.exec(f);)i=n.index;t=t.slice(0,null==i?e:i)}}else n.indexOf(o,e)!=e&&(o=t.lastIndexOf(o),
--1<o&&(t=t.slice(0,o)));return t+r},Nn.unescape=function(n){return(n=u(n))&&pn.test(n)?n.replace(ln,d):n},Nn.uniqueId=function(n){var t=++tu;return u(n)+t},Nn.words=$e,Nn.all=te,Nn.any=ie,Nn.contains=ee,Nn.eq=he,Nn.detect=ro,Nn.foldl=lo,Nn.foldr=so,Nn.head=Kr,Nn.include=ee,Nn.inject=lo,Te(Nn,function(){var n={};return _t(Nn,function(t,r){Nn.prototype[r]||(n[r]=t)}),n}(),false),Nn.sample=oe,Nn.prototype.sample=function(n){return this.__chain__||null!=n?this.thru(function(t){return oe(t,n)}):oe(this.value());
-},Nn.VERSION=b,Pn("bind bindKey curry curryRight partial partialRight".split(" "),function(n){Nn[n].placeholder=Nn}),Pn(["drop","take"],function(n,t){zn.prototype[n]=function(r){var e=this.__filtered__;if(e&&!t)return new zn(this);r=null==r?1:bu(yu(r)||0,0);var u=this.clone();return e?u.__takeCount__=xu(u.__takeCount__,r):u.__views__.push({size:r,type:n+(0>u.__dir__?"Right":"")}),u},zn.prototype[n+"Right"]=function(t){return this.reverse()[n](t).reverse()}}),Pn(["filter","map","takeWhile"],function(n,t){
-var r=t+1,e=r!=T;zn.prototype[n]=function(n,t){var u=this.clone();return u.__iteratees__.push({iteratee:wr(n,t,1),type:r}),u.__filtered__=u.__filtered__||e,u}}),Pn(["first","last"],function(n,t){var r="take"+(t?"Right":"");zn.prototype[n]=function(){return this[r](1).value()[0]}}),Pn(["initial","rest"],function(n,t){var r="drop"+(t?"":"Right");zn.prototype[n]=function(){return this.__filtered__?new zn(this):this[r](1)}}),Pn(["pluck","where"],function(n,t){var r=t?"filter":"map",e=t?bt:ze;zn.prototype[n]=function(n){
-return this[r](e(n))}}),zn.prototype.compact=function(){return this.filter(Fe)},zn.prototype.reject=function(n,t){return n=wr(n,t,1),this.filter(function(t){return!n(t)})},zn.prototype.slice=function(n,t){n=null==n?0:+n||0;var r=this;return r.__filtered__&&(0<n||0>t)?new zn(r):(0>n?r=r.takeRight(-n):n&&(r=r.drop(n)),t!==w&&(t=+t||0,r=0>t?r.dropRight(-t):r.take(t-n)),r)},zn.prototype.takeRightWhile=function(n,t){return this.reverse().takeWhile(n,t).reverse()},zn.prototype.toArray=function(){return this.take(Ru);
-},_t(zn.prototype,function(n,t){var r=/^(?:filter|map|reject)|While$/.test(t),e=/^(?:first|last)$/.test(t),u=Nn[e?"take"+("last"==t?"Right":""):t];u&&(Nn.prototype[t]=function(){function t(n){return e&&i?u(n,1)[0]:u.apply(w,Jn([n],o))}var o=e?[1]:arguments,i=this.__chain__,f=this.__wrapped__,a=!!this.__actions__.length,c=f instanceof zn,l=o[0],s=c||Oo(f);return s&&r&&typeof l=="function"&&1!=l.length&&(c=s=false),l={func:ne,args:[t],thisArg:w},a=c&&!a,e&&!i?a?(f=f.clone(),f.__actions__.push(l),n.call(f)):u.call(w,this.value())[0]:!e&&s?(f=a?f:new zn(this),
-f=n.apply(f,o),f.__actions__.push(l),new Ln(f,i)):this.thru(t)})}),Pn("join pop push replace shift sort splice split unshift".split(" "),function(n){var t=(/^(?:replace|split)$/.test(n)?He:Je)[n],r=/^(?:push|sort|unshift)$/.test(n)?"tap":"thru",e=/^(?:join|pop|replace|shift)$/.test(n);Nn.prototype[n]=function(){var n=arguments;return e&&!this.__chain__?t.apply(this.value(),n):this[r](function(r){return t.apply(r,n)})}}),_t(zn.prototype,function(n,t){var r=Nn[t];if(r){var e=r.name+"";(Wu[e]||(Wu[e]=[])).push({
-name:t,func:r})}}),Wu[sr(w,A).name]=[{name:"wrapper",func:w}],zn.prototype.clone=function(){var n=new zn(this.__wrapped__);return n.__actions__=qn(this.__actions__),n.__dir__=this.__dir__,n.__filtered__=this.__filtered__,n.__iteratees__=qn(this.__iteratees__),n.__takeCount__=this.__takeCount__,n.__views__=qn(this.__views__),n},zn.prototype.reverse=function(){if(this.__filtered__){var n=new zn(this);n.__dir__=-1,n.__filtered__=true}else n=this.clone(),n.__dir__*=-1;return n},zn.prototype.value=function(){
-var n,t=this.__wrapped__.value(),r=this.__dir__,e=Oo(t),u=0>r,o=e?t.length:0;n=o;for(var i=this.__views__,f=0,a=-1,c=i.length;++a<c;){var l=i[a],s=l.size;switch(l.type){case"drop":f+=s;break;case"dropRight":n-=s;break;case"take":n=xu(n,f+s);break;case"takeRight":f=bu(f,n-s)}}if(n={start:f,end:n},i=n.start,f=n.end,n=f-i,u=u?f:i-1,i=this.__iteratees__,f=i.length,a=0,c=xu(n,this.__takeCount__),!e||o<F||o==n&&c==n)return Tt(t,this.__actions__);e=[];n:for(;n--&&a<c;){for(u+=r,o=-1,l=t[u];++o<f;){var p=i[o],s=p.type,p=p.iteratee(l);
-if(s==T)l=p;else if(!p){if(s==N)continue n;break n}}e[a++]=l}return e},Nn.prototype.chain=function(){return Qr(this)},Nn.prototype.commit=function(){return new Ln(this.value(),this.__chain__)},Nn.prototype.concat=Qu,Nn.prototype.plant=function(n){for(var t,r=this;r instanceof Tn;){var e=Mr(r);t?u.__wrapped__=e:t=e;var u=e,r=r.__wrapped__}return u.__wrapped__=n,t},Nn.prototype.reverse=function(){function n(n){return n.reverse()}var t=this.__wrapped__;return t instanceof zn?(this.__actions__.length&&(t=new zn(this)),
-t=t.reverse(),t.__actions__.push({func:ne,args:[n],thisArg:w}),new Ln(t,this.__chain__)):this.thru(n)},Nn.prototype.toString=function(){return this.value()+""},Nn.prototype.run=Nn.prototype.toJSON=Nn.prototype.valueOf=Nn.prototype.value=function(){return Tt(this.__wrapped__,this.__actions__)},Nn.prototype.collect=Nn.prototype.map,Nn.prototype.head=Nn.prototype.first,Nn.prototype.select=Nn.prototype.filter,Nn.prototype.tail=Nn.prototype.rest,Nn}var w,b="3.10.1",x=1,A=2,j=4,k=8,I=16,R=32,O=64,E=128,C=256,U=30,W="...",$=150,S=16,F=200,N=1,T=2,L="Expected a function",z="__lodash_placeholder__",B="[object Arguments]",D="[object Array]",M="[object Boolean]",q="[object Date]",P="[object Error]",K="[object Function]",V="[object Number]",Z="[object Object]",Y="[object RegExp]",G="[object String]",J="[object ArrayBuffer]",X="[object Float32Array]",H="[object Float64Array]",Q="[object Int8Array]",nn="[object Int16Array]",tn="[object Int32Array]",rn="[object Uint8Array]",en="[object Uint8ClampedArray]",un="[object Uint16Array]",on="[object Uint32Array]",fn=/\b__p\+='';/g,an=/\b(__p\+=)''\+/g,cn=/(__e\(.*?\)|\b__t\))\+'';/g,ln=/&(?:amp|lt|gt|quot|#39|#96);/g,sn=/[&<>"'`]/g,pn=RegExp(ln.source),hn=RegExp(sn.source),_n=/<%-([\s\S]+?)%>/g,vn=/<%([\s\S]+?)%>/g,gn=/<%=([\s\S]+?)%>/g,yn=/\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\n\\]|\\.)*?\1)\]/,dn=/^\w*$/,mn=/[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\n\\]|\\.)*?)\2)\]/g,wn=/^[:!,]|[\\^$.*+?()[\]{}|\/]|(^[0-9a-fA-Fnrtuvx])|([\n\r\u2028\u2029])/g,bn=RegExp(wn.source),xn=/[\u0300-\u036f\ufe20-\ufe23]/g,An=/\\(\\)?/g,jn=/\$\{([^\\}]*(?:\\.[^\\}]*)*)\}/g,kn=/\w*$/,In=/^0[xX]/,Rn=/^\[object .+?Constructor\]$/,On=/^\d+$/,En=/[\xc0-\xd6\xd8-\xde\xdf-\xf6\xf8-\xff]/g,Cn=/($^)/,Un=/['\n\r\u2028\u2029\\]/g,Wn=RegExp("[A-Z\\xc0-\\xd6\\xd8-\\xde]+(?=[A-Z\\xc0-\\xd6\\xd8-\\xde][a-z\\xdf-\\xf6\\xf8-\\xff]+)|[A-Z\\xc0-\\xd6\\xd8-\\xde]?[a-z\\xdf-\\xf6\\xf8-\\xff]+|[A-Z\\xc0-\\xd6\\xd8-\\xde]+|[0-9]+","g"),$n="Array ArrayBuffer Date Error Float32Array Float64Array Function Int8Array Int16Array Int32Array Math Number Object RegExp Set String _ clearTimeout isFinite parseFloat parseInt setTimeout TypeError Uint8Array Uint8ClampedArray Uint16Array Uint32Array WeakMap".split(" "),Sn={};
-Sn[X]=Sn[H]=Sn[Q]=Sn[nn]=Sn[tn]=Sn[rn]=Sn[en]=Sn[un]=Sn[on]=true,Sn[B]=Sn[D]=Sn[J]=Sn[M]=Sn[q]=Sn[P]=Sn[K]=Sn["[object Map]"]=Sn[V]=Sn[Z]=Sn[Y]=Sn["[object Set]"]=Sn[G]=Sn["[object WeakMap]"]=false;var Fn={};Fn[B]=Fn[D]=Fn[J]=Fn[M]=Fn[q]=Fn[X]=Fn[H]=Fn[Q]=Fn[nn]=Fn[tn]=Fn[V]=Fn[Z]=Fn[Y]=Fn[G]=Fn[rn]=Fn[en]=Fn[un]=Fn[on]=true,Fn[P]=Fn[K]=Fn["[object Map]"]=Fn["[object Set]"]=Fn["[object WeakMap]"]=false;var Nn={"\xc0":"A","\xc1":"A","\xc2":"A","\xc3":"A","\xc4":"A","\xc5":"A","\xe0":"a","\xe1":"a","\xe2":"a",
-"\xe3":"a","\xe4":"a","\xe5":"a","\xc7":"C","\xe7":"c","\xd0":"D","\xf0":"d","\xc8":"E","\xc9":"E","\xca":"E","\xcb":"E","\xe8":"e","\xe9":"e","\xea":"e","\xeb":"e","\xcc":"I","\xcd":"I","\xce":"I","\xcf":"I","\xec":"i","\xed":"i","\xee":"i","\xef":"i","\xd1":"N","\xf1":"n","\xd2":"O","\xd3":"O","\xd4":"O","\xd5":"O","\xd6":"O","\xd8":"O","\xf2":"o","\xf3":"o","\xf4":"o","\xf5":"o","\xf6":"o","\xf8":"o","\xd9":"U","\xda":"U","\xdb":"U","\xdc":"U","\xf9":"u","\xfa":"u","\xfb":"u","\xfc":"u","\xdd":"Y",
-"\xfd":"y","\xff":"y","\xc6":"Ae","\xe6":"ae","\xde":"Th","\xfe":"th","\xdf":"ss"},Tn={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;","`":"&#96;"},Ln={"&amp;":"&","&lt;":"<","&gt;":">","&quot;":'"',"&#39;":"'","&#96;":"`"},zn={"function":true,object:true},Bn={0:"x30",1:"x31",2:"x32",3:"x33",4:"x34",5:"x35",6:"x36",7:"x37",8:"x38",9:"x39",A:"x41",B:"x42",C:"x43",D:"x44",E:"x45",F:"x46",a:"x61",b:"x62",c:"x63",d:"x64",e:"x65",f:"x66",n:"x6e",r:"x72",t:"x74",u:"x75",v:"x76",x:"x78"},Dn={"\\":"\\",
-"'":"'","\n":"n","\r":"r","\u2028":"u2028","\u2029":"u2029"},Mn=zn[typeof exports]&&exports&&!exports.nodeType&&exports,qn=zn[typeof module]&&module&&!module.nodeType&&module,Pn=zn[typeof self]&&self&&self.Object&&self,Kn=zn[typeof window]&&window&&window.Object&&window,Vn=qn&&qn.exports===Mn&&Mn,Zn=Mn&&qn&&typeof global=="object"&&global&&global.Object&&global||Kn!==(this&&this.window)&&Kn||Pn||this,Yn=m();typeof define=="function"&&typeof define.amd=="object"&&define.amd?(Zn._=Yn, define(function(){
-return Yn})):Mn&&qn?Vn?(qn.exports=Yn)._=Yn:Mn._=Yn:Zn._=Yn}).call(this);
+;(function() {
+
+  /** Used as a safe reference for `undefined` in pre-ES5 environments. */
+  var undefined;
+
+  /** Used as the semantic version number. */
+  var VERSION = '4.0.0';
+
+  /** Used to compose bitmasks for wrapper metadata. */
+  var BIND_FLAG = 1,
+      PARTIAL_FLAG = 32;
+
+  /** Used to compose bitmasks for comparison styles. */
+  var UNORDERED_COMPARE_FLAG = 1,
+      PARTIAL_COMPARE_FLAG = 2;
+
+  /** Used as the `TypeError` message for "Functions" methods. */
+  var FUNC_ERROR_TEXT = 'Expected a function';
+
+  /** Used as references for various `Number` constants. */
+  var MAX_SAFE_INTEGER = 9007199254740991;
+
+  /** `Object#toString` result references. */
+  var argsTag = '[object Arguments]',
+      arrayTag = '[object Array]',
+      boolTag = '[object Boolean]',
+      dateTag = '[object Date]',
+      errorTag = '[object Error]',
+      funcTag = '[object Function]',
+      genTag = '[object GeneratorFunction]',
+      numberTag = '[object Number]',
+      objectTag = '[object Object]',
+      regexpTag = '[object RegExp]',
+      stringTag = '[object String]';
+
+  /** Used to match HTML entities and HTML characters. */
+  var reUnescapedHtml = /[&<>"'`]/g,
+      reHasUnescapedHtml = RegExp(reUnescapedHtml.source);
+
+  /** Used to detect unsigned integer values. */
+  var reIsUint = /^(?:0|[1-9]\d*)$/;
+
+  /** Used to map characters to HTML entities. */
+  var htmlEscapes = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+    '`': '&#96;'
+  };
+
+  /** Used to determine if values are of the language type `Object`. */
+  var objectTypes = {
+    'function': true,
+    'object': true
+  };
+
+  /** Detect free variable `exports`. */
+  var freeExports = (objectTypes[typeof exports] && exports && !exports.nodeType) ? exports : null;
+
+  /** Detect free variable `module`. */
+  var freeModule = (objectTypes[typeof module] && module && !module.nodeType) ? module : null;
+
+  /** Detect free variable `global` from Node.js. */
+  var freeGlobal = checkGlobal(freeExports && freeModule && typeof global == 'object' && global);
+
+  /** Detect free variable `self`. */
+  var freeSelf = checkGlobal(objectTypes[typeof self] && self);
+
+  /** Detect free variable `window`. */
+  var freeWindow = checkGlobal(objectTypes[typeof window] && window);
+
+  /** Detect the popular CommonJS extension `module.exports`. */
+  var moduleExports = (freeModule && freeModule.exports === freeExports) ? freeExports : null;
+
+  /** Detect `this` as the global object. */
+  var thisGlobal = checkGlobal(objectTypes[typeof this] && this);
+
+  /**
+   * Used as a reference to the global object.
+   *
+   * The `this` value is used if it's the global object to avoid Greasemonkey's
+   * restricted `window` object, otherwise the `window` object is used.
+   */
+  var root = freeGlobal || ((freeWindow !== (thisGlobal && thisGlobal.window)) && freeWindow) || freeSelf || thisGlobal || Function('return this')();
+
+  /*--------------------------------------------------------------------------*/
+
+  /**
+   * Creates a new array concatenating `array` with `other`.
+   *
+   * @private
+   * @param {Array} array The first array to concatenate.
+   * @param {Array} other The second array to concatenate.
+   * @returns {Array} Returns the new concatenated array.
+   */
+  function arrayConcat(array, other) {
+    return arrayPush(copyArray(array), values);
+  }
+
+  /**
+   * Appends the elements of `values` to `array`.
+   *
+   * @private
+   * @param {Array} array The array to modify.
+   * @param {Array} values The values to append.
+   * @returns {Array} Returns `array`.
+   */
+  function arrayPush(array, values) {
+    var index = -1,
+        length = values.length,
+        offset = array.length;
+
+    while (++index < length) {
+      array[offset + index] = values[index];
+    }
+    return array;
+  }
+
+  /**
+   * The base implementation of methods like `_.max` and `_.min` which accepts a
+   * `comparator` to determine the extremum value.
+   *
+   * @private
+   * @param {Array} array The array to iterate over.
+   * @param {Function} iteratee The iteratee invoked per iteration.
+   * @param {Function} comparator The comparator used to compare values.
+   * @returns {*} Returns the extremum value.
+   */
+  function baseExtremum(array, iteratee, comparator) {
+    var index = -1,
+        length = array.length;
+
+    while (++index < length) {
+      var value = array[index],
+          current = iteratee(value);
+
+      if (current != null && (computed === undefined
+            ? current === current
+            : comparator(current, computed)
+          )) {
+        var computed = current,
+            result = value;
+      }
+    }
+    return result;
+  }
+
+  /**
+   * The base implementation of methods like `_.find` and `_.findKey`, without
+   * support for iteratee shorthands, which iterates over `collection` using
+   * the provided `eachFunc`.
+   *
+   * @private
+   * @param {Array|Object} collection The collection to search.
+   * @param {Function} predicate The function invoked per iteration.
+   * @param {Function} eachFunc The function to iterate over `collection`.
+   * @param {boolean} [retKey] Specify returning the key of the found element instead of the element itself.
+   * @returns {*} Returns the found element or its key, else `undefined`.
+   */
+  function baseFind(collection, predicate, eachFunc, retKey) {
+    var result;
+    eachFunc(collection, function(value, key, collection) {
+      if (predicate(value, key, collection)) {
+        result = retKey ? key : value;
+        return false;
+      }
+    });
+    return result;
+  }
+
+  /**
+   * The base implementation of `_.reduce` and `_.reduceRight`, without support
+   * for iteratee shorthands, which iterates over `collection` using the provided
+   * `eachFunc`.
+   *
+   * @private
+   * @param {Array|Object} collection The collection to iterate over.
+   * @param {Function} iteratee The function invoked per iteration.
+   * @param {*} accumulator The initial value.
+   * @param {boolean} initFromCollection Specify using the first or last element of `collection` as the initial value.
+   * @param {Function} eachFunc The function to iterate over `collection`.
+   * @returns {*} Returns the accumulated value.
+   */
+  function baseReduce(collection, iteratee, accumulator, initFromCollection, eachFunc) {
+    eachFunc(collection, function(value, index, collection) {
+      accumulator = initFromCollection
+        ? (initFromCollection = false, value)
+        : iteratee(accumulator, value, index, collection);
+    });
+    return accumulator;
+  }
+
+  /**
+   * The base implementation of `_.times` without support for iteratee shorthands
+   * or max array length checks.
+   *
+   * @private
+   * @param {number} n The number of times to invoke `iteratee`.
+   * @param {Function} iteratee The function invoked per iteration.
+   * @returns {Array} Returns the array of results.
+   */
+  function baseTimes(n, iteratee) {
+    var index = -1,
+        result = Array(n);
+
+    while (++index < n) {
+      result[index] = iteratee(index);
+    }
+    return result;
+  }
+
+  /**
+   * The base implementation of `_.values` and `_.valuesIn` which creates an
+   * array of `object` property values corresponding to the property names
+   * of `props`.
+   *
+   * @private
+   * @param {Object} object The object to query.
+   * @param {Array} props The property names to get values for.
+   * @returns {Object} Returns the array of property values.
+   */
+  function baseValues(object, props) {
+    return baseMap(props, function(key) {
+      return object[key];
+    });
+  }
+
+  /**
+   * Checks if `value` is a global object.
+   *
+   * @private
+   * @param {*} value The value to check.
+   * @returns {null|Object} Returns `value` if it's a global object, else `null`.
+   */
+  function checkGlobal(value) {
+    return (value && value.Object === Object) ? value : null;
+  }
+
+  /**
+   * Compares values to sort them in ascending order.
+   *
+   * @private
+   * @param {*} value The value to compare.
+   * @param {*} other The other value to compare.
+   * @returns {number} Returns the sort order indicator for `value`.
+   */
+  function compareAscending(value, other) {
+    if (value !== other) {
+      var valIsNull = value === null,
+          valIsUndef = value === undefined,
+          valIsReflexive = value === value;
+
+      var othIsNull = other === null,
+          othIsUndef = other === undefined,
+          othIsReflexive = other === other;
+
+      if ((value > other && !othIsNull) || !valIsReflexive ||
+          (valIsNull && !othIsUndef && othIsReflexive) ||
+          (valIsUndef && othIsReflexive)) {
+        return 1;
+      }
+      if ((value < other && !valIsNull) || !othIsReflexive ||
+          (othIsNull && !valIsUndef && valIsReflexive) ||
+          (othIsUndef && valIsReflexive)) {
+        return -1;
+      }
+    }
+    return 0;
+  }
+
+  /**
+   * Used by `_.escape` to convert characters to HTML entities.
+   *
+   * @private
+   * @param {string} chr The matched character to escape.
+   * @returns {string} Returns the escaped character.
+   */
+  function escapeHtmlChar(chr) {
+    return htmlEscapes[chr];
+  }
+
+  /**
+   * Checks if `value` is a host object in IE < 9.
+   *
+   * @private
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is a host object, else `false`.
+   */
+  function isHostObject(value) {
+    // Many host objects are `Object` objects that can coerce to strings
+    // despite having improperly defined `toString` methods.
+    var result = false;
+    if (value != null && typeof value.toString != 'function') {
+      try {
+        result = !!(value + '');
+      } catch (e) {}
+    }
+    return result;
+  }
+
+  /**
+   * Checks if `value` is a valid array-like index.
+   *
+   * @private
+   * @param {*} value The value to check.
+   * @param {number} [length=MAX_SAFE_INTEGER] The upper bounds of a valid index.
+   * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
+   */
+  function isIndex(value, length) {
+    value = (typeof value == 'number' || reIsUint.test(value)) ? +value : -1;
+    length = length == null ? MAX_SAFE_INTEGER : length;
+    return value > -1 && value % 1 == 0 && value < length;
+  }
+
+  /**
+   * Converts `iterator` to an array.
+   *
+   * @private
+   * @param {Object} iterator The iterator to convert.
+   * @returns {Array} Returns the converted array.
+   */
+  function iteratorToArray(iterator) {
+    var data,
+        result = [];
+
+    while (!(data = iterator.next()).done) {
+      result.push(data.value);
+    }
+    return result;
+  }
+
+  /*--------------------------------------------------------------------------*/
+
+  /** Used for built-in method references. */
+  var arrayProto = Array.prototype,
+      objectProto = Object.prototype;
+
+  /** Used to check objects for own properties. */
+  var hasOwnProperty = objectProto.hasOwnProperty;
+
+  /** Used to generate unique IDs. */
+  var idCounter = 0;
+
+  /**
+   * Used to resolve the [`toStringTag`](http://ecma-international.org/ecma-262/6.0/#sec-object.prototype.tostring)
+   * of values.
+   */
+  var objectToString = objectProto.toString;
+
+  /** Used to restore the original `_` reference in `_.noConflict`. */
+  var oldDash = root._;
+
+  /** Built-in value references. */
+  var _Symbol = root.Symbol,
+      Reflect = root.Reflect,
+      Uint8Array = root.Uint8Array,
+      enumerate = Reflect ? Reflect.enumerate : undefined,
+      propertyIsEnumerable = objectProto.propertyIsEnumerable;
+
+  /* Built-in method references for those with the same name as other `lodash` methods. */
+  var nativeIsFinite = root.isFinite,
+      nativeKeys = Object.keys,
+      nativeMax = Math.max;
+
+  /*------------------------------------------------------------------------*/
+
+  /**
+   * Creates a `lodash` object which wraps `value` to enable implicit method
+   * chaining. Methods that operate on and return arrays, collections, and
+   * functions can be chained together. Methods that retrieve a single value or
+   * may return a primitive value will automatically end the chain sequence and
+   * return the unwrapped value. Otherwise, the value must be unwrapped with
+   * `_#value`.
+   *
+   * Explicit chaining, which must be unwrapped with `_#value` in all cases,
+   * may be enabled using `_.chain`.
+   *
+   * The execution of chained methods is lazy, that is, it's deferred until
+   * `_#value` is implicitly or explicitly called.
+   *
+   * Lazy evaluation allows several methods to support shortcut fusion. Shortcut
+   * fusion is an optimization to merge iteratee calls; this avoids the creation
+   * of intermediate arrays and can greatly reduce the number of iteratee executions.
+   * Sections of a chain sequence qualify for shortcut fusion if the section is
+   * applied to an array of at least two hundred elements and any iteratees
+   * accept only one argument. The heuristic for whether a section qualifies
+   * for shortcut fusion is subject to change.
+   *
+   * Chaining is supported in custom builds as long as the `_#value` method is
+   * directly or indirectly included in the build.
+   *
+   * In addition to lodash methods, wrappers have `Array` and `String` methods.
+   *
+   * The wrapper `Array` methods are:
+   * `concat`, `join`, `pop`, `push`, `shift`, `sort`, `splice`, and `unshift`
+   *
+   * The wrapper `String` methods are:
+   * `replace` and `split`
+   *
+   * The wrapper methods that support shortcut fusion are:
+   * `at`, `compact`, `drop`, `dropRight`, `dropWhile`, `filter`, `find`,
+   * `findLast`, `head`, `initial`, `last`, `map`, `reject`, `reverse`, `slice`,
+   * `tail`, `take`, `takeRight`, `takeRightWhile`, `takeWhile`, and `toArray`
+   *
+   * The chainable wrapper methods are:
+   * `after`, `ary`, `assign`, `assignIn`, `assignInWith`, `assignWith`,
+   * `at`, `before`, `bind`, `bindAll`, `bindKey`, `chain`, `chunk`, `commit`,
+   * `compact`, `concat`, `conforms`,  `constant`, `countBy`, `create`, `curry`,
+   * `debounce`, `defaults`, `defaultsDeep`, `defer`, `delay`, `difference`,
+   * `differenceBy`, `differenceWith`,  `drop`, `dropRight`, `dropRightWhile`,
+   * `dropWhile`, `fill`, `filter`, `flatten`, `flattenDeep`, `flip`, `flow`,
+   * `flowRight`, `forEach`, `forEachRight`, `forIn`, `forInRight`, `forOwn`,
+   * `forOwnRight`, `fromPairs`, `functions`, `functionsIn`, `groupBy`, `initial`,
+   * `intersection`, `intersectionBy`, `intersectionWith`, invert`, `invokeMap`,
+   * `iteratee`, `keyBy`, `keys`, `keysIn`, `map`, `mapKeys`, `mapValues`,
+   * `matches`, `matchesProperty`, `memoize`, `merge`, `mergeWith`, `method`,
+   * `methodOf`, `mixin`, `negate`, `nthArg`, `omit`, `omitBy`, `once`, `orderBy`,
+   * `over`, `overArgs`, `overEvery`, `overSome`, `partial`, `partialRight`,
+   * `partition`, `pick`, `pickBy`, `plant`, `property`, `propertyOf`, `pull`,
+   * `pullAll`, `pullAllBy`, `pullAt`, `push`, `range`, `rangeRight`, `rearg`,
+   * `reject`, `remove`, `rest`, `reverse`, `sampleSize`, `set`, `setWith`,
+   * `shuffle`, `slice`, `sort`, `sortBy`, `splice`, `spread`, `tail`, `take`,
+   * `takeRight`, `takeRightWhile`, `takeWhile`, `tap`, `throttle`, `thru`,
+   * `toArray`, `toPairs`, `toPairsIn`, `toPath`, `toPlainObject`, `transform`,
+   * `unary`, `union`, `unionBy`, `unionWith`, `uniq`, `uniqBy`, `uniqWith`,
+   * `unset`, `unshift`, `unzip`, `unzipWith`, `values`, `valuesIn`, `without`,
+   * `wrap`, `xor`, `xorBy`, `xorWith`, `zip`, `zipObject`, and `zipWith`
+   *
+   * The wrapper methods that are **not** chainable by default are:
+   * `add`, `attempt`, `camelCase`, `capitalize`, `ceil`, `clamp`, `clone`,
+   * `cloneDeep`, `cloneDeepWith`, `cloneWith`, `deburr`, `endsWith`, `eq`,
+   * `escape`, `escapeRegExp`, `every`, `find`, `findIndex`, `findKey`,
+   * `findLast`, `findLastIndex`, `findLastKey`, `floor`, `get`, `gt`, `gte`,
+   * `has`, `hasIn`, `head`, `identity`, `includes`, `indexOf`, `inRange`,
+   * `invoke`, `isArguments`, `isArray`, `isArrayLike`, `isArrayLikeObject`,
+   * `isBoolean`, `isDate`, `isElement`, `isEmpty`, `isEqual`, `isEqualWith`,
+   * `isError`, `isFinite`, `isFunction`, `isInteger`, `isLength`, `isMatch`,
+   * `isMatchWith`, `isNaN`, `isNative`, `isNil`, `isNull`, `isNumber`,
+   * `isObject`, `isObjectLike`, `isPlainObject`, `isRegExp`, `isSafeInteger`,
+   * `isString`, `isUndefined`, `isTypedArray`, `join`, `kebabCase`, `last`,
+   * `lastIndexOf`, `lowerCase`, `lowerFirst`, `lt`, `lte`, `max`, `maxBy`,
+   * `mean`, `min`, `minBy`, `noConflict`, `noop`, `now`, `pad`, `padEnd`,
+   * `padStart`, `parseInt`, `pop`, `random`, `reduce`, `reduceRight`, `repeat`,
+   * `result`, `round`, `runInContext`, `sample`, `shift`, `size`, `snakeCase`,
+   * `some`, `sortedIndex`, `sortedIndexBy`, `sortedLastIndex`, `sortedLastIndexBy`,
+   * `startCase`, `startsWith`, `subtract`, `sum`, sumBy`, `template`, `times`,
+   * `toLower`, `toInteger`, `toLength`, `toNumber`, `toSafeInteger`, toString`,
+   * `toUpper`, `trim`, `trimEnd`, `trimStart`, `truncate`, `unescape`, `uniqueId`,
+   * `upperCase`, `upperFirst`, `value`, and `words`
+   *
+   * @name _
+   * @constructor
+   * @category Seq
+   * @param {*} value The value to wrap in a `lodash` instance.
+   * @returns {Object} Returns the new `lodash` wrapper instance.
+   * @example
+   *
+   * function square(n) {
+   *   return n * n;
+   * }
+   *
+   * var wrapped = _([1, 2, 3]);
+   *
+   * // returns an unwrapped value
+   * wrapped.reduce(_.add);
+   * // => 6
+   *
+   * // returns a wrapped value
+   * var squares = wrapped.map(square);
+   *
+   * _.isArray(squares);
+   * // => false
+   *
+   * _.isArray(squares.value());
+   * // => true
+   */
+  function lodash(value) {
+    if (isObjectLike(value) && !isArray(value)) {
+      if (value instanceof LodashWrapper) {
+        return value;
+      }
+      if (hasOwnProperty.call(value, '__wrapped__')) {
+        return wrapperClone(value);
+      }
+    }
+    return new LodashWrapper(value);
+  }
+
+  /**
+   * The base constructor for creating `lodash` wrapper objects.
+   *
+   * @private
+   * @param {*} value The value to wrap.
+   * @param {boolean} [chainAll] Enable chaining for all wrapper methods.
+   */
+  function LodashWrapper(value, chainAll) {
+    this.__wrapped__ = value;
+    this.__actions__ = [];
+    this.__chain__ = !!chainAll;
+  }
+
+  /*------------------------------------------------------------------------*/
+
+  /**
+   * Used by `_.defaults` to customize its `_.assignIn` use.
+   *
+   * @private
+   * @param {*} objValue The destination value.
+   * @param {*} srcValue The source value.
+   * @param {string} key The key of the property to assign.
+   * @param {Object} object The parent object of `objValue`.
+   * @returns {*} Returns the value to assign.
+   */
+  function assignInDefaults(objValue, srcValue, key, object) {
+    if (objValue === undefined ||
+        (eq(objValue, objectProto[key]) && !hasOwnProperty.call(object, key))) {
+      return srcValue;
+    }
+    return objValue;
+  }
+
+  /**
+   * Assigns `value` to `key` of `object` if the existing value is not equivalent
+   * using [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
+   * for equality comparisons.
+   *
+   * @private
+   * @param {Object} object The object to modify.
+   * @param {string} key The key of the property to assign.
+   * @param {*} value The value to assign.
+   */
+  function assignValue(object, key, value) {
+    var objValue = object[key];
+    if ((!eq(objValue, value) ||
+          (eq(objValue, objectProto[key]) && !hasOwnProperty.call(object, key))) ||
+        (value === undefined && !(key in object))) {
+      object[key] = value;
+    }
+  }
+
+  /**
+   * The base implementation of `_.create` without support for assigning
+   * properties to the created object.
+   *
+   * @private
+   * @param {Object} prototype The object to inherit from.
+   * @returns {Object} Returns the new object.
+   */
+  var baseCreate = (function() {
+    function object() {}
+    return function(prototype) {
+      if (isObject(prototype)) {
+        object.prototype = prototype;
+        var result = new object;
+        object.prototype = undefined;
+      }
+      return result || {};
+    };
+  }());
+
+  /**
+   * The base implementation of `_.delay` and `_.defer` which accepts an array
+   * of `func` arguments.
+   *
+   * @private
+   * @param {Function} func The function to delay.
+   * @param {number} wait The number of milliseconds to delay invocation.
+   * @param {Object} args The arguments provide to `func`.
+   * @returns {number} Returns the timer id.
+   */
+  function baseDelay(func, wait, args) {
+    if (typeof func != 'function') {
+      throw new TypeError(FUNC_ERROR_TEXT);
+    }
+    return setTimeout(function() { func.apply(undefined, args); }, wait);
+  }
+
+  /**
+   * The base implementation of `_.forEach` without support for iteratee shorthands.
+   *
+   * @private
+   * @param {Array|Object} collection The collection to iterate over.
+   * @param {Function} iteratee The function invoked per iteration.
+   * @returns {Array|Object} Returns `collection`.
+   */
+  var baseEach = createBaseEach(baseForOwn);
+
+  /**
+   * The base implementation of `_.every` without support for iteratee shorthands.
+   *
+   * @private
+   * @param {Array|Object} collection The collection to iterate over.
+   * @param {Function} predicate The function invoked per iteration.
+   * @returns {boolean} Returns `true` if all elements pass the predicate check, else `false`
+   */
+  function baseEvery(collection, predicate) {
+    var result = true;
+    baseEach(collection, function(value, index, collection) {
+      result = !!predicate(value, index, collection);
+      return result;
+    });
+    return result;
+  }
+
+  /**
+   * The base implementation of `_.filter` without support for iteratee shorthands.
+   *
+   * @private
+   * @param {Array|Object} collection The collection to iterate over.
+   * @param {Function} predicate The function invoked per iteration.
+   * @returns {Array} Returns the new filtered array.
+   */
+  function baseFilter(collection, predicate) {
+    var result = [];
+    baseEach(collection, function(value, index, collection) {
+      if (predicate(value, index, collection)) {
+        result.push(value);
+      }
+    });
+    return result;
+  }
+
+  /**
+   * The base implementation of `_.flatten` with support for restricting flattening.
+   *
+   * @private
+   * @param {Array} array The array to flatten.
+   * @param {boolean} [isDeep] Specify a deep flatten.
+   * @param {boolean} [isStrict] Restrict flattening to arrays-like objects.
+   * @param {Array} [result=[]] The initial result value.
+   * @returns {Array} Returns the new flattened array.
+   */
+  function baseFlatten(array, isDeep, isStrict, result) {
+    result || (result = []);
+
+    var index = -1,
+        length = array.length;
+
+    while (++index < length) {
+      var value = array[index];
+      if (isArrayLikeObject(value) &&
+          (isStrict || isArray(value) || isArguments(value))) {
+        if (isDeep) {
+          // Recursively flatten arrays (susceptible to call stack limits).
+          baseFlatten(value, isDeep, isStrict, result);
+        } else {
+          arrayPush(result, value);
+        }
+      } else if (!isStrict) {
+        result[result.length] = value;
+      }
+    }
+    return result;
+  }
+
+  /**
+   * The base implementation of `baseForIn` and `baseForOwn` which iterates
+   * over `object` properties returned by `keysFunc` invoking `iteratee` for
+   * each property. Iteratee functions may exit iteration early by explicitly
+   * returning `false`.
+   *
+   * @private
+   * @param {Object} object The object to iterate over.
+   * @param {Function} iteratee The function invoked per iteration.
+   * @param {Function} keysFunc The function to get the keys of `object`.
+   * @returns {Object} Returns `object`.
+   */
+  var baseFor = createBaseFor();
+
+  /**
+   * The base implementation of `_.forOwn` without support for iteratee shorthands.
+   *
+   * @private
+   * @param {Object} object The object to iterate over.
+   * @param {Function} iteratee The function invoked per iteration.
+   * @returns {Object} Returns `object`.
+   */
+  function baseForOwn(object, iteratee) {
+    return object && baseFor(object, iteratee, keys);
+  }
+
+  /**
+   * The base implementation of `_.functions` which creates an array of
+   * `object` function property names filtered from those provided.
+   *
+   * @private
+   * @param {Object} object The object to inspect.
+   * @param {Array} props The property names to filter.
+   * @returns {Array} Returns the new array of filtered property names.
+   */
+  function baseFunctions(object, props) {
+    return baseFilter(props, function(key) {
+      return isFunction(object[key]);
+    });
+  }
+
+  /**
+   * The base implementation of `_.isEqual` which supports partial comparisons
+   * and tracks traversed objects.
+   *
+   * @private
+   * @param {*} value The value to compare.
+   * @param {*} other The other value to compare.
+   * @param {Function} [customizer] The function to customize comparisons.
+   * @param {boolean} [bitmask] The bitmask of comparison flags.
+   *  The bitmask may be composed of the following flags:
+   *     1 - Unordered comparison
+   *     2 - Partial comparison
+   * @param {Object} [stack] Tracks traversed `value` and `other` objects.
+   * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
+   */
+  function baseIsEqual(value, other, customizer, bitmask, stack) {
+    if (value === other) {
+      return true;
+    }
+    if (value == null || other == null || (!isObject(value) && !isObjectLike(other))) {
+      return value !== value && other !== other;
+    }
+    return baseIsEqualDeep(value, other, baseIsEqual, customizer, bitmask, stack);
+  }
+
+  /**
+   * A specialized version of `baseIsEqual` for arrays and objects which performs
+   * deep comparisons and tracks traversed objects enabling objects with circular
+   * references to be compared.
+   *
+   * @private
+   * @param {Object} object The object to compare.
+   * @param {Object} other The other object to compare.
+   * @param {Function} equalFunc The function to determine equivalents of values.
+   * @param {Function} [customizer] The function to customize comparisons.
+   * @param {number} [bitmask] The bitmask of comparison flags. See `baseIsEqual` for more details.
+   * @param {Object} [stack] Tracks traversed `object` and `other` objects.
+   * @returns {boolean} Returns `true` if the objects are equivalent, else `false`.
+   */
+  function baseIsEqualDeep(object, other, equalFunc, customizer, bitmask, stack) {
+    var objIsArr = isArray(object),
+        othIsArr = isArray(other),
+        objTag = arrayTag,
+        othTag = arrayTag;
+
+    if (!objIsArr) {
+      objTag = objectToString.call(object);
+      if (objTag == argsTag) {
+        objTag = objectTag;
+      }
+    }
+    if (!othIsArr) {
+      othTag = objectToString.call(other);
+      if (othTag == argsTag) {
+        othTag = objectTag;
+      }
+    }
+    var objIsObj = objTag == objectTag && !isHostObject(object),
+        othIsObj = othTag == objectTag && !isHostObject(other),
+        isSameTag = objTag == othTag;
+
+    if (isSameTag && !(objIsArr || objIsObj)) {
+      return equalByTag(object, other, objTag, equalFunc, customizer, bitmask);
+    }
+    var isPartial = bitmask & PARTIAL_COMPARE_FLAG;
+    if (!isPartial) {
+      var objIsWrapped = objIsObj && hasOwnProperty.call(object, '__wrapped__'),
+          othIsWrapped = othIsObj && hasOwnProperty.call(other, '__wrapped__');
+
+      if (objIsWrapped || othIsWrapped) {
+        return equalFunc(objIsWrapped ? object.value() : object, othIsWrapped ? other.value() : other, customizer, bitmask, stack);
+      }
+    }
+    if (!isSameTag) {
+      return false;
+    }
+    stack || (stack = []);
+    var stacked = find(stack, function(entry) {
+      return entry[0] === object;
+    });
+    if (stacked && stacked[1]) {
+      return stacked[1] == other;
+    }
+    stack.push([object, other]);
+    var result =  (objIsArr ? equalArrays : equalObjects)(object, other, equalFunc, customizer, bitmask, stack);
+    stack.pop();
+    return result;
+  }
+
+  /**
+   * The base implementation of `_.iteratee`.
+   *
+   * @private
+   * @param {*} [value=_.identity] The value to convert to an iteratee.
+   * @returns {Function} Returns the iteratee.
+   */
+  function baseIteratee(func) {
+    var type = typeof func;
+    if (type == 'function') {
+      return func;
+    }
+    return func == null
+      ? identity
+      : (type == 'object' ? baseMatches : baseProperty)(func);
+  }
+
+  /**
+   * The base implementation of `_.keys` which doesn't skip the constructor
+   * property of prototypes or treat sparse arrays as dense.
+   *
+   * @private
+   * @type Function
+   * @param {Object} object The object to query.
+   * @returns {Array} Returns the array of property names.
+   */
+  function baseKeys(object) {
+    return nativeKeys(Object(object));
+  }
+
+  /**
+   * The base implementation of `_.keysIn` which doesn't skip the constructor
+   * property of prototypes or treat sparse arrays as dense.
+   *
+   * @private
+   * @param {Object} object The object to query.
+   * @returns {Array} Returns the array of property names.
+   */
+  function baseKeysIn(object) {
+    object = object == null ? object : Object(object);
+
+    var result = [];
+    for (var key in object) {
+      result.push(key);
+    }
+    return result;
+  }
+
+  // Fallback for IE < 9 with es6-shim.
+  if (enumerate && !propertyIsEnumerable.call({ 'valueOf': 1 }, 'valueOf')) {
+    baseKeysIn = function(object) {
+      return iteratorToArray(enumerate(object));
+    };
+  }
+
+  /**
+   * The base implementation of `_.map` without support for iteratee shorthands.
+   *
+   * @private
+   * @param {Array|Object} collection The collection to iterate over.
+   * @param {Function} iteratee The function invoked per iteration.
+   * @returns {Array} Returns the new mapped array.
+   */
+  function baseMap(collection, iteratee) {
+    var index = -1,
+        result = isArrayLike(collection) ? Array(collection.length) : [];
+
+    baseEach(collection, function(value, key, collection) {
+      result[++index] = iteratee(value, key, collection);
+    });
+    return result;
+  }
+
+  /**
+   * The base implementation of `_.matches` which doesn't clone `source`.
+   *
+   * @private
+   * @param {Object} source The object of property values to match.
+   * @returns {Function} Returns the new function.
+   */
+  function baseMatches(source) {
+    var props = keys(source),
+        length = props.length;
+
+    return function(object) {
+      if (object == null) {
+        return !length;
+      }
+      object = Object(object);
+      while (length--) {
+        var key = props[length];
+        if (!(key in object && baseIsEqual(source[key], object[key], undefined, true))) {
+          return false;
+        }
+      }
+      return true;
+    };
+  }
+
+  /**
+   * The base implementation of `_.pick` without support for individual
+   * property names.
+   *
+   * @private
+   * @param {Object} object The source object.
+   * @param {string[]} props The property names to pick.
+   * @returns {Object} Returns the new object.
+   */
+  function basePick(object, props) {
+    object = Object(object);
+    return reduce(props, function(result, key) {
+      if (key in object) {
+        result[key] = object[key];
+      }
+      return result;
+    }, {});
+  }
+
+  /**
+   * The base implementation of `_.property` without support for deep paths.
+   *
+   * @private
+   * @param {string} key The key of the property to get.
+   * @returns {Function} Returns the new function.
+   */
+  function baseProperty(key) {
+    return function(object) {
+      return object == null ? undefined : object[key];
+    };
+  }
+
+  /**
+   * The base implementation of `_.slice` without an iteratee call guard.
+   *
+   * @private
+   * @param {Array} array The array to slice.
+   * @param {number} [start=0] The start position.
+   * @param {number} [end=array.length] The end position.
+   * @returns {Array} Returns the slice of `array`.
+   */
+  function baseSlice(array, start, end) {
+    var index = -1,
+        length = array.length;
+
+    if (start < 0) {
+      start = -start > length ? 0 : (length + start);
+    }
+    end = end > length ? length : end;
+    if (end < 0) {
+      end += length;
+    }
+    length = start > end ? 0 : ((end - start) >>> 0);
+    start >>>= 0;
+
+    var result = Array(length);
+    while (++index < length) {
+      result[index] = array[index + start];
+    }
+    return result;
+  }
+
+  /**
+   * Copies the values of `source` to `array`.
+   *
+   * @private
+   * @param {Array} source The array to copy values from.
+   * @param {Array} [array=[]] The array to copy values to.
+   * @returns {Array} Returns `array`.
+   */
+  function copyArray(source) {
+    return baseSlice(source, 0, source.length);
+  }
+
+  /**
+   * The base implementation of `_.some` without support for iteratee shorthands.
+   *
+   * @private
+   * @param {Array|Object} collection The collection to iterate over.
+   * @param {Function} predicate The function invoked per iteration.
+   * @returns {boolean} Returns `true` if any element passes the predicate check, else `false`.
+   */
+  function baseSome(collection, predicate) {
+    var result;
+
+    baseEach(collection, function(value, index, collection) {
+      result = predicate(value, index, collection);
+      return !result;
+    });
+    return !!result;
+  }
+
+  /**
+   * The base implementation of `wrapperValue` which returns the result of
+   * performing a sequence of actions on the unwrapped `value`, where each
+   * successive action is supplied the return value of the previous.
+   *
+   * @private
+   * @param {*} value The unwrapped value.
+   * @param {Array} actions Actions to perform to resolve the unwrapped value.
+   * @returns {*} Returns the resolved value.
+   */
+  function baseWrapperValue(value, actions) {
+    var result = value;
+    return reduce(actions, function(result, action) {
+      return action.func.apply(action.thisArg, arrayPush([result], action.args));
+    }, result);
+  }
+
+  /**
+   * Copies properties of `source` to `object`.
+   *
+   * @private
+   * @param {Object} source The object to copy properties from.
+   * @param {Array} props The property names to copy.
+   * @param {Object} [object={}] The object to copy properties to.
+   * @returns {Object} Returns `object`.
+   */
+  var copyObject = copyObjectWith;
+
+  /**
+   * This function is like `copyObject` except that it accepts a function to
+   * customize copied values.
+   *
+   * @private
+   * @param {Object} source The object to copy properties from.
+   * @param {Array} props The property names to copy.
+   * @param {Object} [object={}] The object to copy properties to.
+   * @param {Function} [customizer] The function to customize copied values.
+   * @returns {Object} Returns `object`.
+   */
+  function copyObjectWith(source, props, object, customizer) {
+    object || (object = {});
+
+    var index = -1,
+        length = props.length;
+
+    while (++index < length) {
+      var key = props[index],
+          newValue = customizer ? customizer(object[key], source[key], key, object, source) : source[key];
+
+      assignValue(object, key, newValue);
+    }
+    return object;
+  }
+
+  /**
+   * Creates a function like `_.assign`.
+   *
+   * @private
+   * @param {Function} assigner The function to assign values.
+   * @returns {Function} Returns the new assigner function.
+   */
+  function createAssigner(assigner) {
+    return rest(function(object, sources) {
+      var index = -1,
+          length = sources.length,
+          customizer = length > 1 ? sources[length - 1] : undefined;
+
+      customizer = typeof customizer == 'function' ? (length--, customizer) : undefined;
+      object = Object(object);
+      while (++index < length) {
+        var source = sources[index];
+        if (source) {
+          assigner(object, source, customizer);
+        }
+      }
+      return object;
+    });
+  }
+
+  /**
+   * Creates a `baseEach` or `baseEachRight` function.
+   *
+   * @private
+   * @param {Function} eachFunc The function to iterate over a collection.
+   * @param {boolean} [fromRight] Specify iterating from right to left.
+   * @returns {Function} Returns the new base function.
+   */
+  function createBaseEach(eachFunc, fromRight) {
+    return function(collection, iteratee) {
+      if (collection == null) {
+        return collection;
+      }
+      if (!isArrayLike(collection)) {
+        return eachFunc(collection, iteratee);
+      }
+      var length = collection.length,
+          index = fromRight ? length : -1,
+          iterable = Object(collection);
+
+      while ((fromRight ? index-- : ++index < length)) {
+        if (iteratee(iterable[index], index, iterable) === false) {
+          break;
+        }
+      }
+      return collection;
+    };
+  }
+
+  /**
+   * Creates a base function for methods like `_.forIn`.
+   *
+   * @private
+   * @param {boolean} [fromRight] Specify iterating from right to left.
+   * @returns {Function} Returns the new base function.
+   */
+  function createBaseFor(fromRight) {
+    return function(object, iteratee, keysFunc) {
+      var index = -1,
+          iterable = Object(object),
+          props = keysFunc(object),
+          length = props.length;
+
+      while (length--) {
+        var key = props[fromRight ? length : ++index];
+        if (iteratee(iterable[key], key, iterable) === false) {
+          break;
+        }
+      }
+      return object;
+    };
+  }
+
+  /**
+   * Creates a function that produces an instance of `Ctor` regardless of
+   * whether it was invoked as part of a `new` expression or by `call` or `apply`.
+   *
+   * @private
+   * @param {Function} Ctor The constructor to wrap.
+   * @returns {Function} Returns the new wrapped function.
+   */
+  function createCtorWrapper(Ctor) {
+    return function() {
+      // Use a `switch` statement to work with class constructors.
+      // See http://ecma-international.org/ecma-262/6.0/#sec-ecmascript-function-objects-call-thisargument-argumentslist
+      // for more details.
+      var args = arguments;
+      var thisBinding = baseCreate(Ctor.prototype),
+          result = Ctor.apply(thisBinding, args);
+
+      // Mimic the constructor's `return` behavior.
+      // See https://es5.github.io/#x13.2.2 for more details.
+      return isObject(result) ? result : thisBinding;
+    };
+  }
+
+  /**
+   * Creates a function that wraps `func` to invoke it with the optional `this`
+   * binding of `thisArg` and the `partials` prepended to those provided to
+   * the wrapper.
+   *
+   * @private
+   * @param {Function} func The function to wrap.
+   * @param {number} bitmask The bitmask of wrapper flags. See `createWrapper` for more details.
+   * @param {*} thisArg The `this` binding of `func`.
+   * @param {Array} partials The arguments to prepend to those provided to the new function.
+   * @returns {Function} Returns the new wrapped function.
+   */
+  function createPartialWrapper(func, bitmask, thisArg, partials) {
+    if (typeof func != 'function') {
+      throw new TypeError(FUNC_ERROR_TEXT);
+    }
+    var isBind = bitmask & BIND_FLAG,
+        Ctor = createCtorWrapper(func);
+
+    function wrapper() {
+      var argsIndex = -1,
+          argsLength = arguments.length,
+          leftIndex = -1,
+          leftLength = partials.length,
+          args = Array(leftLength + argsLength),
+          fn = (this && this !== root && this instanceof wrapper) ? Ctor : func;
+
+      while (++leftIndex < leftLength) {
+        args[leftIndex] = partials[leftIndex];
+      }
+      while (argsLength--) {
+        args[leftIndex++] = arguments[++argsIndex];
+      }
+      return fn.apply(isBind ? thisArg : this, args);
+    }
+    return wrapper;
+  }
+
+  /**
+   * A specialized version of `baseIsEqualDeep` for arrays with support for
+   * partial deep comparisons.
+   *
+   * @private
+   * @param {Array} array The array to compare.
+   * @param {Array} other The other array to compare.
+   * @param {Function} equalFunc The function to determine equivalents of values.
+   * @param {Function} [customizer] The function to customize comparisons.
+   * @param {number} [bitmask] The bitmask of comparison flags. See `baseIsEqual` for more details.
+   * @param {Object} [stack] Tracks traversed `array` and `other` objects.
+   * @returns {boolean} Returns `true` if the arrays are equivalent, else `false`.
+   */
+  function equalArrays(array, other, equalFunc, customizer, bitmask, stack) {
+    var index = -1,
+        isPartial = bitmask & PARTIAL_COMPARE_FLAG,
+        isUnordered = bitmask & UNORDERED_COMPARE_FLAG,
+        arrLength = array.length,
+        othLength = other.length;
+
+    if (arrLength != othLength && !(isPartial && othLength > arrLength)) {
+      return false;
+    }
+    var result = true;
+
+    // Ignore non-index properties.
+    while (++index < arrLength) {
+      var arrValue = array[index],
+          othValue = other[index];
+
+      var compared;
+      if (compared !== undefined) {
+        if (compared) {
+          continue;
+        }
+        result = false;
+        break;
+      }
+      // Recursively compare arrays (susceptible to call stack limits).
+      if (isUnordered) {
+        if (!baseSome(other, function(othValue) {
+              return arrValue === othValue || equalFunc(arrValue, othValue, customizer, bitmask, stack);
+            })) {
+          result = false;
+          break;
+        }
+      } else if (!(arrValue === othValue || equalFunc(arrValue, othValue, customizer, bitmask, stack))) {
+        result = false;
+        break;
+      }
+    }
+    return result;
+  }
+
+  /**
+   * A specialized version of `baseIsEqualDeep` for comparing objects of
+   * the same `toStringTag`.
+   *
+   * **Note:** This function only supports comparing values with tags of
+   * `Boolean`, `Date`, `Error`, `Number`, `RegExp`, or `String`.
+   *
+   * @private
+   * @param {Object} object The object to compare.
+   * @param {Object} other The other object to compare.
+   * @param {string} tag The `toStringTag` of the objects to compare.
+   * @param {Function} equalFunc The function to determine equivalents of values.
+   * @param {Function} [customizer] The function to customize comparisons.
+   * @param {number} [bitmask] The bitmask of comparison flags. See `baseIsEqual` for more details.
+   * @returns {boolean} Returns `true` if the objects are equivalent, else `false`.
+   */
+  function equalByTag(object, other, tag, equalFunc, customizer, bitmask) {
+    switch (tag) {
+
+      case boolTag:
+      case dateTag:
+        // Coerce dates and booleans to numbers, dates to milliseconds and booleans
+        // to `1` or `0` treating invalid dates coerced to `NaN` as not equal.
+        return +object == +other;
+
+      case errorTag:
+        return object.name == other.name && object.message == other.message;
+
+      case numberTag:
+        // Treat `NaN` vs. `NaN` as equal.
+        return (object != +object) ? other != +other : object == +other;
+
+      case regexpTag:
+      case stringTag:
+        // Coerce regexes to strings and treat strings primitives and string
+        // objects as equal. See https://es5.github.io/#x15.10.6.4 for more details.
+        return object == (other + '');
+
+    }
+    return false;
+  }
+
+  /**
+   * A specialized version of `baseIsEqualDeep` for objects with support for
+   * partial deep comparisons.
+   *
+   * @private
+   * @param {Object} object The object to compare.
+   * @param {Object} other The other object to compare.
+   * @param {Function} equalFunc The function to determine equivalents of values.
+   * @param {Function} [customizer] The function to customize comparisons.
+   * @param {number} [bitmask] The bitmask of comparison flags. See `baseIsEqual` for more details.
+   * @param {Object} [stack] Tracks traversed `object` and `other` objects.
+   * @returns {boolean} Returns `true` if the objects are equivalent, else `false`.
+   */
+  function equalObjects(object, other, equalFunc, customizer, bitmask, stack) {
+    var isPartial = bitmask & PARTIAL_COMPARE_FLAG,
+        isUnordered = bitmask & UNORDERED_COMPARE_FLAG,
+        objProps = keys(object),
+        objLength = objProps.length,
+        othProps = keys(other),
+        othLength = othProps.length;
+
+    if (objLength != othLength && !isPartial) {
+      return false;
+    }
+    var index = objLength;
+    while (index--) {
+      var key = objProps[index];
+      if (!(isPartial ? key in other : hasOwnProperty.call(other, key)) ||
+          !(isUnordered || key == othProps[index])) {
+        return false;
+      }
+    }
+    var result = true;
+
+    var skipCtor = isPartial;
+    while (++index < objLength) {
+      key = objProps[index];
+      var objValue = object[key],
+          othValue = other[key];
+
+      var compared;
+      // Recursively compare objects (susceptible to call stack limits).
+      if (!(compared === undefined
+            ? (objValue === othValue || equalFunc(objValue, othValue, customizer, bitmask, stack))
+            : compared
+          )) {
+        result = false;
+        break;
+      }
+      skipCtor || (skipCtor = key == 'constructor');
+    }
+    if (result && !skipCtor) {
+      var objCtor = object.constructor,
+          othCtor = other.constructor;
+
+      // Non `Object` object instances with different constructors are not equal.
+      if (objCtor != othCtor &&
+          ('constructor' in object && 'constructor' in other) &&
+          !(typeof objCtor == 'function' && objCtor instanceof objCtor &&
+            typeof othCtor == 'function' && othCtor instanceof othCtor)) {
+        result = false;
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Gets the "length" property value of `object`.
+   *
+   * **Note:** This function is used to avoid a [JIT bug](https://bugs.webkit.org/show_bug.cgi?id=142792)
+   * that affects Safari on at least iOS 8.1-8.3 ARM64.
+   *
+   * @private
+   * @param {Object} object The object to query.
+   * @returns {*} Returns the "length" value.
+   */
+  var getLength = baseProperty('length');
+
+  /**
+   * Creates an array of index keys for `object` values of arrays,
+   * `arguments` objects, and strings, otherwise `null` is returned.
+   *
+   * @private
+   * @param {Object} object The object to query.
+   * @returns {Array|null} Returns index keys, else `null`.
+   */
+  function indexKeys(object) {
+    var length = object ? object.length : undefined;
+    return (isLength(length) && (isArray(object) || isString(object) || isArguments(object)))
+      ? baseTimes(length, String)
+      : null;
+  }
+
+  /**
+   * Checks if `value` is likely a prototype object.
+   *
+   * @private
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is a prototype, else `false`.
+   */
+  function isPrototype(value) {
+    var Ctor = value && value.constructor,
+        proto = (typeof Ctor == 'function' && Ctor.prototype) || objectProto;
+
+    return value === proto;
+  }
+
+  /**
+   * Converts `value` to a function if it's not one.
+   *
+   * @private
+   * @param {*} value The value to process.
+   * @returns {Function} Returns the function.
+   */
+  function toFunction(value) {
+    return typeof value == 'function' ? value : identity;
+  }
+
+  /**
+   * Creates a clone of `wrapper`.
+   *
+   * @private
+   * @param {Object} wrapper The wrapper to clone.
+   * @returns {Object} Returns the cloned wrapper.
+   */
+  function wrapperClone(wrapper) {
+    var result = new LodashWrapper(wrapper.__wrapped__, wrapper.__chain__);
+    result.__actions__ = copyArray(wrapper.__actions__);
+    return result;
+  }
+
+  /*------------------------------------------------------------------------*/
+
+  /**
+   * Creates an array with all falsey values removed. The values `false`, `null`,
+   * `0`, `""`, `undefined`, and `NaN` are falsey.
+   *
+   * @static
+   * @memberOf _
+   * @category Array
+   * @param {Array} array The array to compact.
+   * @returns {Array} Returns the new array of filtered values.
+   * @example
+   *
+   * _.compact([0, 1, false, 2, '', 3]);
+   * // => [1, 2, 3]
+   */
+  function compact(array) {
+    return baseFilter(array, Boolean);
+  }
+
+  /**
+   * Creates a new array concatenating `array` with any additional arrays
+   * and/or values.
+   *
+   * @static
+   * @memberOf _
+   * @category Array
+   * @param {Array} array The array to concatenate.
+   * @param {...*} [values] The values to concatenate.
+   * @returns {Array} Returns the new concatenated array.
+   * @example
+   *
+   * var array = [1];
+   * var other = _.concat(array, 2, [3], [[4]]);
+   *
+   * console.log(other);
+   * // => [1, 2, 3, [4]]
+   *
+   * console.log(array);
+   * // => [1]
+   */
+  var concat = rest(function(array, values) {
+    values = baseFlatten(values);
+    return arrayConcat(isArray(array) ? array : [Object(array)], values);
+  });
+
+  /**
+   * Flattens `array` a single level.
+   *
+   * @static
+   * @memberOf _
+   * @category Array
+   * @param {Array} array The array to flatten.
+   * @returns {Array} Returns the new flattened array.
+   * @example
+   *
+   * _.flatten([1, [2, 3, [4]]]);
+   * // => [1, 2, 3, [4]]
+   */
+  function flatten(array) {
+    var length = array ? array.length : 0;
+    return length ? baseFlatten(array) : [];
+  }
+
+  /**
+   * This method is like `_.flatten` except that it recursively flattens `array`.
+   *
+   * @static
+   * @memberOf _
+   * @category Array
+   * @param {Array} array The array to recursively flatten.
+   * @returns {Array} Returns the new flattened array.
+   * @example
+   *
+   * _.flattenDeep([1, [2, 3, [4]]]);
+   * // => [1, 2, 3, 4]
+   */
+  function flattenDeep(array) {
+    var length = array ? array.length : 0;
+    return length ? baseFlatten(array, true) : [];
+  }
+
+  /**
+   * Gets the first element of `array`.
+   *
+   * @static
+   * @memberOf _
+   * @alias first
+   * @category Array
+   * @param {Array} array The array to query.
+   * @returns {*} Returns the first element of `array`.
+   * @example
+   *
+   * _.head([1, 2, 3]);
+   * // => 1
+   *
+   * _.head([]);
+   * // => undefined
+   */
+  function head(array) {
+    return array ? array[0] : undefined;
+  }
+
+  /**
+   * Gets the index at which the first occurrence of `value` is found in `array`
+   * using [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
+   * for equality comparisons. If `fromIndex` is negative, it's used as the offset
+   * from the end of `array`. If `array` is sorted providing `true` for `fromIndex`
+   * performs a faster binary search.
+   *
+   * @static
+   * @memberOf _
+   * @category Array
+   * @param {Array} array The array to search.
+   * @param {*} value The value to search for.
+   * @param {number} [fromIndex=0] The index to search from.
+   * @returns {number} Returns the index of the matched value, else `-1`.
+   * @example
+   *
+   * _.indexOf([1, 2, 1, 2], 2);
+   * // => 1
+   *
+   * // using `fromIndex`
+   * _.indexOf([1, 2, 1, 2], 2, 2);
+   * // => 3
+   */
+  function indexOf(array, value, fromIndex) {
+    var length = array ? array.length : 0;
+    if (typeof fromIndex == 'number') {
+      fromIndex = fromIndex < 0 ? nativeMax(length + fromIndex, 0) : fromIndex;
+    } else {
+      fromIndex = 0;
+    }
+    var index = (fromIndex || 0) - 1,
+        isReflexive = value === value;
+
+    while (++index < length) {
+      var other = array[index];
+      if ((isReflexive ? other === value : other !== other)) {
+        return index;
+      }
+    }
+    return -1;
+  }
+
+  /**
+   * Gets the last element of `array`.
+   *
+   * @static
+   * @memberOf _
+   * @category Array
+   * @param {Array} array The array to query.
+   * @returns {*} Returns the last element of `array`.
+   * @example
+   *
+   * _.last([1, 2, 3]);
+   * // => 3
+   */
+  function last(array) {
+    var length = array ? array.length : 0;
+    return length ? array[length - 1] : undefined;
+  }
+
+  /**
+   * Creates a slice of `array` from `start` up to, but not including, `end`.
+   *
+   * **Note:** This method is used instead of [`Array#slice`](https://mdn.io/Array/slice)
+   * to ensure dense arrays are returned.
+   *
+   * @static
+   * @memberOf _
+   * @category Array
+   * @param {Array} array The array to slice.
+   * @param {number} [start=0] The start position.
+   * @param {number} [end=array.length] The end position.
+   * @returns {Array} Returns the slice of `array`.
+   */
+  function slice(array, start, end) {
+    var length = array ? array.length : 0;
+    return length ? baseSlice(array, start, end) : [];
+  }
+
+  /*------------------------------------------------------------------------*/
+
+  /**
+   * Creates a `lodash` object that wraps `value` with explicit method chaining enabled.
+   * The result of such method chaining must be unwrapped with `_#value`.
+   *
+   * @static
+   * @memberOf _
+   * @category Seq
+   * @param {*} value The value to wrap.
+   * @returns {Object} Returns the new `lodash` wrapper instance.
+   * @example
+   *
+   * var users = [
+   *   { 'user': 'barney',  'age': 36 },
+   *   { 'user': 'fred',    'age': 40 },
+   *   { 'user': 'pebbles', 'age': 1 }
+   * ];
+   *
+   * var youngest = _
+   *   .chain(users)
+   *   .sortBy('age')
+   *   .map(function(o) {
+   *     return o.user + ' is ' + o.age;
+   *   })
+   *   .head()
+   *   .value();
+   * // => 'pebbles is 1'
+   */
+  function chain(value) {
+    var result = lodash(value);
+    result.__chain__ = true;
+    return result;
+  }
+
+  /**
+   * This method invokes `interceptor` and returns `value`. The interceptor is
+   * invoked with one argument; (value). The purpose of this method is to "tap into"
+   * a method chain in order to perform operations on intermediate results within
+   * the chain.
+   *
+   * @static
+   * @memberOf _
+   * @category Seq
+   * @param {*} value The value to provide to `interceptor`.
+   * @param {Function} interceptor The function to invoke.
+   * @returns {*} Returns `value`.
+   * @example
+   *
+   * _([1, 2, 3])
+   *  .tap(function(array) {
+   *    array.pop();
+   *  })
+   *  .reverse()
+   *  .value();
+   * // => [2, 1]
+   */
+  function tap(value, interceptor) {
+    interceptor(value);
+    return value;
+  }
+
+  /**
+   * This method is like `_.tap` except that it returns the result of `interceptor`.
+   *
+   * @static
+   * @memberOf _
+   * @category Seq
+   * @param {*} value The value to provide to `interceptor`.
+   * @param {Function} interceptor The function to invoke.
+   * @returns {*} Returns the result of `interceptor`.
+   * @example
+   *
+   * _('  abc  ')
+   *  .chain()
+   *  .trim()
+   *  .thru(function(value) {
+   *    return [value];
+   *  })
+   *  .value();
+   * // => ['abc']
+   */
+  function thru(value, interceptor) {
+    return interceptor(value);
+  }
+
+  /**
+   * Enables explicit method chaining on the wrapper object.
+   *
+   * @name chain
+   * @memberOf _
+   * @category Seq
+   * @returns {Object} Returns the new `lodash` wrapper instance.
+   * @example
+   *
+   * var users = [
+   *   { 'user': 'barney', 'age': 36 },
+   *   { 'user': 'fred',   'age': 40 }
+   * ];
+   *
+   * // without explicit chaining
+   * _(users).head();
+   * // => { 'user': 'barney', 'age': 36 }
+   *
+   * // with explicit chaining
+   * _(users)
+   *   .chain()
+   *   .head()
+   *   .pick('user')
+   *   .value();
+   * // => { 'user': 'barney' }
+   */
+  function wrapperChain() {
+    return chain(this);
+  }
+
+  /**
+   * Executes the chained sequence to extract the unwrapped value.
+   *
+   * @name value
+   * @memberOf _
+   * @alias run, toJSON, valueOf
+   * @category Seq
+   * @returns {*} Returns the resolved unwrapped value.
+   * @example
+   *
+   * _([1, 2, 3]).value();
+   * // => [1, 2, 3]
+   */
+  function wrapperValue() {
+    return baseWrapperValue(this.__wrapped__, this.__actions__);
+  }
+
+  /*------------------------------------------------------------------------*/
+
+  /**
+   * Checks if `predicate` returns truthy for **all** elements of `collection`.
+   * Iteration is stopped once `predicate` returns falsey. The predicate is
+   * invoked with three arguments: (value, index|key, collection).
+   *
+   * @static
+   * @memberOf _
+   * @category Collection
+   * @param {Array|Object} collection The collection to iterate over.
+   * @param {Function|Object|string} [predicate=_.identity] The function invoked per iteration.
+   * @param- {Object} [guard] Enables use as an iteratee for functions like `_.map`.
+   * @returns {boolean} Returns `true` if all elements pass the predicate check, else `false`.
+   * @example
+   *
+   * _.every([true, 1, null, 'yes'], Boolean);
+   * // => false
+   *
+   * var users = [
+   *   { 'user': 'barney', 'active': false },
+   *   { 'user': 'fred',   'active': false }
+   * ];
+   *
+   * // using the `_.matches` iteratee shorthand
+   * _.every(users, { 'user': 'barney', 'active': false });
+   * // => false
+   *
+   * // using the `_.matchesProperty` iteratee shorthand
+   * _.every(users, ['active', false]);
+   * // => true
+   *
+   * // using the `_.property` iteratee shorthand
+   * _.every(users, 'active');
+   * // => false
+   */
+  function every(collection, predicate, guard) {
+    predicate = guard ? undefined : predicate;
+    return baseEvery(collection, baseIteratee(predicate));
+  }
+
+  /**
+   * Iterates over elements of `collection`, returning an array of all elements
+   * `predicate` returns truthy for. The predicate is invoked with three arguments:
+   * (value, index|key, collection).
+   *
+   * @static
+   * @memberOf _
+   * @category Collection
+   * @param {Array|Object} collection The collection to iterate over.
+   * @param {Function|Object|string} [predicate=_.identity] The function invoked per iteration.
+   * @returns {Array} Returns the new filtered array.
+   * @example
+   *
+   * var users = [
+   *   { 'user': 'barney', 'age': 36, 'active': true },
+   *   { 'user': 'fred',   'age': 40, 'active': false }
+   * ];
+   *
+   * _.filter(users, function(o) { return !o.active; });
+   * // => objects for ['fred']
+   *
+   * // using the `_.matches` iteratee shorthand
+   * _.filter(users, { 'age': 36, 'active': true });
+   * // => objects for ['barney']
+   *
+   * // using the `_.matchesProperty` iteratee shorthand
+   * _.filter(users, ['active', false]);
+   * // => objects for ['fred']
+   *
+   * // using the `_.property` iteratee shorthand
+   * _.filter(users, 'active');
+   * // => objects for ['barney']
+   */
+  function filter(collection, predicate) {
+    return baseFilter(collection, baseIteratee(predicate));
+  }
+
+  /**
+   * Iterates over elements of `collection`, returning the first element
+   * `predicate` returns truthy for. The predicate is invoked with three arguments:
+   * (value, index|key, collection).
+   *
+   * @static
+   * @memberOf _
+   * @category Collection
+   * @param {Array|Object} collection The collection to search.
+   * @param {Function|Object|string} [predicate=_.identity] The function invoked per iteration.
+   * @returns {*} Returns the matched element, else `undefined`.
+   * @example
+   *
+   * var users = [
+   *   { 'user': 'barney',  'age': 36, 'active': true },
+   *   { 'user': 'fred',    'age': 40, 'active': false },
+   *   { 'user': 'pebbles', 'age': 1,  'active': true }
+   * ];
+   *
+   * _.find(users, function(o) { return o.age < 40; });
+   * // => object for 'barney'
+   *
+   * // using the `_.matches` iteratee shorthand
+   * _.find(users, { 'age': 1, 'active': true });
+   * // => object for 'pebbles'
+   *
+   * // using the `_.matchesProperty` iteratee shorthand
+   * _.find(users, ['active', false]);
+   * // => object for 'fred'
+   *
+   * // using the `_.property` iteratee shorthand
+   * _.find(users, 'active');
+   * // => object for 'barney'
+   */
+  function find(collection, predicate) {
+    return baseFind(collection, baseIteratee(predicate), baseEach);
+  }
+
+  /**
+   * Iterates over elements of `collection` invoking `iteratee` for each element.
+   * The iteratee is invoked with three arguments: (value, index|key, collection).
+   * Iteratee functions may exit iteration early by explicitly returning `false`.
+   *
+   * **Note:** As with other "Collections" methods, objects with a "length" property
+   * are iterated like arrays. To avoid this behavior use `_.forIn` or `_.forOwn`
+   * for object iteration.
+   *
+   * @static
+   * @memberOf _
+   * @alias each
+   * @category Collection
+   * @param {Array|Object} collection The collection to iterate over.
+   * @param {Function} [iteratee=_.identity] The function invoked per iteration.
+   * @returns {Array|Object} Returns `collection`.
+   * @example
+   *
+   * _([1, 2]).forEach(function(value) {
+   *   console.log(value);
+   * });
+   * // => logs `1` then `2`
+   *
+   * _.forEach({ 'a': 1, 'b': 2 }, function(value, key) {
+   *   console.log(key);
+   * });
+   * // => logs 'a' then 'b' (iteration order is not guaranteed)
+   */
+  function forEach(collection, iteratee) {
+    return baseEach(collection, toFunction(iteratee));
+  }
+
+  /**
+   * Invokes the method at `path` of each element in `collection`, returning
+   * an array of the results of each invoked method. Any additional arguments
+   * are provided to each invoked method. If `methodName` is a function it's
+   * invoked for, and `this` bound to, each element in `collection`.
+   *
+   * @static
+   * @memberOf _
+   * @category Collection
+   * @param {Array|Object} collection The collection to iterate over.
+   * @param {Array|Function|string} path The path of the method to invoke or
+   *  the function invoked per iteration.
+   * @param {...*} [args] The arguments to invoke each method with.
+   * @returns {Array} Returns the array of results.
+   * @example
+   *
+   * _.invokeMap([[5, 1, 7], [3, 2, 1]], 'sort');
+   * // => [[1, 5, 7], [1, 2, 3]]
+   *
+   * _.invokeMap([123, 456], String.prototype.split, '');
+   * // => [['1', '2', '3'], ['4', '5', '6']]
+   */
+  var invokeMap = rest(function(collection, path, args) {
+    var isFunc = typeof path == 'function';
+    return baseMap(collection, function(value) {
+      var func = isFunc ? path : value[path];
+      return func == null ? func : func.apply(value, args);
+    });
+  });
+
+  /**
+   * Creates an array of values by running each element in `collection` through
+   * `iteratee`. The iteratee is invoked with three arguments:
+   * (value, index|key, collection).
+   *
+   * Many lodash methods are guarded to work as iteratees for methods like
+   * `_.every`, `_.filter`, `_.map`, `_.mapValues`, `_.reject`, and `_.some`.
+   *
+   * The guarded methods are:
+   * `ary`, `curry`, `curryRight`, `drop`, `dropRight`, `every`, `fill`,
+   * `invert`, `parseInt`, `random`, `range`, `rangeRight`, `slice`, `some`,
+   * `sortBy`, `take`, `takeRight`, `template`, `trim`, `trimEnd`, `trimStart`,
+   * and `words`
+   *
+   * @static
+   * @memberOf _
+   * @category Collection
+   * @param {Array|Object} collection The collection to iterate over.
+   * @param {Function|Object|string} [iteratee=_.identity] The function invoked per iteration.
+   * @returns {Array} Returns the new mapped array.
+   * @example
+   *
+   * function square(n) {
+   *   return n * n;
+   * }
+   *
+   * _.map([1, 2], square);
+   * // => [3, 6]
+   *
+   * _.map({ 'a': 1, 'b': 2 }, square);
+   * // => [3, 6] (iteration order is not guaranteed)
+   *
+   * var users = [
+   *   { 'user': 'barney' },
+   *   { 'user': 'fred' }
+   * ];
+   *
+   * // using the `_.property` iteratee shorthand
+   * _.map(users, 'user');
+   * // => ['barney', 'fred']
+   */
+  function map(collection, iteratee) {
+    return baseMap(collection, baseIteratee(iteratee));
+  }
+
+  /**
+   * Reduces `collection` to a value which is the accumulated result of running
+   * each element in `collection` through `iteratee`, where each successive
+   * invocation is supplied the return value of the previous. If `accumulator`
+   * is not provided the first element of `collection` is used as the initial
+   * value. The iteratee is invoked with four arguments:
+   * (accumulator, value, index|key, collection).
+   *
+   * Many lodash methods are guarded to work as iteratees for methods like
+   * `_.reduce`, `_.reduceRight`, and `_.transform`.
+   *
+   * The guarded methods are:
+   * `assign`, `defaults`, `defaultsDeep`, `includes`, `merge`, `orderBy`,
+   * and `sortBy`
+   *
+   * @static
+   * @memberOf _
+   * @category Collection
+   * @param {Array|Object} collection The collection to iterate over.
+   * @param {Function} [iteratee=_.identity] The function invoked per iteration.
+   * @param {*} [accumulator] The initial value.
+   * @returns {*} Returns the accumulated value.
+   * @example
+   *
+   * _.reduce([1, 2], function(sum, n) {
+   *   return sum + n;
+   * });
+   * // => 3
+   *
+   * _.reduce({ 'a': 1, 'b': 2, 'c': 1 }, function(result, value, key) {
+   *   (result[value] || (result[value] = [])).push(key);
+   *   return result;
+   * }, {});
+   * // => { '1': ['a', 'c'], '2': ['b'] } (iteration order is not guaranteed)
+   */
+  function reduce(collection, iteratee, accumulator) {
+    return baseReduce(collection, baseIteratee(iteratee), accumulator, arguments.length < 3, baseEach);
+  }
+
+  /**
+   * Gets the size of `collection` by returning its length for array-like
+   * values or the number of own enumerable properties for objects.
+   *
+   * @static
+   * @memberOf _
+   * @category Collection
+   * @param {Array|Object} collection The collection to inspect.
+   * @returns {number} Returns the collection size.
+   * @example
+   *
+   * _.size([1, 2, 3]);
+   * // => 3
+   *
+   * _.size({ 'a': 1, 'b': 2 });
+   * // => 2
+   *
+   * _.size('pebbles');
+   * // => 7
+   */
+  function size(collection) {
+    if (collection == null) {
+      return 0;
+    }
+    collection = isArrayLike(collection) ? collection : keys(collection);
+    return collection.length;
+  }
+
+  /**
+   * Checks if `predicate` returns truthy for **any** element of `collection`.
+   * Iteration is stopped once `predicate` returns truthy. The predicate is
+   * invoked with three arguments: (value, index|key, collection).
+   *
+   * @static
+   * @memberOf _
+   * @category Collection
+   * @param {Array|Object} collection The collection to iterate over.
+   * @param {Function|Object|string} [predicate=_.identity] The function invoked per iteration.
+   * @param- {Object} [guard] Enables use as an iteratee for functions like `_.map`.
+   * @returns {boolean} Returns `true` if any element passes the predicate check, else `false`.
+   * @example
+   *
+   * _.some([null, 0, 'yes', false], Boolean);
+   * // => true
+   *
+   * var users = [
+   *   { 'user': 'barney', 'active': true },
+   *   { 'user': 'fred',   'active': false }
+   * ];
+   *
+   * // using the `_.matches` iteratee shorthand
+   * _.some(users, { 'user': 'barney', 'active': false });
+   * // => false
+   *
+   * // using the `_.matchesProperty` iteratee shorthand
+   * _.some(users, ['active', false]);
+   * // => true
+   *
+   * // using the `_.property` iteratee shorthand
+   * _.some(users, 'active');
+   * // => true
+   */
+  function some(collection, predicate, guard) {
+    predicate = guard ? undefined : predicate;
+    return baseSome(collection, baseIteratee(predicate));
+  }
+
+  /**
+   * Creates an array of elements, sorted in ascending order by the results of
+   * running each element in a collection through each iteratee. This method
+   * performs a stable sort, that is, it preserves the original sort order of
+   * equal elements. The iteratees are invoked with one argument: (value).
+   *
+   * @static
+   * @memberOf _
+   * @category Collection
+   * @param {Array|Object} collection The collection to iterate over.
+   * @param {...(Function|Function[]|Object|Object[]|string|string[])} [iteratees=[_.identity]]
+   *  The iteratees to sort by, specified individually or in arrays.
+   * @returns {Array} Returns the new sorted array.
+   * @example
+   *
+   * var users = [
+   *   { 'user': 'fred',   'age': 48 },
+   *   { 'user': 'barney', 'age': 36 },
+   *   { 'user': 'fred',   'age': 42 },
+   *   { 'user': 'barney', 'age': 34 }
+   * ];
+   *
+   * _.sortBy(users, function(o) { return o.user; });
+   * // => objects for [['barney', 36], ['barney', 34], ['fred', 48], ['fred', 42]]
+   *
+   * _.sortBy(users, ['user', 'age']);
+   * // => objects for [['barney', 34], ['barney', 36], ['fred', 42], ['fred', 48]]
+   *
+   * _.sortBy(users, 'user', function(o) {
+   *   return Math.floor(o.age / 10);
+   * });
+   * // => objects for [['barney', 36], ['barney', 34], ['fred', 48], ['fred', 42]]
+   */
+  function sortBy(collection, iteratee) {
+    var index = 0;
+    iteratee = baseIteratee(iteratee);
+
+    return baseMap(baseMap(collection, function(value, key, collection) {
+      return { 'value': value, 'index': index++, 'criteria': iteratee(value, key, collection) };
+    }).sort(function(object, other) {
+      return compareAscending(object.criteria, other.criteria) || (object.index - other.index);
+    }), baseProperty('value'));
+  }
+
+  /*------------------------------------------------------------------------*/
+
+  /**
+   * Gets the timestamp of the number of milliseconds that have elapsed since
+   * the Unix epoch (1 January 1970 00:00:00 UTC).
+   *
+   * @static
+   * @memberOf _
+   * @type Function
+   * @category Date
+   * @returns {number} Returns the timestamp.
+   * @example
+   *
+   * _.defer(function(stamp) {
+   *   console.log(_.now() - stamp);
+   * }, _.now());
+   * // => logs the number of milliseconds it took for the deferred function to be invoked
+   */
+  var now = Date.now;
+
+  /*------------------------------------------------------------------------*/
+
+  /**
+   * Creates a function that invokes `func`, with the `this` binding and arguments
+   * of the created function, while it's called less than `n` times. Subsequent
+   * calls to the created function return the result of the last `func` invocation.
+   *
+   * @static
+   * @memberOf _
+   * @category Function
+   * @param {number} n The number of calls at which `func` is no longer invoked.
+   * @param {Function} func The function to restrict.
+   * @returns {Function} Returns the new restricted function.
+   * @example
+   *
+   * jQuery(element).on('click', _.before(5, addContactToList));
+   * // => allows adding up to 4 contacts to the list
+   */
+  function before(n, func) {
+    var result;
+    if (typeof func != 'function') {
+      throw new TypeError(FUNC_ERROR_TEXT);
+    }
+    n = toInteger(n);
+    return function() {
+      if (--n > 0) {
+        result = func.apply(this, arguments);
+      }
+      if (n <= 1) {
+        func = undefined;
+      }
+      return result;
+    };
+  }
+
+  /**
+   * Creates a function that invokes `func` with the `this` binding of `thisArg`
+   * and prepends any additional `_.bind` arguments to those provided to the
+   * bound function.
+   *
+   * The `_.bind.placeholder` value, which defaults to `_` in monolithic builds,
+   * may be used as a placeholder for partially applied arguments.
+   *
+   * **Note:** Unlike native `Function#bind` this method doesn't set the "length"
+   * property of bound functions.
+   *
+   * @static
+   * @memberOf _
+   * @category Function
+   * @param {Function} func The function to bind.
+   * @param {*} thisArg The `this` binding of `func`.
+   * @param {...*} [partials] The arguments to be partially applied.
+   * @returns {Function} Returns the new bound function.
+   * @example
+   *
+   * var greet = function(greeting, punctuation) {
+   *   return greeting + ' ' + this.user + punctuation;
+   * };
+   *
+   * var object = { 'user': 'fred' };
+   *
+   * var bound = _.bind(greet, object, 'hi');
+   * bound('!');
+   * // => 'hi fred!'
+   *
+   * // using placeholders
+   * var bound = _.bind(greet, object, _, '!');
+   * bound('hi');
+   * // => 'hi fred!'
+   */
+  var bind = rest(function(func, thisArg, partials) {
+    return createPartialWrapper(func, BIND_FLAG | PARTIAL_FLAG, thisArg, partials);
+  });
+
+  /**
+   * Defers invoking the `func` until the current call stack has cleared. Any
+   * additional arguments are provided to `func` when it's invoked.
+   *
+   * @static
+   * @memberOf _
+   * @category Function
+   * @param {Function} func The function to defer.
+   * @param {...*} [args] The arguments to invoke `func` with.
+   * @returns {number} Returns the timer id.
+   * @example
+   *
+   * _.defer(function(text) {
+   *   console.log(text);
+   * }, 'deferred');
+   * // logs 'deferred' after one or more milliseconds
+   */
+  var defer = rest(function(func, args) {
+    return baseDelay(func, 1, args);
+  });
+
+  /**
+   * Invokes `func` after `wait` milliseconds. Any additional arguments are
+   * provided to `func` when it's invoked.
+   *
+   * @static
+   * @memberOf _
+   * @category Function
+   * @param {Function} func The function to delay.
+   * @param {number} wait The number of milliseconds to delay invocation.
+   * @param {...*} [args] The arguments to invoke `func` with.
+   * @returns {number} Returns the timer id.
+   * @example
+   *
+   * _.delay(function(text) {
+   *   console.log(text);
+   * }, 1000, 'later');
+   * // => logs 'later' after one second
+   */
+  var delay = rest(function(func, wait, args) {
+    return baseDelay(func, toNumber(wait) || 0, args);
+  });
+
+  /**
+   * Creates a function that negates the result of the predicate `func`. The
+   * `func` predicate is invoked with the `this` binding and arguments of the
+   * created function.
+   *
+   * @static
+   * @memberOf _
+   * @category Function
+   * @param {Function} predicate The predicate to negate.
+   * @returns {Function} Returns the new function.
+   * @example
+   *
+   * function isEven(n) {
+   *   return n % 2 == 0;
+   * }
+   *
+   * _.filter([1, 2, 3, 4, 5, 6], _.negate(isEven));
+   * // => [1, 3, 5]
+   */
+  function negate(predicate) {
+    if (typeof predicate != 'function') {
+      throw new TypeError(FUNC_ERROR_TEXT);
+    }
+    return function() {
+      return !predicate.apply(this, arguments);
+    };
+  }
+
+  /**
+   * Creates a function that is restricted to invoking `func` once. Repeat calls
+   * to the function return the value of the first invocation. The `func` is
+   * invoked with the `this` binding and arguments of the created function.
+   *
+   * @static
+   * @memberOf _
+   * @category Function
+   * @param {Function} func The function to restrict.
+   * @returns {Function} Returns the new restricted function.
+   * @example
+   *
+   * var initialize = _.once(createApplication);
+   * initialize();
+   * initialize();
+   * // `initialize` invokes `createApplication` once
+   */
+  function once(func) {
+    return before(2, func);
+  }
+
+  /**
+   * Creates a function that invokes `func` with the `this` binding of the
+   * created function and arguments from `start` and beyond provided as an array.
+   *
+   * **Note:** This method is based on the [rest parameter](https://mdn.io/rest_parameters).
+   *
+   * @static
+   * @memberOf _
+   * @category Function
+   * @param {Function} func The function to apply a rest parameter to.
+   * @param {number} [start=func.length-1] The start position of the rest parameter.
+   * @returns {Function} Returns the new function.
+   * @example
+   *
+   * var say = _.rest(function(what, names) {
+   *   return what + ' ' + _.initial(names).join(', ') +
+   *     (_.size(names) > 1 ? ', & ' : '') + _.last(names);
+   * });
+   *
+   * say('hello', 'fred', 'barney', 'pebbles');
+   * // => 'hello fred, barney, & pebbles'
+   */
+  function rest(func, start) {
+    if (typeof func != 'function') {
+      throw new TypeError(FUNC_ERROR_TEXT);
+    }
+    start = nativeMax(start === undefined ? (func.length - 1) : toInteger(start), 0);
+    return function() {
+      var args = arguments,
+          index = -1,
+          length = nativeMax(args.length - start, 0),
+          array = Array(length);
+
+      while (++index < length) {
+        array[index] = args[start + index];
+      }
+      var otherArgs = Array(start + 1);
+      index = -1;
+      while (++index < start) {
+        otherArgs[index] = args[index];
+      }
+      otherArgs[start] = array;
+      return func.apply(this, otherArgs);
+    };
+  }
+
+  /*------------------------------------------------------------------------*/
+
+  /**
+   * Creates a shallow clone of `value`.
+   *
+   * **Note:** This method is loosely based on the
+   * [structured clone algorithm](https://mdn.io/Structured_clone_algorithm)
+   * and supports cloning arrays, array buffers, booleans, date objects, maps,
+   * numbers, `Object` objects, regexes, sets, strings, symbols, and typed
+   * arrays. The own enumerable properties of `arguments` objects are cloned
+   * as plain objects. An empty object is returned for uncloneable values such
+   * as error objects, functions, DOM nodes, and WeakMaps.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to clone.
+   * @returns {*} Returns the cloned value.
+   * @example
+   *
+   * var objects = [{ 'a': 1 }, { 'b': 2 }];
+   *
+   * var shallow = _.clone(objects);
+   * console.log(shallow[0] === objects[0]);
+   * // => true
+   */
+  function clone(value) {
+    if (!isObject(value)) {
+      return value;
+    }
+    return isArray(value) ? copyArray(value) : copyObject(value, keys(value));
+  }
+
+  /**
+   * Performs a [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
+   * comparison between two values to determine if they are equivalent.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to compare.
+   * @param {*} other The other value to compare.
+   * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
+   * @example
+   *
+   * var object = { 'user': 'fred' };
+   * var other = { 'user': 'fred' };
+   *
+   * _.eq(object, object);
+   * // => true
+   *
+   * _.eq(object, other);
+   * // => false
+   *
+   * _.eq('a', 'a');
+   * // => true
+   *
+   * _.eq('a', Object('a'));
+   * // => false
+   *
+   * _.eq(NaN, NaN);
+   * // => true
+   */
+  function eq(value, other) {
+    return value === other || (value !== value && other !== other);
+  }
+
+  /**
+   * Checks if `value` is greater than `other`.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to compare.
+   * @param {*} other The other value to compare.
+   * @returns {boolean} Returns `true` if `value` is greater than `other`, else `false`.
+   * @example
+   *
+   * _.gt(3, 1);
+   * // => true
+   *
+   * _.gt(3, 3);
+   * // => false
+   *
+   * _.gt(1, 3);
+   * // => false
+   */
+  function gt(value, other) {
+    return value > other;
+  }
+
+  /**
+   * Checks if `value` is likely an `arguments` object.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+   * @example
+   *
+   * _.isArguments(function() { return arguments; }());
+   * // => true
+   *
+   * _.isArguments([1, 2, 3]);
+   * // => false
+   */
+  function isArguments(value) {
+    // Safari 8.1 incorrectly makes `arguments.callee` enumerable in strict mode.
+    return isArrayLikeObject(value) && hasOwnProperty.call(value, 'callee') &&
+      (!propertyIsEnumerable.call(value, 'callee') || objectToString.call(value) == argsTag);
+  }
+
+  /**
+   * Checks if `value` is classified as an `Array` object.
+   *
+   * @static
+   * @memberOf _
+   * @type Function
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+   * @example
+   *
+   * _.isArray([1, 2, 3]);
+   * // => true
+   *
+   * _.isArray(document.body.children);
+   * // => false
+   *
+   * _.isArray('abc');
+   * // => false
+   *
+   * _.isArray(_.noop);
+   * // => false
+   */
+  var isArray = Array.isArray;
+
+  /**
+   * Checks if `value` is array-like. A value is considered array-like if it's
+   * not a function and has a `value.length` that's an integer greater than or
+   * equal to `0` and less than or equal to `Number.MAX_SAFE_INTEGER`.
+   *
+   * @static
+   * @memberOf _
+   * @type Function
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is array-like, else `false`.
+   * @example
+   *
+   * _.isArrayLike([1, 2, 3]);
+   * // => true
+   *
+   * _.isArrayLike(document.body.children);
+   * // => true
+   *
+   * _.isArrayLike('abc');
+   * // => true
+   *
+   * _.isArrayLike(_.noop);
+   * // => false
+   */
+  function isArrayLike(value) {
+    return value != null &&
+      !(typeof value == 'function' && isFunction(value)) && isLength(getLength(value));
+  }
+
+  /**
+   * This method is like `_.isArrayLike` except that it also checks if `value`
+   * is an object.
+   *
+   * @static
+   * @memberOf _
+   * @type Function
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is an array-like object, else `false`.
+   * @example
+   *
+   * _.isArrayLikeObject([1, 2, 3]);
+   * // => true
+   *
+   * _.isArrayLikeObject(document.body.children);
+   * // => true
+   *
+   * _.isArrayLikeObject('abc');
+   * // => false
+   *
+   * _.isArrayLikeObject(_.noop);
+   * // => false
+   */
+  function isArrayLikeObject(value) {
+    return isObjectLike(value) && isArrayLike(value);
+  }
+
+  /**
+   * Checks if `value` is classified as a boolean primitive or object.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+   * @example
+   *
+   * _.isBoolean(false);
+   * // => true
+   *
+   * _.isBoolean(null);
+   * // => false
+   */
+  function isBoolean(value) {
+    return value === true || value === false ||
+      (isObjectLike(value) && objectToString.call(value) == boolTag);
+  }
+
+  /**
+   * Checks if `value` is classified as a `Date` object.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+   * @example
+   *
+   * _.isDate(new Date);
+   * // => true
+   *
+   * _.isDate('Mon April 23 2012');
+   * // => false
+   */
+  function isDate(value) {
+    return isObjectLike(value) && objectToString.call(value) == dateTag;
+  }
+
+  /**
+   * Checks if `value` is empty. A value is considered empty unless it's an
+   * `arguments` object, array, string, or jQuery-like collection with a length
+   * greater than `0` or an object with own enumerable properties.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {Array|Object|string} value The value to inspect.
+   * @returns {boolean} Returns `true` if `value` is empty, else `false`.
+   * @example
+   *
+   * _.isEmpty(null);
+   * // => true
+   *
+   * _.isEmpty(true);
+   * // => true
+   *
+   * _.isEmpty(1);
+   * // => true
+   *
+   * _.isEmpty([1, 2, 3]);
+   * // => false
+   *
+   * _.isEmpty({ 'a': 1 });
+   * // => false
+   */
+  function isEmpty(value) {
+    return (!isObjectLike(value) || isFunction(value.splice))
+      ? !size(value)
+      : !keys(value).length;
+  }
+
+  /**
+   * Performs a deep comparison between two values to determine if they are
+   * equivalent.
+   *
+   * **Note:** This method supports comparing arrays, array buffers, booleans,
+   * date objects, error objects, maps, numbers, `Object` objects, regexes,
+   * sets, strings, symbols, and typed arrays. `Object` objects are compared
+   * by their own, not inherited, enumerable properties. Functions and DOM
+   * nodes are **not** supported.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to compare.
+   * @param {*} other The other value to compare.
+   * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
+   * @example
+   *
+   * var object = { 'user': 'fred' };
+   * var other = { 'user': 'fred' };
+   *
+   * _.isEqual(object, other);
+   * // => true
+   *
+   * object === other;
+   * // => false
+   */
+  function isEqual(value, other) {
+    return baseIsEqual(value, other);
+  }
+
+  /**
+   * Checks if `value` is a finite primitive number.
+   *
+   * **Note:** This method is based on [`Number.isFinite`](https://mdn.io/Number/isFinite).
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is a finite number, else `false`.
+   * @example
+   *
+   * _.isFinite(3);
+   * // => true
+   *
+   * _.isFinite(Number.MAX_VALUE);
+   * // => true
+   *
+   * _.isFinite(3.14);
+   * // => true
+   *
+   * _.isFinite(Infinity);
+   * // => false
+   */
+  function isFinite(value) {
+    return typeof value == 'number' && nativeIsFinite(value);
+  }
+
+  /**
+   * Checks if `value` is classified as a `Function` object.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+   * @example
+   *
+   * _.isFunction(_);
+   * // => true
+   *
+   * _.isFunction(/abc/);
+   * // => false
+   */
+  function isFunction(value) {
+    // The use of `Object#toString` avoids issues with the `typeof` operator
+    // in Safari 8 which returns 'object' for typed array constructors, and
+    // PhantomJS 1.9 which returns 'function' for `NodeList` instances.
+    var tag = isObject(value) ? objectToString.call(value) : '';
+    return tag == funcTag || tag == genTag;
+  }
+
+  /**
+   * Checks if `value` is a valid array-like length.
+   *
+   * **Note:** This function is loosely based on [`ToLength`](http://ecma-international.org/ecma-262/6.0/#sec-tolength).
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
+   * @example
+   *
+   * _.isLength(3);
+   * // => true
+   *
+   * _.isLength(Number.MIN_VALUE);
+   * // => false
+   *
+   * _.isLength(Infinity);
+   * // => false
+   *
+   * _.isLength('3');
+   * // => false
+   */
+  function isLength(value) {
+    return typeof value == 'number' && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
+  }
+
+  /**
+   * Checks if `value` is the [language type](https://es5.github.io/#x8) of `Object`.
+   * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+   * @example
+   *
+   * _.isObject({});
+   * // => true
+   *
+   * _.isObject([1, 2, 3]);
+   * // => true
+   *
+   * _.isObject(_.noop);
+   * // => true
+   *
+   * _.isObject(null);
+   * // => false
+   */
+  function isObject(value) {
+    // Avoid a V8 JIT bug in Chrome 19-20.
+    // See https://code.google.com/p/v8/issues/detail?id=2291 for more details.
+    var type = typeof value;
+    return !!value && (type == 'object' || type == 'function');
+  }
+
+  /**
+   * Checks if `value` is object-like. A value is object-like if it's not `null`
+   * and has a `typeof` result of "object".
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+   * @example
+   *
+   * _.isObjectLike({});
+   * // => true
+   *
+   * _.isObjectLike([1, 2, 3]);
+   * // => true
+   *
+   * _.isObjectLike(_.noop);
+   * // => false
+   *
+   * _.isObjectLike(null);
+   * // => false
+   */
+  function isObjectLike(value) {
+    return !!value && typeof value == 'object';
+  }
+
+  /**
+   * Checks if `value` is `NaN`.
+   *
+   * **Note:** This method is not the same as [`isNaN`](https://es5.github.io/#x15.1.2.4)
+   * which returns `true` for `undefined` and other non-numeric values.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is `NaN`, else `false`.
+   * @example
+   *
+   * _.isNaN(NaN);
+   * // => true
+   *
+   * _.isNaN(new Number(NaN));
+   * // => true
+   *
+   * isNaN(undefined);
+   * // => true
+   *
+   * _.isNaN(undefined);
+   * // => false
+   */
+  function isNaN(value) {
+    // An `NaN` primitive is the only value that is not equal to itself.
+    // Perform the `toStringTag` check first to avoid errors with some ActiveX objects in IE.
+    return isNumber(value) && value != +value;
+  }
+
+  /**
+   * Checks if `value` is `null`.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is `null`, else `false`.
+   * @example
+   *
+   * _.isNull(null);
+   * // => true
+   *
+   * _.isNull(void 0);
+   * // => false
+   */
+  function isNull(value) {
+    return value === null;
+  }
+
+  /**
+   * Checks if `value` is classified as a `Number` primitive or object.
+   *
+   * **Note:** To exclude `Infinity`, `-Infinity`, and `NaN`, which are classified
+   * as numbers, use the `_.isFinite` method.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+   * @example
+   *
+   * _.isNumber(3);
+   * // => true
+   *
+   * _.isNumber(Number.MIN_VALUE);
+   * // => true
+   *
+   * _.isNumber(Infinity);
+   * // => true
+   *
+   * _.isNumber('3');
+   * // => false
+   */
+  function isNumber(value) {
+    return typeof value == 'number' ||
+      (isObjectLike(value) && objectToString.call(value) == numberTag);
+  }
+
+  /**
+   * Checks if `value` is classified as a `RegExp` object.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+   * @example
+   *
+   * _.isRegExp(/abc/);
+   * // => true
+   *
+   * _.isRegExp('/abc/');
+   * // => false
+   */
+  function isRegExp(value) {
+    return isObject(value) && objectToString.call(value) == regexpTag;
+  }
+
+  /**
+   * Checks if `value` is classified as a `String` primitive or object.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+   * @example
+   *
+   * _.isString('abc');
+   * // => true
+   *
+   * _.isString(1);
+   * // => false
+   */
+  function isString(value) {
+    return typeof value == 'string' ||
+      (!isArray(value) && isObjectLike(value) && objectToString.call(value) == stringTag);
+  }
+
+  /**
+   * Checks if `value` is `undefined`.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is `undefined`, else `false`.
+   * @example
+   *
+   * _.isUndefined(void 0);
+   * // => true
+   *
+   * _.isUndefined(null);
+   * // => false
+   */
+  function isUndefined(value) {
+    return value === undefined;
+  }
+
+  /**
+   * Checks if `value` is less than `other`.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to compare.
+   * @param {*} other The other value to compare.
+   * @returns {boolean} Returns `true` if `value` is less than `other`, else `false`.
+   * @example
+   *
+   * _.lt(1, 3);
+   * // => true
+   *
+   * _.lt(3, 3);
+   * // => false
+   *
+   * _.lt(3, 1);
+   * // => false
+   */
+  function lt(value, other) {
+    return value < other;
+  }
+
+  /**
+   * Converts `value` to an array.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to convert.
+   * @returns {Array} Returns the converted array.
+   * @example
+   *
+   * _.toArray({ 'a': 1, 'b': 2 });
+   * // => [1, 2]
+   *
+   * _.toArray('abc');
+   * // => ['a', 'b', 'c']
+   *
+   * _.toArray(1);
+   * // => []
+   *
+   * _.toArray(null);
+   * // => []
+   */
+  function toArray(value) {
+    if (!isArrayLike(value)) {
+      return values(value);
+    }
+    return value.length ? copyArray(value) : [];
+  }
+
+  /**
+   * Converts `value` to an integer.
+   *
+   * **Note:** This function is loosely based on [`ToInteger`](http://www.ecma-international.org/ecma-262/6.0/#sec-tointeger).
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to convert.
+   * @returns {number} Returns the converted integer.
+   * @example
+   *
+   * _.toInteger(3);
+   * // => 3
+   *
+   * _.toInteger(Number.MIN_VALUE);
+   * // => 0
+   *
+   * _.toInteger(Infinity);
+   * // => 1.7976931348623157e+308
+   *
+   * _.toInteger('3');
+   * // => 3
+   */
+  var toInteger = Number;
+
+  /**
+   * Converts `value` to a number.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to process.
+   * @returns {number} Returns the number.
+   * @example
+   *
+   * _.toNumber(3);
+   * // => 3
+   *
+   * _.toNumber(Number.MIN_VALUE);
+   * // => 5e-324
+   *
+   * _.toNumber(Infinity);
+   * // => Infinity
+   *
+   * _.toNumber('3');
+   * // => 3
+   */
+  var toNumber = Number;
+
+  /**
+   * Converts `value` to a string if it's not one. An empty string is returned
+   * for `null` and `undefined` values. The sign of `-0` is preserved.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to process.
+   * @returns {string} Returns the string.
+   * @example
+   *
+   * _.toString(null);
+   * // => ''
+   *
+   * _.toString(-0);
+   * // => '-0'
+   *
+   * _.toString([1, 2, 3]);
+   * // => '1,2,3'
+   */
+  function toString(value) {
+    if (typeof value == 'string') {
+      return value;
+    }
+    return value == null ? '' : (value + '');
+  }
+
+  /*------------------------------------------------------------------------*/
+
+  /**
+   * Assigns own enumerable properties of source objects to the destination
+   * object. Source objects are applied from left to right. Subsequent sources
+   * overwrite property assignments of previous sources.
+   *
+   * **Note:** This method mutates `object` and is loosely based on
+   * [`Object.assign`](https://mdn.io/Object/assign).
+   *
+   * @static
+   * @memberOf _
+   * @category Object
+   * @param {Object} object The destination object.
+   * @param {...Object} [sources] The source objects.
+   * @returns {Object} Returns `object`.
+   * @example
+   *
+   * function Foo() {
+   *   this.c = 3;
+   * }
+   *
+   * function Bar() {
+   *   this.e = 5;
+   * }
+   *
+   * Foo.prototype.d = 4;
+   * Bar.prototype.f = 6;
+   *
+   * _.assign({ 'a': 1 }, new Foo, new Bar);
+   * // => { 'a': 1, 'c': 3, 'e': 5 }
+   */
+  var assign = createAssigner(function(object, source) {
+    copyObject(source, keys(source), object);
+  });
+
+  /**
+   * This method is like `_.assign` except that it iterates over own and
+   * inherited source properties.
+   *
+   * **Note:** This method mutates `object`.
+   *
+   * @static
+   * @memberOf _
+   * @alias extend
+   * @category Object
+   * @param {Object} object The destination object.
+   * @param {...Object} [sources] The source objects.
+   * @returns {Object} Returns `object`.
+   * @example
+   *
+   * function Foo() {
+   *   this.b = 2;
+   * }
+   *
+   * function Bar() {
+   *   this.d = 4;
+   * }
+   *
+   * Foo.prototype.c = 3;
+   * Bar.prototype.e = 5;
+   *
+   * _.assignIn({ 'a': 1 }, new Foo, new Bar);
+   * // => { 'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5 }
+   */
+  var assignIn = createAssigner(function(object, source) {
+    copyObject(source, keysIn(source), object);
+  });
+
+  /**
+   * This method is like `_.assignIn` except that it accepts `customizer` which
+   * is invoked to produce the assigned values. If `customizer` returns `undefined`
+   * assignment is handled by the method instead. The `customizer` is invoked
+   * with five arguments: (objValue, srcValue, key, object, source).
+   *
+   * **Note:** This method mutates `object`.
+   *
+   * @static
+   * @memberOf _
+   * @alias extendWith
+   * @category Object
+   * @param {Object} object The destination object.
+   * @param {...Object} sources The source objects.
+   * @param {Function} [customizer] The function to customize assigned values.
+   * @returns {Object} Returns `object`.
+   * @example
+   *
+   * function customizer(objValue, srcValue) {
+   *   return _.isUndefined(objValue) ? srcValue : objValue;
+   * }
+   *
+   * var defaults = _.partialRight(_.assignInWith, customizer);
+   *
+   * defaults({ 'a': 1 }, { 'b': 2 }, { 'a': 3 });
+   * // => { 'a': 1, 'b': 2 }
+   */
+  var assignInWith = createAssigner(function(object, source, customizer) {
+    copyObjectWith(source, keysIn(source), object, customizer);
+  });
+
+  /**
+   * Creates an object that inherits from the `prototype` object. If a `properties`
+   * object is provided its own enumerable properties are assigned to the created object.
+   *
+   * @static
+   * @memberOf _
+   * @category Object
+   * @param {Object} prototype The object to inherit from.
+   * @param {Object} [properties] The properties to assign to the object.
+   * @returns {Object} Returns the new object.
+   * @example
+   *
+   * function Shape() {
+   *   this.x = 0;
+   *   this.y = 0;
+   * }
+   *
+   * function Circle() {
+   *   Shape.call(this);
+   * }
+   *
+   * Circle.prototype = _.create(Shape.prototype, {
+   *   'constructor': Circle
+   * });
+   *
+   * var circle = new Circle;
+   * circle instanceof Circle;
+   * // => true
+   *
+   * circle instanceof Shape;
+   * // => true
+   */
+  function create(prototype, properties) {
+    var result = baseCreate(prototype);
+    return properties ? assign(result, properties) : result;
+  }
+
+  /**
+   * Assigns own and inherited enumerable properties of source objects to the
+   * destination object for all destination properties that resolve to `undefined`.
+   * Source objects are applied from left to right. Once a property is set,
+   * additional values of the same property are ignored.
+   *
+   * **Note:** This method mutates `object`.
+   *
+   * @static
+   * @memberOf _
+   * @category Object
+   * @param {Object} object The destination object.
+   * @param {...Object} [sources] The source objects.
+   * @returns {Object} Returns `object`.
+   * @example
+   *
+   * _.defaults({ 'user': 'barney' }, { 'age': 36 }, { 'user': 'fred' });
+   * // => { 'user': 'barney', 'age': 36 }
+   */
+  var defaults = rest(function(args) {
+    args.push(undefined, assignInDefaults);
+    return assignInWith.apply(undefined, args);
+  });
+
+  /**
+   * Checks if `path` is a direct property of `object`.
+   *
+   * @static
+   * @memberOf _
+   * @category Object
+   * @param {Object} object The object to query.
+   * @param {Array|string} path The path to check.
+   * @returns {boolean} Returns `true` if `path` exists, else `false`.
+   * @example
+   *
+   * var object = { 'a': { 'b': { 'c': 3 } } };
+   * var other = _.create({ 'a': _.create({ 'b': _.create({ 'c': 3 }) }) });
+   *
+   * _.has(object, 'a');
+   * // => true
+   *
+   * _.has(object, 'a.b.c');
+   * // => true
+   *
+   * _.has(object, ['a', 'b', 'c']);
+   * // => true
+   *
+   * _.has(other, 'a');
+   * // => false
+   */
+  function has(object, path) {
+    return object != null && hasOwnProperty.call(object, path);
+  }
+
+  /**
+   * Creates an array of the own enumerable property names of `object`.
+   *
+   * **Note:** Non-object values are coerced to objects. See the
+   * [ES spec](http://ecma-international.org/ecma-262/6.0/#sec-object.keys)
+   * for more details.
+   *
+   * @static
+   * @memberOf _
+   * @category Object
+   * @param {Object} object The object to query.
+   * @returns {Array} Returns the array of property names.
+   * @example
+   *
+   * function Foo() {
+   *   this.a = 1;
+   *   this.b = 2;
+   * }
+   *
+   * Foo.prototype.c = 3;
+   *
+   * _.keys(new Foo);
+   * // => ['a', 'b'] (iteration order is not guaranteed)
+   *
+   * _.keys('hi');
+   * // => ['0', '1']
+   */
+  function keys(object) {
+    var isProto = isPrototype(object);
+    if (!(isProto || isArrayLike(object))) {
+      return baseKeys(object);
+    }
+    var indexes = indexKeys(object),
+        skipIndexes = !!indexes,
+        result = indexes || [],
+        length = result.length;
+
+    for (var key in object) {
+      if (hasOwnProperty.call(object, key) &&
+          !(skipIndexes && (key == 'length' || isIndex(key, length))) &&
+          !(isProto && key == 'constructor')) {
+        result.push(key);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Creates an array of the own and inherited enumerable property names of `object`.
+   *
+   * **Note:** Non-object values are coerced to objects.
+   *
+   * @static
+   * @memberOf _
+   * @category Object
+   * @param {Object} object The object to query.
+   * @returns {Array} Returns the array of property names.
+   * @example
+   *
+   * function Foo() {
+   *   this.a = 1;
+   *   this.b = 2;
+   * }
+   *
+   * Foo.prototype.c = 3;
+   *
+   * _.keysIn(new Foo);
+   * // => ['a', 'b', 'c'] (iteration order is not guaranteed)
+   */
+  function keysIn(object) {
+    var index = -1,
+        isProto = isPrototype(object),
+        props = baseKeysIn(object),
+        propsLength = props.length,
+        indexes = indexKeys(object),
+        skipIndexes = !!indexes,
+        result = indexes || [],
+        length = result.length;
+
+    while (++index < propsLength) {
+      var key = props[index];
+      if (!(skipIndexes && (key == 'length' || isIndex(key, length))) &&
+          !(key == 'constructor' && (isProto || !hasOwnProperty.call(object, key)))) {
+        result.push(key);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Creates an object composed of the picked `object` properties.
+   *
+   * @static
+   * @memberOf _
+   * @category Object
+   * @param {Object} object The source object.
+   * @param {...(string|string[])} [props] The property names to pick, specified
+   *  individually or in arrays.
+   * @returns {Object} Returns the new object.
+   * @example
+   *
+   * var object = { 'a': 1, 'b': '2', 'c': 3 };
+   *
+   * _.pick(object, ['a', 'c']);
+   * // => { 'a': 1, 'c': 3 }
+   */
+  var pick = rest(function(object, props) {
+    return object == null ? {} : basePick(object, baseFlatten(props));
+  });
+
+  /**
+   * This method is like `_.get` except that if the resolved value is a function
+   * it's invoked with the `this` binding of its parent object and its result
+   * is returned.
+   *
+   * @static
+   * @memberOf _
+   * @category Object
+   * @param {Object} object The object to query.
+   * @param {Array|string} path The path of the property to resolve.
+   * @param {*} [defaultValue] The value returned if the resolved value is `undefined`.
+   * @returns {*} Returns the resolved value.
+   * @example
+   *
+   * var object = { 'a': [{ 'b': { 'c1': 3, 'c2': _.constant(4) } }] };
+   *
+   * _.result(object, 'a[0].b.c1');
+   * // => 3
+   *
+   * _.result(object, 'a[0].b.c2');
+   * // => 4
+   *
+   * _.result(object, 'a[0].b.c3', 'default');
+   * // => 'default'
+   *
+   * _.result(object, 'a[0].b.c3', _.constant('default'));
+   * // => 'default'
+   */
+  function result(object, path, defaultValue) {
+    var value = object == null ? undefined : object[path];
+    if (value === undefined) {
+      value = defaultValue;
+    }
+    return isFunction(value) ? value.call(object) : value;
+  }
+
+  /**
+   * Creates an array of the own enumerable property values of `object`.
+   *
+   * **Note:** Non-object values are coerced to objects.
+   *
+   * @static
+   * @memberOf _
+   * @category Object
+   * @param {Object} object The object to query.
+   * @returns {Array} Returns the array of property values.
+   * @example
+   *
+   * function Foo() {
+   *   this.a = 1;
+   *   this.b = 2;
+   * }
+   *
+   * Foo.prototype.c = 3;
+   *
+   * _.values(new Foo);
+   * // => [1, 2] (iteration order is not guaranteed)
+   *
+   * _.values('hi');
+   * // => ['h', 'i']
+   */
+  function values(object) {
+    return object ? baseValues(object, keys(object)) : [];
+  }
+
+  /*------------------------------------------------------------------------*/
+
+  /**
+   * Converts the characters "&", "<", ">", '"', "'", and "\`" in `string` to
+   * their corresponding HTML entities.
+   *
+   * **Note:** No other characters are escaped. To escape additional
+   * characters use a third-party library like [_he_](https://mths.be/he).
+   *
+   * Though the ">" character is escaped for symmetry, characters like
+   * ">" and "/" don't need escaping in HTML and have no special meaning
+   * unless they're part of a tag or unquoted attribute value.
+   * See [Mathias Bynens's article](https://mathiasbynens.be/notes/ambiguous-ampersands)
+   * (under "semi-related fun fact") for more details.
+   *
+   * Backticks are escaped because in IE < 9, they can break out of
+   * attribute values or HTML comments. See [#59](https://html5sec.org/#59),
+   * [#102](https://html5sec.org/#102), [#108](https://html5sec.org/#108), and
+   * [#133](https://html5sec.org/#133) of the [HTML5 Security Cheatsheet](https://html5sec.org/)
+   * for more details.
+   *
+   * When working with HTML you should always [quote attribute values](http://wonko.com/post/html-escaping)
+   * to reduce XSS vectors.
+   *
+   * @static
+   * @memberOf _
+   * @category String
+   * @param {string} [string=''] The string to escape.
+   * @returns {string} Returns the escaped string.
+   * @example
+   *
+   * _.escape('fred, barney, & pebbles');
+   * // => 'fred, barney, &amp; pebbles'
+   */
+  function escape(string) {
+    string = toString(string);
+    return (string && reHasUnescapedHtml.test(string))
+      ? string.replace(reUnescapedHtml, escapeHtmlChar)
+      : string;
+  }
+
+  /*------------------------------------------------------------------------*/
+
+  /**
+   * This method returns the first argument provided to it.
+   *
+   * @static
+   * @memberOf _
+   * @category Util
+   * @param {*} value Any value.
+   * @returns {*} Returns `value`.
+   * @example
+   *
+   * var object = { 'user': 'fred' };
+   *
+   * _.identity(object) === object;
+   * // => true
+   */
+  function identity(value) {
+    return value;
+  }
+
+  /**
+   * Creates a function that invokes `func` with the arguments of the created
+   * function. If `func` is a property name the created callback returns the
+   * property value for a given element. If `func` is an object the created
+   * callback returns `true` for elements that contain the equivalent object properties, otherwise it returns `false`.
+   *
+   * @static
+   * @memberOf _
+   * @category Util
+   * @param {*} [func=_.identity] The value to convert to a callback.
+   * @returns {Function} Returns the callback.
+   * @example
+   *
+   * var users = [
+   *   { 'user': 'barney', 'age': 36 },
+   *   { 'user': 'fred',   'age': 40 }
+   * ];
+   *
+   * // create custom iteratee shorthands
+   * _.iteratee = _.wrap(_.iteratee, function(callback, func) {
+   *   var p = /^(\S+)\s*([<>])\s*(\S+)$/.exec(func);
+   *   return !p ? callback(func) : function(object) {
+   *     return (p[2] == '>' ? object[p[1]] > p[3] : object[p[1]] < p[3]);
+   *   };
+   * });
+   *
+   * _.filter(users, 'age > 36');
+   * // => [{ 'user': 'fred', 'age': 40 }]
+   */
+  var iteratee = baseIteratee;
+
+  /**
+   * Adds all own enumerable function properties of a source object to the
+   * destination object. If `object` is a function then methods are added to
+   * its prototype as well.
+   *
+   * **Note:** Use `_.runInContext` to create a pristine `lodash` function to
+   * avoid conflicts caused by modifying the original.
+   *
+   * @static
+   * @memberOf _
+   * @category Util
+   * @param {Function|Object} [object=lodash] The destination object.
+   * @param {Object} source The object of functions to add.
+   * @param {Object} [options] The options object.
+   * @param {boolean} [options.chain=true] Specify whether the functions added
+   *  are chainable.
+   * @returns {Function|Object} Returns `object`.
+   * @example
+   *
+   * function vowels(string) {
+   *   return _.filter(string, function(v) {
+   *     return /[aeiou]/i.test(v);
+   *   });
+   * }
+   *
+   * _.mixin({ 'vowels': vowels });
+   * _.vowels('fred');
+   * // => ['e']
+   *
+   * _('fred').vowels().value();
+   * // => ['e']
+   *
+   * _.mixin({ 'vowels': vowels }, { 'chain': false });
+   * _('fred').vowels();
+   * // => ['e']
+   */
+  function mixin(object, source, options) {
+    var props = keys(source),
+        methodNames = baseFunctions(source, props);
+
+    if (options == null &&
+        !(isObject(source) && (methodNames.length || !props.length))) {
+      options = source;
+      source = object;
+      object = this;
+      methodNames = baseFunctions(source, keys(source));
+    }
+    var chain = (isObject(options) && 'chain' in options) ? options.chain : true,
+        isFunc = isFunction(object);
+
+    baseEach(methodNames, function(methodName) {
+      var func = source[methodName];
+      object[methodName] = func;
+      if (isFunc) {
+        object.prototype[methodName] = function() {
+          var chainAll = this.__chain__;
+          if (chain || chainAll) {
+            var result = object(this.__wrapped__),
+                actions = result.__actions__ = copyArray(this.__actions__);
+
+            actions.push({ 'func': func, 'args': arguments, 'thisArg': object });
+            result.__chain__ = chainAll;
+            return result;
+          }
+          return func.apply(object, arrayPush([this.value()], arguments));
+        };
+      }
+    });
+
+    return object;
+  }
+
+  /**
+   * Reverts the `_` variable to its previous value and returns a reference to
+   * the `lodash` function.
+   *
+   * @static
+   * @memberOf _
+   * @category Util
+   * @returns {Function} Returns the `lodash` function.
+   * @example
+   *
+   * var lodash = _.noConflict();
+   */
+  function noConflict() {
+    root._ = oldDash;
+    return this;
+  }
+
+  /**
+   * A no-operation function that returns `undefined` regardless of the
+   * arguments it receives.
+   *
+   * @static
+   * @memberOf _
+   * @category Util
+   * @example
+   *
+   * var object = { 'user': 'fred' };
+   *
+   * _.noop(object) === undefined;
+   * // => true
+   */
+  function noop() {
+    // No operation performed.
+  }
+
+  /**
+   * Generates a unique ID. If `prefix` is provided the ID is appended to it.
+   *
+   * @static
+   * @memberOf _
+   * @category Util
+   * @param {string} [prefix] The value to prefix the ID with.
+   * @returns {string} Returns the unique ID.
+   * @example
+   *
+   * _.uniqueId('contact_');
+   * // => 'contact_104'
+   *
+   * _.uniqueId();
+   * // => '105'
+   */
+  function uniqueId(prefix) {
+    var id = ++idCounter;
+    return toString(prefix) + id;
+  }
+
+  /*------------------------------------------------------------------------*/
+
+  /**
+   * Computes the maximum value of `array`. If `array` is empty or falsey
+   * `undefined` is returned.
+   *
+   * @static
+   * @memberOf _
+   * @category Math
+   * @param {Array} array The array to iterate over.
+   * @returns {*} Returns the maximum value.
+   * @example
+   *
+   * _.max([4, 2, 8, 6]);
+   * // => 8
+   *
+   * _.max([]);
+   * // => undefined
+   */
+  function max(array) {
+    return (array && array.length)
+      ? baseExtremum(array, identity, gt)
+      : undefined;
+  }
+
+  /**
+   * Computes the minimum value of `array`. If `array` is empty or falsey
+   * `undefined` is returned.
+   *
+   * @static
+   * @memberOf _
+   * @category Math
+   * @param {Array} array The array to iterate over.
+   * @returns {*} Returns the minimum value.
+   * @example
+   *
+   * _.min([4, 2, 8, 6]);
+   * // => 2
+   *
+   * _.min([]);
+   * // => undefined
+   */
+  function min(array) {
+    return (array && array.length)
+      ? baseExtremum(array, identity, lt)
+      : undefined;
+  }
+
+  /*------------------------------------------------------------------------*/
+
+  LodashWrapper.prototype = baseCreate(lodash.prototype);
+  LodashWrapper.prototype.constructor = LodashWrapper;
+
+  // Add functions that return wrapped values when chaining.
+  lodash.assignIn = assignIn;
+  lodash.before = before;
+  lodash.bind = bind;
+  lodash.chain = chain;
+  lodash.compact = compact;
+  lodash.concat = concat;
+  lodash.create = create;
+  lodash.defaults = defaults;
+  lodash.defer = defer;
+  lodash.delay = delay;
+  lodash.filter = filter;
+  lodash.flatten = flatten;
+  lodash.flattenDeep = flattenDeep;
+  lodash.invokeMap = invokeMap;
+  lodash.iteratee = iteratee;
+  lodash.keys = keys;
+  lodash.map = map;
+  lodash.mixin = mixin;
+  lodash.negate = negate;
+  lodash.once = once;
+  lodash.pick = pick;
+  lodash.slice = slice;
+  lodash.sortBy = sortBy;
+  lodash.tap = tap;
+  lodash.thru = thru;
+  lodash.toArray = toArray;
+  lodash.values = values;
+
+  // Add aliases.
+  lodash.each = forEach;
+  lodash.extend = assignIn;
+
+  // Add functions to `lodash.prototype`.
+  mixin(lodash, lodash);
+
+  /*------------------------------------------------------------------------*/
+
+  // Add functions that return unwrapped values when chaining.
+  lodash.clone = clone;
+  lodash.escape = escape;
+  lodash.every = every;
+  lodash.find = find;
+  lodash.forEach = forEach;
+  lodash.has = has;
+  lodash.head = head;
+  lodash.identity = identity;
+  lodash.indexOf = indexOf;
+  lodash.isArguments = isArguments;
+  lodash.isArray = isArray;
+  lodash.isBoolean = isBoolean;
+  lodash.isDate = isDate;
+  lodash.isEmpty = isEmpty;
+  lodash.isEqual = isEqual;
+  lodash.isFinite = isFinite;
+  lodash.isFunction = isFunction;
+  lodash.isNaN = isNaN;
+  lodash.isNull = isNull;
+  lodash.isNumber = isNumber;
+  lodash.isObject = isObject;
+  lodash.isRegExp = isRegExp;
+  lodash.isString = isString;
+  lodash.isUndefined = isUndefined;
+  lodash.last = last;
+  lodash.max = max;
+  lodash.min = min;
+  lodash.noConflict = noConflict;
+  lodash.noop = noop;
+  lodash.now = now;
+  lodash.reduce = reduce;
+  lodash.result = result;
+  lodash.size = size;
+  lodash.some = some;
+  lodash.uniqueId = uniqueId;
+
+  // Add aliases.
+  lodash.first = head;
+
+  mixin(lodash, (function() {
+    var source = {};
+    baseForOwn(lodash, function(func, methodName) {
+      if (!hasOwnProperty.call(lodash.prototype, methodName)) {
+        source[methodName] = func;
+      }
+    });
+    return source;
+  }()), { 'chain': false });
+
+  /*------------------------------------------------------------------------*/
+
+  /**
+   * The semantic version number.
+   *
+   * @static
+   * @memberOf _
+   * @type string
+   */
+  lodash.VERSION = VERSION;
+
+  // Add `Array` and `String` methods to `lodash.prototype`.
+  baseEach(['pop', 'join', 'replace', 'reverse', 'split', 'push', 'shift', 'sort', 'splice', 'unshift'], function(methodName) {
+    var func = (/^(?:replace|split)$/.test(methodName) ? String.prototype : arrayProto)[methodName],
+        chainName = /^(?:push|sort|unshift)$/.test(methodName) ? 'tap' : 'thru',
+        retUnwrapped = /^(?:pop|join|replace|shift)$/.test(methodName);
+
+    lodash.prototype[methodName] = function() {
+      var args = arguments;
+      if (retUnwrapped && !this.__chain__) {
+        return func.apply(this.value(), args);
+      }
+      return this[chainName](function(value) {
+        return func.apply(value, args);
+      });
+    };
+  });
+
+  // Add chaining functions to the `lodash` wrapper.
+  lodash.prototype.toJSON = lodash.prototype.valueOf = lodash.prototype.value = wrapperValue;
+
+  /*--------------------------------------------------------------------------*/
+
+  // Expose lodash on the free variable `window` or `self` when available. This
+  // prevents errors in cases where lodash is loaded by a script tag in the presence
+  // of an AMD loader. See http://requirejs.org/docs/errors.html#mismatch for more details.
+  (freeWindow || freeSelf || {})._ = lodash;
+
+  // Some AMD build optimizers like r.js check for condition patterns like the following:
+  if (typeof define == 'function' && typeof define.amd == 'object' && define.amd) {
+    // Define as an anonymous module so, through path mapping, it can be
+    // referenced as the "underscore" module.
+    define(function() {
+      return lodash;
+    });
+  }
+  // Check for `exports` after `define` in case a build optimizer adds an `exports` object.
+  else if (freeExports && freeModule) {
+    // Export for Node.js.
+    if (moduleExports) {
+      (freeModule.exports = lodash)._ = lodash;
+    }
+    // Export for CommonJS support.
+    freeExports._ = lodash;
+  }
+  else {
+    // Export to the global object.
+    root._ = lodash;
+  }
+}.call(this));

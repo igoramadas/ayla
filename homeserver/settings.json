@@ -20,7 +20,7 @@
         },
         "title": "Ayla",
         // Default URL should be changed!!!
-        "url": "localhost"
+        "url": "https://localhost/"
     },
     // Camera date format while saving snaps, and max age of snaps before
     // they get deleted (default is 7).
