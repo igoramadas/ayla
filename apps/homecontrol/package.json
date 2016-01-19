@@ -7,7 +7,7 @@
     "license": "MIT",
     "subdomain": "ayla",
     "domains": [
-        "ayla.codeplex.com"
+        "ayla.pw"
     ],
     "scripts": {
         "publish": "node publish.js",
@@ -27,7 +27,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://git01.codeplex.com/ayla"
+        "url": "https://github.com/igoramadas/ayla.git"
     },
     "keywords": [
         "ai",
