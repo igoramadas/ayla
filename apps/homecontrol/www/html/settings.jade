@@ -7,17 +7,17 @@
         .row
             .small-8.column
                 input.host(type="text", placeholder="home server hostname", pattern="alpha_numeric", required)
-                small.error Invalid hostname
+                span.form-error Invalid hostname
             .small-4.column
                 input.port(type="text", placeholder="port", pattern="number", required)
-                small.error Invalid port
+                span.form-error Invalid port
         .row.spaced
             .small-12.column
                 span Your access token
         .row
             .small-12.column
                 input.token(type="text", placeholder="your personal token", pattern="alpha_numeric", required)
-                small.error Access token must be alphanumeric
+                span.form-error Access token must be alphanumeric
         .row.spaced
             .small-12.column
                 span.server-result(data-bind="if: username") Not authenticated yet...
