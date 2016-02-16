@@ -11,6 +11,7 @@
 #= require sockets.coffee
 #= require views/baseview.coffee
 #= require views/api.coffee
+#= require views/dashboard.coffee
 #= require views/manager.coffee
 #= require views/start.coffee
 

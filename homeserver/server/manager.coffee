@@ -36,7 +36,7 @@ class Manager
         for f in files
             if f isnt "basemanager.coffee" and f.indexOf(".coffee") > 0
                 filename = f.replace ".coffee", ""
-                enabled = lodash.contains settings.modules.managers, filename
+                enabled = lodash.indexOf(settings.modules.managers, filename) >= 0
 
                 # Only add if set on enabled managers setting.
                 if not enabled
