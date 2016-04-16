@@ -1,9 +1,18 @@
 {
     "accessTokens": {
-        "ninja": "String",
-        "ubi": "String"
+        "sD84sf4ujjIFa7": "String",
+        "ZaLjd4Shf897cp": "String"
     },
-    "electricImp": {
+    "app": {
+        "url": "String",
+        "connectAssets": {
+            "build": "Boolean",
+            "buildDir": "Boolean",
+            "compress": "Boolean",
+            "gzip": "Boolean"
+        }
+    },
+    "electricimp": {
         "devices": [
             "String"
         ]
@@ -26,34 +35,12 @@
                 {
                     "action": "String",
                     "from": [
-                        "String",
-                        "String",
-                        "String"
+                        "hi@ayla.pw",
+                        "igor@devv.com",
+                        "igor.ramadas@zalando.de",
+                        "devv@devv.com",
+                        "biiinnneee@yahoo.de"
                     ]
-                }
-            ]
-        },
-        "igor": {
-            "archiveName": "String",
-            "inboxName": "String",
-            "imap": {
-                "host": "String",
-                "password": "String",
-                "port": "Number",
-                "user": "String",
-                "tls": "Boolean",
-                "tlsOptions": {
-                    "rejectUnauthorized": "Boolean"
-                }
-            },
-            "rules": [
-                {
-                    "action": "String",
-                    "subject": [
-                        "String",
-                        "String"
-                    ],
-                    "hasAttachments": "Boolean"
                 }
             ]
         }
@@ -64,41 +51,73 @@
             "secret": "String"
         }
     },
-    "general": {
-        "appUrl": "String"
-    },
     "github": {
         "api": {
             "token": "String"
         }
     },
     "home": {
-        "rooms": {
-            "bedroom": {
+        "rooms": [
+            {
+                "id": "String",
                 "title": "String",
-                "symbol": "String",
                 "floor": "Number",
-                "weatherSource": "String"
+                "climateSource": {
+                    "electricimp": "String"
+                }
             },
-            "livingroom": {
+            {
+                "id": "String",
                 "title": "String",
-                "symbol": "String",
                 "floor": "Number",
-                "weatherSource": "String"
+                "climateSource": {
+                    "netatmo": "String"
+                },
+                "ventilatorSource": {
+                    "ninja": {
+                        "on": "xx",
+                        "off": "yy"
+                    }
+                }
             },
-            "babyroom": {
+            {
+                "id": "String",
                 "title": "String",
-                "symbol": "String",
                 "floor": "Number",
-                "weatherSource": "String"
+                "climateSource": {
+                    "netatmo": "String"
+                },
+                "doorSensor": {
+                    "ninja": "String"
+                }
             },
-            "kitchen": {
+            {
+                "id": "String",
                 "title": "String",
-                "symbol": "String",
                 "floor": "Number",
-                "weatherSource": "String"
+                "climateSource": {
+                    "ninja": "String"
+                },
+                "ventilatorSource": {
+                    "ninja": {
+                        "on": "ie9CU",
+                        "off": "eubb2"
+                    }
+                },
+                "doorSensor": {
+                    "ninja": "String"
+                }
+            },
+            {
+                "id": "String",
+                "symbol": "String",
+                "title": "String",
+                "floor": "Number",
+                "climateSource": {
+                    "ubi": "String"
+                }
             }
-        }
+        ]
     },
     "hue": {
         "api": {
@@ -106,9 +125,13 @@
         }
     },
     "logger": {
-        "criticalEmailTo": "String"
+        "criticalEmailTo": "String",
+        "local": {
+            "maxAge": "Number"
+        }
     },
     "mailer": {
+        "doNotSend": "Boolean",
         "from": "String",
         "smtp": {
             "password": "String",
@@ -116,78 +139,45 @@
             "user": "String"
         }
     },
-    "modules": {
-        "enable": [
-            "String"
-        ]
-    },
     "netatmo": {
         "api": {
             "clientId": "String",
             "secret": "String",
-            "password": "String",
+            "oauthState": "String",
             "username": "String"
         }
     },
     "network": {
+        "autoDiscovery": "Boolean",
         "router": {
             "description": "String",
             "host": "String",
             "ip": "String",
-            "remoteHost": "String",
-            "localPort": "Number",
-            "remotePort": "Number",
-            "password": "String",
-            "uidWifi24g": "String",
-            "uidWifi5g": "String"
+            "port": "Number",
+            "remoteHost": "String"
         },
         "devices": [
             {
                 "description": "String",
                 "host": "String",
                 "type": "String",
-                "mac": "String",
                 "ip": "String",
-                "localPort": "Number",
-                "remotePort": "Number"
+                "port": "Number"
             },
             {
                 "description": "String",
                 "host": "String",
                 "type": "String",
-                "mac": "String",
                 "ip": "String",
-                "localPort": "Number",
-                "remotePort": "Number"
+                "port": "Number"
             },
             {
                 "description": "String",
                 "host": "String",
                 "type": "String",
-                "mac": "String",
                 "ip": "String",
-                "localPort": "Number"
-            },
-            {
-                "description": "String",
-                "host": "String",
-                "type": "String",
-                "mac": "String",
-                "ip": "String",
-                "localPort": "Number",
-                "remotePort": "Number",
+                "port": "Number",
                 "webPath": "String"
-            },
-            {
-                "description": "String",
-                "host": "String",
-                "type": "String",
-                "mac": "String",
-                "ip": "String",
-                "localPort": "Number",
-                "remotePort": "Number",
-                "imagePath": "String",
-                "auth": "String"
             }
         ]
     },
@@ -200,27 +190,19 @@
             "userToken": "String"
         }
     },
-    "shoeboxed": {
-        "email": "String"
-    },
-    "toshl": {
+    "strava": {
         "api": {
             "clientId": "String",
-            "secret": "String",
-            "oauthState": "String"
+            "secret": "String"
         }
-    },
-    "ubi": {
-        "apiUrl": "String"
     },
     "users": {
         "igor": {
             "isDefault": "Boolean",
             "name": "String",
             "email": "String",
-            "emailMobile": "String",
-            "mac": "String",
-            "mobileIP": "String",
+            "computerMac": "String",
+            "bluetoothMac": "String",
             "fitness": {
                 "desiredWeight": "Number",
                 "desiredFat": "Number"
@@ -229,20 +211,24 @@
         "sabine": {
             "name": "String",
             "email": "String",
-            "mac": "String",
-            "mobileIP": "String"
+            "computerMac": "String",
+            "bluetoothMac": "String"
+        },
+        "noah": {
+            "name": "String"
         }
     },
     "withings": {
+        "userId": "Number",
         "api": {
             "clientId": "String",
             "secret": "String"
-        },
-        "userId": "Number"
+        }
     },
     "wunderground": {
         "api": {
             "clientId": "String"
-        }
+        },
+        "defaultQuery": "String"
     }
 }

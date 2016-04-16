@@ -99,11 +99,14 @@ class EmailManager extends (require "./basemanager.coffee")
                 if err?
                     logger.warn "EmailManager.openBox", account.id, err
 
+                    # Auth failed? Do not try again.
+                    if err.textCode is "AUTHORIZATIONFAILED"
+                        @logError "EmailManager.openBox", account.id, "Auth failed, please check user and password."
                     # Try connecting to the inbox again in a few seconds in case it fails.
-                    if retry < settings.imap.maxRetry
+                    else if retry < settings.imap.maxRetry
                         lodash.delay @openBox, settings.imap.retryInterval, account, retry + 1
                     else
-                        @logError "EmailManager.openBox", account.id, "Can't connect #{retry} times.", err
+                        @logError "EmailManager.openBox", account.id, "Failed to connect #{retry} times. Abort!"
                 else
                     logger.info "EmailManager.openBox", account.id, "Inbox ready!"
 
@@ -239,7 +242,7 @@ class EmailManager extends (require "./basemanager.coffee")
         actions = []
 
         # Get matching `from` rules.
-        from = lodash.where account.rules, (rule) ->
+        from = lodash.filter account.rules, (rule) ->
             return false if not rule.from?
             return false if rule.hasAttachments and parsedMsg.attachments?.length < 1
 
@@ -249,7 +252,7 @@ class EmailManager extends (require "./basemanager.coffee")
             return false
 
         # Get matching `subject` rules.
-        subject = lodash.where account.rules, (rule) ->
+        subject = lodash.filter account.rules, (rule) ->
             return false if not rule.subject?
             return false if rule.hasAttachments and parsedMsg.attachments?.length < 1
 

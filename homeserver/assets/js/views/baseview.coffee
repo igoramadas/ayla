@@ -16,7 +16,7 @@ class BaseView
     # Init the view and set elements.
     init: =>
         $(document).foundation()
-
+        
         @setSockets()
         @setAnnouncements()
         @setHeader()

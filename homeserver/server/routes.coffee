@@ -81,9 +81,9 @@ class Routes
             # Get or post? Available render types are page, json and image.
             app[method] "/#{m.moduleName}/#{route.path}", (req, res) ->
                 if route.render is "json"
-                    renderFn = renderJson
+                    renderFn = expresser.app.renderJson
                 else if route.render is "image"
-                    renderFn = renderImage
+                    renderFn = expresser.app.renderImage
                 else
                     renderFn = renderPage
 
@@ -165,11 +165,11 @@ class Routes
         result.disabledApiModules = lodash.keys api.disabledModules
         result.jobs = jobs
 
-        renderJson req, res, result
+        expresser.app.renderJson req, res, result
 
     # The token request page.
     tokenRequestPage = (req, res) ->
-        ipClient = req.headers['X-Forwarded-For'] or req.connection.remoteAddress or req.socket?.remoteAddress
+        ipClient = req.headers["X-Forwarded-For"] or req.connection.remoteAddress or req.socket?.remoteAddress
         ipRouter = settings.network.router.ip
 
         # Check if client is connected to home network.
@@ -189,7 +189,7 @@ class Routes
 
         # Add temp token to cache and send back to client.
         tokenCache[token] = {device: req.params.device, expires: moment().add 5, "d"}
-        renderJson req, res, {result: tokenCache[token]}
+        expresser.app.renderJson req, res, {result: tokenCache[token]}
 
     # The commander processor.
     commanderPage = (req, res) ->
@@ -197,7 +197,7 @@ class Routes
             if err?
                 sendErrorResponse req, res, "commanderPage", err
             else
-                renderJson req, res, result
+                expresser.app.renderJson req, res, result
 
     # The API module overview page.
     apiPage = (req, res) ->
@@ -250,7 +250,7 @@ class Routes
         for job in jobs
             options.jobs.push {id: job.id, schedule: job.schedule, endTime: job.endTime}
 
-        renderJson req, res, options
+        expresser.app.renderJson req, res, options
 
     # Handles authentication for API modules.
     apiAuthPage = (req, res) ->
@@ -305,7 +305,7 @@ class Routes
         options.data = m.data
         options.errors = m.errors
 
-        renderJson req, res, options
+        expresser.app.renderJson req, res, options
 
     # RENDER METHODS
     # -------------------------------------------------------------------------
@@ -329,47 +329,7 @@ class Routes
         filename += ".jade" if filename.indexOf(".jade") < 0
 
         # Render page.
-        res.render filename, options
-
-    # Render response as JSON data.
-    renderJson = (req, res, data) ->
-        return if not checkSecurity req, res
-
-        logger.info "Routes.renderJson", req.path
-
-        # Remove methods from JSON before rendering.
-        cleanJson = (obj) ->
-            if lodash.isArray obj
-                cleanJson i for i in obj
-            else if lodash.isObject obj
-                for k, v of obj
-                    if lodash.isFunction v
-                        delete obj[k]
-                    else
-                        cleanJson v
-
-        cleanJson data
-
-        # Add Access-Control-Allow-Origin to all when debug is true.
-        if settings.general.debug
-            res.setHeader "Access-Control-Allow-Origin", "*"
-
-        # Send JSON response.
-        res.json data
-
-    # Render response as image.
-    renderImage = (req, res, filename, options) ->
-        return if not checkSecurity req, res
-
-        mimetype = options?.mimetype
-
-        if not mimetype?
-            extname = path.extname(filename).toLowerCase().replace(".","")
-            extname = "jpeg" if extname is "jpg"
-            mimetype = "image/#{extname}"
-
-        res.contentType mimetype
-        res.sendFile filename
+        expresser.app.renderView req, res, filename, options
 
     # SECURITY METHODS
     # -------------------------------------------------------------------------
@@ -378,7 +338,8 @@ class Routes
     # from a remote address, check if it's using a valid user token.
     # IP is calculated based on the `settings.network.router.ip` value.
     checkSecurity = (req, res) ->
-        return true
+        return true if not settings.app.checkSecurity
+
         ipClient = req.headers["X-Forwarded-For"] or req.connection.remoteAddress or req.socket?.remoteAddress
 
         # Valid token? Grant access.

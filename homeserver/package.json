@@ -1,8 +1,8 @@
 {
     "name": "ayla-homeserver",
-    "version": "0.4.8",
+    "version": "0.5.0",
     "description": "Ayla at your service.",
-    "homepage": "http://ayla.codeplex.com",
+    "homepage": "https://github.com/igoramadas/ayla",
     "author": "Igor Ramadas <igor@devv.com>",
     "license": "MIT",
     "subdomain": "ayla",
@@ -21,21 +21,21 @@
         "node": "*"
     },
     "dependencies": {
-        "assert": ">= 1.3.0",
         "coffee-script": ">= 1.10.0",
-        "expresser": ">= 2.0.0-alpha.4",
-        "expresser-cron": ">= 1.0.0-alpha.1",
-        "expresser-downloader": ">= 1.0.0-alpha.1",
-        "expresser-logger-logentries": ">= 1.0.0-alpha.1",
-        "expresser-mailer": ">= 1.0.0-alpha.1",
-        "expresser-sockets": ">= 1.0.0-alpha.1",
-        "imap": ">= 0.8.15",
-        "mailparser": ">= 0.5.2",
-        "mdns": ">= 2.2.10",
-        "ninja-blocks": ">= 0.1.3",
-        "oauth": ">= 0.9.14",
-        "request": ">= 2.64.0",
-        "tinycolor2": ">= 1.1.2"
+        "expresser": ">= 2.1.3",
+        "expresser-cron": ">= 1.0.1",
+        "expresser-downloader": ">= 1.0.1",
+        "expresser-logger-logentries": ">= 1.0.1",
+        "expresser-mailer": ">= 1.0.1",
+        "expresser-sockets": ">= 1.0.1",
+        "assert": "1.3.x",
+        "imap": "0.8.x",
+        "mailparser": "0.5.x",
+        "mdns": "2.3.x",
+        "ninja-blocks": "0.1.x",
+        "oauth": "0.9.x",
+        "request": "2.69.x",
+        "tinycolor2": "1.3.x"
     },
     "devDependencies": {
         "chai": "*",
@@ -44,7 +44,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://git01.codeplex.com/ayla"
+        "url": "https://github.com/igoramadas/ayla.git"
     },
     "keywords": [
         "ai",

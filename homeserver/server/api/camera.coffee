@@ -104,11 +104,7 @@ class Camera extends (require "./baseapi.coffee")
         # local IP or remote host, port and image path.
         now = moment().format settings.camera.dateFormat
         saveTo = @snapsPath + "#{cam.host}.#{now}.jpg"
-
-        if datastore.Network?.isHome
-            downloadUrl = "#{cam.ip}:#{cam.localPort}/#{cam.imagePath}"
-        else
-            downloadUrl = "#{settings.network.router.remoteHost}:#{cam.remotePort}/#{cam.imagePath}"
+        downloadUrl = "#{cam.ip}:#{cam.port}/#{cam.imagePath}"
 
         # Camera needs auth?
         if cam.auth?

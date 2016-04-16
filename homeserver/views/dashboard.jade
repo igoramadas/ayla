@@ -2,68 +2,66 @@ extends ./index.jade
 
 block contents
     #dashboard.page(data-bind="with: model")
-        ul.maingrid.small-block-grid-1
-            li
-                h3 Server
-                .panel.inner(data-bind="with: server")
-                    div
-                        span.spaced Host:
-                        span(data-bind="text: hostname()")
-                    div
-                        span.spaced OS:
-                        span(data-bind="text: platform()")
-                    div
-                        span.spaced Uptime:
-                        span(data-bind="text: uptime()")
-                    div
-                        span.spaced CPU Load:
-                        span(data-bind="text: loadAvg() + '% (' + cpuCores() + ' cores)'")
-                    div
-                        span.spaced RAM Usage:
-                        span(data-bind="text: memoryUsage() + '% (' + memoryTotal() + ')'")
+        .row
+            h3 Server
+            .panel.inner(data-bind="with: server")
+                div
+                    span.spaced Host:
+                    span(data-bind="text: hostname()")
+                div
+                    span.spaced OS:
+                    span(data-bind="text: platform()")
+                div
+                    span.spaced Uptime:
+                    span(data-bind="text: uptime()")
+                div
+                    span.spaced CPU Load:
+                    span(data-bind="text: loadAvg() + '% (' + cpuCores() + ' cores)'")
+                div
+                    span.spaced RAM Usage:
+                    span(data-bind="text: memoryUsage() + '% (' + memoryTotal() + ')'")
 
-            li
-                h3 API Modules
-                ul.small-block-grid-1.medium-block-grid-4
-                    // ko foreach: apiModules()
-                    li
-                        .panel
-                            a(data-bind="attr: {href: '/api/' + id()}")
-                                h4(data-bind="text: moduleName()")
+        .row
+            h3 API Modules
+            .small-up-2.large-up-4
+                // ko foreach: apiModules()
+                .column.panel
+                    a(data-bind="attr: {href: '/api/' + id()}")
+                        h4(data-bind="text: moduleName()")
 
-                            .inner
-                                // ko if: oauth
-                                .oauth
-                                    button.label(data-bind="click: $root.apiOAuthRedirect, css: {success: oauth().authenticated, alert: !oauth().authenticated}, text: oauth().authenticated ? 'Authenticated' : 'Not authenticated'")
-                                // /ko
+                    .inner
+                        // ko if: oauth
+                        .oauth
+                            button.label(data-bind="click: $root.apiOAuthRedirect, css: {success: oauth().authenticated, alert: !oauth().authenticated}, text: oauth().authenticated ? 'Authenticated' : 'Not authenticated'")
+                        // /ko
 
-                                // ko if: !oauth()
-                                .oauth
-                                    span.label.info No OAuth
-                                // /ko
+                        // ko if: !oauth()
+                        .oauth
+                            span.label.info No OAuth
+                        // /ko
 
-                                // ko if: data().length > 0
-                                strong Data
-                                ul
-                                    // ko foreach: data
-                                    li
-                                        span.spaced(data-bind="text: key()")
-                                        span.timestamp(data-bind="text: lastUpdated()")
-                                    // /ko
-                                // /ko
+                        // ko if: data().length > 0
+                        strong Data
+                        ul
+                            // ko foreach: data
+                            li
+                                span.spaced(data-bind="text: key()")
+                                span.timestamp(data-bind="text: lastUpdated()")
+                            // /ko
+                        // /ko
 
-                                // ko if: jobs().length > 0
-                                strong Jobs
-                                ul
-                                    // ko foreach: jobs
-                                    li
-                                        span.spaced(data-bind="text: callback()")
-                                        span.timestamp(data-bind="text: lastRun()")
-                                    // /ko
-                                // /ko
-                    // /ko
+                        // ko if: jobs().length > 0
+                        strong Jobs
+                        ul
+                            // ko foreach: jobs
+                            li
+                                span.spaced(data-bind="text: callback()")
+                                span.timestamp(data-bind="text: lastRun()")
+                            // /ko
+                        // /ko
+                // /ko
 
-            li.disabled-modules
-                h3 Disabled modules
-                .panel.inner
-                    div(data-bind="text: disabledManagerModules().join(', ') + ', ' + disabledApiModules().join(', ')")
+        .row.disabled-modules
+            h3 Disabled modules
+            .panel.inner
+                div(data-bind="text: disabledManagerModules().join(', ') + ', ' + disabledApiModules().join(', ')")

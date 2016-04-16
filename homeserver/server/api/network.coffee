@@ -401,7 +401,7 @@ class Network extends (require "./baseapi.coffee")
             existingDevice = lodash.find @data.devices, (d) ->
                 if lodash.indexOf(service.addresses, d.ip) < 0
                     return false
-                if service.port isnt d.localPort and service.port isnt d.remotePort
+                if service.port isnt d.port
                     return false
                 return true
 
@@ -434,7 +434,7 @@ class Network extends (require "./baseapi.coffee")
             existingDevice = lodash.find @data.devices, (d) ->
                 if lodash.indexOf(service.addresses, d.ip) < 0
                     return false
-                if service.port isnt d.localPort and service.port isnt d.remotePort
+                if service.port isnt d.port
                     return false
                 return true
 

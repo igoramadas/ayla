@@ -70,11 +70,7 @@ class Hue extends (require "./baseapi.coffee")
                 logger.warn "Hue.apiRequest", errMsg
             return
 
-        # Get correct URL depending on home or remote location.
-        if datastore.Network?.isHome
-            baseUrl = "http://#{device.ip}:#{device.localPort}/api/#{settings.hue.api.user}/"
-        else
-            baseUrl = "http://#{settings.network.router.remoteHost}:#{device.remotePort}/api/#{settings.hue.api.user}/"
+        baseUrl = "http://#{device.ip}:#{device.port}/api/#{settings.hue.api.user}/"
 
         reqUrl = baseUrl + urlPath
 

@@ -4,8 +4,8 @@
 #= require lib/knockout.js
 #= require lib/ko.mapping.js
 #= require lib/moment.js
-#= require lib/what-input.js
 #= require lib/foundation.js
+#= require lib/what-input.js
 #= require lib/crel.js
 #= require lib/jsonhuman.js
 #= require sockets.coffee

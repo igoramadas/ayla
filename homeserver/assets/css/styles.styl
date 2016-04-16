@@ -2,12 +2,14 @@
 
 // Variables
 formTextColor = rgb(30, 30, 30)
-linkColor = rgb(240, 200, 250)
+linkColor = rgb(45, 155, 235)
+lightLinkColor = rgb(175, 235, 255)
 gridBlockMargin = 5px
 gridBlockPadding = 5px
 validColor = rgb(33, 199, 33)
 invalidColor = rgb(222, 122, 111)
 invalidBgColor = rgba(250, 110, 90, 0.45)
+topBarBgColor = rgb(33, 33, 33)
 
 // Import css libs
 @import foundation
@@ -84,7 +86,7 @@ table, table thead, table tbody
 textarea
     color formTextColor
 
-// SPECIAL STYLES
+// SPECIAL / FOUNDATION STYLES
 // ----------------------------------------------------------------------------
 
 // Green and red colours
@@ -109,6 +111,12 @@ h5.invalid
 // Right spaced span
 span.spaced
     margin-right 10px
+
+div.top-bar, ul.menu
+    background-color topBarBgColor
+    color lightLinkColor
+    a
+        color lightLinkColor
 
 // ANNOUNCEMENTS
 // ----------------------------------------------------------------------------

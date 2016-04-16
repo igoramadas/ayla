@@ -1,4 +1,4 @@
-var expresser, filename, fs, privateSettings, privateSettingsObj;
+var a, expresser, filename, fs, privateSettings, privateSettingsObj, maxDepth;
 
 expresser = require("expresser");
 fs = require("fs");
@@ -9,59 +9,44 @@ lodash = expresser.libs.lodash;
 
 filename = expresser.utils.getFilePath("settings.private.json");
 
+maxDepth = 4;
+
+getValueType = function(v) {
+    return v.constructor.toString().split(" ")[1].replace("()", "");
+};
+
 if (filename != null) {
     privateSettings = fs.readFileSync(filename, {encoding: "utf8"});
     privateSettingsObj = expresser.utils.minifyJson(privateSettings);
 
-    var reset = function(source) {
+    var reset = function(source, depth) {
+        if (depth > maxDepth) return;
+
         var prop, value;
 
         for (prop in source) {
             value = source[prop];
-            if (lodash.keys(value).length > 0) {
-                reset(source[prop]);
+
+            if (lodash.isObject(value)) {
+                reset(source[prop], depth + 1);
+            } else if (lodash.isArray(value)) {
+                for (a = 0; a < value.length; a++) {
+                    if (lodash.isObject(value[a])) {
+                        reset(value[a], depth + 1);
+                    } else {
+                        value[a] = getValueType(value[a]);
+                    }
+                }
             } else {
-                source[prop] = value.constructor.toString().split(" ")[1].replace("()", "");
+                source[prop] = getValueType(value);
             }
         }
     };
 
-    reset(privateSettingsObj);
+    reset(privateSettingsObj, 0);
 
     filename = __dirname + "/settings.private.json.sample";
     fs.writeFileSync(filename, JSON.stringify(privateSettingsObj, null, 4));
-}
-
-// GENERATE SAMPLE FOR CRON.API.JSON
-
-filename = expresser.utils.getFilePath("cron.api.json");
-
-if (filename != null) {
-    cronApiJson = fs.readFileSync(filename, {encoding: "utf8"});
-    cronApiJsonObj = expresser.utils.minifyJson(cronApiJson);
-
-    var reset = function(source) {
-        var prop, value;
-
-        for (prop in source) {
-            value = source[prop];
-            if (lodash.keys(value).length > 0) {
-                reset(source[prop]);
-            } else if (prop == "description") {
-                source[prop] = "Run " + source["callback"];
-            }
-            if (source["args"]) {
-                delete source["args"];
-            } else if (source["schedule"] && lodash.isArray(source["schedule"])) {
-                source["schedule"] = 600;
-            }
-        }
-    };
-
-    reset(cronApiJsonObj);
-
-    filename = __dirname + "/cron.api.json.sample";
-    fs.writeFileSync(filename, JSON.stringify(cronApiJsonObj, null, 4));
 }
 
 // UPDATE DOCUMENTATION
