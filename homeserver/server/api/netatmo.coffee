@@ -1,7 +1,7 @@
 # NETATMO API
 # -----------------------------------------------------------------------------
 # Collect weather and climate data from Netatmo devices. Supports indoor and
-# outdoor modules, and the rain gauge.
+# outdoor modules, the rain gauge and Welcome cameras.
 # More info at http://dev.netatmo.com.
 class Netatmo extends (require "./baseapi.coffee")
 
@@ -89,7 +89,7 @@ class Netatmo extends (require "./baseapi.coffee")
             result = JSON.parse result if result? and lodash.isString result
             callback err, result
 
-    # DEVICES DATA
+    # WEATHER DATA
     # -------------------------------------------------------------------------
 
     # Get weather data from Netatmo stations.
@@ -102,6 +102,22 @@ class Netatmo extends (require "./baseapi.coffee")
             else
                 deviceData = result.body.devices
                 @setData "weather", deviceData
+
+            callback err, result if hasCallback
+
+    # WELCOME CAMERA DATA
+    # -------------------------------------------------------------------------
+
+    # Get home data from Welcome cameras.
+    getWelcome: (callback) =>
+        hasCallback = lodash.isFunction callback
+
+        @apiRequest "gethomedata", (err, result) =>
+            if err?
+                @logError "Netatmo.getWelcome", err
+            else
+                homes = result.body.homes
+                @setData "welcome", homes
 
             callback err, result if hasCallback
 

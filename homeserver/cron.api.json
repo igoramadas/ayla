@@ -33,8 +33,8 @@
         },
         {
             "callback": "probeBluetooth",
-            "description": "Probe discoverable bluetooth devices every 5 minutes.",
-            "schedule": 300
+            "description": "Probe discoverable bluetooth devices every 2 minutes.",
+            "schedule": 120
         }
     ],
     "ninja.coffee": [

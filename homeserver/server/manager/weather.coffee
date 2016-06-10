@@ -5,6 +5,7 @@ class WeatherManager extends (require "./basemanager.coffee")
 
     expresser = require "expresser"
 
+    appData = require "../appdata.coffee"
     climateModel = require "../model/climate.coffee"
     events = expresser.events
     lodash = expresser.libs.lodash
@@ -26,15 +27,15 @@ class WeatherManager extends (require "./basemanager.coffee")
         outside = new climateModel {title: "Outside"}
         current = new climateModel {title: "Current forecast"}
 
-        @baseInit {forecastDays: [], forecastCurrent: current, astronomy: astronomy, outside: outside, rooms: settings.home.rooms}
+        @baseInit {forecastDays: [], forecastCurrent: current, astronomy: astronomy, outside: outside, rooms: appData.home.rooms}
 
     # Start the weather manager and listen to data updates / events.
     # Indoor weather data depends on rooms being set on the settings.
     start: =>
-        if not settings.home?.rooms?
+        if not appData.home?.rooms?
             logger.warn "WeatherManager.start", "No rooms were defined on the settings. Indoor weather won't be monitored."
         else
-            for room in settings.home.rooms
+            for room in appData.home.rooms
                 @data[room.id] = new roomModel(room) if not @data[room.id]?
 
         events.on "ElectricImp.data", @onElectricImp
@@ -104,7 +105,7 @@ class WeatherManager extends (require "./basemanager.coffee")
 
         # No room found? Abort here.
         if not roomObj?.id?
-            logger.warn "WeatherManager.setRoomClimate", source, "Room not properly set, check settings.home.rooms and make sure they have an ID set."
+            logger.warn "WeatherManager.setRoomClimate", source, "Room not properly set, check the 'home.json' rooms and make sure they all have an ID set."
             return
 
         # Make sure data is taken out of the array and newer than current available data.
@@ -282,7 +283,7 @@ class WeatherManager extends (require "./basemanager.coffee")
 
         # Set properties to be read (indoor rooms or outdoor / conditions).
         if where is "indoor"
-            arr = lodash.pluck settings.home.rooms, "id"
+            arr = lodash.pluck appData.home.rooms, "id"
         else
             arr = ["outside", "conditions"]
 

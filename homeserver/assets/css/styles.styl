@@ -10,6 +10,7 @@ validColor = rgb(33, 199, 33)
 invalidColor = rgb(222, 122, 111)
 invalidBgColor = rgba(250, 110, 90, 0.45)
 topBarBgColor = rgb(33, 33, 33)
+panelBgColor = rgb(240, 240, 240)
 
 // Import css libs
 @import foundation
@@ -143,7 +144,6 @@ div.top-bar, ul.menu
 #announcements.ok
     background rgba(67, 172, 106, 0.9)
 
-
 // OVERWRITE FOUNDATION STYLES
 // ----------------------------------------------------------------------------
 
@@ -158,6 +158,7 @@ h3
 
 // Make panels flatter
 .panel
+    background panelBgColor
     border 0 !important
     padding 0 !important
 
@@ -178,6 +179,10 @@ h3
 
 .panel.inner
     padding 10px !important
+
+.align-columns
+    margin-left -.9375rem
+    margin-right -.9375rem
 
 // IMPORT PAGE STYLES
 // ----------------------------------------------------------------------------

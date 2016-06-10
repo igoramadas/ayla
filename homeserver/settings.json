@@ -35,10 +35,6 @@
     "electricimp": {
         "agentUrl": "https://agent.electricimp.com/"
     },
-    // Disable Expresser firewall by default.
-    "firewall": {
-        "enabled": false
-    },
     // Fitbit options. Check if user is missing sleep data 2 and 5 days ago, if
     // weight hasn't been set for more than 10 days, and default date format is YEAR-MONTH-DAY.
     "fitbit": {

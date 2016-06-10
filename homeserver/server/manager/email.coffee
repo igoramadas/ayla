@@ -5,6 +5,7 @@ class EmailManager extends (require "./basemanager.coffee")
 
     expresser = require "expresser"
 
+    appData = require "../appdata.coffee"
     events = expresser.events
     fs = require "fs"
     imapModule = require "imap"
@@ -29,19 +30,17 @@ class EmailManager extends (require "./basemanager.coffee")
     # The default email and mobile email addresses, taken from
     # the users collections on settings. Set on init.
     defaultTo: null
-    defaultToMobile: null
 
     # INIT
     # -------------------------------------------------------------------------
 
     # Init the Email module and start listening to new message events from the server.
     init: =>
-        defaultUser = lodash.find settings.users, {isDefault: true}
+        defaultUser = lodash.find appData.users, {isDefault: true}
 
         # Set default email if a default user was set, or warn that defaults
         # will be taken from the Expresser Mailer.
         @defaultTo = defaultUser.email if defaultUser?.email?
-        @defaultToMobile = defaultUser.emailMobile or @defaultTo
 
         @baseInit {skippedEmails: [], processedEmails: []}
 
@@ -50,10 +49,10 @@ class EmailManager extends (require "./basemanager.coffee")
         events.on "EmailManager.send", @send
 
         # Send email telling Ayla home server has started managing emails.
-        if @defaultToMobile?
-            mailer.send {to: @defaultToMobile, subject: "Ayla home server started!"}
+        if @defaultTo?
+            mailer.send {to: @defaultTo, subject: "Ayla home server started!"}
         else
-            logger.warn "Manager.init", "No default user was set, or no mobile email was found."
+            logger.warn "EmailManager.init", "No default user was set, or no mobile email was found."
 
         # Create IMAP clients, one for each email account.
         for key, a of settings.emailAccounts
@@ -67,7 +66,7 @@ class EmailManager extends (require "./basemanager.coffee")
 
     # Stop listening to new messages and disconnect. Set `running` to false.
     stop: =>
-        events.off "emailManager.send", @send
+        events.off "EmailManager.send", @send
 
         # Close IMAP clients.
         for account of @accounts
@@ -283,9 +282,7 @@ class EmailManager extends (require "./basemanager.coffee")
     # If no `to` is present on the options send to the `defaultTo` specified above, or
     # to the `defaultToMobile` in case `options.mobile` is true.
     send: (options, callback) =>
-        if not options.to?
-            options.to = if options.mobile then @defaultToMobile else @defaultTo
-
+        options.to = @defaultTo if not options.to?
         logger.info "EmailManager.send", "To #{options.to}: #{options.subject}"
 
         # Send the email using the Expresser Mailer module.

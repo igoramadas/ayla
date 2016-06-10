@@ -6,6 +6,7 @@ class Hue extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
 
+    appData = require "../appdata.coffee"
     async = expresser.libs.async
     datastore = expresser.datastore
     events = expresser.events
@@ -59,11 +60,11 @@ class Hue extends (require "./baseapi.coffee")
             params = null
 
         # Get device info from settings.
-        device = lodash.find settings.network.devices, {type: "hue"}
+        device = lodash.find appData.network.devices, {type: "hue"}
 
         # No device found? Abort!
         if not @isRunning [device]
-            errMsg = "Hue bridge was not found on network device list. Please check settings.network.devices."
+            errMsg = "Hue bridge was not found on network device list. Please check appData.network.devices."
             if lodash.isFunction callback
                 callback errMsg
             else

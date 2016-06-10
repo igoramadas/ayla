@@ -1,12 +1,11 @@
 .idea/
-atlassian-ide-plugin.xml
+assets/build
 data/
 docs/
 logs/
 newrelic.js
 newrelic_agent.log
-node_modules/
-settings.development.json
+node_modules
 settings.private.json
 settings.production.json
 ayla.cer
