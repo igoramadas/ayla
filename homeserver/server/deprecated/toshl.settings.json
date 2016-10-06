@@ -1,0 +1,17 @@
+{
+    // Toshl settings. The API clientId, secret and oauthState must be set on the private settings file.
+    // The `recentDays` by default is set to 30 days.
+    "toshl": {
+        "api": {
+            "url": "https://api.toshl.com/",
+            "oauthPathAuthorize": "oauth2/authorize",
+            "oauthPathToken": "oauth2/token",
+            "oauthResponseType": "code",
+            "oauthUrl": "https://toshl.com/",
+            "oauthVersion": "2.0",
+            "oauthUseHeader": true
+        },
+        "recentDays": 30,
+        "dateFormat": "YYYY-MM-DD"
+    }
+}

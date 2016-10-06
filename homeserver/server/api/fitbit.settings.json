@@ -1,0 +1,15 @@
+{
+    // Fitbit options. Check if user is missing sleep data 2 and 5 days ago, if
+    // weight hasn't been set for more than 10 days, and default date format is YEAR-MONTH-DAY.
+    "fitbit": {
+        // API clientId and secret must be set on the private settings file.
+        "api": {
+            "url": "https://api.fitbit.com/1/",
+            "oauthUrl": "https://api.fitbit.com/oauth/",
+            "oauthVersion": "1.0"
+        },
+        "missingSleepDays": [2, 5],
+        "missingWeightAfterDays": 10,
+        "dateFormat": "YYYY-MM-DD"
+    }
+}

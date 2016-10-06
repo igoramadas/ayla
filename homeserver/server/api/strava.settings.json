@@ -1,0 +1,15 @@
+{
+    // Strava settings. The `recentDays` by default is set to 30 days.
+    "strava": {
+        "api": {
+            "url": "https://www.strava.com/api/v3/",
+            "oauthPathAuthorize": "oauth/authorize",
+            "oauthPathToken": "oauth/token",
+            "oauthPassRedirect": true,
+            "oauthResponseType": "code",
+            "oauthUrl": "https://www.strava.com/",
+            "oauthVersion": "2.0"
+        },
+        "recentDays": 30
+    }
+}

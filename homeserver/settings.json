@@ -22,42 +22,6 @@
         // Default URL should be changed!!!
         "url": "https://localhost/"
     },
-    // Camera date format while saving snaps, and max age of snaps before
-    // they get deleted (default is 7).
-    "camera": {
-        "dateFormat": "YYYYMMDD-HHmmss",
-        "snapsMaxAgeDays": 7
-    },
-    // Settings to connect to your Electric Imp devices. You must set a devices
-    // array with the list of devices to be used.
-    // Please note that you must use the Ayla Imp code on them,
-    // both agent and device codes (available on our GIT repo under the /imp folder).
-    "electricimp": {
-        "agentUrl": "https://agent.electricimp.com/"
-    },
-    // Fitbit options. Check if user is missing sleep data 2 and 5 days ago, if
-    // weight hasn't been set for more than 10 days, and default date format is YEAR-MONTH-DAY.
-    "fitbit": {
-        // API clientId and secret must be set on the private settings file.
-        "api": {
-            "url": "https://api.fitbit.com/1/",
-            "oauthUrl": "https://api.fitbit.com/oauth/",
-            "oauthVersion": "1.0"
-        },
-        "missingSleepDays": [2, 5],
-        "missingWeightAfterDays": 10,
-        "dateFormat": "YYYY-MM-DD"
-    },
-    // Garmin Connect settings. The API `username` and `password` must be set on
-    // your private settings file. The `recentDays` define how many days to get
-    // recent sleep, activities and fitness stats data.
-    "garmin": {
-        "api": {
-            "url": "http://connect.garmin.com/modern/proxy/",
-            "loginUrl": "https://sso.garmin.com/sso/login?service=http%3A%2F%2Fconnect.garmin.com%2Fpost-auth%2Flogin&webhost=olaxpw-connect33&source=http%3A%2F%2Fconnect.garmin.com%2Fen-US%2Fsignin&redirectAfterAccountLoginUrl=http%3A%2F%2Fconnect.garmin.com%2Fpost-auth%2Flogin&gauthHost=https%3A%2F%2Fsso.garmin.com%2Fsso&locale=en_US&id=gauth-widget&clientId=GarminConnect&openCreateAccount=false"
-        },
-        "recentDays": 30
-    },
     // General app settings. Debug is disabled by default.
     "general": {
         "debug": false,
@@ -88,13 +52,11 @@
         "retryInterval": 90000,
         "tagProcessedMessages": "<strong>Message processed automatically by Ayla!</strong><br /><br />"
     },
-    // Modules (API and managers) settings. You'll need to enable modules individually by
-    // creating a `enable` property containing an array of modules to be enabled.
-    // For example to enable only Netatmo and Hue APIs and the Email and Weather managers:
+    // Modules (API and managers) settings. For example to enable only Netatmo and Hue APIs and the Email and Weather managers:
     // { "api": ["hue", "netatmo"] }
     // { "managers": ["email", "weather"] }
     "modules": {
-        "api": ["fitbit", "hue", "netatmo", "network", "ninja", "strava", "wunderground"],
+        "api": ["hue", "netatmo", "network", "ninja", "strava", "wunderground"],
         "managers": ["email", "lights", "weather"],
         // By default the app will keep the most recent 5 results of module
         // data having the same key (each key inside the .data property of API modules).
@@ -114,31 +76,13 @@
         // happens 10 times in less than 48 hours.
         "stopOnErrorCount": 10
     },
-    // Netatmo settings. The API clientId, secret, password and username must
-    // be set on the private settings file.
-    "netatmo": {
-        "api": {
-            "url": "https://api.netatmo.net/api/",
-            "oauthPathAuthorize": "oauth2/authorize",
-            "oauthPathToken": "oauth2/token",
-            "oauthUrl": "https://api.netatmo.net/",
-            "oauthVersion": "2.0",
-            "oauthPassRedirect": true
-        }
-    },
     // Network settings. You must defined a `router` object with router details like
     // ip, model, remoteHost etc, and a `devices` array containing a list of expected
     // devices on your network also with ip, description, localIp, localPort, remotePort etc.
     // Set `autoDiscovery` to false if you don't want to use MDNS to auto discover devices.
     "network": {
         "autoDiscovery": true
-    },
-    // Ninja Blocks API userToken must be set on the private settings file.
-    "ninja": {
-        "api": {
-            "url": "https://a.ninja.is/rest/v0/"
-        }
-    },
+    },    
     // Path to various settings and data.
     "path": {
         "cameraSnaps": "/data/cameraSnaps/",
@@ -147,61 +91,5 @@
         // You'll need to get your own certificates if you want to use HTTPS!
         "sslKeyFile": "ssl.key",
         "sslCertFile": "ssl.cer"
-    },
-    // Strava settings. The `recentDays` by default is set to 30 days.
-    "strava": {
-        "api": {
-            "url": "https://www.strava.com/api/v3/",
-            "oauthPathAuthorize": "oauth/authorize",
-            "oauthPathToken": "oauth/token",
-            "oauthPassRedirect": true,
-            "oauthResponseType": "code",
-            "oauthUrl": "https://www.strava.com/",
-            "oauthVersion": "2.0"
-        },
-        "recentDays": 30
-    },
-    // Toshl settings. The API clientId, secret and oauthState must be set on the private settings file.
-    // The `recentDays` by default is set to 30 days.
-    "toshl": {
-        "api": {
-            "url": "https://api.toshl.com/",
-            "oauthPathAuthorize": "oauth2/authorize",
-            "oauthPathToken": "oauth2/token",
-            "oauthResponseType": "code",
-            "oauthUrl": "https://toshl.com/",
-            "oauthVersion": "2.0",
-            "oauthUseHeader": true
-        },
-        "recentDays": 30,
-        "dateFormat": "YYYY-MM-DD"
-    },
-    // Ubi settings. API clientId and secret must be set on the private settings file.
-    "ubi": {
-        "api": {
-            "url": "https://portal.theubi.com/v2/ubi/",
-            "oauthPathAuthorize": "oauth/authorize",
-            "oauthPathToken": "oauth/token",
-            "oauthPassRedirect": true,
-            "oauthResponseType": "code",
-            "oauthUrl": "https://portal.theubi.com/",
-            "oauthVersion": "2.0"
-        }
-    },
-    // Withings settings. API clientId and secret must be set on the private settings file,
-    // along with the account userId.
-    "withings": {
-        "api": {
-            "url": "http://wbsapi.withings.net/",
-            "oauthUrl": "https://oauth.withings.com/account/",
-            "oauthVersion": "1.0"
-        },
-        "recentDays": 30
-    },
-    // Weather Underground settings. You must set the api.clientId and defaultQuery.
-    "wunderground": {
-        "api": {
-            "url": "http://api.wunderground.com/api/"
-        }
     }
 }

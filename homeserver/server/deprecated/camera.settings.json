@@ -1,0 +1,8 @@
+{
+    // Camera date format while saving snaps, and max age of snaps before
+    // they get deleted (default is 7).
+    "camera": {
+        "dateFormat": "YYYYMMDD-HHmmss",
+        "snapsMaxAgeDays": 7
+    }
+}

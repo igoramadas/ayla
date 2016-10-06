@@ -1,0 +1,12 @@
+{
+    // Garmin Connect settings. The API `username` and `password` must be set on
+    // your private settings file. The `recentDays` define how many days to get
+    // recent sleep, activities and fitness stats data.
+    "garmin": {
+        "api": {
+            "url": "http://connect.garmin.com/modern/proxy/",
+            "loginUrl": "https://sso.garmin.com/sso/login?service=http%3A%2F%2Fconnect.garmin.com%2Fpost-auth%2Flogin&webhost=olaxpw-connect33&source=http%3A%2F%2Fconnect.garmin.com%2Fen-US%2Fsignin&redirectAfterAccountLoginUrl=http%3A%2F%2Fconnect.garmin.com%2Fpost-auth%2Flogin&gauthHost=https%3A%2F%2Fsso.garmin.com%2Fsso&locale=en_US&id=gauth-widget&clientId=GarminConnect&openCreateAccount=false"
+        },
+        "recentDays": 30
+    }
+}

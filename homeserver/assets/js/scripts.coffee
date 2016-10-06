@@ -1,5 +1,5 @@
 #= require lib/jquery.js
-#= require lib/jquery.cookie.js
+#= require lib/js.cookie.js
 #= require lib/lodash.js
 #= require lib/knockout.js
 #= require lib/ko.mapping.js

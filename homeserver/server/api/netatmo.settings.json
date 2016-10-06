@@ -1,0 +1,13 @@
+{
+    // The API clientId, secret, password and username must be set on the private settings file.
+    "netatmo": {
+        "api": {
+            "url": "https://api.netatmo.net/api/",
+            "oauthPathAuthorize": "oauth2/authorize",
+            "oauthPathToken": "oauth2/token",
+            "oauthUrl": "https://api.netatmo.net/",
+            "oauthVersion": "2.0",
+            "oauthPassRedirect": true
+        }
+    }
+}

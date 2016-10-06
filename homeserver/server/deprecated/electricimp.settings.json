@@ -1,0 +1,9 @@
+{
+    // Settings to connect to your Electric Imp devices. You must set a devices
+    // array with the list of devices to be used.
+    // Please note that you must use the Ayla Imp code on them,
+    // both agent and device codes (available on our GIT repo under the /imp folder).
+    "electricimp": {
+        "agentUrl": "https://agent.electricimp.com/"
+    }
+}

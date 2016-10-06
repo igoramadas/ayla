@@ -1,0 +1,12 @@
+{
+    // Withings settings. API clientId and secret must be set on the private settings file,
+    // along with the account userId.
+    "withings": {
+        "api": {
+            "url": "http://wbsapi.withings.net/",
+            "oauthUrl": "https://oauth.withings.com/account/",
+            "oauthVersion": "1.0"
+        },
+        "recentDays": 30
+    }
+}

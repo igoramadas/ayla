@@ -1,0 +1,8 @@
+{
+    // Ninja Blocks API userToken must be set on the private settings file.
+    "ninja": {
+        "api": {
+            "url": "https://a.ninja.is/rest/v0/"
+        }
+    }
+}

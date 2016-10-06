@@ -21,20 +21,20 @@
         "node": "*"
     },
     "dependencies": {
-        "coffee-script": ">= 1.10.0",
+        "coffee-script": ">= 1.11.0",
         "expresser": ">= 2.1.9",
         "expresser-cron": ">= 1.0.1",
         "expresser-downloader": ">= 1.0.1",
         "expresser-logger-logentries": ">= 1.0.1",
         "expresser-mailer": ">= 1.0.1",
         "expresser-sockets": ">= 1.0.1",
-        "assert": "1.3.x",
+        "assert": "1.4.x",
         "imap": "0.8.x",
-        "mailparser": "0.5.x",
+        "mailparser": "0.6.x",
         "mdns": "2.3.x",
         "oauth": "0.9.x",
-        "request": "2.69.x",
-        "tinycolor2": "1.3.x"
+        "request": "2.75.x",
+        "tinycolor2": "1.4.x"
     },
     "devDependencies": {
         "chai": "*",

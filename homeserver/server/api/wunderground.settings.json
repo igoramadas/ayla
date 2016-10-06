@@ -1,0 +1,8 @@
+{
+    // Weather Underground settings. You must set the api.clientId and defaultQuery.
+    "wunderground": {
+        "api": {
+            "url": "http://api.wunderground.com/api/"
+        }
+    }
+}
