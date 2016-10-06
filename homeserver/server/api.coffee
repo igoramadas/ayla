@@ -51,6 +51,8 @@ class Api
                     logger.debug "Api.init", f, "API Module is not enabled and won't be instantiated."
                     @disabledModules[filename] = filename
                 else
+                    settings.loadFromJson "./api/" + f.replace ".coffee", ".settings.json"
+
                     module = require "./api/#{f}"
                     module.init()
                     @modules[filename] = module

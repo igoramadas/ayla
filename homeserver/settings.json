@@ -25,7 +25,7 @@
     // General app settings. Debug is disabled by default.
     "general": {
         "debug": false,
-        // Maximum tasks to execute in parallel using async.
+        // Maximum async tasks to execute in parallel.
         "parallelTasksLimit": 4
     },
     // Home settings.
@@ -56,7 +56,7 @@
     // { "api": ["hue", "netatmo"] }
     // { "managers": ["email", "weather"] }
     "modules": {
-        "api": ["hue", "netatmo", "network", "ninja", "strava", "wunderground"],
+        "api": ["hue", "netatmo", "network", "strava", "wunderground"],
         "managers": ["email", "lights", "weather"],
         // By default the app will keep the most recent 5 results of module
         // data having the same key (each key inside the .data property of API modules).
@@ -76,13 +76,6 @@
         // happens 10 times in less than 48 hours.
         "stopOnErrorCount": 10
     },
-    // Network settings. You must defined a `router` object with router details like
-    // ip, model, remoteHost etc, and a `devices` array containing a list of expected
-    // devices on your network also with ip, description, localIp, localPort, remotePort etc.
-    // Set `autoDiscovery` to false if you don't want to use MDNS to auto discover devices.
-    "network": {
-        "autoDiscovery": true
-    },    
     // Path to various settings and data.
     "path": {
         "cameraSnaps": "/data/cameraSnaps/",

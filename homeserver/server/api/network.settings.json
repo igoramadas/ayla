@@ -1,0 +1,9 @@
+{
+    // Network settings. You must defined a `router` object with router details like
+    // ip, model, remoteHost etc, and a `devices` array containing a list of expected
+    // devices on your network also with ip, description, localIp, localPort, remotePort etc.
+    // Set `autoDiscovery` to false if you don't want to use MDNS to auto discover devices.
+    "network": {
+        "autoDiscovery": true
+    }
+}
