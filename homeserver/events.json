@@ -1,0 +1,16 @@
+[{
+    "description": "Blink lights when it starts raining.",
+    "enabled": true,
+    "events": [{
+        "method": "Netatmo.rainStarted",
+        "filter": null
+    }],
+    "callbacks": [{
+        "method": "Hue.blink",
+        "params": ["1", "2"]
+    }],
+    "times": [{
+        "from": "07:30:00",
+        "to": "23:30:00"
+    }]
+}]
