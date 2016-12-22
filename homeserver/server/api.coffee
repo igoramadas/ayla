@@ -44,7 +44,7 @@ class Api
         for f in files
             if f isnt "baseapi.coffee" and f.indexOf(".coffee") > 0
                 filename = f.replace ".coffee", ""
-                enabled = lodash.indexOf(settings.modules.api, filename) >= 0
+                enabled = settings[filename].enabled
 
                 # Only add if set on enabled modules setting.
                 if not enabled

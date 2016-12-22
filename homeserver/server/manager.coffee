@@ -36,16 +36,10 @@ class Manager
         for f in files
             if f isnt "basemanager.coffee" and f.indexOf(".coffee") > 0
                 filename = f.replace ".coffee", ""
-                enabled = lodash.indexOf(settings.modules.managers, filename) >= 0
 
-                # Only add if set on enabled managers setting.
-                if not enabled
-                    logger.debug "Manager.init", f, "Manager is not enabled and won't be instantiated."
-                    @disabledModules[filename] = filename
-                else
-                    module = require "./manager/#{f}"
-                    module.init()
-                    @modules[filename] = module
+                module = require "./manager/#{f}"
+                module.init()
+                @modules[filename] = module
 
         # Start all managers.
         m.start() for k, m of @modules
