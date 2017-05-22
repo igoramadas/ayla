@@ -41,7 +41,7 @@ class Camera extends (require "./baseapi.coffee")
             # Make sure the camera snaps folder exists!
             fs.exists @snapsPath, (exists) =>
                 if not exists
-                    utils.mkdirRecursive @snapsPath
+                    utils.io.mkdirRecursive @snapsPath
 
                 @baseStart()
                 @takeAllSnaps()

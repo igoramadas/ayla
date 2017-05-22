@@ -1,17 +1,12 @@
 {
     "name": "ayla-homeserver",
-    "version": "0.6.0",
+    "version": "0.6.2",
     "description": "Ayla at your service.",
     "homepage": "https://github.com/igoramadas/ayla",
     "author": "Igor Ramadas <igor@devv.com>",
     "license": "MIT",
     "subdomain": "ayla",
-    "main": "index",
-    "domains": [
-        "ayla.codeplex.com"
-    ],
     "scripts": {
-        "publish": "node publish.js",
         "start": "node index.js"
     },
     "bin": {
@@ -21,19 +16,18 @@
         "node": "*"
     },
     "dependencies": {
-        "coffee-script": ">= 1.11.0",
-        "expresser": ">= 2.1.9",
-        "expresser-cron": ">= 1.0.1",
-        "expresser-downloader": ">= 1.0.1",
-        "expresser-logger-logentries": ">= 1.0.1",
-        "expresser-mailer": ">= 1.0.1",
-        "expresser-sockets": ">= 1.0.1",
+        "coffee-script": ">= 1.12.6",
+        "expresser": "2.3.x",
+        "expresser-cron": "1.2.x",
+        "expresser-downloader": "1.1.x",
+        "expresser-mailer": "1.1.x",
+        "expresser-sockets": "1.1.x",
         "assert": "1.4.x",
         "imap": "0.8.x",
-        "mailparser": "0.6.x",
+        "mailparser": "2.0.x",
         "mdns": "2.3.x",
         "oauth": "0.9.x",
-        "request": "2.75.x",
+        "request": "2.81.x",
         "tinycolor2": "1.4.x"
     },
     "devDependencies": {

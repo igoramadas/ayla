@@ -27,31 +27,25 @@ class WeatherManager extends (require "./basemanager.coffee")
         outside = new climateModel {title: "Outside"}
         current = new climateModel {title: "Current forecast"}
 
-        @baseInit {forecastDays: [], forecastCurrent: current, astronomy: astronomy, outside: outside, rooms: appData.home.rooms}
+        @baseInit {forecastDays: [], forecastCurrent: current, astronomy: astronomy, outside: outside, spaces: appData.home.spaces}
 
     # Start the weather manager and listen to data updates / events.
-    # Indoor weather data depends on rooms being set on the settings.
+    # Indoor weather data depends on spaces being set on the settings.
     start: =>
-        if not appData.home?.rooms?
-            logger.warn "WeatherManager.start", "No rooms were defined on the settings. Indoor weather won't be monitored."
+        if not appData.home?.spaces?
+            logger.warn "WeatherManager.start", "No spaces were defined on the settings. Indoor weather won't be monitored."
         else
-            for room in appData.home.rooms
+            for room in appData.home.spaces
                 @data[room.id] = new roomModel(room) if not @data[room.id]?
 
-        events.on "ElectricImp.data", @onElectricImp
         events.on "Netatmo.data", @onNetatmo
-        events.on "Ninja.data", @onNinja
-        events.on "Ubi.data", @onUbi
         events.on "Wunderground.data", @onWunderground
 
         @baseStart()
 
     # Stop the weather manager.
     stop: =>
-        events.off "ElectricImp.data", @onElectricImp
         events.off "Netatmo.data", @onNetatmo
-        events.off "Ninja.data", @onNinja
-        events.off "Ubi.data", @onUbi
         events.off "Wunderground.data", @onWunderground
 
         @baseStop()
@@ -105,7 +99,7 @@ class WeatherManager extends (require "./basemanager.coffee")
 
         # No room found? Abort here.
         if not roomObj?.id?
-            logger.warn "WeatherManager.setRoomClimate", source, "Room not properly set, check the 'home.json' rooms and make sure they all have an ID set."
+            logger.warn "WeatherManager.setRoomClimate", source, "Room not properly set, check the 'home.json' spaces and make sure they all have an ID set."
             return
 
         # Make sure data is taken out of the array and newer than current available data.
@@ -117,7 +111,7 @@ class WeatherManager extends (require "./basemanager.coffee")
         @data[roomObj.id].setData lastData
         @checkRoomClimate roomObj
         @dataUpdated roomObj.id
-        
+
         logger.info "WeatherManager.setRoomClimate", roomObj
 
     # Helper to set current conditions for outdoors.
@@ -197,46 +191,6 @@ class WeatherManager extends (require "./basemanager.coffee")
     onNetatmoOutdoor: (data, filter) =>
         @setOutsideClimate data, "netatmo"
 
-    # NINJA
-    # -------------------------------------------------------------------------
-
-    # Check indoor weather conditions using Ninja Blocks.
-    onNinja: (key, data, filter) =>
-        logger.debug "WeatherManager.onNinja", key, data, filter
-
-        return if key isnt "weather"
-
-        weather = {}
-        weather.temperature = data.value.temperature[0].value if data.value.temperature[0]?
-        weather.humidity = data.value.humidity[0].value if data.value.humidity[0]?
-
-        if weather.temperature? or weather.humidity?
-            weather.timestamp = data.value.temperature[0].timestamp or data.value.humidity[0].timestamp
-
-        # Update original data and set room weather.
-        data.value = weather
-        @setRoomClimate data, {"ninja": ""}
-
-    # ELECTRIC IMP
-    # -------------------------------------------------------------------------
-
-    # Check indoor weather conditions using Electric Imp. We're binding to the global data event,
-    # so a key is passed here as well.
-    onElectricImp: (key, data, filter) =>
-        logger.debug "WeatherManager.onElectricImp", key, data, filter
-
-        @setRoomClimate data, {"electricimp": key}
-
-    # UBI
-    # -------------------------------------------------------------------------
-
-    # Check sensor data from Ubi.
-    onUbi: (key, data, filter) =>
-        logger.debug "WeatherManager.onUbi", key, data, filter
-        return if key isnt "sensors"
-
-        @setRoomClimate data, {"ubi": data.value.device_id}
-
     # WUNDERGROUND
     # -------------------------------------------------------------------------
 
@@ -281,9 +235,9 @@ class WeatherManager extends (require "./basemanager.coffee")
         avg = 0
         count = 0
 
-        # Set properties to be read (indoor rooms or outdoor / conditions).
+        # Set properties to be read (indoor spaces or outdoor / conditions).
         if where is "indoor"
-            arr = lodash.pluck appData.home.rooms, "id"
+            arr = lodash.pluck appData.home.spaces, "id"
         else
             arr = ["outside", "conditions"]
 

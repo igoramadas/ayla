@@ -65,7 +65,7 @@ class Network extends (require "./baseapi.coffee")
 
         @checkIP()
 
-        @serverInfo = utils.getServerInfo()
+        @serverInfo = utils.system.getInfo()
         @serverInfo.platform = @serverInfo.platform.toLowerCase()
 
         if mdns?

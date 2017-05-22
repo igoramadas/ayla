@@ -2,7 +2,7 @@
     "description": "Blink lights blue when it starts raining.",
     "enabled": true,
     "events": [{
-        "method": "Netatmo.rainStarted",
+        "method": "Weather.rainStarted",
         "filter": null
     }],
     "callbacks": [{

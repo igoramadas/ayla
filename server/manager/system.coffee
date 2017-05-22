@@ -78,7 +78,7 @@ class SystemManager extends (require "./basemanager.coffee")
 
     # Get current server status (CPU, memory etc).
     getServerInfo: =>
-        @data.server = utils.getServerInfo()
+        @data.server = utils.system.getInfo()
         @dataUpdated "server"
 
     # Get current server settings. Clean settings before sending to clients.

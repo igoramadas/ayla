@@ -1,32 +1,15 @@
 {
-    "fitbit.coffee": [
-        {
-            "callback": "getSleep",
-            "description": "Get sleep data from Fitbit twice daily.",
-            "schedule": ["10:00:00", "20:00:00"]
-        },
-        {
-            "callback": "getBody",
-            "description": "Get weight data from Fitbit every morning.",
-            "schedule": ["09:00:00"]
-        }
-    ],
-    "hue.coffee": [
-        {
-            "callback": "refreshHub",
-            "description": "Refresh Philips Hue hub data every minute.",
-            "schedule": 60
-        }
-    ],
-    "netatmo.coffee": [
-        {
-            "callback": "getWeather",
-            "description": "Get Netatmo weather data every 10 minutes.",
-            "schedule": 600
-        }
-    ],
-    "network.coffee": [
-        {
+    "hue.coffee": [{
+        "callback": "refreshHub",
+        "description": "Refresh Philips Hue hub data every minute.",
+        "schedule": 60
+    }],
+    "netatmo.coffee": [{
+        "callback": "getWeather",
+        "description": "Get Netatmo weather data every 10 minutes.",
+        "schedule": 600
+    }],
+    "network.coffee": [{
             "callback": "probeDevices",
             "description": "Probe network devices and update their statuses every minute.",
             "schedule": 60
@@ -37,15 +20,7 @@
             "schedule": 120
         }
     ],
-    "ninja.coffee": [
-        {
-            "callback": "getDevices",
-            "description": "Probe Ninja Block device list every 15 minutes.",
-            "schedule": 900
-        }
-    ],
-    "strava.coffee": [
-        {
+    "strava.coffee": [{
             "callback": "getProfile",
             "description": "Get Strava profile twice a day.",
             "schedule": ["11:00:00", "21:00:00"]
@@ -56,8 +31,7 @@
             "schedule": ["11:01:00", "21:01:00"]
         }
     ],
-    "wunderground.coffee": [
-        {
+    "wunderground.coffee": [{
             "callback": "getConditions",
             "description": "Get updated weather information every 10 minutes.",
             "schedule": 600

@@ -25,7 +25,7 @@ class AppData
 
                         try
                             contents = fs.readFileSync filename, "utf8"
-                            @[basename] = utils.minifyJson contents
+                            @[basename] = utils.data.minifyJson contents
                         catch ex
                             logger.error "AppData.init", "Could not load #{f}", ex
 

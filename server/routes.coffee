@@ -158,7 +158,7 @@ class Routes
             aModule.jobs.push obj if aModule?
 
         # Add everything to the result.
-        result.server = utils.getServerInfo()
+        result.server = utils.system.getInfo()
         result.managerModules = managerModules
         result.disabledManagerModules = lodash.keys manager.disabledModules
         result.apiModules = apiModules
@@ -322,7 +322,7 @@ class Routes
         options.loadJs = [] if not options.loadJs?
         options.loadCss = [] if not options.loadCss?
         options.moment = moment
-        options.server = utils.getServerInfo()
+        options.server = utils.system.getInfo()
         options.managerModules = manager.modules
 
         # Force .jade extension.

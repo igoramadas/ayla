@@ -48,21 +48,18 @@ class BaseModule
     # Called when the module starts.
     baseStart: =>
         @running = true
+        logger.info "#{@moduleName}.baseStart"
 
         # Start cron jobs for that module.
         cron.start {module: "#{@moduleName}.coffee"} if settings.cron.enabled
 
-        logger.debug "#{@moduleName}.baseStart"
-
     # Called when the module stops.
     baseStop: =>
         @running = false
-        logger.debug "#{@moduleName}.baseStop"
+        logger.info "#{@moduleName}.baseStop"
 
         # Stop cron jobs for that module.
         cron.stop {module: "#{@moduleName}.coffee"} if settings.cron.enabled
-
-        logger.debug "#{@moduleName}.baseStop"
 
     # DATA HANDLING
     # -------------------------------------------------------------------------
