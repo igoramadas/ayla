@@ -9,21 +9,22 @@ class Network extends (require "./baseapi.coffee")
     expresser = require "expresser"
 
     async = expresser.libs.async
-    buffer = require "buffer"
-    cprocess = require "child_process"
     datastore = expresser.datastore
-    dgram = require "dgram"
     events = expresser.events
-    fs = require "fs"
-    http = require "http"
     lodash = expresser.libs.lodash
     logger = expresser.logger
     moment = expresser.libs.moment
+    settings = expresser.settings
+    utils = expresser.utils
+
+    buffer = require "buffer"
+    cprocess = require "child_process"
+    dgram = require "dgram"
+    fs = require "fs"
+    http = require "http"
     querystring = require "querystring"
     path = require "path"
-    settings = expresser.settings
     url = require "url"
-    utils = expresser.utils
 
     # PROPERTIES
     # -------------------------------------------------------------------------
@@ -146,7 +147,7 @@ class Network extends (require "./baseapi.coffee")
             logger.debug "Network.checkIP", "Expected router IP: #{settings.network.router.ip}"
 
         # Get and process current IP.
-        ips = utils.getServerIP()
+        ips = utils.system.getIP()
         ips = ips.join ","
         homeSubnet = settings.network.router?.ip?.substring 0, 7
 

@@ -1,16 +1,16 @@
-# SERVER: ROOM MODEL
+# SERVER: SPACE MODEL
 # -----------------------------------------------------------------------------
-class RoomModel extends (require "./basemodel.coffee")
+class SpaceModel extends (require "./basemodel.coffee")
 
     expresser = require "expresser"
     climateModel = require "../model/climate.coffee"
     settings = expresser.settings
 
-    # Room constructor.
+    # Space constructor.
     constructor: (obj, @source) ->
         @setData obj
 
-    # Set room data and check climate conditions straight away.
+    # Set space data and check climate conditions straight away.
     setData: (obj) =>
         data = obj.value or obj
         data.indoor = true
@@ -26,7 +26,7 @@ class RoomModel extends (require "./basemodel.coffee")
         @checkClimate()
         @afterSetData obj
 
-    # Helper to verify room climate and set its condition.
+    # Helper to verify space climate and set its condition.
     checkClimate: =>
         return if not @climate?
 
@@ -69,4 +69,4 @@ class RoomModel extends (require "./basemodel.coffee")
 
 # Exports model.
 # -----------------------------------------------------------------------------
-module.exports = exports = RoomModel
+module.exports = exports = SpaceModel

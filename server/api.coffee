@@ -6,10 +6,10 @@
 class Api
 
     expresser = require "expresser"
-    events = null
-    lodash = null
-    logger = null
-    settings = null
+    lodash = expresser.libs.lodash
+    logger = expresser.logger
+    settings = expresser.settings
+    utils = expresser.utils
 
     fs = require "fs"
     path = require "path"
@@ -24,11 +24,6 @@ class Api
     # Init all API modules.
     init: (callback) =>
         cron = expresser.cron
-        events = expresser.events
-        lodash = expresser.libs.lodash
-        logger = expresser.logger
-        settings = expresser.settings
-        utils = expresser.utils
 
         rootPath = path.join __dirname, "../"
         cronPath = rootPath + "cron.api.json"
@@ -61,14 +56,13 @@ class Api
         m.start() for k, m of @modules
         cron.load cronPath, {basePath: "server/api/"} if settings.cron.enabled
 
-        # Proceed with callback?
-        callback() if callback?
+        callback?()
 
     # Stop all API modules and clear timers.
     stop: (callback) =>
         m.stop() for k, m of @modules
 
-        callback() if callback?
+        callback?()
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

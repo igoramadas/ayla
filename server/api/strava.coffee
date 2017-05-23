@@ -11,8 +11,9 @@ class Strava extends (require "./baseapi.coffee")
     lodash = expresser.libs.lodash
     logger = expresser.logger
     moment = expresser.libs.moment
-    querystring = require "querystring"
     settings = expresser.settings
+
+    querystring = require "querystring"
 
     # INIT
     # -------------------------------------------------------------------------

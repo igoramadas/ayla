@@ -5,16 +5,13 @@
 class Manager
 
     expresser = require "expresser"
-
-    commander = require "./commander.coffee"
-    events = expresser.events
-    fs = require "fs"
-    jsonPath = require "./jsonpath.coffee"
     lodash = expresser.libs.lodash
     logger = expresser.logger
-    path = require "path"
     settings = expresser.settings
-    sockets = expresser.sockets
+    utils = expresser.utils
+
+    fs = require "fs"
+    path = require "path"
 
     # Modules will be set on init.
     modules: {}
@@ -27,9 +24,6 @@ class Manager
     init: (callback) =>
         rootPath = path.join __dirname, "../"
         managerPath = rootPath + "server/manager/"
-
-        # Init the commander.
-        commander.init()
 
         # Init modules.
         files = fs.readdirSync managerPath
@@ -44,14 +38,13 @@ class Manager
         # Start all managers.
         m.start() for k, m of @modules
 
-        # Proceed with callback?
         callback() if callback?
 
     # Stop all managers and clear timers.
     stop: (callback) =>
         m.stop() for k, m of @modules
 
-        callback() if callback?
+        callback?()
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

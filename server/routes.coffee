@@ -4,12 +4,12 @@
 class Routes
 
     expresser = require "expresser"
-    cron = null
-    lodash = null
-    logger = null
-    moment = null
-    settings = null
-    utils = null
+    cron = expresser.cron
+    lodash = expresser.libs.lodash
+    logger = expresser.logger
+    moment = expresser.libs.moment
+    settings = expresser.settings
+    utils = expresser.utils
 
     api = require "./api.coffee"
     commander = require "./commander.coffee"
@@ -17,21 +17,11 @@ class Routes
     manager = require "./manager.coffee"
     path = require "path"
 
-    # Holds a list of all valid access tokens.
-    tokenCache = {}
-
     # INIT
     # -------------------------------------------------------------------------
 
     # Set most routes on init. The app (from Expresser) must be passed here.
     init: (callback) =>
-        cron = expresser.cron
-        lodash = expresser.libs.lodash
-        logger = expresser.logger
-        moment = expresser.libs.moment
-        settings = expresser.settings
-        utils = expresser.utils
-
         app = expresser.app.server
 
         # Main route.
@@ -40,11 +30,6 @@ class Routes
         # Dashboard routes.
         app.get "/dashboard", dashboardPage
         app.get "/dashboard/data", dashboardDataPage
-
-        # Used by clients to get or renew an access token. This is mainly used
-        # via NFC tags, for example an NFC tag on the entrance door that
-        # publishes this URL to the mobile app / browser.
-        app.get "/tokenrequest", tokenRequestPage
 
         # Commander and status routes.
         app.get "/commander/:cmd", commanderPage
@@ -62,12 +47,7 @@ class Routes
         app.get "/manager/:id/data", managerDataPage
         bindModuleRoutes m for key, m of manager.modules
 
-        # Init the access tokens collection.
-        for token, value of settings.accessTokens
-            tokenCache[token] = value
-            tokenCache[token].permanent = true
-
-        callback() if callback?
+        callback?()
 
     # Helper to bind module routes.
     bindModuleRoutes = (m) ->
@@ -167,31 +147,7 @@ class Routes
 
         expresser.app.renderJson req, res, result
 
-    # The token request page.
-    tokenRequestPage = (req, res) ->
-        ipClient = req.headers["X-Forwarded-For"] or req.connection.remoteAddress or req.socket?.remoteAddress
-        ipRouter = settings.network.router.ip
-
-        # Check if client is connected to home network.
-        clientSubnet = ipClient.substring(0, ipClient.lastIndexOf ".")
-        routerSubnet = ipRouter.substring(0, ipRouter.lastIndexOf ".")
-
-        if clientSubnet isnt routerSubnet and not settings.general.debug
-            return sendAccessDenied req, res, ipClient
-
-        # Create a temporary token and send to client.
-        chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-        token = ""
-        i = 0
-        while i < 5
-            token += chars.charAt Math.floor(Math.random() * chars.length)
-            i++
-
-        # Add temp token to cache and send back to client.
-        tokenCache[token] = {device: req.params.device, expires: moment().add 5, "d"}
-        expresser.app.renderJson req, res, {result: tokenCache[token]}
-
-    # The commander processor.
+     # The commander processor.
     commanderPage = (req, res) ->
         commander.execute req.params.cmd, req.body, (err, result) ->
             if err?
@@ -334,26 +290,14 @@ class Routes
     # SECURITY METHODS
     # -------------------------------------------------------------------------
 
-    # Check if request is allowed by getting the client's IP and if coming
-    # from a remote address, check if it's using a valid user token.
-    # IP is calculated based on the `settings.network.router.ip` value.
+    # Check if request is allowed by getting the client's IP.
+    # IP is calculated based on the subnet setting.
     checkSecurity = (req, res) ->
         return true if not settings.app.checkSecurity
 
         ipClient = req.headers["X-Forwarded-For"] or req.connection.remoteAddress or req.socket?.remoteAddress
 
-        # Valid token? Grant access.
-        # Also check if a token cookie should be set for this particular client.
-        token = req.query.token
-        if token? and settings.accessTokens[token]?
-            expires = {expires: moment().add(settings.app.cookieTokenExpireDays, "d").toDate()}
-            res.cookie "token", token, expires
-            return true
-
-        # Check if token is present as a cookie.
-        cookie = req.cookies?.token
-        if cookie? and settings.accessTokens[cookie]?
-            return true
+        return true if utils.network.ipInRange ipClient, settings.network.subnet
 
         # Oops, access denied.
         sendAccessDenied req, res, ipClient
@@ -367,7 +311,7 @@ class Routes
         logger.warn "Routes.sendAccessDenied", req.url, ipClient
 
         res.status 401
-        res.json {error: "Access denied or invalid token for #{ipClient}."}
+        res.json {error: "Access denied for #{ipClient}."}
 
     # When the server can't return a valid result,
     # send an error response with status code 500.

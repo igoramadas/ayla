@@ -51,7 +51,7 @@ class BaseModule
         logger.info "#{@moduleName}.baseStart"
 
         # Start cron jobs for that module.
-        cron.start {module: "#{@moduleName}.coffee"} if settings.cron.enabled
+        cron.start {module: "#{@moduleName}.coffee"} if settings.cron.enabled and @hasCron
 
     # Called when the module stops.
     baseStop: =>
@@ -59,7 +59,7 @@ class BaseModule
         logger.info "#{@moduleName}.baseStop"
 
         # Stop cron jobs for that module.
-        cron.stop {module: "#{@moduleName}.coffee"} if settings.cron.enabled
+        cron.stop {module: "#{@moduleName}.coffee"} if settings.cron.enabled and @hasCron
 
     # DATA HANDLING
     # -------------------------------------------------------------------------

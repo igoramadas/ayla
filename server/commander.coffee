@@ -18,7 +18,7 @@ class Commander
     # -------------------------------------------------------------------------
 
     # Init the commander.
-    init: =>
+    init: (callback) =>
         events = expresser.events
         lodash = expresser.libs.lodash
         logger = expresser.logger
@@ -28,6 +28,8 @@ class Commander
             @commands = require "../commands.json"
         catch ex
             logger.error "Commander.init", ex.message, ex.stack
+
+        callback?()
 
     # PARSE AND EXECUTE
     # -------------------------------------------------------------------------

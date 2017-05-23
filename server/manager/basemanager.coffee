@@ -12,6 +12,9 @@ class BaseManager extends (require "../basemodule.coffee")
     settings = expresser.settings
     sockets = expresser.sockets
 
+    # Disable cron for managers by default.
+    hasCron: false
+
     # HELPERS
     # -------------------------------------------------------------------------
 

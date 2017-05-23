@@ -11,7 +11,7 @@ class WeatherManager extends (require "./basemanager.coffee")
     lodash = expresser.libs.lodash
     logger = expresser.logger
     moment = expresser.libs.moment
-    roomModel = require "../model/room.coffee"
+    spaceModel = require "../model/space.coffee"
     settings = expresser.settings
     sockets = expresser.sockets
 
@@ -27,16 +27,16 @@ class WeatherManager extends (require "./basemanager.coffee")
         outside = new climateModel {title: "Outside"}
         current = new climateModel {title: "Current forecast"}
 
-        @baseInit {forecastDays: [], forecastCurrent: current, astronomy: astronomy, outside: outside, spaces: appData.home.spaces}
+        @baseInit {forecastDays: [], forecastCurrent: current, astronomy: astronomy, outside: outside, spaces: appData.spaces}
 
     # Start the weather manager and listen to data updates / events.
     # Indoor weather data depends on spaces being set on the settings.
     start: =>
-        if not appData.home?.spaces?
+        if not appData.spaces?
             logger.warn "WeatherManager.start", "No spaces were defined on the settings. Indoor weather won't be monitored."
         else
-            for room in appData.home.spaces
-                @data[room.id] = new roomModel(room) if not @data[room.id]?
+            for space in appData.spaces
+                @data[space.id] = new spaceModel(space) if not @data[space.id]?
 
         events.on "Netatmo.data", @onNetatmo
         events.on "Wunderground.data", @onWunderground
@@ -53,25 +53,25 @@ class WeatherManager extends (require "./basemanager.coffee")
     # WEATHER AND CLIMATE
     # -------------------------------------------------------------------------
 
-    # Helper to verify if room climate is in good condition. Do necessary actions
+    # Helper to verify if space climate is in good condition. Do necessary actions
     # and notify if it's not.
-    checkRoomClimate: (room) =>
-        return if not room.climate?
+    checkSpaceClimate: (space) =>
+        return if not space.climate?
 
         notifyOptions = {}
-        condition = room.climate.condition.toLowerCase()
+        condition = space.climate.condition.toLowerCase()
 
         # Check temperature.
         if condition.indexOf("too warm") >= 0
             notifyOptions.critical = true
-            @switchVentilator room.ventilatorSource, true, settings.home.ventilatorTimeout
+            @switchVentilator space.ventilatorSource, true, settings.home.ventilatorTimeout
         else if condition.indexOf("too cold") >= 0
             notifyOptions.critical = true
 
         # Check humidity.
         if condition.indexOf("too humid") >= 0
             notifyOptions.critical = true
-            @switchVentilator room.ventilatorSource, true, settings.home.ventilatorTimeout
+            @switchVentilator space.ventilatorSource, true, settings.home.ventilatorTimeout
         else if condition.indexOf("too dry") >= 0
             notifyOptions.critical = true
 
@@ -79,40 +79,40 @@ class WeatherManager extends (require "./basemanager.coffee")
         if condition.indexOf("co2 too high") >= 0
             notifyOptions.critical = true
 
-        # Alert about bad room conditions.
+        # Alert about bad space conditions.
         if condition isnt "good"
-            notifyOptions.subject = "#{room.title}: #{room.climate.condition}"
-            notifyOptions.message =  "Conditions: temperature #{room.climate.temperature}, humidity #{room.climate.humidity}, CO2 #{room.climate.co2}."
+            notifyOptions.subject = "#{space.title}: #{space.climate.condition}"
+            notifyOptions.message =  "Conditions: temperature #{space.climate.temperature}, humidity #{space.climate.humidity}, CO2 #{space.climate.co2}."
 
             @notify notifyOptions
 
-    # Helper to set current conditions for the specified room.
-    setRoomClimate: (data, source) =>
+    # Helper to set current conditions for the specified space.
+    setSpaceClimate: (data, source) =>
         return if not data?
 
-        # Find room linked to the specified weather source.
+        # Find space linked to the specified weather source.
         try
-            roomObj = lodash.find @data, {climateSource: source}
+            spaceObj = lodash.find @data, {climateSource: source}
         catch ex
-            logger.error "WeatherManager.setRoomClimate", source, data, ex.message
-        return if not roomObj?
+            logger.error "WeatherManager.setSpaceClimate", source, data, ex.message
+        return if not spaceObj?
 
-        # No room found? Abort here.
-        if not roomObj?.id?
-            logger.warn "WeatherManager.setRoomClimate", source, "Room not properly set, check the 'home.json' spaces and make sure they all have an ID set."
+        # No space found? Abort here.
+        if not spaceObj?.id?
+            logger.warn "WeatherManager.setSpaceClimate", source, "Space not properly set, check the 'home.json' spaces and make sure they all have an ID set."
             return
 
         # Make sure data is taken out of the array and newer than current available data.
         # Stop here if data is not up-to-date.
-        lastData = @compareGetLastData data, roomObj
+        lastData = @compareGetLastData data, spaceObj
         return if not lastData?
 
-        # Set room data and check its climate.
-        @data[roomObj.id].setData lastData
-        @checkRoomClimate roomObj
-        @dataUpdated roomObj.id
+        # Set space data and check its climate.
+        @data[spaceObj.id].setData lastData
+        @checkSpaceClimate spaceObj
+        @dataUpdated spaceObj.id
 
-        logger.info "WeatherManager.setRoomClimate", roomObj
+        logger.info "WeatherManager.setSpaceClimate", spaceObj
 
     # Helper to set current conditions for outdoors.
     # Make sure data is taken out of the array and newer than current available data.
@@ -185,7 +185,7 @@ class WeatherManager extends (require "./basemanager.coffee")
         else
             source = {"netatmo": ""}
 
-        @setRoomClimate data, source
+        @setSpaceClimate data, source
 
     # Check outdoor weather conditions using Netatmo.
     onNetatmoOutdoor: (data, filter) =>

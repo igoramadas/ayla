@@ -10,8 +10,9 @@ class Netatmo extends (require "./baseapi.coffee")
     lodash = expresser.libs.lodash
     logger = expresser.logger
     moment = expresser.libs.moment
-    querystring = require "querystring"
     settings = expresser.settings
+
+    querystring = require "querystring"
 
     # INIT
     # -------------------------------------------------------------------------
@@ -28,9 +29,15 @@ class Netatmo extends (require "./baseapi.coffee")
             if err?
                 @logError "Netatmo.start", err
 
+        events.on "Netatmo.getWeather", @getWeather
+        events.on "Netatmo.getWelcome", @getWelcome
+
     # Stop collecting weather data.
     stop: =>
         @baseStop()
+
+        events.off "Netatmo.getWeather", @getWeather
+        events.off "Netatmo.getWelcome", @getWelcome
 
     # Load initial data, usually called when module has authenticated.
     getInitialData: =>

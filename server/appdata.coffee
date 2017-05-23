@@ -4,7 +4,9 @@
 class AppData
 
     expresser = require "expresser"
+    logger = expresser.logger
     utils = expresser.utils
+
     fs = require "fs"
     path = require "path"
 
@@ -16,7 +18,7 @@ class AppData
         dataPath = path.resolve __dirname, "../data"
         fs.readdir dataPath, (err, files) =>
             if err?
-
+                logger.error "AppData.init", err
             else
                 for f in files
                     if path.extname(f) is ".json"
@@ -26,10 +28,11 @@ class AppData
                         try
                             contents = fs.readFileSync filename, "utf8"
                             @[basename] = utils.data.minifyJson contents
+                            logger.info "AppData.init", f
                         catch ex
                             logger.error "AppData.init", "Could not load #{f}", ex
 
-            callback() if callback?
+            callback?()
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

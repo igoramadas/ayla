@@ -5,16 +5,16 @@
 class Hue extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
-
-    appData = require "../appdata.coffee"
     async = expresser.libs.async
     datastore = expresser.datastore
     events = expresser.events
     lodash = expresser.libs.lodash
     logger = expresser.logger
     settings = expresser.settings
-    url = require "url"
     utils = expresser.utils
+
+    appData = require "../appdata.coffee"
+    url = require "url"
 
     # INIT
     # -------------------------------------------------------------------------

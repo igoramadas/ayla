@@ -16,6 +16,9 @@ class BaseApi extends (require "../basemodule.coffee")
     sockets = expresser.sockets
     url = require "url"
 
+    # Enable cron for API modules.
+    hasCron: true
+
     # AUTH HANDLING
     # -------------------------------------------------------------------------
 

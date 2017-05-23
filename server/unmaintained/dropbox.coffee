@@ -9,8 +9,9 @@ class Dropbox extends (require "./baseapi.coffee")
     lodash = expresser.libs.lodash
     logger = expresser.logger
     moment = expresser.libs.moment
-    querystring = require "querystring"
     settings = expresser.settings
+
+    querystring = require "querystring"
 
     # INIT
     # -------------------------------------------------------------------------
@@ -22,7 +23,7 @@ class Dropbox extends (require "./baseapi.coffee")
     # Start the Dropbox module.
     start: =>
         @baseStart()
-        
+
         @oauthInit (err, result) =>
             if err?
                 @logError "Dropbox.start", err
