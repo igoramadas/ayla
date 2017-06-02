@@ -97,8 +97,7 @@ class Camera extends (require "./baseapi.coffee")
 
         # Camnot found? Stop here.
         if not cam?
-            callback "Camera #{id} does not exist." if callback?
-            return
+            return callback? "Camera #{id} does not exist."
 
         # Set save options. Is URL remote or local? Construct path using
         # local IP or remote host, port and image path.
@@ -149,8 +148,7 @@ class Camera extends (require "./baseapi.coffee")
         fs.readdir @snapsPath, (err, files) =>
             if err?
                 logger.error "Camera.cleanSnaps", olderThanDays, err
-                callback err if callback?
-                return
+                return callback? err
 
             err = null
 

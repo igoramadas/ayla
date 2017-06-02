@@ -286,7 +286,7 @@ class EmailManager extends (require "./basemanager.coffee")
         logger.info "EmailManager.send", "To #{options.to}: #{options.subject}"
 
         # Send the email using the Expresser Mailer module.
-        mailer.send options, (err, result) => callback err, result if callback?
+        mailer.send options, (err, result) => callback? err, result
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

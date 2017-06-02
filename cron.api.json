@@ -20,26 +20,15 @@
             "schedule": 120
         }
     ],
-    "strava.coffee": [{
-            "callback": "getProfile",
-            "description": "Get Strava profile twice a day.",
-            "schedule": ["11:00:00", "21:00:00"]
-        },
-        {
-            "callback": "getRecentActivities",
-            "description": "Get recent Strava activities list twice a day.",
-            "schedule": ["11:01:00", "21:01:00"]
-        }
-    ],
     "wunderground.coffee": [{
             "callback": "getConditions",
-            "description": "Get updated weather information every 10 minutes.",
-            "schedule": 600
+            "description": "Get updated weather information every 20 minutes.",
+            "schedule": 1200
         },
         {
             "callback": "getForecast",
-            "description": "Get updated weather forecast three times a day.",
-            "schedule": ["07:00:00", "13:00:00", "19:00:00"]
+            "description": "Get updated weather forecast five times a day.",
+            "schedule": ["06:00:00", "10:00:00", "14:00:00", "18:00:00", "22:00:00"]
         },
         {
             "callback": "getAstronomy",

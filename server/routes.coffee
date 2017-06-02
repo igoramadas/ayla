@@ -201,7 +201,7 @@ class Routes
         options.oauth = m.oauth.getJSON true
         options.jobs = []
 
-        jobs = lodash.where cron.jobs, {module: m.moduleName + ".coffee"}
+        jobs = lodash.filter cron.jobs, {module: m.moduleName + ".coffee"}
 
         for job in jobs
             options.jobs.push {id: job.id, schedule: job.schedule, endTime: job.endTime}

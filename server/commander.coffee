@@ -73,11 +73,11 @@ class Commander
                         executed = true
                     catch ex
                         logger.error "Commander.execute", cmd, options, ex.message, ex.stack
-                        callback {err: ex, command: cmd, options: options} if callback?
+                        callback? {err: ex, command: cmd, options: options}
 
         # Nothing executed? Make sure callback is called.
         if not executed
-            callback null, true if callback?
+            callback? null, true
 
     # HOME GENERAL
     # -------------------------------------------------------------------------
@@ -120,7 +120,7 @@ class Commander
         # No errors? Set array to null.
         cError = null if cError.length < 1
 
-        callback cError, cResult if callback?
+        callback? cError, cResult
 
     # HOME LIGHTS
     # -------------------------------------------------------------------------
@@ -130,24 +130,24 @@ class Commander
         logger.info "Commander.turnLightsOn", options
 
         events.emit "Hue.switchGroupLights", true, (err, result) =>
-            callback err, result if callback?
+            callback? err, result
 
         options.nameContains = "light on"
 
         events.emit "Ninja.actuate433", options, (err, result) =>
-            callback err, result if callback?
+            callback? err, result
 
     # Turn the specified house lights off.
     turnLightsOff: (options, callback) =>
         logger.info "Commander.turnLightsOff", options
 
         events.emit "Hue.switchGroupLights", false, (err, result) =>
-            callback err, result if callback?
+            callback? err, result
 
         options.nameContains = "light off"
 
         events.emit "Ninja.actuate433", options, (err, result) =>
-            callback err, result if callback?
+            callback? err, result
 
     # HOME APPLIANCES
     # -------------------------------------------------------------------------
@@ -159,7 +159,7 @@ class Commander
         options.nameContains = "ventilator on"
 
         events.emit "Ninja.actuate433", options, (err, result) =>
-            callback err, result if callback?
+            callback? err, result
 
     # Turn specified ventilators off.
     turnVentilatorsOff: (options, callback) =>
@@ -168,7 +168,7 @@ class Commander
         options.nameContains = "ventilator off"
 
         events.emit "Ninja.actuate433", options, (err, result) =>
-            callback err, result if callback?
+            callback? err, result
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

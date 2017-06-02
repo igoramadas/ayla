@@ -8,6 +8,7 @@ class Wunderground extends (require "./baseapi.coffee")
 
     expresser = require "expresser"
 
+    events = expresser.events
     lodash = expresser.libs.lodash
     logger = expresser.logger
     moment = expresser.libs.moment
@@ -27,6 +28,8 @@ class Wunderground extends (require "./baseapi.coffee")
         events.on "Wunderground.getAstronomy", @getAstronomy
         events.on "Wunderground.getForecast", @getForecast
         events.on "Wunderground.getConditions", @getConditions
+
+        console.warn settings.wunderground
 
         @getAstronomy()
         @getForecast()

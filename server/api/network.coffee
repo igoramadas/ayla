@@ -17,6 +17,7 @@ class Network extends (require "./baseapi.coffee")
     settings = expresser.settings
     utils = expresser.utils
 
+    appData = require "../appdata.coffee"
     buffer = require "buffer"
     cprocess = require "child_process"
     dgram = require "dgram"
@@ -38,7 +39,7 @@ class Network extends (require "./baseapi.coffee")
         logger.warn "Network.MDNS", "MDNS module is not available :-("
 
     # Local network discovery.
-    mdnsBrowser = null
+    mdnsBrowser: null
 
     # Server information cache.
     serverInfo: {}
@@ -67,12 +68,12 @@ class Network extends (require "./baseapi.coffee")
         @serverInfo.platform = @serverInfo.platform.toLowerCase()
 
         if mdns?
-            mdnsBrowser = mdns.createBrowser mdns.tcp "http"
+            @mdnsBrowser = mdns.createBrowser mdns.tcp "http"
 
-        if mdnsBrowser? and settings.network.autoDiscovery
-            mdnsBrowser.on "serviceUp", @onServiceUp
-            mdnsBrowser.on "serviceDown", @onServiceDown
-            mdnsBrowser.start()
+        if @mdnsBrowser? and settings.network.autoDiscovery
+            @mdnsBrowser.on "serviceUp", @onServiceUp
+            @mdnsBrowser.on "serviceDown", @onServiceDown
+            @mdnsBrowser.start()
 
         # Probe network.
         @probeDevices()
@@ -85,10 +86,10 @@ class Network extends (require "./baseapi.coffee")
         events.off "Network.probeBluetoothUsers", @probeBluetoothUsers
         events.off "Network.wol", @wol
 
-        if mdnsBrowser? and settings.network.autoDiscovery
-            mdnsBrowser.off "serviceUp", @onServiceUp
-            mdnsBrowser.off "serviceDown", @onServiceDown
-            mdnsBrowser.stop()
+        if @mdnsBrowser? and settings.network.autoDiscovery
+            @mdnsBrowser.off "serviceUp", @onServiceUp
+            @mdnsBrowser.off "serviceDown", @onServiceDown
+            @mdnsBrowser.stop()
 
         @baseStop()
 
@@ -174,16 +175,7 @@ class Network extends (require "./baseapi.coffee")
     probeDevices: (callback) =>
         logger.debug "Network.probeDevices"
 
-        if not @isRunning [settings.network.devices]
-            errMsg = "Module is not running or no devices are set. Please check the network devices list on settings."
-
-            if lodash.isFunction callback
-                callback errMsg
-            else
-                logger.warn "Network.probeDevices", errMsg
-            return
-
-        @checkDevice d for d in settings.network.devices
+        @checkDevice d for d in appData.network.devices
 
     # WAKE-ON-LAN
     # -------------------------------------------------------------------------
@@ -291,8 +283,7 @@ class Network extends (require "./baseapi.coffee")
 
         if @serverInfo.platform.indexOf("darwin") >= 0
             logger.error "Network.probeBluetooth", platformErrorMsg
-            callback platformErrorMsg if callback?
-            return
+            return callback? platformErrorMsg
 
         # Scan and parse results from command line.
         # Use btdiscovery on Windows, hcitool on Linux.
@@ -323,10 +314,10 @@ class Network extends (require "./baseapi.coffee")
 
                     @setData "bluetooth", devices
 
-                    callback null, devices if callback?
+                    callback? null, devices
         catch ex
             logger.error "Network.probeBluetooth", ex
-            callback ex if callback?
+            callback? ex
 
     # Probe user's bluetooth devices by checking the `bluetooth` property of registered users.
     probeBluetoothUsers: (callback) =>
@@ -338,8 +329,7 @@ class Network extends (require "./baseapi.coffee")
 
         if @serverInfo.platform.indexOf("darwin") >= 0
             logger.error "Network.probeBluetoothUsers", platformErrorMsg
-            callback platformErrorMsg if callback?
-            return
+            return callback? platformErrorMsg
 
         tasks = []
 
@@ -385,7 +375,7 @@ class Network extends (require "./baseapi.coffee")
                     for user in results
                         @setData "userPresence", {user: user.name, mac: user.bluetoothMac, online: user.online}, user.username
 
-                callback err, results if callback?
+                callback? err, results
 
     # SERVICE DISCOVERY
     # -------------------------------------------------------------------------

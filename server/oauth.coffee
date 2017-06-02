@@ -61,7 +61,7 @@ class OAuth
         fs.readFile @filename, "utf8", (err, result) =>
             if err?
                 logger.critical "OAuth.loadToken", @service, err
-                callback err, result if callback?
+                callback? err, result
             else
                 logger.debug "OAuth.loadToken", result
 
@@ -81,8 +81,7 @@ class OAuth
                     @onAuthenticated() if @onAuthenticated?
 
                 # Pass data back to caller.
-                if callback?
-                    callback null, result
+                callback? null, result
 
     # Save the specified auth token to disk.
     saveToken: (params, callback) =>
@@ -116,8 +115,7 @@ class OAuth
             else
                 logger.debug "OAuth.saveToken", data, "OK"
 
-            if callback?
-                callback err, result
+            callback? err, result
 
     # PROCESSING AND REQUESTING
     # -------------------------------------------------------------------------

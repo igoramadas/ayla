@@ -15,7 +15,6 @@ class Manager
 
     # Modules will be set on init.
     modules: {}
-    disabledModules: {}
 
     # INIT
     # -------------------------------------------------------------------------
@@ -35,10 +34,12 @@ class Manager
                 module.init()
                 @modules[filename] = module
 
+                logger.info "Manager.init", filename, "Loaded"
+
         # Start all managers.
         m.start() for k, m of @modules
 
-        callback() if callback?
+        callback?()
 
     # Stop all managers and clear timers.
     stop: (callback) =>

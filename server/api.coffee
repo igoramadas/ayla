@@ -16,7 +16,6 @@ class Api
 
     # Modules will be set on init.
     modules: {}
-    disabledModules: {}
 
     # INIT
     # -------------------------------------------------------------------------
@@ -39,18 +38,15 @@ class Api
         for f in files
             if f isnt "baseapi.coffee" and f.indexOf(".coffee") > 0
                 filename = f.replace ".coffee", ""
-                enabled = settings[filename]?.enabled
 
-                # Only add if set on enabled modules setting.
-                if not enabled
-                    logger.debug "Api.init", f, "API Module is not enabled and won't be instantiated."
-                    @disabledModules[filename] = filename
-                else
-                    settings.loadFromJson "./api/" + f.replace ".coffee", ".settings.json"
+                apiSettingsPath = __dirname + "/api/" + f.replace ".coffee", ".settings.json"
+                settings.loadFromJson apiSettingsPath
 
-                    module = require "./api/#{f}"
-                    module.init()
-                    @modules[filename] = module
+                module = require "./api/#{f}"
+                module.init()
+                @modules[filename] = module
+
+                logger.info "Api.init", filename, "Loaded"
 
         # Start all API modules and load cron jobs.
         m.start() for k, m of @modules
