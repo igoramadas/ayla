@@ -25,8 +25,6 @@ class BaseModule
         settings = expresser.settings
         sockets = expresser.sockets
 
-        @errors = {}
-
         @moduleName = @__proto__.constructor.name.toString()
         @moduleNameLower = @moduleName.toLowerCase()
         @initTimestamp = moment().unix()
@@ -80,44 +78,7 @@ class BaseModule
             sockets.emit "#{@moduleName}.data", key, dataObj, filter
 
         catch ex
-            @logError "#{@moduleName}.setData", key, ex.message, ex.stack
-
-    # LOGGING AND ERRORS
-    # -------------------------------------------------------------------------
-
-    # Log when a module is called when not running (mainly because of missing settings).
-    logNotRunning: (methodName) =>
-        logger.warn "#{@moduleName}.notRunning", methodName
-        return false
-
-    # Logs module errors.
-    logError: =>
-        id = arguments[0]
-        args = lodash.toArray arguments
-
-        # Append to the errors log.
-        @errors[id] = [] if not @errors[id]?
-        @errors[id].push {timestamp: moment().unix(), data: args}
-        count = @errors[id].length
-
-        logger.error.apply logger, args
-
-        # Too many consecutive errors? Stop the module.
-        if count is settings.general.stopOnErrorCount
-            logger.critical id, "Too many consecutive errors (#{count}) logged.", "Module will now stop."
-            @stop()
-
-    # Helper to clear old errors.
-    clearErrors: =>
-        maxAge = moment().subtract(settings.general.errorMaxAgeHours, "h").unix()
-
-        # Iterate errors by ID, then internal data, and remove everything which is too old.
-        for key, value of @errors
-            for d in value
-                if d.timestamp < maxAge
-                    lodash.remove value, d
-            if value.length < 1
-                delete @errors[key]
+            logger.error "#{@moduleName}.setData", key, ex.message, ex.stack
 
 # Exports API Base Module.
 # -----------------------------------------------------------------------------

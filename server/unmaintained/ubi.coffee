@@ -30,7 +30,7 @@ class Ubi extends (require "./baseapi.coffee")
 
         @oauthInit (err, result) =>
             if err?
-                @logError "Ubi.start", err
+                logger.error "Ubi.start", err
 
     # Stop collecting data from the Ubi.
     stop: =>
@@ -80,10 +80,10 @@ class Ubi extends (require "./baseapi.coffee")
     # Get registered Ubi devices.
     getDevices: (callback) =>
         hasCallback = lodash.isFunction callback
-        
+
         @apiRequest "list", (err, result) =>
             if err?
-                @logError "Ubi.getDevices", err
+                logger.error "Ubi.getDevices", err
             else
                 @setData "devices", result.result.data
                 logger.info "Ubi.getDevices", result.result.data
@@ -104,7 +104,7 @@ class Ubi extends (require "./baseapi.coffee")
         if filter?.id?
             deviceIds = [filter.id]
         else if not @data.devices? or @data.devices.length < 1
-            @logError "Ubi.getSensorData", "No devices found. Please run getDevices first."
+            logger.error "Ubi.getSensorData", "No devices found. Please run getDevices first."
             callback "No devices found. Please run getDevices first." if hasCallback
             return
         else
@@ -131,7 +131,7 @@ class Ubi extends (require "./baseapi.coffee")
         # Sensor data will be fetched in parallel.
         async.parallelLimit tasks, settings.general.parallelTasksLimit, (err, results) =>
             if err?
-                @logError "Ubi.getSensorData", filter, err
+                logger.error "Ubi.getSensorData", filter, err
             else
                 deviceData = {device_id: results[0]?.device_id}
                 filter = {device_id: results[0]?.device_id} if not filter?
@@ -185,7 +185,7 @@ class Ubi extends (require "./baseapi.coffee")
                 tasks.push (cb) =>
                     @apiRequest id, "speak", {phrase: filter.phrase}, (err, result) =>
                         if err?
-                            @logError "Ubi.speak", filter, err
+                            logger.error "Ubi.speak", filter, err
                         else
                             @setData "speak", result, filter
 
@@ -194,7 +194,7 @@ class Ubi extends (require "./baseapi.coffee")
         # Sensor data will be fetched in parallel.
         async.parallelLimit tasks, settings.general.parallelTasksLimit, (err, results) =>
             if err?
-                @logError "Ubi.speak", filter, err
+                logger.error "Ubi.speak", filter, err
 
             callback err, results if hasCallback
 

@@ -23,7 +23,7 @@ class ElectricImp extends (require "./baseapi.coffee")
     # Start collecting Electric Imp data.
     start: =>
         if not settings.electricimp?.devices?
-            @logError "ElectricImp.start", "No Electric Imp devices defined. Please check the settings."
+            logger.error "ElectricImp.start", "No Electric Imp devices defined. Please check the settings."
         else
             @baseStart()
             @getDeviceData()
@@ -65,7 +65,7 @@ class ElectricImp extends (require "./baseapi.coffee")
             do (id) =>
                 @makeRequest settings.electricimp.agentUrl + id, (err, result) =>
                     if err?
-                        @logError "ElectricImp.getDeviceData", id, err
+                        logger.error "ElectricImp.getDeviceData", id, err
                     else
                         # If the imp code has no id, set the same as the device.
                         result.id = id if not result.id?

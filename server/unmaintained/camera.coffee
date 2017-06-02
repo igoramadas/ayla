@@ -117,7 +117,7 @@ class Camera extends (require "./baseapi.coffee")
         # Save (download) a snap from the camera. Use the camera's host for the data key.
         downloader.download downloadUrl, saveTo, (err, result) =>
             if err?
-                @logError "Camera.takeSnap", cam.host, err
+                logger.error "Camera.takeSnap", cam.host, err
             else
                 cam.filename = saveTo
                 @setData cam.host, cam
@@ -148,7 +148,7 @@ class Camera extends (require "./baseapi.coffee")
         # Read snaps path to iterate and check files to be deleted.
         fs.readdir @snapsPath, (err, files) =>
             if err?
-                @logError "Camera.cleanSnaps", olderThanDays, err
+                logger.error "Camera.cleanSnaps", olderThanDays, err
                 callback err if callback?
                 return
 
@@ -171,7 +171,7 @@ class Camera extends (require "./baseapi.coffee")
                             count++
                         catch ex
                             err = ex
-                            @logError "Camera.cleanSnaps", f, ex.message, ex.stack
+                            logger.error "Camera.cleanSnaps", f, ex.message, ex.stack
 
             # Only log if count is greater than 0.
             if count > 0

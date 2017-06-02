@@ -35,7 +35,7 @@ class Network extends (require "./baseapi.coffee")
     try
         mdns = require "mdns"
     catch ex
-        logger.warn "Network.MDNS", "MDNS module is not available."
+        logger.warn "Network.MDNS", "MDNS module is not available :-("
 
     # Local network discovery.
     mdnsBrowser = null
@@ -43,16 +43,13 @@ class Network extends (require "./baseapi.coffee")
     # Server information cache.
     serverInfo: {}
 
-    # Holds user status (online true, offline false) based on their mobile
-    # phones connected to the same network.
-    userStatus: {}
-
     # INIT
     # -------------------------------------------------------------------------
 
     # Init the Network module.
     init: =>
         @baseInit {isHome: true, devices: []}
+
         @routes.push {method: "get", path: "userpresence", render: "json", callback: @routeUserPresence}
         @routes.push {method: "get", path: "userlocation", render: "json", callback: @routeUserLocation}
 
@@ -234,7 +231,7 @@ class Network extends (require "./baseapi.coffee")
         # The mac address is mandatory!
         if not mac? or not mac.match /[^a-fA-F0-9]/
             errMsg = "The specified MAC address #{mac} is not valid."
-            @logError "Network.wol", errMsg
+            logger.error "Network.wol", errMsg
             callback errMsg
             return
 
@@ -293,7 +290,7 @@ class Network extends (require "./baseapi.coffee")
             callback = null
 
         if @serverInfo.platform.indexOf("darwin") >= 0
-            @logError "Network.probeBluetooth", platformErrorMsg
+            logger.error "Network.probeBluetooth", platformErrorMsg
             callback platformErrorMsg if callback?
             return
 
@@ -308,9 +305,9 @@ class Network extends (require "./baseapi.coffee")
             # On close parse the output and get device mac and names out of it.
             cprocess.exec cmd, (err, stdout, stderr) =>
                 if err?
-                    @logError "Network.probeBluetooth", err
+                    logger.error "Network.probeBluetooth", err
                 else if stderr? and stderr isnt ""
-                    @logError "Network.probeBluetooth", stderr
+                    logger.error "Network.probeBluetooth", stderr
 
                 if stdout? and stdout isnt ""
                     devices = []
@@ -328,7 +325,7 @@ class Network extends (require "./baseapi.coffee")
 
                     callback null, devices if callback?
         catch ex
-            @logError "Network.probeBluetooth", ex
+            logger.error "Network.probeBluetooth", ex
             callback ex if callback?
 
     # Probe user's bluetooth devices by checking the `bluetooth` property of registered users.
@@ -340,7 +337,7 @@ class Network extends (require "./baseapi.coffee")
             callback = null
 
         if @serverInfo.platform.indexOf("darwin") >= 0
-            @logError "Network.probeBluetoothUsers", platformErrorMsg
+            logger.error "Network.probeBluetoothUsers", platformErrorMsg
             callback platformErrorMsg if callback?
             return
 
@@ -363,9 +360,9 @@ class Network extends (require "./baseapi.coffee")
                             # If name is found, add `deviceName` to the original object.
                             cprocess.exec cmd, (err, stdout, stderr) =>
                                 if err?
-                                    @logError "Network.probeBluetoothUsers", err
+                                    logger.error "Network.probeBluetoothUsers", err
                                 else if stderr? and stderr isnt ""
-                                    @logError "Network.probeBluetoothUsers", stderr
+                                    logger.error "Network.probeBluetoothUsers", stderr
 
                                 if stdout? and stdout isnt ""
                                     user.deviceName = stdout.trim()
@@ -383,7 +380,7 @@ class Network extends (require "./baseapi.coffee")
         if tasks.length > 0
             async.series tasks, (err, results) =>
                 if err?
-                    @logError "Network.probeBluetoothUsers", err
+                    logger.error "Network.probeBluetoothUsers", err
                 else
                     for user in results
                         @setData "userPresence", {user: user.name, mac: user.bluetoothMac, online: user.online}, user.username
@@ -421,7 +418,7 @@ class Network extends (require "./baseapi.coffee")
             existingDevice.up = true
             existingDevice.mdns = true
         catch ex
-            @logError "Network.onServiceUp", ex
+            logger.error "Network.onServiceUp", ex
 
         # New device? Add to devices list and dispatch event.
         @data.devices.push existingDevice if isNew
@@ -444,7 +441,7 @@ class Network extends (require "./baseapi.coffee")
                 existingDevice.up = false
                 existingDevice.mdns = false
         catch ex
-            @logError "Network.onServiceDown", ex
+            logger.error "Network.onServiceDown", ex
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

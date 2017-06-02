@@ -26,7 +26,7 @@ class Ninja extends (require "./baseapi.coffee")
     # Start collecting data from Ninja Blocks.
     start: =>
         if not settings.ninja?.api?.userToken?
-            @logError "Ninja.start", "Ninja API userToken not set."
+            logger.error "Ninja.start", "Ninja API userToken not set."
         else
             @baseStart()
 
@@ -56,7 +56,7 @@ class Ninja extends (require "./baseapi.coffee")
         # Get all devices from Ninja Blocks.
         ninjaApi.devices (err, result) =>
             if err?
-                @logError "getDevices", err
+                logger.error "getDevices", err
             else
                 @setData "devices", result
 

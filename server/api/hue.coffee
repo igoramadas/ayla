@@ -50,36 +50,30 @@ class Hue extends (require "./baseapi.coffee")
 
     # Make a request to the Hue API.
     apiRequest: (urlPath, params, callback) =>
-        if not settings.hue?.api?
-            logger.warn "Hue.apiRequest", "Hue API settings are not defined. Abort!"
-            return
-
-        # Set correct parameters.
         if lodash.isFunction params
             callback = params
             params = null
 
-        # Get device info from settings.
+        # Get Hue bridge info from settings.
         device = lodash.find appData.network.devices, {type: "hue"}
 
         # No device found? Abort!
-        if not @isRunning [device]
+        if not @isRunning [settings.hue?.api, device]
             errMsg = "Hue bridge was not found on network device list. Please check appData.network.devices."
+
             if lodash.isFunction callback
                 callback errMsg
             else
                 logger.warn "Hue.apiRequest", errMsg
             return
 
-        baseUrl = "http://#{device.ip}:#{device.port}/api/#{settings.hue.api.user}/"
-
-        reqUrl = baseUrl + urlPath
+        reqUrl = "http://#{device.ip}:#{device.port}/api/#{settings.hue.api.user}/" + urlPath
 
         # Make request. The hue API sometimes is not super stable, so try once
         # more before triggering errors to the callback.
         @makeRequest reqUrl, params, (err, result) =>
             if not err?
-                callback err, result
+                callback null, result
             else
                 lodash.delay @makeRequest, 1000, reqUrl, params, callback
 
@@ -90,11 +84,9 @@ class Hue extends (require "./baseapi.coffee")
     refreshHub: (callback) =>
         logger.debug "Hue.refreshHub"
 
-        hasCallback = lodash.isFunction callback
-
         @apiRequest "", (err, results) =>
             if err?
-                @logError "Hue.refreshHub", err
+                logger.error "Hue.refreshHub", err
             else
                 # Clean results, delete whitelist for security reasons and remove pointsymbol data.
                 delete results.config.whitelist if results?.config?
@@ -109,7 +101,7 @@ class Hue extends (require "./baseapi.coffee")
                 lightCount = lodash.keys(results.lights).length if results?.lights?
                 groupCount = lodash.keys(results.groups).length if results?.groups?
 
-            callback err, results if hasCallback
+            callback? err, results
 
     # LIGHT CONTROL
     # -------------------------------------------------------------------------
@@ -120,8 +112,6 @@ class Hue extends (require "./baseapi.coffee")
             throw new Error "A valid light, array of lights or filter must be specified."
         else
             logger.debug "Hue.setLightState", filter, state
-
-        hasCallback = lodash.isFunction callback
 
         # Set request parameter to use PUT and pass the full state and create tasks array.
         params = {method: "PUT", body: state}
@@ -152,12 +142,12 @@ class Hue extends (require "./baseapi.coffee")
         # Execute requests in parallel.
         async.parallelLimit tasks, settings.general.parallelTasksLimit, (err, results) =>
             if err?
-                @logError "Hue.setLightState", filter, state, err
+                logger.error "Hue.setLightState", filter, state, err
             else
                 logger.info "Hue.setLightState", filter, state
                 events.emit "Hue.light.state", filter, state
 
-            callback err, results if hasCallback
+            callback? err, results
 
     # Turn group lights on (true) or off (false). If no ID is passed or ID is 0, switch all lights.
     switchGroupLights: (id, turnOn, callback) =>

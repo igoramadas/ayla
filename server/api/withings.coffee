@@ -27,7 +27,7 @@ class Withings extends (require "./baseapi.coffee")
 
         @oauthInit (err, result) =>
             if err?
-                @logError "Withings.start", err
+                logger.error "Withings.start", err
             else
                 @oauth.client?.setClientOptions {requestTokenHttpMethod: "GET", accessTokenHttpMethod: "GET"}
 
@@ -36,11 +36,7 @@ class Withings extends (require "./baseapi.coffee")
         @baseStop()
 
     # Load initial data, usually called when module has authenticated.
-    getInitialData: =>
-        return if @initialDataLoaded
-
-        @initialDataLoaded = true
-
+    onAuthenticated: =>
         @getBodyMeasures()
 
     # API BASE METHODS
@@ -100,9 +96,9 @@ class Withings extends (require "./baseapi.coffee")
 
         @apiRequest "measure", "getmeas", filter, (err, result, resp) =>
             if err?
-                @logError "Withings.getBodyMeasures", filter, err
+                logger.error "Withings.getBodyMeasures", filter, err
             else if result?.status > 0
-                @logError "Withings.getBodyMeasures", "Invalid response!", result.status, filter
+                logger.error "Withings.getBodyMeasures", "Invalid response!", result.status, filter
             else
                 @setData "bodyMeasures", result, filter
 

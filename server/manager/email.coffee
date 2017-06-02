@@ -74,7 +74,7 @@ class EmailManager extends (require "./basemanager.coffee")
                 account.client.closeBox()
                 account.client.end()
             catch ex
-                @logError "EmailManager.stop", ex.message, ex.stack
+                logger.error "EmailManager.stop", ex.message, ex.stack
 
         @baseStop()
 
@@ -100,12 +100,12 @@ class EmailManager extends (require "./basemanager.coffee")
 
                     # Auth failed? Do not try again.
                     if err.textCode is "AUTHORIZATIONFAILED"
-                        @logError "EmailManager.openBox", account.id, "Auth failed, please check user and password."
+                        logger.error "EmailManager.openBox", account.id, "Auth failed, please check user and password."
                     # Try connecting to the inbox again in a few seconds in case it fails.
                     else if retry < settings.imap.maxRetry
                         lodash.delay @openBox, settings.imap.retryInterval, account, retry + 1
                     else
-                        @logError "EmailManager.openBox", account.id, "Failed to connect #{retry} times. Abort!"
+                        logger.error "EmailManager.openBox", account.id, "Failed to connect #{retry} times. Abort!"
                 else
                     logger.info "EmailManager.openBox", account.id, "Inbox ready!"
 
@@ -115,7 +115,7 @@ class EmailManager extends (require "./basemanager.coffee")
 
         # Handle IMAP errors. If disconnected because of connection reset, call openBox again.
         account.client.on "error", (err) =>
-            @logError "EmailManager.openBox.onError", account.id, err
+            logger.error "EmailManager.openBox.onError", account.id, err
 
             if err.code? is "ECONNRESET"
                 lodash.delay @openBox, settings.imap.retryInterval, account, 0
@@ -127,14 +127,14 @@ class EmailManager extends (require "./basemanager.coffee")
     fetchNewMessages: (account) =>
         account.client.search ["UNSEEN"], (err, results) =>
             if err?
-                @logError "EmailManager.fetchNewMessages", account.id, err
+                logger.error "EmailManager.fetchNewMessages", account.id, err
             else if not results? or results.length < 1
                 logger.debug "EmailManager.fetchNewMessages", account.id, "No new messages"
             else
                 logger.info "EmailManager.fetchNewMessages", account.id, results.length
                 fetcher = account.client.fetch results, {size: true, struct: true, markSeen: false, bodies: ""}
                 fetcher.on "message", (msg, seqno) => @downloadMessage account, msg, seqno
-                fetcher.once "error", (err) => @logError "EmailManager.fetchNewMessages.onError", account.id, err
+                fetcher.once "error", (err) => logger.error "EmailManager.fetchNewMessages.onError", account.id, err
 
     # Download the specified message and load the related Email Action.
     downloadMessage: (account, msg, seqno) =>
@@ -148,7 +148,7 @@ class EmailManager extends (require "./basemanager.coffee")
                 parsedMsg = result
                 @processMessage account, parsedMsg, msgAttributes
             catch ex
-                @logError "EmailManager.downloadMessage", ex.message, ex.stack
+                logger.error "EmailManager.downloadMessage", ex.message, ex.stack
 
         # Get message attributes and body chunks, and on end proccess the message.
         msg.on "body", (stream, info) -> stream.pipe parser
@@ -206,7 +206,7 @@ class EmailManager extends (require "./basemanager.coffee")
                         processedEmail.actions.push {action: action.id, err: err, result: result}
 
                         if err?
-                            @logError "EmailManager.processMessage", parsedMsg.from.address, parsedMsg.subject, action.id, err
+                            logger.error "EmailManager.processMessage", parsedMsg.from.address, parsedMsg.subject, action.id, err
                         else if result isnt false
                             logger.info "EmailManager.processMessage", "#{parsedMsg.from.address}: #{parsedMsg.subject}", action.id
                             @archiveMessage account, parsedMsg unless action.doNotArchive
@@ -229,7 +229,7 @@ class EmailManager extends (require "./basemanager.coffee")
             delete a.content for a in parsedMsg.attachments
 
             if err?
-                @logError "EmailManager.archiveMessage", account.id, parsedMsg.from.address, parsedMsg.subject, err
+                logger.error "EmailManager.archiveMessage", account.id, parsedMsg.from.address, parsedMsg.subject, err
 
         @dataUpdated "processedEmails"
 
@@ -270,7 +270,7 @@ class EmailManager extends (require "./basemanager.coffee")
                 a.id = r.action
                 actions.push a
             catch ex
-                @logError "EmailManager.getMessageActions", r.action, ex.message, ex.stack
+                logger.error "EmailManager.getMessageActions", r.action, ex.message, ex.stack
 
         # Return actions.
         return actions

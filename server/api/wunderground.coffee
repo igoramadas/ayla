@@ -22,20 +22,23 @@ class Wunderground extends (require "./baseapi.coffee")
 
     # Start collecting Wunderground data.
     start: =>
-        if not settings.wunderground?.api?.clientId?
-            @logError "Wunderground.start", "API clientId for Wunderground not found."
-        else if not settings.wunderground?.defaultQuery?
-            @logError "Wunderground.start", "The defaultQuery setting for Wunderground was not set."
-        else
-            @baseStart()
+        @baseStart()
 
-            @getAstronomy()
-            @getForecast()
-            @getConditions()
+        events.on "Wunderground.getAstronomy", @getAstronomy
+        events.on "Wunderground.getForecast", @getForecast
+        events.on "Wunderground.getConditions", @getConditions
+
+        @getAstronomy()
+        @getForecast()
+        @getConditions()
 
     # Stop collecting Wunderground data.
     stop: =>
         @baseStop()
+
+        events.off "Wunderground.getAstronomy", @getAstronomy
+        events.off "Wunderground.getForecast", @getForecast
+        events.off "Wunderground.getConditions", @getConditions
 
     # API BASE METHODS
     # -------------------------------------------------------------------------
@@ -48,8 +51,13 @@ class Wunderground extends (require "./baseapi.coffee")
             callback = params
             params = {}
 
-        if not @isRunning [settings.wunderground.api]
-            callback "Wunderground API is not set, please check the settings."
+        if not @isRunning [settings.wunderground?.api]
+            errMsg = "Wunderground API details not defined, please check settings.wunderground.api."
+
+            if lodash.isFunction callback
+                callback errMsg
+            else
+                logger.warn "Wunderground.apiRequest", errMsg
             return
 
         reqUrl = "#{settings.wunderground.api.url}#{settings.wunderground.api.clientId}/#{urlpath}/q/"
@@ -79,16 +87,14 @@ class Wunderground extends (require "./baseapi.coffee")
         else
             filter = @getJobArgs filter
 
-        hasCallback = lodash.isFunction callback
-
         @apiRequest "conditions", filter, (err, result) =>
             if err?
-                @logError "Wunderground.getConditions", err
+                logger.error "Wunderground.getConditions", err
             else
                 result = result.current_observation
                 @setData "conditions", result, filter
 
-            callback err, result if hasCallback
+            callback? err, result
 
     # Get the weather forecast for the next 3 days. If not filter is specified,
     # use default location from settings.netatmo.defaultQuery.
@@ -99,16 +105,14 @@ class Wunderground extends (require "./baseapi.coffee")
         else
             filter = @getJobArgs filter
 
-        hasCallback = lodash.isFunction callback
-
         @apiRequest "forecast", filter, (err, result) =>
             if err?
-                @logError "Wunderground.getForecast", err
+                logger.error "Wunderground.getForecast", err
             else
                 result = result.forecast?.simpleforecast
                 @setData "forecast", result, filter
 
-            callback err, result if hasCallback
+            callback? err, result
 
     # Get sunrise and sunset hours and other astronomy details for today. If not filter
     # is specified, use default location from settings.netatmo.defaultQuery.
@@ -119,16 +123,14 @@ class Wunderground extends (require "./baseapi.coffee")
         else
             filter = @getJobArgs filter
 
-        hasCallback = lodash.isFunction callback
-
         @apiRequest "astronomy", filter, (err, result) =>
             if err?
-                @logError "Wunderground.getAstronomy", err
+                logger.error "Wunderground.getAstronomy", err
             else
                 result = result.moon_phase
                 @setData "astronomy", result, filter
 
-            callback err, result if hasCallback
+            callback? err, result
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

@@ -25,7 +25,7 @@ class Toshl extends (require "./baseapi.coffee")
 
         @oauthInit (err, result) =>
             if err?
-                @logError "Toshl.start", err
+                logger.error "Toshl.start", err
 
     # Stop the Toshl module.
     stop: =>
@@ -92,7 +92,7 @@ class Toshl extends (require "./baseapi.coffee")
         # Call Toshl API.
         @apiRequest urlpath, filter, (err, result) =>
             if err?
-                @logError "Toshl.getMonths", err
+                logger.error "Toshl.getMonths", err
             else
                 @setData "months", result, filter
 
@@ -114,7 +114,7 @@ class Toshl extends (require "./baseapi.coffee")
 
         @apiRequest "expenses", filter, (err, result) =>
             if err?
-                @logError "Toshl.getExpenses", err
+                logger.error "Toshl.getExpenses", err
             else
                 @setData "expenses", result, filter
 
@@ -149,7 +149,7 @@ class Toshl extends (require "./baseapi.coffee")
 
         @apiRequest "incomes", filter, (err, result) =>
             if err?
-                @logError "Toshl.getIncomes", err
+                logger.error "Toshl.getIncomes", err
             else
                 @setData "incomes", result, filter
 

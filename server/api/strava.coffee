@@ -28,18 +28,14 @@ class Strava extends (require "./baseapi.coffee")
 
         @oauthInit (err, result) =>
             if err?
-                @logError "Strava.start", err
+                logger.error "Strava.start", err
 
     # Stop collecting data from Strava.
     stop: =>
         @baseStop()
 
     # Load initial data, usually called when module has authenticated.
-    getInitialData: =>
-        return if @initialDataLoaded
-
-        @initialDataLoaded = true
-
+    onAuthenticated: =>
         @getProfile()
         @getRecentActivities()
 
@@ -76,7 +72,7 @@ class Strava extends (require "./baseapi.coffee")
 
         @apiRequest "athlete", (err, result) =>
             if err?
-                @logError "Strava.getProfile", err
+                logger.error "Strava.getProfile", err
             else
                 @setData "profile", result
 
@@ -100,7 +96,7 @@ class Strava extends (require "./baseapi.coffee")
 
         @apiRequest "athlete/activities", filter, (err, result, resp) =>
             if err?
-                @logError "Strava.getActivities", filter, err
+                logger.error "Strava.getActivities", filter, err
             else
                 @setData "activities", result, filter
 
@@ -134,7 +130,7 @@ class Strava extends (require "./baseapi.coffee")
             console.warn result
 
             if err?
-                @logError "Strava.getActivity", filter, err
+                logger.error "Strava.getActivity", filter, err
             else
                 @setData "activity", result, filter
 

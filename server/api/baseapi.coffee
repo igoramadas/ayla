@@ -26,10 +26,10 @@ class BaseApi extends (require "../basemodule.coffee")
     oauthInit: (callback) =>
         if settings[@moduleNameLower].api
             @oauth = new (require "../oauth.coffee") @moduleNameLower
-            @oauth.onAuthenticated = @getInitialData if @getInitialData?
+            @oauth.onAuthenticated = @onAuthenticated if @onAuthenticated?
             @oauth.loadToken callback
         else
-            callback "API settings for #{@moduleName} not found." if callback?
+            callback? "API settings for #{@moduleName} not found."
 
     # GENERAL METHODS
     # -------------------------------------------------------------------------

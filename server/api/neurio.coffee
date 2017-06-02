@@ -1,6 +1,6 @@
 # NEURIO API
 # -----------------------------------------------------------------------------
-# NOT READY YET! Get and post programming related data to Neurio.
+# Collect energy consumption data from Neurio.
 # More info at http://neur.io
 class Neurio extends (require "./baseapi.coffee")
 
@@ -23,7 +23,6 @@ class Neurio extends (require "./baseapi.coffee")
     # Stop collecting data from Neurio.
     stop: =>
         @baseStop()
-
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

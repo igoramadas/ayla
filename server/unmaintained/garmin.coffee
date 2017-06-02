@@ -32,7 +32,7 @@ class Garmin extends (require "./baseapi.coffee")
     # Start collecting data from Garmin Connect.
     start: =>
         if not settings.garmin.api.username? or not settings.garmin.api.password?
-            @logError "Garmin.start", "Garmin username and/or password is missing, please set on settings.garmin.api."
+            logger.error "Garmin.start", "Garmin username and/or password is missing, please set on settings.garmin.api."
         else
             @baseStart()
 
@@ -57,7 +57,7 @@ class Garmin extends (require "./baseapi.coffee")
         try
             zombieBrowser.visit settings.garmin.api.loginUrl, (err) =>
                 if err?
-                    @logError "Garmin.login", "Could not fetch sigin page.", err
+                    logger.error "Garmin.login", "Could not fetch sigin page.", err
                     return callback err
 
                 zombieBrowser.fill "#username", settings.garmin.api.username
@@ -69,7 +69,7 @@ class Garmin extends (require "./baseapi.coffee")
 
                     callback null
         catch ex
-            @logError "Garmin.login", "Exception", ex.message, ex.stack
+            logger.error "Garmin.login", "Exception", ex.message, ex.stack
             callback {exception: ex}
 
     # Helper to make requests to the Garmin Connect website.
@@ -97,7 +97,7 @@ class Garmin extends (require "./baseapi.coffee")
                     result = result.body.toString "utf8"
                     result = JSON.parse result
                 catch ex
-                    @logError "Garmin.apiRequest", "Could not parse response JSON.", ex.message, ex.stack
+                    logger.error "Garmin.apiRequest", "Could not parse response JSON.", ex.message, ex.stack
                     result = null
 
             callback err, result
@@ -117,7 +117,7 @@ class Garmin extends (require "./baseapi.coffee")
 
         @apiRequest "wellness-service", "wellness/dailySleeps", filter, (err, result) =>
             if err?
-                @logError "Garmin.getSleep", filter, err
+                logger.error "Garmin.getSleep", filter, err
             else
                 @setData "sleep", result, filter
 

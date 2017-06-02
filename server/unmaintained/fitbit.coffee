@@ -26,7 +26,7 @@ class Fitbit extends (require "./baseapi.coffee")
 
         @oauthInit (err, result) =>
             if err?
-                @logError "Fitbit.start", err
+                logger.error "Fitbit.start", err
 
     # Stop the Fitbit module.
     stop: =>
@@ -96,7 +96,7 @@ class Fitbit extends (require "./baseapi.coffee")
         # Request sleep data.
         @apiRequest "user/-/sleep/date/#{date}.json", (err, result) =>
             if err?
-                @logError "Fitbit.getSleep", filter, err
+                logger.error "Fitbit.getSleep", filter, err
             else
                 @setData "sleep", result, filter
 
@@ -131,7 +131,7 @@ class Fitbit extends (require "./baseapi.coffee")
         # Request activities data.
         @apiRequest "user/-/activities/date/#{date}.json", (err, result) =>
             if err?
-                @logError "Fitbit.getActivities", filter, err
+                logger.error "Fitbit.getActivities", filter, err
             else
                 @setData "activities", result, filter
 
@@ -173,7 +173,7 @@ class Fitbit extends (require "./baseapi.coffee")
         # Get body weight and fat using async.
         async.parallelLimit tasks, settings.general.parallelTasksLimit, (err, results) =>
             if err?
-                @logError "Fitbit.getBody", filter, err
+                logger.error "Fitbit.getBody", filter, err
             else
                 results = lodash.merge results[0], results[1]
                 @setData "body", results, filter

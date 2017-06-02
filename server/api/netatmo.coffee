@@ -27,10 +27,12 @@ class Netatmo extends (require "./baseapi.coffee")
 
         @oauthInit (err, result) =>
             if err?
-                @logError "Netatmo.start", err
+                logger.error "Netatmo.start", err
+            else
+                events.on "Netatmo.getWeather", @getWeather
+                events.on "Netatmo.getWelcome", @getWelcome
 
-        events.on "Netatmo.getWeather", @getWeather
-        events.on "Netatmo.getWelcome", @getWelcome
+                @getWeather()
 
     # Stop collecting weather data.
     stop: =>
@@ -40,13 +42,9 @@ class Netatmo extends (require "./baseapi.coffee")
         events.off "Netatmo.getWelcome", @getWelcome
 
     # Load initial data, usually called when module has authenticated.
-    getInitialData: =>
-        return if @initialDataLoaded
-
-        @initialDataLoaded = true
-
-        # Get device list first, then get indoor and outdoor readings.
+    onAuthenticated: =>
         @getWeather()
+        @getWelcome()
 
     # API BASE METHODS
     # -------------------------------------------------------------------------
@@ -101,32 +99,28 @@ class Netatmo extends (require "./baseapi.coffee")
 
     # Get weather data from Netatmo stations.
     getWeather: (callback) =>
-        hasCallback = lodash.isFunction callback
-
         @apiRequest "getstationsdata", (err, result) =>
             if err?
-                @logError "Netatmo.getWeather", err
+                logger.error "Netatmo.getWeather", err
             else
                 deviceData = result.body.devices
                 @setData "weather", deviceData
 
-            callback err, result if hasCallback
+            callback? err, result
 
     # WELCOME CAMERA DATA
     # -------------------------------------------------------------------------
 
     # Get home data from Welcome cameras.
     getWelcome: (callback) =>
-        hasCallback = lodash.isFunction callback
-
         @apiRequest "gethomedata", (err, result) =>
             if err?
-                @logError "Netatmo.getWelcome", err
+                logger.error "Netatmo.getWelcome", err
             else
                 homes = result.body.homes
                 @setData "welcome", homes
 
-            callback err, result if hasCallback
+            callback? err, result
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------
