@@ -282,7 +282,7 @@ class Routes
         options.managerModules = manager.modules
 
         # Force .jade extension.
-        filename += ".jade" if filename.indexOf(".jade") < 0
+        filename += ".pug" if filename.indexOf(".pug") < 0
 
         # Render page.
         expresser.app.renderView req, res, filename, options
