@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 
 # Note on exit.
-process.on "exit", (code) -> console.warn "Ayla process exit", code
+process.on "exit", (code) -> console.warn "Shutting down Ayla", code
 
 # Require Expresser.
 expresser = require "expresser"
@@ -16,11 +16,11 @@ settings.loadFromJson "settings.private.json"
 expresser.datastore = {}
 
 # Required modules.
-api = require "./server/api.coffee"
-commander = require "./server/commander.coffee"
-manager = require "./server/manager.coffee"
-routes = require "./server/routes.coffee"
-appData = require "./server/appdata.coffee"
+api = require "./api.coffee"
+commander = require "./commander.coffee"
+manager = require "./manager.coffee"
+routes = require "./routes.coffee"
+appData = require "./appdata.coffee"
 
 # Init Expresser.
 expresser.init()
@@ -29,4 +29,4 @@ expresser.init()
 appData.init -> api.init -> manager.init -> commander.init -> routes.init()
 
 # Automatically update settings when settings.json gets updated.
-settings.watch true, -> logger.info "Settings.watch", "Reloaded from disk!"
+settings.watch true, -> logger.info "Settings.watch", "Reloaded from disk"

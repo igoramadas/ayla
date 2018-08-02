@@ -1,5 +1,5 @@
 {
-    "name": "ayla-homeserver",
+    "name": "ayla",
     "version": "0.6.2",
     "description": "Ayla at your service.",
     "homepage": "https://github.com/igoramadas/ayla",
@@ -16,19 +16,18 @@
         "node": "*"
     },
     "dependencies": {
-        "coffee-script": ">= 1.12.6",
-        "expresser": "2.3.x",
-        "expresser-cron": "1.2.x",
-        "expresser-downloader": "1.1.x",
-        "expresser-mailer": "1.1.x",
-        "expresser-sockets": "1.1.x",
-        "assert": "1.4.x",
-        "imap": "0.8.x",
-        "mailparser": "2.0.x",
-        "mdns": "2.3.x",
-        "oauth": "0.9.x",
-        "request": "2.81.x",
-        "tinycolor2": "1.4.x"
+        "assert": "^1.4.1",
+        "coffeescript": "^2.3.1",
+        "expresser": "^3.4.3",
+        "expresser-cron": "^3.1.0",
+        "expresser-mailer": "^3.1.0",
+        "expresser-sockets": "^3.1.0",
+        "imap": "^0.8.19",
+        "mailparser": "^2.3.2",
+        "mdns": "^2.4.0",
+        "oauth": "^0.9.15",
+        "request": "^2.87.0",
+        "tinycolor2": "^1.4.1"
     },
     "devDependencies": {
         "chai": "*",
