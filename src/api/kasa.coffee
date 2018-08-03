@@ -13,6 +13,7 @@ class Kasa extends (require "./baseapi.coffee")
     utils = expresser.utils
 
     appData = require "../appdata.coffee"
+    client = require("tplink-smarthome-api").Client
     url = require "url"
 
     # INIT
