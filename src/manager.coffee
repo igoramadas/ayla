@@ -20,26 +20,35 @@ class Manager
     # -------------------------------------------------------------------------
 
     # Init all managers.
-    init: (callback) =>
-        rootPath = path.join __dirname, "../"
-        managerPath = rootPath + "server/manager/"
+    init: =>
+        return new Promise (resolve, reject) =>
+            rootPath = path.join __dirname, "../"
+            managerPath = rootPath + "src/manager/"
 
-        # Init modules.
-        files = fs.readdirSync managerPath
-        for f in files
-            if f isnt "basemanager.coffee" and f.indexOf(".coffee") > 0
-                filename = f.replace ".coffee", ""
+            # Init modules.
+            files = fs.readdirSync managerPath
+            for f in files
+                try
+                    if f isnt "basemanager.coffee" and f.indexOf(".coffee") > 0
+                        filename = f.replace ".coffee", ""
 
-                module = require "./manager/#{f}"
-                module.init()
-                @modules[filename] = module
+                        module = require "./manager/#{f}"
+                        module.init()
+                        @modules[filename] = module
 
-                logger.info "Manager.init", filename, "Loaded"
+                        logger.info "Manager.init", filename, "Loaded"
+                catch ex
+                    logger.error "Manager.init", "Error loading module", f, ex
+                    return reject ex
 
-        # Start all managers.
-        m.start() for k, m of @modules
+            # Start all managers.
+            try
+                m.start() for k, m of @modules
+            catch ex
+                logger.error "Manager.init", "Error starting modules", ex
+                return reject ex
 
-        callback?()
+            resolve()
 
     # Stop all managers and clear timers.
     stop: (callback) =>

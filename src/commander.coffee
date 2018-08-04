@@ -18,18 +18,20 @@ class Commander
     # -------------------------------------------------------------------------
 
     # Init the commander.
-    init: (callback) =>
-        events = expresser.events
-        lodash = expresser.libs.lodash
-        logger = expresser.logger
-        settings = expresser.settings
+    init: =>
+        return new Promise (resolve, reject) =>
+            events = expresser.events
+            lodash = expresser.libs.lodash
+            logger = expresser.logger
+            settings = expresser.settings
 
-        try
-            @commands = require "../commands.json"
-        catch ex
-            logger.error "Commander.init", ex.message, ex.stack
+            try
+                @commands = require "../commands.json"
+            catch ex
+                logger.error "Commander.init", ex
+                return reject ex
 
-        callback?()
+            resolve()
 
     # PARSE AND EXECUTE
     # -------------------------------------------------------------------------

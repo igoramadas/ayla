@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 
 # Note on exit.
-process.on "exit", (code) -> console.warn "Shutting down Ayla", code
+process.on "exit", (code) -> console.warn "Shutting down Ayla...", "Code #{code}"
 
 # Require Expresser.
 expresser = require "expresser"
@@ -22,11 +22,22 @@ manager = require "./manager.coffee"
 routes = require "./routes.coffee"
 appData = require "./appdata.coffee"
 
-# Init Expresser.
-expresser.init()
+# Init server, app data, then API modules, managers, commander and finally routes.
+startup = ->
+    try
+        expresser.init()
+        await appData.init()
+        await api.init()
+        await manager.init()
+        await commander.init()
+        await routes.init()
+    catch ex
+        logger.error "Can't start the Ayla server!"
+        return process.exit()
 
-# Init app data, then API modules, managers, commander and finally routes.
-appData.init -> api.init -> manager.init -> commander.init -> routes.init()
+    return async
+
+startup()
 
 # Automatically update settings when settings.json gets updated.
 settings.watch true, -> logger.info "Settings.watch", "Reloaded from disk"

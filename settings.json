@@ -1,18 +1,9 @@
 // AYLA SETTINGS
-// Ayla uses the Expresser platform, therefore I recommend having a look
-// at https://expresser.codeplex.com to understand how settings work.
-// The properties below are the defaults for Ayla, and do not include
-// private API keys, tokens, passwords, user preferences etc. For this
-// you'll have to create a settings.private.json file.
 
 {
     // Web app defaults, please note that for SSL to work you'll need to have
-    // a ssl.key and ssl.cer files. The `cookieTokenExpireDays` defines how
-    // many days a token will be saved as cookie when user access the app
-    // with a token and passing savecookie=1.
+    // a ayla.key and ayla.cer files.
     "app": {
-        // Expire token cookie on browser after 30 days
-        "cookieTokenExpireDays": 30,
         "port": 8443,
         "ssl": {
             "enabled": true,
@@ -56,31 +47,21 @@
     // { "api": ["hue", "netatmo"] }
     // { "managers": ["email", "weather"] }
     "modules": {
-        // By default the app will keep the most recent 5 results of module
+        // By default the app will keep the most recent 10 results of module
         // data having the same key (each key inside the .data property of API modules).
-        "dataKeyCacheSize": 5,
-        // Modules errors will stay logged on the module itself fogoor up to 48 hours.
-        // Used to check module's health (for example if it's throwing too many errors).
-        "errorMaxAgeHours": 48,
-        // OAUth expired tokens will be saved for a week.
-        "maxAuthTokenAgeDays": 7,
+        "dataKeyCacheSize": 10,
         // How long before trying to refresh an OAuth token again, in seconds.
         // Default represents 5 minutes.
         "minRefreshTokenIntervalSeconds": 300,
         // The `notifyExpireMinutes` is used to avoid sending repeated notifications.
         // By default it won't resend the same notification if last was sent less than 60 minutes ago.
-        "notifyExpireMinutes": 60,
-        // Call the module's `stop` method automatically if the same error
-        // happens 10 times in less than 48 hours.
-        "stopOnErrorCount": 10
+        "notifyExpireMinutes": 60
     },
     // Path to various settings and data.
     "path": {
         "cameraSnaps": "/data/cameraSnaps/",
-        "data": "/data/",
-        "emailTemplatesDir": "/data/emailTemplates/",
         // You'll need to get your own certificates if you want to use HTTPS!
-        "sslKeyFile": "ssl.key",
-        "sslCertFile": "ssl.cer"
+        "sslKeyFile": "ayla.key",
+        "sslCertFile": "ayla.cer"
     }
 }

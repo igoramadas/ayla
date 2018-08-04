@@ -14,12 +14,15 @@ class AppData
     # -------------------------------------------------------------------------
 
     # Load initial data from the /data folder.
-    init: (callback) =>
-        dataPath = path.resolve __dirname, "../data"
-        fs.readdir dataPath, (err, files) =>
-            if err?
-                logger.error "AppData.init", err
-            else
+    init: =>
+        return new Promise (resolve, reject) =>
+            dataPath = path.resolve __dirname, "../data"
+
+            fs.readdir dataPath, (err, files) =>
+                if err?
+                    logger.error "AppData.init", err
+                    return reject err
+
                 for f in files
                     if path.extname(f) is ".json"
                         basename = path.basename f, ".json"
@@ -32,7 +35,7 @@ class AppData
                         catch ex
                             logger.error "AppData.init", "Could not load #{f}", ex
 
-            callback?()
+                resolve()
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

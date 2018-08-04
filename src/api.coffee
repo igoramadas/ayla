@@ -21,44 +21,51 @@ class Api
     # -------------------------------------------------------------------------
 
     # Init all API modules.
-    init: (callback) =>
-        cron = expresser.cron
+    init: =>
+        return new Promise (resolve, reject) =>
+            cron = expresser.cron
 
-        rootPath = path.join __dirname, "../"
-        cronPath = rootPath + "cron.api.json"
-        apiPath = rootPath + "server/api/"
+            rootPath = path.join __dirname, "../"
+            cronPath = rootPath + "cron.api.json"
+            apiPath = rootPath + "src/api/"
 
-        # Make sure oauth data path exists.
-        oauthPath = path.join __dirname, "../data/oauth/"
-        utils.io.mkdirRecursive oauthPath
+            # Make sure oauth data path exists.
+            oauthPath = path.join __dirname, "../data/oauth/"
+            utils.io.mkdirRecursive oauthPath
 
-        # Init modules.
-        files = fs.readdirSync apiPath
+            # Init modules.
+            files = fs.readdirSync apiPath
 
-        for f in files
-            if f isnt "baseapi.coffee" and f.indexOf(".coffee") > 0
-                filename = f.replace ".coffee", ""
+            for f in files
+                try
+                    if f isnt "baseapi.coffee" and f.indexOf(".coffee") > 0
+                        filename = f.replace ".coffee", ""
 
-                apiSettingsPath = __dirname + "/api/" + f.replace ".coffee", ".settings.json"
-                settings.loadFromJson apiSettingsPath
+                        apiSettingsPath = __dirname + "/api/" + f.replace ".coffee", ".settings.json"
+                        settings.loadFromJson apiSettingsPath
 
-                module = require "./api/#{f}"
-                module.init()
-                @modules[filename] = module
+                        module = require "./api/#{f}"
+                        module.init()
+                        @modules[filename] = module
 
-                logger.info "Api.init", filename, "Loaded"
+                        logger.info "Api.init", filename, "Loaded"
+                catch ex
+                    logger.error "Api.init", "Error loading module", f, ex
+                    return reject ex
 
-        # Start all API modules and load cron jobs.
-        m.start() for k, m of @modules
-        cron.load cronPath, {basePath: "server/api/"} if settings.cron.enabled
+            # Start all API modules and load cron jobs.
+            try
+                m.start() for k, m of @modules
+                cron.load cronPath, {basePath: "server/api/"} if settings.cron.enabled
+            catch ex
+                logger.error "Api.init", "Error starting modules", ex
+                return reject ex
 
-        callback?()
+            resolve()
 
     # Stop all API modules and clear timers.
-    stop: (callback) =>
+    stop: =>
         m.stop() for k, m of @modules
-
-        callback?()
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

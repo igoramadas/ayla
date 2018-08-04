@@ -21,33 +21,34 @@ class Routes
     # -------------------------------------------------------------------------
 
     # Set most routes on init. The app (from Expresser) must be passed here.
-    init: (callback) =>
-        app = expresser.app.server
+    init: =>
+        return new Promise (resolve, reject) =>
+            app = expresser.app.server
 
-        # Main route.
-        app.get "/", indexPage
+            # Main route.
+            app.get "/", indexPage
 
-        # Dashboard routes.
-        app.get "/dashboard", dashboardPage
-        app.get "/dashboard/data", dashboardDataPage
+            # Dashboard routes.
+            app.get "/dashboard", dashboardPage
+            app.get "/dashboard/data", dashboardDataPage
 
-        # Commander and status routes.
-        app.get "/commander/:cmd", commanderPage
-        app.post "/commander/:cmd", commanderPage
+            # Commander and status routes.
+            app.get "/commander/:cmd", commanderPage
+            app.post "/commander/:cmd", commanderPage
 
-        # Bind API module routes.
-        app.get "/api/:id", apiPage
-        app.get "/api/:id/data", apiDataPage
-        app.get "/api/:id/auth", apiAuthPage
-        app.get "/api/:id/auth/callback", apiAuthPage
-        bindModuleRoutes m for key, m of api.modules
+            # Bind API module routes.
+            app.get "/api/:id", apiPage
+            app.get "/api/:id/data", apiDataPage
+            app.get "/api/:id/auth", apiAuthPage
+            app.get "/api/:id/auth/callback", apiAuthPage
+            bindModuleRoutes m for key, m of api.modules
 
-        # Bind manager routes.
-        app.get "/manager/:id", managerPage
-        app.get "/manager/:id/data", managerDataPage
-        bindModuleRoutes m for key, m of manager.modules
+            # Bind manager routes.
+            app.get "/manager/:id", managerPage
+            app.get "/manager/:id/data", managerDataPage
+            bindModuleRoutes m for key, m of manager.modules
 
-        callback?()
+            resolve()
 
     # Helper to bind module routes.
     bindModuleRoutes = (m) ->
