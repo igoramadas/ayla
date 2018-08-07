@@ -1,9 +1,9 @@
 # BASE VIEW
-# --------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 class BaseView
 
     # PROPERTIES
-    # ----------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     # Holds main view data.
     model: {}
@@ -11,29 +11,21 @@ class BaseView
     lastUserInteraction: moment().unix()
 
     # MAIN METHODS
-    # ----------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     # Init the view and set elements.
     init: =>
         $(document).foundation()
-        
+
         @setSockets()
-        @setAnnouncements()
-        @setHeader()
 
-        # Get URL for data.
-        jsonUrl = location.pathname + "/data"
+        # Create Vue router and app.
+        @router = new VueRouter {routes: noidm.routes}
+        @vue = new Vue {router: @router, data: {error: null, pageTitle: ""}}
+        @vue.$mount "#app"
 
-        $.getJSON jsonUrl.replace("//", ""), (data) =>
-            @model = ko.mapping.fromJS data, @mappingOptions
-            ko.applyBindings this
-
-            @onReady()
-
-    # Create announcements queue.
-    setAnnouncements: =>
-        @announcementsQueue = []
-        @announcing = false
+        # Connect to sockets.
+        @socket = io {query: {token: token}}
 
     # Helper to listen to socket events sent by the server. If no event name is
     # passed then use the view's default.
@@ -43,56 +35,32 @@ class BaseView
         ayla.sockets.on "server.info", (info) =>
             ayla.server.info = info
 
-    # Set active navigation and header properties.
-    setHeader: =>
-        currentPath = location.pathname.substring 1
+    # DATA METHODS
+    # -------------------------------------------------------------------------
 
-        sepIndex = currentPath.indexOf "/"
+    # Fetch (GET) data from the server.
+    fetchData: (path, data) ->
+        return new Promise (resolve, reject) ->
+            try
+                result = await $.getJSON "/api/#{path}"
+                resolve result
+            catch ex
+                logger.error "App.fetchData", path, ex
+                reject ex
 
-        if sepIndex > 0
-            currentPath = currentPath.substring 0, sepIndex
-
-        if currentPath isnt "/" and currentPath isnt ""
-            $("#header").find(".#{currentPath}").addClass "active"
-
-    # ANNOUNCEMENTS
-    # ----------------------------------------------------------------------
-
-    # Show bottom announcement.
-    announce: (obj) =>
-        @announcementsQueue.push obj
-        @nextAnnouncement()
-
-    # Show next announcement.
-    nextAnnouncement: =>
-        return if @announcing or @announcementsQueue.length < 1
-
-        obj = @announcementsQueue.shift()
-
-        if obj.err?
-            css = "error"
-            timeout = 3000
-        else if obj.result? and obj.important
-            css = "ok"
-            timeout = 1600
-        else
-            return @nextAnnouncement()
-
-        # Set announcing and remove color classes.
-        @announcing = true
-        @dom.announcements.removeClass "error"
-        @dom.announcements.removeClass "ok"
-        @dom.announcements.addClass css
-
-        # Update announcement element.
-        @dom.announcements.find(".message").html obj.message
-        @dom.announcements.fadeIn 200, =>
-            hideFunc = =>
-                @dom.announcements.fadeOut 200, =>
-                    @announcing = false
-                    @nextAnnouncement()
-
-            _.delay hideFunc, timeout
+    # Post data to the server.
+    postData: (path, data) ->
+        return new Promise (resolve, reject) ->
+            try
+                options = {
+                    url: "/api/#{path}"
+                    data: data
+                }
+                result = await $.post options
+                resolve result
+            catch ex
+                logger.error "App.postData", path, ex
+                reject ex
 
 # BIND BASE VIEW AND OPTIONS TO WINDOW
 # --------------------------------------------------------------------------

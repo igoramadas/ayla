@@ -35,7 +35,7 @@ startup = ->
         logger.error "Can't start the Ayla server!"
         return process.exit()
 
-    return async
+    return await true
 
 startup()
 

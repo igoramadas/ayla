@@ -1,14 +1,13 @@
 #= require lib/jquery.js
 #= require lib/js.cookie.js
 #= require lib/lodash.js
-#= require lib/knockout.js
-#= require lib/ko.mapping.js
+#= require lib/vue.js
+#= require lib/vue-router.js
 #= require lib/moment.js
 #= require lib/foundation.js
 #= require lib/what-input.js
 #= require lib/crel.js
 #= require lib/jsonhuman.js
-#= require sockets.coffee
 #= require views/baseview.coffee
 #= require views/api.coffee
 #= require views/dashboard.coffee
