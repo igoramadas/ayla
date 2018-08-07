@@ -12,7 +12,7 @@
         },
         "title": "Ayla",
         // Default URL should be changed!!!
-        "url": "https://localhost/"
+        "url": "https://localhost:8443/"
     },
     // General app settings. Debug is disabled by default.
     "general": {
