@@ -10,7 +10,7 @@
         "start": "node index.js"
     },
     "bin": {
-        "ayla": "./bin/ayla-homeserver"
+        "ayla": "./bin/ayla"
     },
     "engines": {
         "node": "*"
