@@ -23,6 +23,9 @@ class Hue extends (require "./baseapi.coffee")
     init: =>
         @baseInit()
 
+        async = expresser.libs.async
+        lodash = expresser.libs.lodash
+
     # Start the module and refresh the Hue hub data.
     start: =>
         @baseStart()

@@ -7,6 +7,7 @@ class ActivityModel extends (require "./basemodel.coffee")
 
     # Activity constructor.
     constructor: (obj, @source) ->
+        super obj
         @setData obj
 
     # Set Activity data.

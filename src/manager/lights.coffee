@@ -11,7 +11,7 @@ class LightsManager extends (require "./basemanager.coffee")
     logger = expresser.logger
     moment = expresser.libs.moment
     settings = expresser.settings
-    sockets = expresser.sockets
+    sockets = expresser.plugins.sockets
     utils = expresser.utils
 
     title: "Lights"
@@ -22,17 +22,15 @@ class LightsManager extends (require "./basemanager.coffee")
 
     # Init the lights manager.
     init: =>
-        @baseInit {hue: {lights: [], groups: []}, ninja: []}
+        @baseInit {hue: {lights: [], groups: []}}
 
     # Start the lights manager and listen to data updates / events.
     start: =>
         events.on "Hue.data", @onHue
         events.on "Hue.light.state", @onHueLightState
-        events.on "Ninja.data", @onNinja
 
         sockets.listenTo "LightsManager.Hue.color", @onClientHueColor
         sockets.listenTo "LightsManager.Hue.toggle", @onClientHueToggle
-        sockets.listenTo "LightsManager.Ninja.toggle", @onClientNinjaToggle
 
         @baseStart()
 
@@ -40,11 +38,9 @@ class LightsManager extends (require "./basemanager.coffee")
     stop: =>
         events.off "Hue.data", @onHue
         events.off "Hue.light.state", @onHueLightState
-        events.off "Ninja.data", @onNinja
 
         sockets.stopListening "LightsManager.Hue.color", @onClientHueColor
         sockets.stopListening "LightsManager.Hue.toggle", @onClientHueToggle
-        sockets.stopListening "LightsManager.Ninja.toggle", @onClientNinjaToggle
 
         @baseStop()
 
@@ -142,51 +138,6 @@ class LightsManager extends (require "./basemanager.coffee")
                 result = {message: "#{light.title} switched #{onOrOff}", result: result}
 
             @emitResultSocket err, result
-
-    # NINJA
-    # -------------------------------------------------------------------------
-
-    # Update list of light actuators from Ninja Blocks, by getting all RF433 devices
-    # that have "light" on their name.
-    onNinja: (key, data) =>
-        logger.debug "LightsManager.onNinjaDevices", data
-        return if key isnt "rf433"
-
-        @data.ninja = []
-        lights = {}
-
-        # Iterated filtered light list to create the specific light models.
-        # It merges devices containing same title with On and Off.
-        for id, device of data.value.device.subDevices
-            if device.shortName.toLowerCase().indexOf("light") >= 0
-                lightTitle = device.shortName.replace(" On", "").replace(" Off", "")
-                device.id = id
-                device.title = lightTitle
-
-                if not lights[lightTitle]?
-                    lights[lightTitle] = new lightModel device, "ninja"
-                else
-                    lights[lightTitle].setData device
-
-                # Here's where the action happens. Instead of creating one light for Off
-                # and another for On, we merge them and set the codeOn and codeOff properties.
-                if device.shortName.indexOf(" On") > 0
-                    lights[lightTitle].codeOn = id
-                else if device.shortName.indexOf(" Off") > 0
-                    lights[lightTitle].codeOff = id
-
-        # Push created light models to the ninja light collection.
-        @data.ninja.push light for title, light of lights
-        logger.debug "LightsManager.onNinjaDevices", @data.ninja
-
-        # Emit updated ninja lights and save log.
-        @dataUpdated "ninja"
-
-    # When a toggle ON/OFF is received from the client, filtered by title.
-    onClientNinjaToggle: (data) =>
-        logger.debug "LightsManager.onClientHueToggle", data
-
-        events.emit "Ninja.actuate433", data
 
 # Singleton implementation.
 # -----------------------------------------------------------------------------

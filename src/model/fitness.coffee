@@ -7,6 +7,7 @@ class FitnessModel extends (require "./basemodel.coffee")
 
     # Fitness constructor.
     constructor: (obj, @source) ->
+        super obj
         @setData obj
 
     # Set Fitness data.

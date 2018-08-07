@@ -8,6 +8,7 @@ class ClimateModel extends (require "./basemodel.coffee")
 
     # Climate constructor.
     constructor: (obj, @source) ->
+        super obj
         @setData obj
 
     # Update climate data.
@@ -39,7 +40,7 @@ class ClimateModel extends (require "./basemodel.coffee")
                 @dateString = "Tomorrow"
             else
                 @dateString = currentDate
-        
+
         # Property format temperature.
         if @temperature?
             @temperature = parseFloat(@temperature).toFixed 1

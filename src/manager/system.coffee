@@ -6,7 +6,7 @@ class SystemManager extends (require "./basemanager.coffee")
     expresser = require "expresser"
 
     api = require "../api.coffee"
-    cron = expresser.cron
+    cron = expresser.plugins.cron
     events = expresser.events
     lodash = expresser.libs.lodash
     logger = expresser.logger
@@ -61,10 +61,8 @@ class SystemManager extends (require "./basemanager.coffee")
         disabledModules = api.disabledModules
 
         @data.apiModules = modules
-        @dataUpdated "apiModules"
 
         @data.disabledModules = disabledModules
-        @dataUpdated "apiDisabledModules"
 
     # Get scheduled jobs.
     getJobs: =>

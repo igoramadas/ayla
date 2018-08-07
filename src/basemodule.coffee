@@ -17,13 +17,13 @@ class BaseModule
 
     # Called when the module inits.
     baseInit: (initialData) =>
-        cron = expresser.cron
+        cron = expresser.plugins.cron
         events = expresser.events
         lodash = expresser.libs.lodash
         logger = expresser.logger
         moment = expresser.libs.moment
         settings = expresser.settings
-        sockets = expresser.sockets
+        sockets = expresser.plugins.sockets
 
         @moduleName = @__proto__.constructor.name.toString()
         @moduleNameLower = @moduleName.toLowerCase()

@@ -7,6 +7,7 @@ class UserModel extends (require "./basemodel.coffee")
 
     # User constructor.
     constructor: (obj, @source) ->
+        super obj
         @setData obj
 
     # Set user data.

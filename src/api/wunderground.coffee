@@ -29,8 +29,6 @@ class Wunderground extends (require "./baseapi.coffee")
         events.on "Wunderground.getForecast", @getForecast
         events.on "Wunderground.getConditions", @getConditions
 
-        console.warn settings.wunderground
-
         @getAstronomy()
         @getForecast()
         @getConditions()

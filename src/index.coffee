@@ -40,4 +40,4 @@ startup = ->
 startup()
 
 # Automatically update settings when settings.json gets updated.
-settings.watch true, -> logger.info "Settings.watch", "Reloaded from disk"
+settings.watch -> logger.info "Settings.watch", "Reloaded from disk"

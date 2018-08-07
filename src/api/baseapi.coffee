@@ -5,7 +5,7 @@ class BaseApi extends (require "../basemodule.coffee")
 
     expresser = require "expresser"
 
-    cron = expresser.cron
+    cron = expresser.plugins.cron
     events = expresser.events
     lodash = expresser.libs.lodash
     logger = expresser.logger
@@ -13,7 +13,7 @@ class BaseApi extends (require "../basemodule.coffee")
     path = require "path"
     request = require "request"
     settings = expresser.settings
-    sockets = expresser.sockets
+    sockets = expresser.plugins.sockets
     url = require "url"
 
     # Enable cron for API modules.

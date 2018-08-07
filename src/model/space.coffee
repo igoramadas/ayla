@@ -8,6 +8,7 @@ class SpaceModel extends (require "./basemodel.coffee")
 
     # Space constructor.
     constructor: (obj, @source) ->
+        super obj
         @setData obj
 
     # Set space data and check climate conditions straight away.

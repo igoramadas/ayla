@@ -6,6 +6,7 @@ class LightModel extends (require "./basemodel.coffee")
 
     # Light constructor. Default state is off.
     constructor: (obj, @source) ->
+        super obj
         @state = false
         @setData obj
 
@@ -22,10 +23,6 @@ class LightModel extends (require "./basemodel.coffee")
             @state = data.on
         else if data.state?
             @state = data.state
-
-        # This is used for Ninja lights, to define the code to turn on and off.
-        @codeOn = data.codeOn if data.codeOn?
-        @codeOff = data.codeOff if data.codeOff?
 
         # Set color depending on the provided info.
         if data.state?.hue? and data.state?.bri?

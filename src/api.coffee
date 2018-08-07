@@ -23,7 +23,7 @@ class Api
     # Init all API modules.
     init: =>
         return new Promise (resolve, reject) =>
-            cron = expresser.cron
+            cron = expresser.plugins.cron
 
             rootPath = path.join __dirname, "../"
             cronPath = rootPath + "cron.api.json"
@@ -56,7 +56,7 @@ class Api
             # Start all API modules and load cron jobs.
             try
                 m.start() for k, m of @modules
-                cron.load cronPath, {basePath: "server/api/"} if settings.cron.enabled
+                cron.load cronPath, {basePath: "src/api/"} if settings.cron.enabled
             catch ex
                 logger.error "Api.init", "Error starting modules", ex
                 return reject ex
