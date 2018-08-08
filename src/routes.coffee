@@ -28,26 +28,27 @@ class Routes
                 app = expresser.app.expressApp
 
                 # Main route.
-                app.get "/", indexPage
+                app.get "/", getIndex
 
                 # Dashboard routes.
-                app.get "/dashboard", dashboardPage
-                app.get "/dashboard/data", dashboardDataPage
+                app.get "/dashboard", getDashboard
 
                 # Commander and status routes.
-                app.get "/commander/:cmd", commanderPage
-                app.post "/commander/:cmd", commanderPage
+                app.get "/commander/:cmd", getCommander
+
+                # System information.
+                app.get "/system/data", getSystemData
 
                 # Bind API module routes.
-                app.get "/api/:id", apiPage
-                app.get "/api/:id/data", apiDataPage
-                app.get "/api/:id/auth", apiAuthPage
-                app.get "/api/:id/auth/callback", apiAuthPage
+                app.get "/api/:id", getApi
+                app.get "/api/:id/data", getApiData
+                app.get "/api/:id/auth", getApiAuth
+                app.get "/api/:id/auth/callback", getApiAuth
                 bindModuleRoutes m for key, m of api.modules
 
                 # Bind manager routes.
-                app.get "/manager/:id", managerPage
-                app.get "/manager/:id/data", managerDataPage
+                app.get "/manager/:id", getManager
+                app.get "/manager/:id/data", getManagerData
                 bindModuleRoutes m for key, m of manager.modules
 
             catch ex
@@ -80,15 +81,15 @@ class Routes
     # -------------------------------------------------------------------------
 
     # Main route will mostly redirect to dashboard page.
-    indexPage = (req, res) ->
+    getIndex = (req, res) ->
         res.redirect "/dashboard"
 
     # The main dashboard homepage.
-    dashboardPage = (req, res) ->
+    getDashboard = (req, res) ->
         renderPage req, res, "dashboard", {pageTitle: "Dashboard"}
 
     # Data returned on the dashboard page.
-    dashboardDataPage = (req, res) ->
+    getSystemData = (req, res) ->
         result = {}
         managerModules = []
         apiModules = []
@@ -155,7 +156,7 @@ class Routes
         expresser.app.renderJson req, res, result
 
      # The commander processor.
-    commanderPage = (req, res) ->
+    getCommander = (req, res) ->
         commander.execute req.params.cmd, req.body, (err, result) ->
             if err?
                 sendErrorResponse req, res, "commanderPage", err
@@ -163,7 +164,7 @@ class Routes
                 expresser.app.renderJson req, res, result
 
     # The API module overview page.
-    apiPage = (req, res) ->
+    getApi = (req, res) ->
         id = req.params.id
         m = api.modules[id]
 
@@ -190,7 +191,7 @@ class Routes
                     return renderPage req, res, "api", options
 
     # Returns data from the API module.
-    apiDataPage = (req, res) ->
+    getApiData = (req, res) ->
         id = req.params.id
         m = api.modules[id]
 
@@ -216,7 +217,7 @@ class Routes
         expresser.app.renderJson req, res, options
 
     # Handles authentication for API modules.
-    apiAuthPage = (req, res) ->
+    getApiAuth = (req, res) ->
         id = req.params.id
         m = api.modules[id]
 
@@ -228,7 +229,7 @@ class Routes
             m.oauth.process req, res
 
     # The manager overview page.
-    managerPage = (req, res) ->
+    getManager = (req, res) ->
         id = req.params.id
         m = manager.modules[id]
 
@@ -252,7 +253,7 @@ class Routes
                     return renderPage req, res, "manager", options
 
     # Returns data from the manager.
-    managerDataPage = (req, res) ->
+    getManagerData = (req, res) ->
         id = req.params.id
         m = manager.modules[id]
 
