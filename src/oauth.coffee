@@ -67,18 +67,23 @@ class OAuth
 
                 @client = getClient @service
 
-                # Iterate results to create OAuth clients for all users.
-                if result?
-                    @credentials = JSON.parse result
+                try
 
-                    # Needs refresh?
-                    if @credentials.expires? and moment().unix() > @credentials.expires
-                        lodash.delay @refresh, 1000
+                    # Iterate results to create OAuth clients for all users.
+                    if result?
+                        @credentials = JSON.parse(result) or {}
 
-                # Is it authenticated?
-                if @credentials.token?
-                    @authenticated = true
-                    @onAuthenticated() if @onAuthenticated?
+                        # Needs refresh?
+                        if @credentials.expires? and moment().unix() > @credentials.expires
+                            lodash.delay @refresh, 1000
+
+                    # Is it authenticated?
+                    if @credentials.token?
+                        @authenticated = true
+                        @onAuthenticated() if @onAuthenticated?
+
+                catch ex
+                    logger.error "OAuth.loadToken", @service, ex
 
                 # Pass data back to caller.
                 callback? null, result
@@ -90,6 +95,7 @@ class OAuth
             params = null
 
         # Add extra parameters like timestamp and user ID.
+        @credentials.token = params.token
         @credentials.refreshToken = params.refreshToken or params.refresh
         @credentials.timestamp = params.oauth_timestamp or moment().unix()
         @credentials.userId = params.encoded_user_id if params.encoded_user_id?
@@ -106,7 +112,7 @@ class OAuth
         @onAuthenticated() if @onAuthenticated?
 
         # Clone itself to be saved to disk.
-        data = @getJSON true
+        data = @getJSON().credentials
 
         # Update oauth collection and set related tokens `active` to false.
         fs.writeFile @filename, JSON.stringify(data), (err, result) =>
@@ -304,18 +310,13 @@ class OAuth
 
     # Helper to get JSON representation of the OAuth object.
     # If safe is true, return only safe values (remove tokens and confidential data).
-    getJSON: (safe) =>
-        data = {}
-
-        for key, value of this
-            if not lodash.isFunction value and key isnt "client"
-                data[key] = lodash.cloneDeep value
-
-        if safe
-            delete data.token
-            delete data.refreshToken
-
-        return data
+    getJSON: =>
+        result = {
+            service: @service
+            filename: @filename
+            authenticated: @authenticated
+            credentials: @credentials
+        }
 
 # Exports OAuth module.
 # -----------------------------------------------------------------------------

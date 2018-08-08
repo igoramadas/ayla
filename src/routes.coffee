@@ -123,7 +123,7 @@ class Routes
 
         # Get details for API modules.
         for key, m of api.modules
-            oauthObj = m.oauth?.getJSON(true) or null
+            oauthObj = m.oauth?.getJSON() or null
             obj = {id: key, moduleName: m.moduleName, errors: m.errors, jobs: [], oauth: oauthObj}
             apiModules.push obj
 
@@ -202,10 +202,12 @@ class Routes
         options.moduleName = m.moduleName
         options.data = m.data
         options.errors = m.errors
-        options.oauth = m.oauth.getJSON true
         options.jobs = []
 
-        jobs = lodash.filter cron.jobs, {module: m.moduleName + ".coffee"}
+        if m.oauth?
+            options.oauth = m.oauth.getJSON()
+
+        jobs = lodash.filter cron.jobs, {module: m.moduleName.toLowerCase() + ".coffee"}
 
         for job in jobs
             options.jobs.push {id: job.id, schedule: job.schedule, endTime: job.endTime}

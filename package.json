@@ -25,10 +25,15 @@
         "imap": "^0.8.19",
         "mailparser": "^2.3.2",
         "mdns": "^2.4.0",
+        "noble": "^1.9.1",
         "oauth": "^0.9.15",
         "request": "^2.87.0",
         "tinycolor2": "^1.4.1",
-        "tplink-smarthome-api": "^0.22.0"
+        "tplink-smarthome-api": "^0.22.0",
+        "xpc-connection": "sandeepmistry/node-xpc-connection#pull/26/head"
+    },
+    "resolutions": {
+        "xpc-connection": "sandeepmistry/node-xpc-connection#pull/26/head"
     },
     "devDependencies": {
         "chai": "*",

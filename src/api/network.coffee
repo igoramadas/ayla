@@ -19,12 +19,12 @@ class Network extends (require "./baseapi.coffee")
 
     appData = require "../appdata.coffee"
     buffer = require "buffer"
-    cprocess = require "child_process"
     dgram = require "dgram"
     fs = require "fs"
     http = require "http"
-    querystring = require "querystring"
+    noble = require "noble"
     path = require "path"
+    querystring = require "querystring"
     url = require "url"
 
     # PROPERTIES
@@ -58,8 +58,6 @@ class Network extends (require "./baseapi.coffee")
     start: =>
         @baseStart()
 
-        events.on "Network.probeBluetooth", @probeBluetooth
-        events.on "Network.probeBluetoothUsers", @probeBluetoothUsers
         events.on "Network.wol", @wol
 
         @checkIP()
@@ -75,16 +73,17 @@ class Network extends (require "./baseapi.coffee")
             @mdnsBrowser.on "serviceDown", @onServiceDown
             @mdnsBrowser.start()
 
-        # Probe network.
+        noble.startScanning()
+        noble.on "discover", @bluetoothDiscovered
+
         @probeDevices()
-        @probeBluetooth()
-        @probeBluetoothUsers()
 
     # Stop monitoring the network.
     stop: =>
-        events.off "Network.probeBluetooth", @probeBluetooth
-        events.off "Network.probeBluetoothUsers", @probeBluetoothUsers
         events.off "Network.wol", @wol
+
+        noble.off "discover", @bluetoothDiscovered
+        noble.stopScanning()
 
         if @mdnsBrowser? and settings.network.autoDiscovery
             @mdnsBrowser.off "serviceUp", @onServiceUp
@@ -274,108 +273,21 @@ class Network extends (require "./baseapi.coffee")
     # -------------------------------------------------------------------------
 
     # Query bluetooth and returns all discoverable devices.
-    probeBluetooth: (callback) =>
-        platformErrorMsg = "Platform not supported, bluetooth probing works only on Ubuntu and Windows."
+    bluetoothDiscovered: (device) =>
+        logger.debug "Network.bluetoothDiscovered", device
 
-        # Sometimes callback might not be a function (calling from cron jobs for example).
-        if not lodash.isFunction callback
-            callback = null
+        id = device.advertisement.localName or device.id
 
-        if @serverInfo.platform.indexOf("darwin") >= 0
-            logger.error "Network.probeBluetooth", platformErrorMsg
-            return callback? platformErrorMsg
+        if device.address is "unknown"
+            return logger.info "Network.bluetoothDiscovered", "Unknown device", id
 
-        # Scan and parse results from command line.
-        # Use btdiscovery on Windows, hcitool on Linux.
-        try
-            if @serverInfo.platform.indexOf("linux") < 0
-                cmd = "btdiscovery"
-            else
-                cmd = "hcitool scan"
+        existingDevice = lodash.find @data.devices, {address: device.address}
 
-            # On close parse the output and get device mac and names out of it.
-            cprocess.exec cmd, (err, stdout, stderr) =>
-                if err?
-                    logger.error "Network.probeBluetooth", err
-                else if stderr? and stderr isnt ""
-                    logger.error "Network.probeBluetooth", stderr
+        if existingDevice?
+            index = @data.devices.indexOf existingDevice
+            @data.devices.splice index, 1
 
-                if stdout? and stdout isnt ""
-                    devices = []
-                    lines = stdout.split "\n"
-
-                    # First line is the "Scanning..." string.
-                    lines.shift()
-                    logger.info "Network.probeBluetooth", lines
-
-                    # Iterate and trim device details.
-                    for d in lines
-                        devices.push d.trim() if d? and d isnt ""
-
-                    @setData "bluetooth", devices
-
-                    callback? null, devices
-        catch ex
-            logger.error "Network.probeBluetooth", ex
-            callback? ex
-
-    # Probe user's bluetooth devices by checking the `bluetooth` property of registered users.
-    probeBluetoothUsers: (callback) =>
-        platformErrorMsg = "Platform not supported, bluetooth probing works only on Ubuntu and Windows."
-
-        # Sometimes callback might not be a function (calling from cron jobs for example).
-        if not lodash.isFunction callback
-            callback = null
-
-        if @serverInfo.platform.indexOf("darwin") >= 0
-            logger.error "Network.probeBluetoothUsers", platformErrorMsg
-            return callback? platformErrorMsg
-
-        tasks = []
-
-        # Iterate and create tasks for each passed mac address.
-        for username, user of settings.users
-            do (user) =>
-                user.username = username
-
-                if user.bluetoothMac?
-                    tasks.push (cb) =>
-                        try
-                            if @serverInfo.platform.indexOf("linux") < 0
-                                cmd = "btdiscovery -b#{user.bluetoothMac} -d%n%"
-                            else
-                                cmd = "hcitool name #{user.bluetoothMac}"
-
-                            # On close parse the output and get device name, and set its online property.
-                            # If name is found, add `deviceName` to the original object.
-                            cprocess.exec cmd, (err, stdout, stderr) =>
-                                if err?
-                                    logger.error "Network.probeBluetoothUsers", err
-                                else if stderr? and stderr isnt ""
-                                    logger.error "Network.probeBluetoothUsers", stderr
-
-                                if stdout? and stdout isnt ""
-                                    user.deviceName = stdout.trim()
-                                    user.online = true
-                                else
-                                    user.online = false
-
-                                logger.info "Network.probeBluetoothUsers", user.name, user.bluetoothMac, user.online
-
-                                cb null, user
-                        catch ex
-                            cb ex
-
-        # Check all passed bluetooth devices.
-        if tasks.length > 0
-            async.series tasks, (err, results) =>
-                if err?
-                    logger.error "Network.probeBluetoothUsers", err
-                else
-                    for user in results
-                        @setData "userPresence", {user: user.name, mac: user.bluetoothMac, online: user.online}, user.username
-
-                callback? err, results
+        @data.devices.push device
 
     # SERVICE DISCOVERY
     # -------------------------------------------------------------------------

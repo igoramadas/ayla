@@ -1,8 +1,8 @@
 {
     "hue.coffee": [{
         "callback": "refreshHub",
-        "description": "Refresh Philips Hue hub data every minute.",
-        "schedule": 60000
+        "description": "Refresh Philips Hue hub data every 30 seconds.",
+        "schedule": 30000
     }],
     "netatmo.coffee": [{
         "callback": "getWeather",
@@ -10,16 +10,10 @@
         "schedule": 600000
     }],
     "network.coffee": [{
-            "callback": "probeDevices",
-            "description": "Probe network devices and update their statuses every minute.",
-            "schedule": 60000
-        },
-        {
-            "callback": "probeBluetooth",
-            "description": "Probe discoverable bluetooth devices every 2 minutes.",
-            "schedule": 120000
-        }
-    ],
+        "callback": "probeDevices",
+        "description": "Probe network devices and update their statuses every minute.",
+        "schedule": 60000
+    }],
     "wunderground.coffee": [{
             "callback": "getConditions",
             "description": "Get updated weather information every 20 minutes.",
