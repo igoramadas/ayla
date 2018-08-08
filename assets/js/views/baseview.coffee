@@ -17,23 +17,13 @@ class BaseView
     init: =>
         $(document).foundation()
 
-        @setSockets()
-
         # Create Vue router and app.
         @router = new VueRouter {routes: noidm.routes}
         @vue = new Vue {router: @router, data: {error: null, pageTitle: ""}}
         @vue.$mount "#app"
 
         # Connect to sockets.
-        @socket = io {query: {token: token}}
-
-    # Helper to listen to socket events sent by the server. If no event name is
-    # passed then use the view's default.
-    setSockets: =>
-        ayla.sockets.init()
-
-        ayla.sockets.on "server.info", (info) =>
-            ayla.server.info = info
+        @socket = io()
 
     # DATA METHODS
     # -------------------------------------------------------------------------

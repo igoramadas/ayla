@@ -9,10 +9,7 @@
 #= require lib/crel.js
 #= require lib/jsonhuman.js
 #= require views/baseview.coffee
-#= require views/api.coffee
 #= require views/dashboard.coffee
-#= require views/manager.coffee
-#= require views/start.coffee
 
 # Bind helper to log to console.
 window.logger = -> console.log.apply console, arguments

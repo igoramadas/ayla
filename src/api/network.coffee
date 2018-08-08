@@ -274,12 +274,12 @@ class Network extends (require "./baseapi.coffee")
 
     # Query bluetooth and returns all discoverable devices.
     bluetoothDiscovered: (device) =>
-        logger.debug "Network.bluetoothDiscovered", device
-
-        id = device.advertisement.localName or device.id
+        name = id = device.advertisement?.localName or device.id
 
         if device.address is "unknown"
-            return logger.info "Network.bluetoothDiscovered", "Unknown device", id
+            return logger.debug "Network.bluetoothDiscovered", "Unknown device", name
+
+        logger.info "Network.bluetoothDiscovered", name, device.address
 
         existingDevice = lodash.find @data.devices, {address: device.address}
 

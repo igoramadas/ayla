@@ -32,7 +32,6 @@
         },
         // Default timeout to auto turn off lights, in minutes (when house is empty for example).
         "lightsTimeout": 5
-
     },
     // Default settings for IMAP connections. Try connecting to accounts up to 3 times in a row,
     // with a delay of 90 seconds between retries. The `messageCacheSize` sets how many
