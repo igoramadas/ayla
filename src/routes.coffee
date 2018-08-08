@@ -118,16 +118,14 @@ class Routes
 
         # Get details for managers.
         for key, m of manager.modules
-            obj = {id: key, moduleName: m.moduleName, errors: m.errors, data: []}
+            obj = {id: key, moduleName: m.moduleName, errors: m.errors}
             managerModules.push obj
-            populateData m.data, obj.data
 
         # Get details for API modules.
         for key, m of api.modules
             oauthObj = m.oauth?.getJSON(true) or null
-            obj = {id: key, moduleName: m.moduleName, errors: m.errors, data: [], jobs: [], oauth: oauthObj}
+            obj = {id: key, moduleName: m.moduleName, errors: m.errors, jobs: [], oauth: oauthObj}
             apiModules.push obj
-            populateData m.data, obj.data
 
         # Get cron jobs.
         for job in cron.jobs
@@ -170,8 +168,7 @@ class Routes
 
         # Check if API module is enabled and running.
         if not m?
-            sendErrorResponse req, res, "apiPage", "API module not found or not active."
-            return
+            return sendErrorResponse req, res, "apiPage", "API module not found or not active."
 
         jobs = m.getScheduledJobs()
 
@@ -197,8 +194,7 @@ class Routes
 
         # Check if API module is enabled and running.
         if not m?
-            sendErrorResponse req, res, "apiDataPage", "API module not found or not active."
-            return
+            return sendErrorResponse req, res, "apiDataPage", "API module not found or not active."
 
         # Create options object.
         options = {}
@@ -235,8 +231,7 @@ class Routes
 
         # Check if manager is enabled and running.
         if not m?
-            sendErrorResponse req, res, "managerPage", "Manager not found or not active."
-            return
+            return sendErrorResponse req, res, "managerPage", "Manager not found or not active."
 
         fs.readFile "#{__dirname}/manager/#{m.moduleNameLower.replace("manager", "")}.coffee", {encoding: settings.general.encoding}, (err, data) ->
             lines = data.split "\n"
@@ -259,8 +254,7 @@ class Routes
 
         # Check if API module is enabled and running.
         if not m?
-            sendErrorResponse req, res, "managerDataPage", "Manager not found or not active."
-            return
+            return sendErrorResponse req, res, "managerDataPage", "Manager not found or not active."
 
         # Create options object.
         options = {}
